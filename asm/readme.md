@@ -81,10 +81,10 @@ Download the latest zip file from release folder
 
 ### Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
-1. .Net Framework 4.0 or higher
-1. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
-1. Login credentials at source Azure subscription
-1. Login credentials at destination Azure subscription
+2. .Net Framework 4.0 or higher
+3. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
+4. Login credentials at source Azure subscription
+5. Login credentials at destination Azure subscription
 
 ### Launch migAz.exe
 
@@ -199,18 +199,21 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v1.4.10.0
+- Fix script samples in generated HTML instructions
+
 ### v1.4.9.0
- - Performance improvements, minor fixes to generated resource names
- 
+- Performance improvements, minor fixes to generated resource names
+
 ### v1.4.8.0
- - Fix error when exporting a VM that is in a VNET with no subnets defined
+- Fix error when exporting a VM that is in a VNET with no subnets defined
 
 ### v1.4.7.0
- - New dialog after exporting template that generates instructions on how to deploy to ARM.
+- New dialog after exporting template that generates instructions on how to deploy to ARM.
 
 ### v1.4.6.0
- - Support for VNETs attached to ExpressRoute circuts
- - Fix unit tests
+- Support for VNETs attached to ExpressRoute circuts
+- Fix unit tests
 
 ### v1.4.5.0
 - Add Auto Select Dependencies option
