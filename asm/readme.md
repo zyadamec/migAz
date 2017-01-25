@@ -1,4 +1,4 @@
-# Classic IaaS to Azure Resource Manager IaaS migration using migAz
+# Classic IaaS to Azure Resource Manager IaaS migration using migAz ASM
 
 This article will show you how to use migAz to migrate or clone classic IaaS solutions to Azure Resource Manager IaaS.
 
