@@ -1,21 +1,40 @@
 Hello Azure expert!
 
-This repo is the home of all migAz tool versions. 
+This repo is the home for all migAz tools. migAz intent is to help you on Azure deployments and migrations.
 
-# migAz ASM to ARM version
+The base principal of migAz tools is to work on top of ARM templates. This creates the foundations for you to create, change and migrate deployments with the power and flexibility of ARM templates deployment model. This is true if you are now starting to work with ARM templates and want to learn, or you already have advanced knowledge but need a tool to make you even more productive.
 
-ASM to ARM version allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
+All versions (except ASM Native) work the same way. Connects to the source environment, allows you to select the objects you need to export and create an ARM template from it. With this ARM template you can now make changes, clone or migrate an environment.
+Have a look to each ASM, ARM and AWS versions and see where it helps you.
 
-[Link to the tool](../../tree/master/migaz)
+Give us feedback so we continue to improve this tools and, specially, help us by submitting your own updates. Remember this are community tools that depend deeply on your feedback and code contributions.
 
-# migAz ARM to ARM version
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-AWS to ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment.
+
+
+# migAz ASM version
+
+migAz ASM version allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
+
+[Link to this version](asm)
+
+# migAz ARM version
+
+migAz ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
+
+[Link to this version](arm)
+
+# migAz AWS version
+
+migAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
+
+[Link to this version](aws)
+
+# migAz ASM Native version
+
+migAz ASM Native version is a graphical interface for the platform supported classic migration.
 
 Comming soon.
 
-# migAz AWS to ARM version
-
-AWS to ARM version allows you to create an ARM template out of an AWS EC2 deployment.
-
-Comming soon.
+# 
