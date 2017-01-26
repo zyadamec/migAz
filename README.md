@@ -15,7 +15,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 # migAz ASM version
 
-migAz ASM version allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
+migAz ASM version will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
 
 [Link to this version](asm)
 
@@ -27,13 +27,13 @@ migAz ARM version allows you to create an ARM template out of an Azure IaaS ARM 
 
 # migAz AWS version
 
-migAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
+migAz AWS version will help you on your AWS to Azure migrations. migAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
 
 [Link to this version](aws)
 
 # migAz ASM Native version
 
-migAz ASM Native version is a graphical interface for the platform supported classic migration.
+migAz ASM Native version is a graphical interface for the platform supported ASM to ARM migration.
 
 Comming soon.
 

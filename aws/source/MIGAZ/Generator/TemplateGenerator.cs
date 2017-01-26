@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows.Forms;
 
 namespace MIGAZ.Generator
@@ -261,7 +262,16 @@ namespace MIGAZ.Generator
                 var subnet = _awsObjectRetriever.getSubnetbyId(LB.Subnets[0]);
                 string subnetname = GetSubnetName(subnet[0]);
 
-                frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
+                frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
+                try
+                {
+                    IPHostEntry host = Dns.GetHostEntry(LB.DNSName);
+                    frontendipconfiguration_properties.privateIPAddress = host.AddressList[0].ToString();
+                }
+                catch
+                {
+                    frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
+                }
 
                 List<string> dependson = new List<string>();
                 if (GetProcessedItem("Microsoft.Network/virtualNetworks/" + virtualnetworkname))
