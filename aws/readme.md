@@ -90,7 +90,10 @@ Follow the instructions below to start the deployment of the template using the 
 > If EC2 instances were included on the export, an error will show up stating that the virtual machines VHDs were not found. This is expected since the blobs haven’t been copied yet to the new storage accounts.
 
 If EC2 instances were included, delete the Virtual Machine and NIC resources created by the deployment. You will recreate them later in the process.
+
+
     .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action DeleteVirtualMachines
+
 Execute steps 7 to 11 only if virtual machines were included on the export.
 
 **Step 7:** initiate and complete the blob copy of the required OS disks and data disks using Azure Site Recovery as it takes minimal downtime.
