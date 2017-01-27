@@ -101,12 +101,18 @@ Execute steps 7 to 11 only if virtual machines were included on the export.
 > Refer the link to know how to setup the Azure Site Recovery to get your EC2 instances migrated over to Azure with the VHDs:  https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-migrate-aws-to-azure
 
 **Step 8**: Once the VMs are created by the Azure Site Recovery collect the VHD uri for all the OS and Data Disks.
+
+
     .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action UpdateTemplateDisks
 
 **Step 9:** Delete the Virtual Machine and NIC resources created by the Azure Site Recovery. All VHDs will be kept.
+
+
     .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action DeleteVirtualMachines
 
 **Step 10:** Re-deploy the export.JSON template since the VHD’s required for the virtual machines are available now.
+
+
     New-AzureRmResourceGroupDeployment -Name "<Deployment Name>" -ResourceGroupName "<Resource Group Name>" -TemplateFile "<full path of the export.JSON>" -Verbose
 
 **Step 11:** Because the tool creates a Load Balancer with new DNS names, after the migration is complete, you need to change the DNS records that were pointing to the AWS Loadbalancer DNS name or IP to point to the new Load Balancer DNS name or IP.
