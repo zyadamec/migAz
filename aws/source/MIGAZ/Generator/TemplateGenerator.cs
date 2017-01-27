@@ -472,9 +472,9 @@ namespace MIGAZ.Generator
                 }
             }
 
+            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
             if (dnsservers.Count > 0)
             {
-                VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
                 dhcpoptions.dnsServers = dnsservers;
             }
             //VirtualNetworks
@@ -552,7 +552,7 @@ namespace MIGAZ.Generator
             VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
             virtualnetwork_properties.addressSpace = addressspace;
             virtualnetwork_properties.subnets = subnets;
-            //virtualnetwork_properties.dhcpOptions = dhcpoptions;
+            virtualnetwork_properties.dhcpOptions = dhcpoptions;
 
             virtualnetwork.properties = virtualnetwork_properties;
 
