@@ -7,7 +7,7 @@ param (
     [Parameter(Mandatory = $true)] 
     $TemplateFilePath,
 
-    [ValidateSet("StopASRVirtualMachines", "DeleteASRVirtualMachines", "UpdateTemplateDisks")]
+    [ValidateSet("StopVirtualMachines", "DeleteVirtualMachines", "UpdateTemplateDisks")]
     [Parameter(Mandatory = $true)] 
     $Action,
 
@@ -56,23 +56,26 @@ If ($Action -eq "UpdateTemplateDisks")
         }
     }
 
-    $template | ConvertTo-Json -Depth 100 | Out-File $TemplateFilePath 
+    $templatetext = $template | ConvertTo-Json -Depth 100
+    $templatetext = $templatetext.Replace("\u0027", "'")
+    $templatetext | Out-File $TemplateFilePath
 }
 
-# If action is to stop ASR virtual machines
-If ($Action -eq "StopASRVirtualMachines")
+# If action is to stop virtual machines
+If ($Action -eq "StopVirtualMachines")
 {
+
     $resources = Get-Content $TemplateFilePath | ConvertFrom-Json
     $virtualmachines = $resources.resources | ? type -EQ 'Microsoft.Compute/virtualMachines'
     foreach ($virtualmachine in $virtualmachines)
     {
         $vmname = $virtualmachine.Name+$Sufix
-        Stop-AzureRmVM -ResourceGroupName $ResourcegroupName -Name ($vmname) -Force -StayProvisioned -Verbose
+        Stop-AzureRmVM -ResourceGroupName $ResourcegroupName -Name $vmname -Force -StayProvisioned
     }
 }
 
-# If action is to delete ASR virtual machines and network interfaces
-If ($Action -eq "DeleteASRVirtualMachines")
+# If action is to delete virtual machines and network interfaces
+If ($Action -eq "DeleteVirtualMachines")
 {
     $resources = Get-Content $TemplateFilePath | ConvertFrom-Json
     $virtualmachines = $resources.resources | ? type -EQ 'Microsoft.Compute/virtualMachines'
