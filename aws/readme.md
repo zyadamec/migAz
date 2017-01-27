@@ -89,23 +89,24 @@ Follow the instructions below to start the deployment of the template using the 
 
 > If EC2 instances were included on the export, an error will show up stating that the virtual machines VHDs were not found. This is expected since the blobs haven’t been copied yet to the new storage accounts.
 
+If EC2 instances were included, delete the Virtual Machine and NIC resources created by the deployment. You will recreate them later in the process.
+    .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action DeleteVirtualMachines
 Execute steps 7 to 11 only if virtual machines were included on the export.
 
 **Step 7:** initiate and complete the blob copy of the required OS disks and data disks using Azure Site Recovery as it takes minimal downtime.
 
 > Refer the link to know how to setup the Azure Site Recovery to get your EC2 instances migrated over to Azure with the VHDs:  https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-migrate-aws-to-azure
 
-**Step 8**: Once the VMs are created by the Azure Site Recovery collect the VHD uri for all the OS and Data Disks. 
+**Step 8**: Once the VMs are created by the Azure Site Recovery collect the VHD uri for all the OS and Data Disks.
+    .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action UpdateTemplateDisks
 
-**Step 9**:Edit the export.JSON and modify the VHD uri for each Virtual Machine resource with the collected uri details in the Step 8. 
+**Step 9:** Delete the Virtual Machine and NIC resources created by the Azure Site Recovery. All VHDs will be kept.
+    .\Prepare.ps1 -ResourcegroupName "<Resource Group Name>" -TemplateFilePath "<Template File Path>" -Action DeleteVirtualMachines
 
-> Make sure the VHD uri are properly matched with the relevant VM in the export.JSON template
+**Step 10:** Re-deploy the export.JSON template since the VHD’s required for the virtual machines are available now.
+    New-AzureRmResourceGroupDeployment -Name "<Deployment Name>" -ResourceGroupName "<Resource Group Name>" -TemplateFile "<full path of the export.JSON>" -Verbose
 
-**Step 10:** Delete the Virtual Machine and NIC resources created by the Azure Site Recovery by keeping the VHDs. We would need the VHDs while re-deploying the export.JSON template.
-
-**Step 11:** Re-deploy the export.JSON template since the VHD’s required for the virtual machines are available now.
-
-**Step 12:** Because the tool creates a Load Balancer with new DNS names, after the migration is complete, you need to change the DNS records that were pointing to the AWS Loadbalancer DNS name or IP to point to the new Load Balancer DNS name or IP.
+**Step 11:** Because the tool creates a Load Balancer with new DNS names, after the migration is complete, you need to change the DNS records that were pointing to the AWS Loadbalancer DNS name or IP to point to the new Load Balancer DNS name or IP.
 
 ## Tool Options
 
