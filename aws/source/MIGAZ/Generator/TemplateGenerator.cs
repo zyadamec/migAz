@@ -257,7 +257,7 @@ namespace MIGAZ.Generator
             //// if internal load balancer
             if (LB.Scheme != "internet-facing")
             {
-                string virtualnetworkname = GetVPCName2(LB.VPCId);
+                string virtualnetworkname = GetVPCName(LB.VPCId);
 
                 var subnet = _awsObjectRetriever.getSubnetbyId(LB.Subnets[0]);
                 string subnetname = GetSubnetName(subnet[0]);
@@ -482,10 +482,7 @@ namespace MIGAZ.Generator
             }
             //VirtualNetworks
             VirtualNetwork virtualnetwork = new VirtualNetwork();
-
-            // virtualnetwork.name = vpc.VpcId.Replace(" ","-");
-
-            virtualnetwork.name = GetVPCName2(vpc.VpcId);
+            virtualnetwork.name = GetVPCName(vpc.VpcId);
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -871,7 +868,7 @@ namespace MIGAZ.Generator
 
             string virtualmachinename = GetInstanceName(resource);
        
-            string virtualnetworkname = GetVPCName2(resource.VpcId);
+            string virtualnetworkname = GetVPCName(resource.VpcId);
 
             foreach (var additionalnetworkinterface in resource.NetworkInterfaces)
             {
@@ -1359,7 +1356,7 @@ namespace MIGAZ.Generator
             return NICName;
         }
 
-        private string GetVPCName2(string VpcId)
+        private string GetVPCName(string VpcId)
         {
             var VPC = _awsObjectRetriever.getVPCbyId(VpcId);
 
@@ -1369,7 +1366,7 @@ namespace MIGAZ.Generator
             {
                 if (tag.Key == "Name")
                 {
-                    VPCName = tag.Value;
+                    VPCName = tag.Value.Replace(" ","-");
                 }
             }
 
