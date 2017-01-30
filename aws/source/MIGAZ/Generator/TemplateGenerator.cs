@@ -476,6 +476,10 @@ namespace MIGAZ.Generator
             {
                 dhcpoptions.dnsServers = dnsservers;
             }
+            else
+            {
+                dhcpoptions = null;
+            }
             //VirtualNetworks
             VirtualNetwork virtualnetwork = new VirtualNetwork();
 
