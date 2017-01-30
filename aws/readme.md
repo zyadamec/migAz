@@ -178,12 +178,15 @@ A single Storage Account is created during the export process for all the Virtua
 
 The tool exports all the configured Loadbalancers for an EC2 instance selected and attach it with an availability set. There are chances that an EC2 instance is configured with more than 1 Loadbalancers in AWS. As the Azure supports only 1 loadbalancer per Virtual Machine, we need to manually update the JSON template to configure the Virtual Machine with only one loadbalancer and remove all the references of excluded loadbalancers and their availability sets.  
 
-
-
 ### Troubleshooting
 The detailed logs  are captured in the location %USERPROFILE%\appdata\Local\\MigAz with the file name migAz-<YYYYMMDD>.log
 In case of any issues during the deployment of the export.JSON you need to troubleshoot the template properties and fix the invalid entries. Report any issue on the tool site.
 
 
+
 ## Release Notes
 
+### v1.0.0.2
+
+- Changes in DHCPOptions processing
+- Update to GetVPCName function to remove spaces from name

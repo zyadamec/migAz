@@ -257,7 +257,7 @@ namespace MIGAZ.Generator
             //// if internal load balancer
             if (LB.Scheme != "internet-facing")
             {
-                string virtualnetworkname = GetVPCName2(LB.VPCId);
+                string virtualnetworkname = GetVPCName(LB.VPCId);
 
                 var subnet = _awsObjectRetriever.getSubnetbyId(LB.Subnets[0]);
                 string subnetname = GetSubnetName(subnet[0]);
@@ -463,8 +463,7 @@ namespace MIGAZ.Generator
             {
                 foreach (var item in dnsserver.DhcpConfigurations)
                 {
-                    //TODO Change hard coding || item.Values[0] != _awsObjectRetriever.REGION + ".compute.internal"
-                    if (item.Key == "domain-name-servers")
+                    if ((item.Key == "domain-name-servers") && (item.Values[0] != "AmazonProvidedDNS"))
                     {
                         foreach(var value in item.Values)
                             dnsservers.Add(value);
@@ -477,12 +476,13 @@ namespace MIGAZ.Generator
             {
                 dhcpoptions.dnsServers = dnsservers;
             }
+            else
+            {
+                dhcpoptions = null;
+            }
             //VirtualNetworks
             VirtualNetwork virtualnetwork = new VirtualNetwork();
-
-            // virtualnetwork.name = vpc.VpcId.Replace(" ","-");
-
-            virtualnetwork.name = GetVPCName2(vpc.VpcId);
+            virtualnetwork.name = GetVPCName(vpc.VpcId);
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -868,7 +868,7 @@ namespace MIGAZ.Generator
 
             string virtualmachinename = GetInstanceName(resource);
        
-            string virtualnetworkname = GetVPCName2(resource.VpcId);
+            string virtualnetworkname = GetVPCName(resource.VpcId);
 
             foreach (var additionalnetworkinterface in resource.NetworkInterfaces)
             {
@@ -1356,7 +1356,7 @@ namespace MIGAZ.Generator
             return NICName;
         }
 
-        private string GetVPCName2(string VpcId)
+        private string GetVPCName(string VpcId)
         {
             var VPC = _awsObjectRetriever.getVPCbyId(VpcId);
 
@@ -1366,7 +1366,7 @@ namespace MIGAZ.Generator
             {
                 if (tag.Key == "Name")
                 {
-                    VPCName = tag.Value;
+                    VPCName = tag.Value.Replace(" ","-");
                 }
             }
 
