@@ -463,8 +463,7 @@ namespace MIGAZ.Generator
             {
                 foreach (var item in dnsserver.DhcpConfigurations)
                 {
-                    //TODO Change hard coding || item.Values[0] != _awsObjectRetriever.REGION + ".compute.internal"
-                    if (item.Key == "domain-name-servers")
+                    if ((item.Key == "domain-name-servers") && (item.Values[0] != "AmazonProvidedDNS"))
                     {
                         foreach(var value in item.Values)
                             dnsservers.Add(value);
