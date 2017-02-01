@@ -593,43 +593,45 @@ namespace MIGAZ.Generator
                 if (rule.RuleNumber > 4096)
                     securityrule_properties.priority = 4096;
                 else
+                {
                     securityrule_properties.priority = rule.RuleNumber;//RuleNum
 
-                securityrule_properties.access = rule.RuleAction; //ruleAction
-                securityrule_properties.sourceAddressPrefix = rule.CidrBlock; //cidrBlock
-                securityrule_properties.destinationAddressPrefix = "0.0.0.0/0";
+                    securityrule_properties.access = rule.RuleAction; //ruleAction
+                    securityrule_properties.sourceAddressPrefix = rule.CidrBlock; //cidrBlock
+                    securityrule_properties.destinationAddressPrefix = "0.0.0.0/0";
 
-                if(rule.Protocol == "6")
-                    securityrule_properties.protocol = "tcp";
-                else if(rule.Protocol == "17")
-                    securityrule_properties.protocol = "udp";
-                else
-                    securityrule_properties.protocol = "*";
-
-                if (rule.PortRange != null)
-                {
-                    int from, to;
-                    from  = rule.PortRange.From;
-                    to = rule.PortRange.To;
-                    if (from == to)
-                        securityrule_properties.sourcePortRange = from.ToString();
+                    if (rule.Protocol == "6")
+                        securityrule_properties.protocol = "tcp";
+                    else if (rule.Protocol == "17")
+                        securityrule_properties.protocol = "udp";
                     else
-                        securityrule_properties.sourcePortRange = from + "-" + to;
-                    // number, number-num, * - if portrange not available - from and to tags of port range tag
+                        securityrule_properties.protocol = "*";
+
+                    if (rule.PortRange != null)
+                    {
+                        int from, to;
+                        from = rule.PortRange.From;
+                        to = rule.PortRange.To;
+                        if (from == to)
+                            securityrule_properties.sourcePortRange = from.ToString();
+                        else
+                            securityrule_properties.sourcePortRange = from + "-" + to;
+                        // number, number-num, * - if portrange not available - from and to tags of port range tag
+                    }
+                    else
+                    {
+                        securityrule_properties.sourcePortRange = "*";
+                    }
+                    securityrule_properties.destinationPortRange = "*";
+
+                    SecurityRule securityrule = new SecurityRule();
+
+                    securityrule.name = (ruleDirection + "-" + rule.RuleNumber);
+                    securityrule.properties = securityrule_properties;
+
+                    networksecuritygroup_properties.securityRules.Add(securityrule);
+                    networksecuritygroup.properties = networksecuritygroup_properties;
                 }
-                else
-                {
-                    securityrule_properties.sourcePortRange = "*";
-                }
-                securityrule_properties.destinationPortRange = "*";
-
-                SecurityRule securityrule = new SecurityRule();
-
-                securityrule.name = (ruleDirection + "-" + rule.RuleNumber);
-                securityrule.properties = securityrule_properties;
-
-                networksecuritygroup_properties.securityRules.Add(securityrule);
-                networksecuritygroup.properties = networksecuritygroup_properties;
             }
             try // it fails if this network security group was already processed. safe to continue.
             {
@@ -699,26 +701,6 @@ namespace MIGAZ.Generator
                 networksecuritygroup_properties.securityRules.Add(securityrule);
             }
 
-            // add explicit deny inbond rule
-            {
-                SecurityRule securityrule = new SecurityRule();
-                securityrule.name = ("Inbound-" + 4090);
-                securityrule.properties = new SecurityRule_Properties();
-
-                SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                securityrule_properties.direction = "Inbound";
-                securityrule_properties.access = "Deny";
-                securityrule_properties.sourceAddressPrefix = "0.0.0.0/0";
-                securityrule_properties.sourcePortRange = "*";
-                securityrule_properties.destinationAddressPrefix = "0.0.0.0/0";
-                securityrule_properties.destinationPortRange = "*";
-                securityrule_properties.priority = 4090;
-                securityrule_properties.protocol = "*";
-
-                securityrule.properties = securityrule_properties;
-                networksecuritygroup_properties.securityRules.Add(securityrule);
-            }
-
             // process outbound rules
             foreach (Amazon.EC2.Model.IpPermission ippermissionegress in securitygroup.IpPermissionsEgress)
             {
@@ -753,26 +735,6 @@ namespace MIGAZ.Generator
                 {
                     securityrule_properties.destinationPortRange = ippermissionegress.ToPort.ToString();
                 }
-
-                securityrule.properties = securityrule_properties;
-                networksecuritygroup_properties.securityRules.Add(securityrule);
-            }
-
-            // add explicit deny outbound rule
-            {
-                SecurityRule securityrule = new SecurityRule();
-                securityrule.name = ("Outbound-" + 4091);
-                securityrule.properties = new SecurityRule_Properties();
-
-                SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                securityrule_properties.direction = "Outbound";
-                securityrule_properties.access = "Deny";
-                securityrule_properties.sourceAddressPrefix = "0.0.0.0/0";
-                securityrule_properties.sourcePortRange = "*";
-                securityrule_properties.destinationAddressPrefix = "0.0.0.0/0";
-                securityrule_properties.destinationPortRange = "*";
-                securityrule_properties.priority = 4090;
-                securityrule_properties.protocol = "*";
 
                 securityrule.properties = securityrule_properties;
                 networksecuritygroup_properties.securityRules.Add(securityrule);
