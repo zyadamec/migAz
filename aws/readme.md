@@ -186,6 +186,10 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 ## Release Notes
 
+### v1.0.0.3
+
+- Update to BuildNetworkSecurityGroup functions
+- Update Prepare.ps1 to execute parallel instead of sequential 
 ### v1.0.0.2
 
 - Changes in DHCPOptions processing
