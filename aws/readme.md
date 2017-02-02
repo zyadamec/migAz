@@ -66,7 +66,7 @@ Download the latest zip file from release folder
 
 ![migAz main window](./media/virtual-machines-windows-migration-migaz/main.png)
 
-**Step 1:** Click the “Sign In” button. The “Sign In” button will launch the Authentication page and user has to enter the AWS Access Key ID and the AWS Secret Access Key.
+**Step 1:** Click the “Sign In” button. The “Sign In” button will launch the Authentication page and user has to enter the AWS Access Key ID and the AWS Secret Access Key. ([get AWS Access Key](https://aws.amazon.com/developers/access-keys/))
 
 ![migAz main window](./media/virtual-machines-windows-migration-migaz/login.png)
 
@@ -80,7 +80,7 @@ Post successful authentication the Regions are loaded with the respective VPC an
 
 **Step 5:** The Export Objects will then collect all the properties of selected resources and create a JSON Template file in the Output Folder selected.
 
-**Step 6:** Once the export completes, the next step is  to deploy the template to your Azure environment. 
+**Step 6:** Once the export completes, the next step is to deploy the template to your Azure environment. 
 
 Follow the instructions below to start the deployment of the template using the cmdlet:
 
