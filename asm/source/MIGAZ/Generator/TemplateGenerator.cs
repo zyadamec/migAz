@@ -85,7 +85,6 @@ namespace MIGAZ.Generator
             // process selected cloud services and virtual machines
             foreach (var cloudServiceVM in artefacts.VirtualMachines)
             {
-
                 var vmDetails = await _asmRetriever.GetVMDetails(subscriptionId, cloudServiceVM.CloudService, cloudServiceVM.VirtualMachine, token);
 
                 Hashtable cloudserviceinfo = new Hashtable();
@@ -521,9 +520,9 @@ namespace MIGAZ.Generator
             List<string> dependson = new List<string>();
 
             List<string> addressprefixes = new List<string>();
-            foreach (XmlNode addressprefix in resource.SelectNodes("AddressSpace/AddressPrefixes"))
+            foreach (XmlNode addressprefix in resource.SelectNodes("AddressSpace/AddressPrefixes/AddressPrefix"))
             {
-                addressprefixes.Add(addressprefix.SelectSingleNode("AddressPrefix").InnerText);
+                addressprefixes.Add(addressprefix.InnerText);
             }
 
             AddressSpace addressspace = new AddressSpace();
@@ -778,9 +777,9 @@ namespace MIGAZ.Generator
                 {
                     // Local Network Gateway
                     var addressprefixes = new List<string>();
-                    foreach (XmlNode addressprefix in LocalNetworkSite.SelectNodes("AddressSpace/AddressPrefixes"))
+                    foreach (XmlNode addressprefix in LocalNetworkSite.SelectNodes("AddressSpace/AddressPrefixes/AddressPrefix"))
                     {
-                        addressprefixes.Add(addressprefix.SelectSingleNode("AddressPrefix").InnerText);
+                        addressprefixes.Add(addressprefix.InnerText);
                     }
 
                     AddressSpace localnetworkaddressspace = new AddressSpace();
