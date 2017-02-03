@@ -381,13 +381,13 @@ namespace MIGAZ
                     var token = GetToken(subscriptionsAndTenants[subscriptionid], PromptBehavior.Auto);
                     var exportResults = new ExportResults(_asmRetriever, token, messages, subscriptionid, instructionsPath, templatePath, blobDetailsPath);
                     exportResults.ShowDialog(this);
-                }
-                catch (Exception ex)
-                {
-                    writeLog("btnExport_Click", "Error generating template : " + ex.ToString());
-                    MessageBox.Show("Something went wrong when generating the template. Check the log file for details.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
+                catch (Exception ex)
+            {
+                writeLog("btnExport_Click", "Error generating template : " + ex.ToString());
+                MessageBox.Show("Something went wrong when generating the template. Check the log file for details.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
             lblStatus.Text = "Done";
             btnExport.Enabled = true;

@@ -1135,7 +1135,7 @@ namespace MIGAZ.Generator
             foreach (var resource in resources.properties.subnets)
             {
                 // Process Virtual Network Gateway if one exists
-                if (resource.name == "GatewaySubnet")
+                if (resource.name == "GatewaySubnet" && !(resource.properties.ipConfigurations == null))
                 {
 
                     //Get Gateway Details
