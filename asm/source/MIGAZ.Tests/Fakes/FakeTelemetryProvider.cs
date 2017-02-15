@@ -1,4 +1,6 @@
-﻿using MIGAZ.Generator;
+﻿using MIGAZ.Asm;
+using MIGAZ.Generator;
+using MIGAZ.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +11,8 @@ namespace MIGAZ.Tests.Fakes
 {
     class FakeTelemetryProvider : ITelemetryProvider
     {
-        public void PostTelemetryRecord(string tenantId, string subscriptionId, Dictionary<string, string> processedItems)
+        public void PostTelemetryRecord(TemplateResult templateResult)
         {
-            
-        }
-
-        public void PostTelemetryRecord(string tenantId, string subscriptionId, Dictionary<string, string> processedItems, string offercategories)
-        {
-            
         }
     }
 }

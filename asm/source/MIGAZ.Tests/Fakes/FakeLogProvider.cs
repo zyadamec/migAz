@@ -1,4 +1,5 @@
 ﻿using MIGAZ.Generator;
+using MIGAZ.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

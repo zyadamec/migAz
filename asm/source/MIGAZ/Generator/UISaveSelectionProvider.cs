@@ -4,6 +4,11 @@ using MIGAZ.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Threading.Tasks;
+using MIGAZ.Asm;
+using MIGAZ.Interface;
+using MIGAZ.Arm;
+using MIGAZ.Azure;
 
 namespace MIGAZ.Generator
 {
@@ -20,9 +25,9 @@ namespace MIGAZ.Generator
             filePath = filedir + "\\MIGAZ-SaveSelection.json";
         }
 
-        public void Save(Guid subscriptionId, ListView lvwVirtualNetworks, ListView lvwStorageAccounts, ListView lvwVirtualMachines)
+        public async Task Save(Guid subscriptionId, List<TreeNode> selectedNodes)
         {
-            string jsontext = "";
+            string jsontext = String.Empty;
 
             try
             {
@@ -47,26 +52,65 @@ namespace MIGAZ.Generator
             SaveSelection saveSelection = new SaveSelection();
             saveSelection.SubscriptionId = subscriptionId;
 
-            saveSelection.VirtualNetworks = new List<string>();
-            foreach (ListViewItem virtualNetwork in lvwVirtualNetworks.CheckedItems)
-            {
-                saveSelection.VirtualNetworks.Add(virtualNetwork.Text);
-            }
+            saveSelection.VirtualNetworks = new List<SaveSelectionVirtualNetwork>();
+            saveSelection.StorageAccounts = new List<SaveSelectioStorageAccount>();
+            saveSelection.VirtualMachines = new List<SaveSelectionVirtualMachine>();
 
-            saveSelection.StorageAccounts = new List<string>();
-            foreach (ListViewItem storageAccount in lvwStorageAccounts.CheckedItems)
+            if (selectedNodes != null)
             {
-                saveSelection.StorageAccounts.Add(storageAccount.Text);
-            }
+                foreach (TreeNode treeNode in selectedNodes)
+                {
+                    if (treeNode.Tag != null)
+                    {
+                        Type tagType = treeNode.Tag.GetType();
+                        if (tagType == typeof(AsmVirtualNetwork))
+                        {
+                            AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)treeNode.Tag;
 
-            saveSelection.VirtualMachines = new List<SaveSelectioVirtualMachine>();
-            foreach (ListViewItem virtualMachine in lvwVirtualMachines.CheckedItems)
-            {
-                SaveSelectioVirtualMachine saveSelectionVirtualMachine = new SaveSelectioVirtualMachine();
-                saveSelectionVirtualMachine.CloudService = virtualMachine.SubItems[0].Text;
-                saveSelectionVirtualMachine.VirtualMachine = virtualMachine.SubItems[1].Text;
+                            SaveSelectionVirtualNetwork saveSelectionVirtualNetwork = new SaveSelectionVirtualNetwork();
+                            saveSelectionVirtualNetwork.VirtualNetworkName = asmVirtualNetwork.Name;
 
-                saveSelection.VirtualMachines.Add(saveSelectionVirtualMachine);
+                            saveSelection.VirtualNetworks.Add(saveSelectionVirtualNetwork);
+                        }
+                        else if (tagType == typeof(AsmStorageAccount))
+                        {
+                            AsmStorageAccount asmStorageAccount = (AsmStorageAccount)treeNode.Tag;
+
+                            SaveSelectioStorageAccount saveSelectionStorageAccount = new SaveSelectioStorageAccount();
+                            saveSelectionStorageAccount.StorageAccountName = asmStorageAccount.Name;
+                            saveSelectionStorageAccount.TargetStorageAccountName = asmStorageAccount.TargetName;
+
+                            saveSelection.StorageAccounts.Add(saveSelectionStorageAccount);
+                        }
+                        else if (tagType == typeof(AsmVirtualMachine))
+                        {
+                            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)treeNode.Tag;
+
+                            SaveSelectionVirtualMachine saveSelectionVirtualMachine = new SaveSelectionVirtualMachine();
+                            saveSelectionVirtualMachine.CloudService = asmVirtualMachine.CloudServiceName;
+                            saveSelectionVirtualMachine.VirtualMachine = asmVirtualMachine.RoleName;
+
+                            if (asmVirtualMachine.TargetVirtualNetwork != null)
+                                saveSelectionVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.TargetVirtualNetwork.Id;
+
+                            if (asmVirtualMachine.TargetSubnet != null)
+                                saveSelectionVirtualMachine.TargetSubnet = asmVirtualMachine.TargetSubnet.Id;
+
+                            // Add OS Disk Target Storage Account
+                            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                                saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.Id);
+
+                            // Add OS Disk Target Storage Account
+                            foreach (AsmDisk asmDataDisk in asmVirtualMachine.DataDisks)
+                            {
+                                if (asmDataDisk.TargetStorageAccount != null)
+                                    saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.Id);
+                            }
+
+                            saveSelection.VirtualMachines.Add(saveSelectionVirtualMachine);
+                        }
+                    }
+                }
             }
 
             saveSelections.Add(saveSelection);
@@ -79,7 +123,7 @@ namespace MIGAZ.Generator
             saveSelectionWriter.Close();
         }
 
-        public void Read(Guid subscriptionId, ref ListView lvwVirtualNetworks, ref ListView lvwStorageAccounts, ref ListView lvwVirtualMachines)
+        public async Task Read(Guid subscriptionId, AzureRetriever sourceAzureRetreiver, AzureRetriever targetAzureRetreiver, TreeView treeView)
         {
             try
             {
@@ -99,22 +143,124 @@ namespace MIGAZ.Generator
             {
                 SaveSelection saveSelection = saveSelections.Find(x => x.SubscriptionId == subscriptionId);
 
-                foreach (string virtualNetwork in saveSelection.VirtualNetworks)
+                foreach (SaveSelectionVirtualNetwork saveSelectionVirtualNetwork in saveSelection.VirtualNetworks)
                 {
-                    lvwVirtualNetworks.FindItemWithText(virtualNetwork).Checked = true;
+                    foreach (TreeNode treeNode in treeView.Nodes.Find(saveSelectionVirtualNetwork.VirtualNetworkName, true))
+                    {
+                        if (treeNode.Tag.GetType() == typeof(AsmVirtualNetwork))
+                        {
+                            AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)treeNode.Tag;
+
+                            treeNode.Checked = true;
+                        }
+                    }
                 }
 
-                foreach (string storageAccount in saveSelection.StorageAccounts)
+                foreach (SaveSelectioStorageAccount saveSelectionStorageAccount in saveSelection.StorageAccounts)
                 {
-                    lvwStorageAccounts.FindItemWithText(storageAccount).Checked = true;
+                    foreach (TreeNode treeNode in treeView.Nodes.Find(saveSelectionStorageAccount.StorageAccountName, true))
+                    {
+                        if (treeNode.Tag.GetType() == typeof(AsmStorageAccount))
+                        {
+                            AsmStorageAccount asmStorageAccount = (AsmStorageAccount)treeNode.Tag;
+                            if (saveSelectionStorageAccount.TargetStorageAccountName.Length > 0) // We aren't going to reload a blank name, should it occur, as a name is required
+                                asmStorageAccount.TargetName = saveSelectionStorageAccount.TargetStorageAccountName;
+                            treeNode.Checked = true;
+                        }
+                    }
                 }
 
-                foreach (SaveSelectioVirtualMachine saveSelectionVirtualMachine in saveSelection.VirtualMachines)
+                foreach (SaveSelectionVirtualMachine saveSelectionVirtualMachine in saveSelection.VirtualMachines)
                 {
-                    int startAt = lvwVirtualMachines.FindItemWithText(saveSelectionVirtualMachine.CloudService).Index;
-                    lvwVirtualMachines.FindItemWithText(saveSelectionVirtualMachine.VirtualMachine, true, startAt).Checked = true;
+                    foreach (TreeNode virtualMachineNode in treeView.Nodes.Find(saveSelectionVirtualMachine.VirtualMachine, true))
+                    {
+                        if (virtualMachineNode.Tag != null)
+                        {
+                            if (virtualMachineNode.Tag.GetType() == typeof(AsmVirtualMachine))
+                            {
+                                AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)virtualMachineNode.Tag;
+
+                                if (asmVirtualMachine.CloudServiceName == saveSelectionVirtualMachine.CloudService && asmVirtualMachine.RoleName == saveSelectionVirtualMachine.VirtualMachine)
+                                {
+                                    asmVirtualMachine.TargetVirtualNetwork = SeekVirtualNetwork(saveSelectionVirtualMachine.TargetVirtualNetwork, await sourceAzureRetreiver.GetAzureAsmVirtualNetworks(), await targetAzureRetreiver.GetAzureARMVirtualNetworks());
+                                    asmVirtualMachine.TargetSubnet = SeekSubnet(saveSelectionVirtualMachine.TargetSubnet, asmVirtualMachine.TargetVirtualNetwork);
+
+                                    if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmVirtualMachine.OSVirtualHardDisk.DiskName))
+                                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmVirtualMachine.OSVirtualHardDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
+
+                                    foreach (AsmDisk asmDataDisk in asmVirtualMachine.DataDisks)
+                                    {
+                                        if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmDataDisk.DiskName))
+                                            asmDataDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmDataDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
+                                    }
+
+                                    virtualMachineNode.Checked = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        private IVirtualNetwork SeekVirtualNetwork(string id, List<AsmVirtualNetwork> asmVirtualNetworks, List<ArmVirtualNetwork> armVirtualNetworks)
+        {
+            if (asmVirtualNetworks != null)
+            {
+                foreach (AsmVirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
+                {
+                    if (asmVirtualNetwork.Id == id)
+                        return asmVirtualNetwork;
+                }
+            }
+
+            if (armVirtualNetworks != null)
+            {
+                foreach (ArmVirtualNetwork armVirtualNetwork in armVirtualNetworks)
+                {
+                    if (armVirtualNetwork.Id == id)
+                        return armVirtualNetwork;
+                }
+            }
+
+            return null;
+        }
+
+        private ISubnet SeekSubnet(string id, IVirtualNetwork virtualNetwork)
+        {
+            if (virtualNetwork != null)
+            {
+                foreach (ISubnet subnet in virtualNetwork.Subnets)
+                {
+                    if (subnet.Id == id)
+                        return subnet;
+                }
+            }
+
+            return null;
+        }
+
+        private IStorageAccount SeekStorageAccount(string id, List<AsmStorageAccount> asmStorageAccounts, List<ArmStorageAccount> armStorageAccounts)
+        {
+            if (asmStorageAccounts != null)
+            {
+                foreach (AsmStorageAccount asmStorageAccount in asmStorageAccounts)
+                {
+                    if (asmStorageAccount.Id == id)
+                        return asmStorageAccount;
+                }
+            }
+
+            if (armStorageAccounts != null)
+            {
+                foreach (ArmStorageAccount armStorageAccount in armStorageAccounts)
+                {
+                    if (armStorageAccount.Id == id)
+                        return armStorageAccount;
+                }
+            }
+
+            return null;
         }
     }
 }

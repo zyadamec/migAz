@@ -1,4 +1,7 @@
-﻿using MIGAZ.Generator;
+﻿using MIGAZ.Asm;
+using MIGAZ.Azure;
+using MIGAZ.Generator;
+using MIGAZ.Interface;
 using MIGAZ.Tests.Fakes;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MIGAZ.Arm;
+using MIGAZ.Models;
 
 namespace MIGAZ.Tests
 {
@@ -14,16 +19,49 @@ namespace MIGAZ.Tests
     {
         public const string TenantId = "11111111-1111-1111-1111-111111111111";
         public const string SubscriptionId = "22222222-2222-2222-2222-222222222222";
+        public static ISubscription GetTestAzureSubscription()
+        {
+            return new FakeAzureSubscription();
+        }
+        public static AzureContext SetupAzureContext()
+        {
+            return SetupAzureContext(AzureEnvironment.AzureCloud);
+        }
 
-        public static void SetupObjects(out FakeAsmRetriever asmRetreiver, out TemplateGenerator templateGenerator)
+        public static AzureContext SetupAzureContext(AzureEnvironment azureEnvironment)
         {
             ILogProvider logProvider = new FakeLogProvider();
             IStatusProvider statusProvider = new FakeStatusProvider();
-            ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
-            ITokenProvider tokenProvider = new FakeTokenProvider();
             ISettingsProvider settingsProvider = new FakeSettingsProvider();
-            asmRetreiver = new FakeAsmRetriever(logProvider, statusProvider);
-            templateGenerator = new TemplateGenerator(logProvider, statusProvider, telemetryProvider, tokenProvider, asmRetreiver, settingsProvider);
+            AzureContext azureContext = new AzureContext(logProvider, statusProvider, settingsProvider);
+            azureContext.AzureEnvironment = azureEnvironment;
+            FakeAzureRetriever fakeAzureRetriever = new FakeAzureRetriever(azureContext);
+            azureContext.AzureRetriever = fakeAzureRetriever;
+
+            return azureContext;
+        }
+
+        internal static void SetTargetSubnets(AsmArtifacts artifacts)
+        {
+            string x = "{\r\n  \"name\": \"DummyVNet\",\r\n  \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/virtualNetworks/DummyVNet\",\r\n  \"etag\": \"W/\\\"1fa3c5bd-1cf4-4bb9-9839-96ece3b3776d\\\"\",\r\n  \"type\": \"Microsoft.Network/virtualNetworks\",\r\n  \"location\": \"westus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"resourceGuid\": \"b8b6b69d-2480-436a-886b-ac3ef4061253\",\r\n    \"addressSpace\": {\r\n      \"addressPrefixes\": [\r\n        \"10.0.0.0/16\"\r\n      ]\r\n    },\r\n    \"subnets\": [\r\n      {\r\n        \"name\": \"subnet01\",\r\n        \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/virtualNetworks/DummyVNet/subnets/subnet01\",\r\n        \"etag\": \"W/\\\"1f53c5be-1cf4-4bb9-9839-96ece3b3776d\\\"\",\r\n        \"properties\": {\r\n          \"provisioningState\": \"Succeeded\",\r\n          \"addressPrefix\": \"10.0.0.0/24\",\r\n\"applicationGatewayIPConfigurations\": [\r\n            {\r\n              \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/applicationGateways/appgwtest/gatewayIPConfigurations/gatewayIP01\"\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}";
+            JObject webRequestResultJson = JObject.Parse(x);
+
+            ArmVirtualNetwork armVirtualNetwork = new ArmVirtualNetwork(webRequestResultJson);
+
+            foreach (AsmVirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            {
+                if (asmVirtualMachine.TargetVirtualNetwork == null)
+                    asmVirtualMachine.TargetVirtualNetwork = armVirtualNetwork;
+
+                if (asmVirtualMachine.TargetSubnet == null)
+                    asmVirtualMachine.TargetSubnet = armVirtualNetwork.Subnets[0];
+            }
+        }
+        
+        public static TemplateGenerator SetupTemplateGenerator(AzureContext azureContext)
+        {
+            ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
+            return new TemplateGenerator(azureContext.LogProvider, azureContext.StatusProvider, telemetryProvider, azureContext.SettingsProvider);
         }
 
         public static JObject GetJsonData(MemoryStream closedStream)
@@ -32,6 +70,14 @@ namespace MIGAZ.Tests
             var reader = new StreamReader(newStream);
             var templateText = reader.ReadToEnd();
             return JObject.Parse(templateText);
+        }
+
+        internal static async Task<ArmResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
+        {
+            List<AzureLocation> azureLocations = await azureContext.AzureRetriever.GetAzureLocations();
+            ArmResourceGroup targetResourceGroup = new ArmResourceGroup(azureContext, "Target Resource Group");
+            targetResourceGroup.Location = azureLocations[0];
+            return targetResourceGroup;
         }
     }
 }

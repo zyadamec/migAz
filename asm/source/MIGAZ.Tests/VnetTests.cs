@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MIGAZ.Tests.Fakes;
 using MIGAZ.Generator;
@@ -9,6 +7,7 @@ using MIGAZ.Models;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
+using MIGAZ.Azure;
 
 namespace MIGAZ.Tests
 {
@@ -21,25 +20,23 @@ namespace MIGAZ.Tests
         [TestMethod]
         public async Task ValidateComplexSingleVnet()
         {
-            FakeAsmRetriever fakeAsmRetriever;
-            TemplateGenerator templateGenerator;
-            TestHelper.SetupObjects(out fakeAsmRetriever, out templateGenerator);
-            fakeAsmRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET1"));
+            AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
+            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
+            azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET1"));
 
-            var templateStream = new MemoryStream();
-            var blobDetailStream = new MemoryStream();
-            var artefacts = new AsmArtefacts();
-            artefacts.VirtualNetworks.Add("10.2.0.0");
+            var artifacts = new AsmArtifacts();
+            artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("10.2.0.0"));
 
-            await templateGenerator.GenerateTemplate(TestHelper.TenantId, TestHelper.SubscriptionId, artefacts, new StreamWriter(templateStream), new StreamWriter(blobDetailStream));
+            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
-            JObject templateJson = TestHelper.GetJsonData(templateStream);
+            JObject templateJson = templateResult.GenerateTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworks");
             Assert.AreEqual(1, vnets.Count());
-            Assert.AreEqual("10.2.0.0", vnets.First()["name"].Value<string>());
+            Assert.AreEqual("10.2.0.0-vnet", vnets.First()["name"].Value<string>());
 
             // Validate subnets
             var subnets = vnets.First()["properties"]["subnets"];
@@ -49,7 +46,7 @@ namespace MIGAZ.Tests
             var gw = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworkGateways");
             Assert.AreEqual(1, gw.Count());
-            Assert.AreEqual("10.2.0.0-Gateway", gw.First()["name"].Value<string>());
+            Assert.AreEqual("10.2.0.0-gw", gw.First()["name"].Value<string>());
 
             var localGw = templateJson["resources"].Children().Where(
                r => r["type"].Value<string>() == "Microsoft.Network/localNetworkGateways");
@@ -60,32 +57,30 @@ namespace MIGAZ.Tests
             var pips = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/publicIPAddresses");
             Assert.AreEqual(1, pips.Count());
-            Assert.AreEqual("10.2.0.0-Gateway-PIP", pips.First()["name"].Value<string>());
+            Assert.AreEqual("10.2.0.0-gw-pip", pips.First()["name"].Value<string>());
             Assert.AreEqual("Dynamic", pips.First()["properties"]["publicIPAllocationMethod"].Value<string>());
         }
 
         [TestMethod]
         public async Task ValidateSingleVnetWithNsgAndRT()
         {
-            FakeAsmRetriever fakeAsmRetriever;
-            TemplateGenerator templateGenerator;
-            TestHelper.SetupObjects(out fakeAsmRetriever, out templateGenerator);
-            fakeAsmRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET2"));
+            AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
+            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
+            azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET2"));
 
-            var templateStream = new MemoryStream();
-            var blobDetailStream = new MemoryStream();
-            var artefacts = new AsmArtefacts();
-            artefacts.VirtualNetworks.Add("asmtest");
+            var artifacts = new AsmArtifacts();
+            artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmtest"));
 
-            await templateGenerator.GenerateTemplate(TestHelper.TenantId, TestHelper.SubscriptionId, artefacts, new StreamWriter(templateStream), new StreamWriter(blobDetailStream));
+            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
-            JObject templateJson = TestHelper.GetJsonData(templateStream);
+            JObject templateJson = templateResult.GenerateTemplate();
 
             // Validate NSG
             var nsgs = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/networkSecurityGroups");
             Assert.AreEqual(1, nsgs.Count());
-            Assert.AreEqual("asmnsg", nsgs.First()["name"].Value<string>());
+            Assert.AreEqual("asmnsg-nsg", nsgs.First()["name"].Value<string>());
 
             // Validate NSG rules
             JArray rules = (JArray) nsgs.First()["properties"]["securityRules"];
@@ -108,7 +103,7 @@ namespace MIGAZ.Tests
             var vnets = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworks");
             Assert.AreEqual(1, vnets.Count());
-            Assert.AreEqual("asmtest", vnets.First()["name"].Value<string>());
+            Assert.AreEqual("asmtest-vnet", vnets.First()["name"].Value<string>());
 
             // Validate subnets
             var subnets = vnets.First()["properties"]["subnets"];
@@ -121,25 +116,23 @@ namespace MIGAZ.Tests
         [TestMethod]
         public async Task ValidateSingleVnetWithExpressRouteGateway()
         {
-            FakeAsmRetriever fakeAsmRetriever;
-            TemplateGenerator templateGenerator;
-            TestHelper.SetupObjects(out fakeAsmRetriever, out templateGenerator);
-            fakeAsmRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET3"));
+            AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
+            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
+            azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET3"));
 
-            var templateStream = new MemoryStream();
-            var blobDetailStream = new MemoryStream();
-            var artefacts = new AsmArtefacts();
-            artefacts.VirtualNetworks.Add("vnet3");
+            var artifacts = new AsmArtifacts();
+            artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("vnet3"));
 
-            var messages = await templateGenerator.GenerateTemplate(TestHelper.TenantId, TestHelper.SubscriptionId, artefacts, new StreamWriter(templateStream), new StreamWriter(blobDetailStream));
+            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
-            JObject templateJson = TestHelper.GetJsonData(templateStream);
+            JObject templateJson = templateResult.GenerateTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworks");
             Assert.AreEqual(1, vnets.Count());
-            Assert.AreEqual("vnet3", vnets.First()["name"].Value<string>());
+            Assert.AreEqual("vnet3-vnet", vnets.First()["name"].Value<string>());
 
             // Validate subnets
             var subnets = vnets.First()["properties"]["subnets"];
@@ -149,7 +142,7 @@ namespace MIGAZ.Tests
             var gw = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworkGateways");
             Assert.AreEqual(1, gw.Count());
-            Assert.AreEqual("vnet3-Gateway", gw.First()["name"].Value<string>());
+            Assert.AreEqual("vnet3-gw", gw.First()["name"].Value<string>());
             Assert.AreEqual("ExpressRoute", gw.First()["properties"]["gatewayType"].Value<string>());
 
             // Validate no local network
@@ -161,37 +154,35 @@ namespace MIGAZ.Tests
             var conn = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/connections");
             Assert.AreEqual(1, conn.Count());
-            Assert.AreEqual("vnet3-Gateway-localsite-connection", conn.First()["name"].Value<string>());
+            Assert.AreEqual("vnet3-gw-localsite-connection", conn.First()["name"].Value<string>());
             Assert.AreEqual("ExpressRoute", conn.First()["properties"]["connectionType"].Value<string>());
             Assert.IsNotNull(conn.First()["properties"]["peer"]["id"].Value<string>());
 
             // Validate message
-            Assert.AreEqual(1, messages.Count);
-            StringAssert.Contains(messages[0], "ExpressRoute");
+            Assert.AreEqual(1, templateResult.Messages.Count);
+            StringAssert.Contains(templateResult.Messages[0], "ExpressRoute");
         }
 
         [TestMethod]
         public async Task ValidateSingleVnetWithNoSubnetsGetsNewDefaultSubet()
         {
-            FakeAsmRetriever fakeAsmRetriever;
-            TemplateGenerator templateGenerator;
-            TestHelper.SetupObjects(out fakeAsmRetriever, out templateGenerator);
-            fakeAsmRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET4"));
+            AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
+            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
+            azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET4"));
 
-            var templateStream = new MemoryStream();
-            var blobDetailStream = new MemoryStream();
-            var artefacts = new AsmArtefacts();
-            artefacts.VirtualNetworks.Add("asmnet");
+            var artifacts = new AsmArtifacts();
+            artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmnet"));
 
-            var messages = await templateGenerator.GenerateTemplate(TestHelper.TenantId, TestHelper.SubscriptionId, artefacts, new StreamWriter(templateStream), new StreamWriter(blobDetailStream));
+            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
-            JObject templateJson = TestHelper.GetJsonData(templateStream);
+            JObject templateJson = templateResult.GenerateTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(
                 r => r["type"].Value<string>() == "Microsoft.Network/virtualNetworks");
             Assert.AreEqual(1, vnets.Count());
-            Assert.AreEqual("asmnet", vnets.First()["name"].Value<string>());
+            Assert.AreEqual("asmnet-vnet", vnets.First()["name"].Value<string>());
             Assert.AreEqual("10.0.0.0/20", vnets.First()["properties"]["addressSpace"]["addressPrefixes"][0].Value<string>());
 
             // Validate subnets

@@ -4,9 +4,9 @@ using System;
 
 namespace MIGAZ.Models.ARM
 {
-    public class Extension : Resource
+    public class Extension : ArmResource
     {
-        public Extension()
+        public Extension(Guid executionGuid) : base(executionGuid)
         {
             type = "extensions";
             apiVersion = "2015-06-15";
@@ -22,9 +22,9 @@ namespace MIGAZ.Models.ARM
         public Dictionary<string, string> settings;
     }
 
-    public class VirtualNetworkGateway : Resource
+    public class VirtualNetworkGateway : ArmResource
     {
-        public VirtualNetworkGateway()
+        public VirtualNetworkGateway(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/virtualNetworkGateways";
             apiVersion = "2015-06-15";
@@ -47,9 +47,9 @@ namespace MIGAZ.Models.ARM
         public string tier;
     }
 
-    public class LocalNetworkGateway : Resource
+    public class LocalNetworkGateway : ArmResource
     {
-        public LocalNetworkGateway()
+        public LocalNetworkGateway(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/localNetworkGateways";
             apiVersion = "2015-06-15";
@@ -62,9 +62,9 @@ namespace MIGAZ.Models.ARM
         public string gatewayIpAddress;
     }
 
-    public class GatewayConnection : Resource
+    public class GatewayConnection : ArmResource
     {
-        public GatewayConnection()
+        public GatewayConnection(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/connections";
             apiVersion = "2015-06-15";
@@ -100,9 +100,9 @@ namespace MIGAZ.Models.ARM
         public string Thumbprint;
     }
 
-    public class RouteTable : Resource
+    public class RouteTable : ArmResource
     {
-        public RouteTable()
+        public RouteTable(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/routeTables";
             apiVersion = "2015-06-15";
@@ -127,9 +127,9 @@ namespace MIGAZ.Models.ARM
         public string nextHopIpAddress;
     }
 
-    public class NetworkSecurityGroup : Resource
+    public class NetworkSecurityGroup : ArmResource
     {
-        public NetworkSecurityGroup()
+        public NetworkSecurityGroup(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/networkSecurityGroups";
             apiVersion = "2015-06-15";
@@ -160,9 +160,9 @@ namespace MIGAZ.Models.ARM
         public string direction;
     }
 
-    public class VirtualNetwork : Resource
+    public class VirtualNetwork : ArmResource
     {
-        public VirtualNetwork()
+        public VirtualNetwork(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/virtualNetworks";
             apiVersion = "2015-06-15";
@@ -199,9 +199,9 @@ namespace MIGAZ.Models.ARM
         public List<string> dnsServers;
     }
 
-    public class StorageAccount : Resource
+    public class StorageAccount : ArmResource
     {
-        public StorageAccount()
+        public StorageAccount(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Storage/storageAccounts";
             apiVersion = "2015-06-15";
@@ -213,9 +213,9 @@ namespace MIGAZ.Models.ARM
         public string accountType;
     }
 
-    public class LoadBalancer : Resource
+    public class LoadBalancer : ArmResource
     {
-        public LoadBalancer()
+        public LoadBalancer(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/loadBalancers";
             apiVersion = "2015-06-15";
@@ -293,9 +293,9 @@ namespace MIGAZ.Models.ARM
         public string requestPath;
     }
 
-    public class PublicIPAddress : Resource
+    public class PublicIPAddress : ArmResource
     {
-        public PublicIPAddress()
+        public PublicIPAddress(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/publicIPAddresses";
             apiVersion = "2015-06-15";
@@ -308,9 +308,9 @@ namespace MIGAZ.Models.ARM
         public Hashtable dnsSettings;
     }
 
-    public class NetworkInterface : Resource
+    public class NetworkInterface : ArmResource
     {
-        public NetworkInterface()
+        public NetworkInterface(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Network/networkInterfaces";
             apiVersion = "2015-06-15";
@@ -340,19 +340,19 @@ namespace MIGAZ.Models.ARM
         public List<Reference> loadBalancerInboundNatRules;
     }
 
-    public class AvailabilitySet : Resource
+    public class AvailabilitySet : ArmResource
     {
-        public AvailabilitySet()
+        public AvailabilitySet(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/availabilitySets";
             apiVersion = "2015-06-15";
         }
     }
 
-    public class VirtualMachine : Resource
+    public class VirtualMachine : ArmResource
     {
-        public List<Resource> resources;
-        public VirtualMachine()
+        public List<ArmResource> resources;
+        public VirtualMachine(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/virtualMachines";
             apiVersion = "2015-06-15";
@@ -452,7 +452,7 @@ namespace MIGAZ.Models.ARM
         public string id;
     }
 
-    public class Resource
+    public class ArmResource
     {
         public string type;
         public string apiVersion;
@@ -462,12 +462,27 @@ namespace MIGAZ.Models.ARM
         public List<string> dependsOn;
         public object properties;
 
-        public Resource()
+        private ArmResource() { }
+
+        public ArmResource(Guid executionGuid)
         {
             if (app.Default.AllowTag)
             {
                 tags = new Dictionary<string, string>();
-                tags.Add("migAz", app.Default.ExecutionId);
+                tags.Add("migAz", executionGuid.ToString());
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                ArmResource other = (ArmResource)obj;
+                return this.type == other.type && this.name == other.name;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
@@ -483,6 +498,6 @@ namespace MIGAZ.Models.ARM
         public string contentVersion = "1.0.0.0";
         public Dictionary<string, Parameter> parameters;
         public Dictionary<string, string> variables;
-        public List<Resource> resources;
+        public List<ArmResource> resources;
     }
 }

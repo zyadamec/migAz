@@ -199,6 +199,27 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v1.5.0.0
+- Updated project package reference and code for Microsoft.IdentityModel.Clients.ActiveDirectory from 2.20.0.0 to 3.13.8.0
+- Moved selection of Azure Environment out from Option Dialog, enabling streamlined selection prior to login as well as ongoing awareness of selected Azure Environment during Asm To Arm process
+- Auto selects (binds to) Azure Subscription if the authenticated Azure ASM Account only has access to a single subscription
+- Auto logout (upon successful login) from Azure AD Account if the authenticated account does not have any subscriptions present in the identified Azure Environment
+- Introduced TreeView for viewing and selecting ASM Resources (Virtual Networks, Storage Accounts, Cloud Services, Virtual Machines) for export, creating clearer visibility of resources in subscriptions that have ASM resources deployed across multiple Azure Locations
+- Introduced Treeview for viewing of Target ARM Resource output, increasing visiblity prior to actual export
+- Introduced Azure Resource Object Detail property explorer pane, increasing object visiblity prior to actual export as well as allowing for object revision prior to export
+- All ASM / XmlNode logic centralized into Asm classes for reusable/centralized code base of all XMLNode parsing logic (externalized from actual template generation process)
+- Updated Unit Tests for successful pass with FakeRetriever overrides against new to AzureRetriever structure
+- Added Query of Azure Locations available to subscription, used to populate available Location ComboBox
+- Added population of target location on pre export dialog to populate locations available to target subscription (inclusive of rare migration condition across Azure Environments)
+- Resolved bug in which only the first Address Prefix of a VPN Local Site that contains multiple Address Prefixes was exported
+- Added Azure REST API calls to query exisning ARM based resources (Virtual Networks, Storage Accounts and Storage Account Keys) to aid in migration scenarios targeting prior ARM deployed resources
+- Ensured that GatewaySubnet is not populated in ASM/ARM Subnet as a user deployable Target Subnet
+- Introduced separate Export Parameter dialog with previous inputs for output path and Resource Group, added Target Azure Subscription and Target Azure Location
+- Removed "Next Steps" Tab from Export Result dialog, as Azure Location selection was moved for input prior to export occurring.  Show Deployment button moved to status screen
+- Implemented initial pre-export check, requiring Target Resource name selection
+- Update blank VM export to target Windows Server 2016 instead of Windows Server 2012, per image availablity across all Azure Regions
+- Added http://aka.ms/MigAz URL to Status Strip on main form.
+
 ### v1.4.10.0
 - Fix script samples in generated HTML instructions
 

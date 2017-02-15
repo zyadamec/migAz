@@ -1,4 +1,7 @@
-﻿using MIGAZ.Models;
+﻿using MIGAZ.Asm;
+using MIGAZ.Interface;
+using MIGAZ.Models;
+using MIGAZ.Models.ARM;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,15 +17,28 @@ namespace MIGAZ.Generator
 {
     public class CloudTelemetryProvider : ITelemetryProvider
     {
-        public void PostTelemetryRecord(string tenantId, string subscriptionId, Dictionary<string, string> processedItems, string offercategories)
+        private Dictionary<string,string> GetProcessedItems(TemplateResult templateResult)
+        {
+            Dictionary<string, string> processedItems = new Dictionary<string, string>();
+
+            foreach (ArmResource resource in templateResult.Resources)
+            {
+                if (!processedItems.ContainsKey(resource.type + resource.name))
+                    processedItems.Add(resource.type + resource.name, resource.location);
+            }
+
+            return processedItems;
+        }
+
+        public void PostTelemetryRecord(TemplateResult templateResult)
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
-            telemetryrecord.ExecutionId = Guid.Parse(app.Default.ExecutionId);
-            telemetryrecord.SubscriptionId = new Guid(subscriptionId);
-            telemetryrecord.TenantId = tenantId;
-            telemetryrecord.OfferCategories = offercategories;
+            telemetryrecord.ExecutionId = templateResult.ExecutionGuid;
+            telemetryrecord.SubscriptionId = templateResult.SourceSubscription.SubscriptionId;
+            telemetryrecord.TenantId = templateResult.SourceSubscription.AzureAdTenantId;
+            telemetryrecord.OfferCategories = templateResult.SourceSubscription.offercategories;
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            telemetryrecord.ProcessedResources = processedItems;
+            telemetryrecord.ProcessedResources = this.GetProcessedItems(templateResult);
 
             string jsontext = JsonConvert.SerializeObject(telemetryrecord, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             ASCIIEncoding encoding = new ASCIIEncoding();
@@ -30,7 +46,7 @@ namespace MIGAZ.Generator
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/telemetry/ASMtoARM");
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/telemetry");
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.ContentLength = data.Length;

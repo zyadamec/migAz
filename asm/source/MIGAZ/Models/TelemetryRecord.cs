@@ -6,8 +6,8 @@ namespace MIGAZ.Models
     public class TelemetryRecord
     {
         public Guid ExecutionId;
-        public string TenantId;
-        public System.Guid SubscriptionId;
+        public Guid TenantId;
+        public Guid SubscriptionId;
         public Dictionary<string, string> ProcessedResources;
         public string OfferCategories;
         public string SourceVersion;

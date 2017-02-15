@@ -15,13 +15,13 @@ namespace MIGAZ.Models
         public string DestinationSA;
         public string DestinationContainer;
         public string DestinationBlob;
-        public string DestinationKey = "";
-        public string Status = "";
+        public string DestinationKey = String.Empty;
+        public string Status = String.Empty;
         public long TotalBytes = 0;
         public long BytesCopied = 0;
-        public string StartTime = "";
-        public string EndTime = "";
-        public string SnapshotTime = "";
+        public string StartTime = String.Empty;
+        public string EndTime = String.Empty;
+        public string SnapshotTime = String.Empty;
     }
 
 }
