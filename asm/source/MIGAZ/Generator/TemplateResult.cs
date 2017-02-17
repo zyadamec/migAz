@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace MIGAZ.Generator
 {
@@ -172,6 +173,7 @@ namespace MIGAZ.Generator
                 instructionContent = instructionContent.Replace("{resourceGroupName}", _TargetResourceGroup.GetFinalTargetName());
                 instructionContent = instructionContent.Replace("{location}", _TargetResourceGroup.Location.Name);
                 instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
+                instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
 
                 if (_TargetSubscription.AzureEnvironment == AzureEnvironment.AzureCloud)
                     instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", String.Empty); // Default Azure Environment in Powershell, no AzureEnvironment switch needed
@@ -189,6 +191,29 @@ namespace MIGAZ.Generator
                     instructionWriter.Dispose();
                 }
             }
+        }
+
+        private string BuildMigAzMessages()
+        {
+            if (this.Messages.Count == 0)
+                return String.Empty;
+
+            StringBuilder sbMigAzMessageResult = new StringBuilder();
+
+            sbMigAzMessageResult.Append("<p>MigAz has identified the following advisements during template generation for review:</p>");
+
+            sbMigAzMessageResult.Append("<p>");
+            sbMigAzMessageResult.Append("<ul>");
+            foreach (string migAzMessage in this.Messages)
+            {
+                sbMigAzMessageResult.Append("<li>");
+                sbMigAzMessageResult.Append(migAzMessage);
+                sbMigAzMessageResult.Append("</li>");
+            }
+            sbMigAzMessageResult.Append("</ul>");
+            sbMigAzMessageResult.Append("</p>");
+
+            return sbMigAzMessageResult.ToString();
         }
 
         public bool IsProcessed(ArmResource resource)

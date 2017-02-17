@@ -534,6 +534,9 @@ namespace MIGAZ.Generator
 
                 templateResult.AddResource(virtualnetworkgateway);
 
+                if (!asmVirtualNetwork.HasGatewaySubnet)
+                    templateResult.Messages.Add("The Virtual Network '" + asmVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.");
+
                 await AddLocalSiteToGateway(templateResult, asmVirtualNetwork, virtualnetwork, virtualnetworkgateway);
             }
         }

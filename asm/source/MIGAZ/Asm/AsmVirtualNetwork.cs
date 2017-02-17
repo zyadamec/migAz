@@ -166,6 +166,19 @@ namespace MIGAZ.Asm
             }
         }
 
+        public bool HasGatewaySubnet
+        {
+            get
+            {
+                foreach (AsmSubnet asmSubnet in this.Subnets)
+                {
+                    if (asmSubnet.Name == ArmConst.GatewaySubnetName)
+                        return true;
+                }
+                return false;
+            }
+        }
+
         public List<AsmLocalNetworkSite> LocalNetworkSites
         {
             get { return _AsmLocalNetworkSites; }
