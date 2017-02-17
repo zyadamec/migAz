@@ -122,9 +122,9 @@ the template to your Azure environment. Alternatively follow the instructions be
 
 > If virtual machines were included on the export, an error will show up stating that the virtual machines VHDs were not found. This is expected since the blobs haven’t been copied yet to the new storage accounts.
 
-Execute steps 7 to 9 only if virtual machines were included on the export.
+Execute steps 9 to 11 only if virtual machines were included on the export.
 
-**Step 7:** initiate and complete the blob copy of the required OS disks and data disks using BlobCopy.PS1 script
+**Step 9:** initiate and complete the blob copy of the required OS disks and data disks using BlobCopy.PS1 script
 
 > BlobCopy.ps1 script creates temporary snapshots to copy the blobs. This means that it will be able to copy disks from running virtual machines. But, depending on the workload, it can be absolutely required to stop the virtual machine to guarantee data consistency. This is the case, for example, for virtual machines using multiple data disks to create stripped volumes (like storage spaces).
 
@@ -142,9 +142,9 @@ Execute steps 7 to 9 only if virtual machines were included on the export.
 
     .\BlobCopy.ps1 -ResourcegroupName "<Resource Group Name>" -DetailsFilePath "<Full Path of copyblobdetails.JSON>" -StartType CancelBlobCopy
 
-**Step 8:** Once the BlobCopy is completed re-deploy the export.JSON template (step 7) since the VHD’s required for the virtual machines are available now.
+**Step 10:** Once the BlobCopy is completed re-deploy the export.JSON template (step 7) since the VHD’s required for the virtual machines are available now.
 
-**Step 9:** Because the tool creates a Load Balancer matching each Cloud Service, after the migration is complete, you need to change the DNS records that were pointing to the Cloud Service DNS name or IP to point to the new Load Balancer DNS name or IP.
+**Step 11:** Because the tool creates a Load Balancer matching each Cloud Service, after the migration is complete, you need to change the DNS records that were pointing to the Cloud Service DNS name or IP to point to the new Load Balancer DNS name or IP.
 
 ## Tool Options
 
@@ -169,12 +169,6 @@ If this option is selected, migAz will record the last selected resources per ea
 ### Allow telemetry collection
 
 “Allow telemetry collection” is enabled by default. It is used to collect information such as Tenant ID, Subscription ID, Processed Resource Type, Processed Resource Location and the Execution date. This data is collected only to know the tool usage and it will remain only with the development team. You can disable this at any time.
-
-### Azure Environment
-
-To enable deployment of the ARM template to the new Microsoft National Clouds you can choose from the options windows which cloud you want to use.
-
-![migAz options window](./media/virtual-machines-windows-migration-migaz/options-clouds.png)
 
 ## Scenarios
 
