@@ -90,21 +90,31 @@ Download the latest zip file from release folder
 
 ![migAz main window](./media/virtual-machines-windows-migration-migaz/main.png)
 
-**Step 1:** Click the “Sign In” button. The “Sign In” button will launch the Azure Authentication page and user has to enter the credentials to access the source subscription.
+**Step 1:** View the options dialog and set MigAz options prior to utilizing MigAz for ARM Template generation.
+
+**Step 2:** Click the ASM (Source) Subscription “Change” button to present the ASM (Source) Subscription dialog. 
+
+![migAz main window](./media/virtual-machines-windows-migration-migaz/ASMSubscriptionDialog.png)
+
+Begin by selected the Azure Environment that you are going to authentication to.  Next, click the “Sign In” button to launch the Azure Authentication page and complete the user authentication process against Azure AD using the credentials that have access the source subscription.
 
 ![migAz main window](./media/virtual-machines-windows-migration-migaz/login.png)
 
-Post successful authentication the Subscriptions will be loaded.
+If the account used to authenticate to Azure AD has access to multiple subscription, select Azure subscription you would like to use as the ASM (Source) Subscription.  Upon successfully authenticating to Azure AD and selecting your ASM (Source) Subscription, MigAz will begin querying the existing Azure Resources within the subscription.  The status bar will show as “Ready” when all the Azure Resources are loaded for the subscription.
 
-**Step 2:** Select one of the Subscriptions from the list and wait for the components to completely load. The status bar will show as “Ready” when all the components are loaded.
+**Step 3:** If the ARM (Target) Azure Subscription that you want to migrate exported ASM resources into is a different subscription than the ASM (Source) Subscription, click the "Change" button to use select a different subscription available to the Azure AD user account that was used for authentication.
 
-**Step 3:** The tool can export the configurations of Virtual Networks, Storage and Virtual Machine. User can select any of them or combination of the resources to export.
+![migAz main window](./media/virtual-machines-windows-migration-migaz/ARMSubscriptionDialog.png)
 
-**Step 4:** The Export Objects button will be enabled only after choosing the Output folder. Once the resources are selected and Output Folder is set, user can click on Export Objects.
+**Step 4:** The tool can export the configurations of Virtual Networks, Storage and Virtual Machine.  Utilize the ASM Tree View to explore and select the ASM (Source) objects that you want to export into the ARM Template.  User can select any of them or combination of the resources to export.
 
-**Step 5:** The Export Objects will then collect all the properties of selected resources and create a JSON Template and a blob details file in the Output Folder selected.
+**Step 5:** Utilize the ARM (Target) Tree View to explorer and revise the ARM (Target) defintion.  Upon selecting an ARM (Target) resource in the Tree View, the ARM Properties pane will present infomation about the selected object.
 
-**Step 6:** Once the export completes, click the "Next Steps" tab to generate a customized documentation page showing how to deploy
+**Step 6:** Utilize the ARM Properties interface to view and refine ARM Template details prior to generating the ARM Template.
+
+**Step 7:** The Export button will be enabled only after selecting ASM objects for export.  Upon clicking the Export button, MigAz will conduct a pre-export health check and may prompt for required inputs (such as Target Location, missing names, missing target VNet/Subnet/Storage Account, etc.)
+
+**Step 8:** Once the export completes, view the HTML based deployment instructions showing how to deploy
 the template to your Azure environment. Alternatively follow the instructions below to start the deployment of the template using the cmdlet:
 
 
