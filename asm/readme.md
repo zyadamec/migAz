@@ -150,10 +150,6 @@ Execute steps 9 to 11 only if virtual machines were included on the export.
 
 ![migAz options window](./media/virtual-machines-windows-migration-migaz/MigAzOptions.png)
 
-### Uniqueness suffix
-
-When exporting storage accounts and cloud services, the tool appends to the resource name the “uniqueness suffix” string to avoid names conflicts. You have the option to change this uniqueness suffix string.
-
 ### Build empty environment
 
 If this option is selected, the selected virtual machines will be exported to export.json file as new virtual machines with empty data disks. By default, Windows virtual machines will be created using Windows Server 2012 R2 Datacenter SKU and Linux virtual machine will be created using Ubuntu Server 16.04.0-LTS SKU. You can change this by editing the export.json template and change the image references.
@@ -169,6 +165,10 @@ If this option is selected, migAz will record the last selected resources per ea
 ### Allow telemetry collection
 
 “Allow telemetry collection” is enabled by default. It is used to collect information such as Tenant ID, Subscription ID, Processed Resource Type, Processed Resource Location and the Execution date. This data is collected only to know the tool usage and it will remain only with the development team. You can disable this at any time.
+
+### Azure Resource Manager (ARM) Naming Suffixes
+
+Naming conventions are recommended for your ARM objects.  The values specified in the Suffix fields will be appended as MigAz generates your ARM Template.  The Storage Account suffix must be specified to enable VHD blob copy to a new location that does not conflict with the existing ASM based object.
 
 ## Scenarios
 
