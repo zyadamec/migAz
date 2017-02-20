@@ -589,12 +589,10 @@ namespace MIGAZ
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(AsmVirtualMachine))
                         {
-                            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
-
                             pictureBox1.Image = imageList1.Images["VirtualMachine"];
 
                             VirtualMachineProperties properties = new VirtualMachineProperties();
-                            properties.Bind(asmVirtualMachine, this);
+                            properties.Bind(e.Node, this);
                             panel1.Controls.Add(properties);
                         }
                     }

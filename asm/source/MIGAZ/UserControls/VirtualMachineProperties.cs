@@ -16,17 +16,20 @@ namespace MIGAZ.UserControls
     public partial class VirtualMachineProperties : UserControl
     {
         private AsmToArmForm _AsmToArmForm;
-        private AsmVirtualMachine _AsmVirtualMachine;
+        private TreeNode _VirtualMachineNode;
 
         public VirtualMachineProperties()
         {
             InitializeComponent();
         }
 
-        public async void Bind(AsmVirtualMachine asmVirtualMachine, AsmToArmForm asmToArmForm)
+        public async void Bind(TreeNode armVirtualMachineNode, AsmToArmForm asmToArmForm)
         {
-            _AsmVirtualMachine = asmVirtualMachine;
+            _VirtualMachineNode = armVirtualMachineNode;
             _AsmToArmForm = asmToArmForm;
+
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
 
             lblRoleSize.Text = asmVirtualMachine.RoleSize;
             lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
@@ -37,8 +40,8 @@ namespace MIGAZ.UserControls
 
             this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
 
-            if ((_AsmVirtualMachine.TargetSubnet == null) ||
-                    (_AsmVirtualMachine.TargetSubnet.GetType() == typeof(AsmSubnet)))
+            if ((asmVirtualMachine.TargetSubnet == null) ||
+                    (asmVirtualMachine.TargetSubnet.GetType() == typeof(AsmSubnet)))
             {
                 rbVNetInMigration.Checked = true;
             }
@@ -51,6 +54,9 @@ namespace MIGAZ.UserControls
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
         {
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+
             cmbExistingArmSubnet.Items.Clear();
 
             if (rbVNetInMigration.Checked)
@@ -63,11 +69,11 @@ namespace MIGAZ.UserControls
                         cmbExistingArmSubnet.Items.Add(asmSubnet);
                 }
 
-                if (_AsmVirtualMachine.TargetSubnet != null)
+                if (asmVirtualMachine.TargetSubnet != null)
                 {
                     foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
                     {
-                        if (listSubnet.Id == _AsmVirtualMachine.TargetSubnet.Id)
+                        if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
                     }
                 }
@@ -82,11 +88,11 @@ namespace MIGAZ.UserControls
                         cmbExistingArmSubnet.Items.Add(armSubnet);
                 }
 
-                if (_AsmVirtualMachine.TargetSubnet != null)
+                if (asmVirtualMachine.TargetSubnet != null)
                 {
                     foreach (ArmSubnet listSubnet in cmbExistingArmSubnet.Items)
                     {
-                        if (listSubnet.Id == _AsmVirtualMachine.TargetSubnet.Id)
+                        if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
                     }
                 }
@@ -98,6 +104,8 @@ namespace MIGAZ.UserControls
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
         {
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
             RadioButton rb = (RadioButton)sender;
 
             if (rb.Checked)
@@ -119,12 +127,12 @@ namespace MIGAZ.UserControls
                     }
                 }
 
-                if (_AsmVirtualMachine.TargetVirtualNetwork != null)
+                if (asmVirtualMachine.TargetVirtualNetwork != null)
                 {
                     // Attempt to match target to list items
                     foreach (AsmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                     {
-                        if (listVirtualNetwork.Id == _AsmVirtualMachine.TargetVirtualNetwork.Id)
+                        if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
                     }
                 }
@@ -136,6 +144,8 @@ namespace MIGAZ.UserControls
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
         {
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
             RadioButton rb = (RadioButton)sender;
 
             if (rb.Checked)
@@ -149,12 +159,12 @@ namespace MIGAZ.UserControls
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);
                 }
 
-                if (_AsmVirtualMachine.TargetVirtualNetwork != null)
+                if (asmVirtualMachine.TargetVirtualNetwork != null)
                 {
                     // Attempt to match target to list items
                     foreach (ArmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                     {
-                        if (listVirtualNetwork.Id == _AsmVirtualMachine.TargetVirtualNetwork.Id)
+                        if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
                     }
                 }
@@ -166,33 +176,39 @@ namespace MIGAZ.UserControls
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
         {
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
             ComboBox cmbSender = (ComboBox)sender;
 
             if (cmbSender.SelectedItem == null)
             {
-                _AsmVirtualMachine.TargetVirtualNetwork = null;
-                _AsmVirtualMachine.TargetSubnet = null;
+                asmVirtualMachine.TargetVirtualNetwork = null;
+                asmVirtualMachine.TargetSubnet = null;
             }
             else
             {
                 if (cmbSender.SelectedItem.GetType() == typeof(AsmSubnet))
                 {
                     AsmSubnet asmSubnet = (AsmSubnet)cmbSender.SelectedItem;
-                    _AsmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
-                    _AsmVirtualMachine.TargetSubnet = asmSubnet;
+                    asmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
+                    asmVirtualMachine.TargetSubnet = asmSubnet;
                 }
                 else if (cmbSender.SelectedItem.GetType() == typeof(ArmSubnet))
                 {
                     ArmSubnet armSubnet = (ArmSubnet)cmbSender.SelectedItem;
-                    _AsmVirtualMachine.TargetVirtualNetwork = armSubnet.Parent;
-                    _AsmVirtualMachine.TargetSubnet = armSubnet;
+                    asmVirtualMachine.TargetVirtualNetwork = armSubnet.Parent;
+                    asmVirtualMachine.TargetSubnet = armSubnet;
                 }
             }
         }
 
         private void txtARMVMName_TextChanged(object sender, EventArgs e)
         {
-            _AsmVirtualMachine.TargetName = txtARMVMName.Text;
+            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+
+            asmVirtualMachine.TargetName = txtARMVMName.Text;
+            _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
         }
     }
 }

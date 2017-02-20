@@ -17,7 +17,7 @@ namespace MIGAZ.Tests.Fakes
     class FakeAzureRetriever : AzureRetriever
     {
         private AzureContext _AzureContext;
-        private List<AzureLocation> _AzureLocations = new List<AzureLocation>();
+        private List<AsmLocation> _AzureASMLocations = new List<AsmLocation>();
         private List<AsmCloudService> _CloudServices = new List<AsmCloudService>();
         private List<AsmStorageAccount> _StorageAccounts = new List<AsmStorageAccount>();
         private List<AsmVirtualNetwork> _VirtualNetworks = new List<AsmVirtualNetwork>();
@@ -73,7 +73,7 @@ namespace MIGAZ.Tests.Fakes
 
                         foreach (XmlNode azureLocationXml in doc.SelectNodes("/Locations/Location"))
                         {
-                            _AzureLocations.Add(new AzureLocation(_AzureContext, azureLocationXml));
+                            _AzureASMLocations.Add(new AsmLocation(_AzureContext, azureLocationXml));
                         }
 
                         break;
@@ -294,9 +294,9 @@ namespace MIGAZ.Tests.Fakes
             return _AsmRouteTable;
         }
 
-        public async override Task<List<AzureLocation>> GetAzureASMLocations()
+        public async override Task<List<AsmLocation>> GetAzureASMLocations()
         {
-            return _AzureLocations;
+            return _AzureASMLocations;
         }
 
     }

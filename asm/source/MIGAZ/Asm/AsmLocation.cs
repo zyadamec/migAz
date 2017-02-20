@@ -1,4 +1,5 @@
 ﻿using MIGAZ.Azure;
+using MIGAZ.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Xml;
 
 namespace MIGAZ.Asm
 {
-    public class AsmLocation
+    public class AsmLocation : ILocation
     {
         #region Properties
 

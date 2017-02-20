@@ -124,7 +124,6 @@
     <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
     <Compile Include="Azure\ArmConst.cs" />
     <Compile Include="Azure\AzureContext.cs" />
-    <Compile Include="Azure\AzureLocation.cs" />
     <Compile Include="Azure\AzureRetriever.cs" />
     <Compile Include="Azure\AzureServiceUrls.cs" />
     <Compile Include="Azure\AzureSubscription.cs" />
@@ -169,6 +168,7 @@
     <Compile Include="Generator\CloudTelemetryProvider.cs" />
     <Compile Include="Generator\TemplateResult.cs" />
     <Compile Include="Generator\UISaveSelectionProvider.cs" />
+    <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />

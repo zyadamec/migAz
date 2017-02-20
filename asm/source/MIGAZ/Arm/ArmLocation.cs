@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MIGAZ.Azure;
+using MIGAZ.Interface;
 
 namespace MIGAZ.Arm
 {
-    public class ArmLocation
+    public class ArmLocation : ILocation
     {
         private AzureContext _AzureContext;
         private JToken _LocationToken;
