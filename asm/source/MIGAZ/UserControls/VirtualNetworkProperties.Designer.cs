@@ -30,10 +30,11 @@
         {
             this.lblVNetName = new System.Windows.Forms.Label();
             this.lblASMVirtualNetworkName = new System.Windows.Forms.Label();
-            this.lblAddressSpace = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtVirtualNetworkName = new System.Windows.Forms.TextBox();
             this.lblARMVirtualNetworkName = new System.Windows.Forms.Label();
+            this.dgvAddressSpaces = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAddressSpaces)).BeginInit();
             this.SuspendLayout();
             // 
             // lblVNetName
@@ -53,15 +54,6 @@
             this.lblASMVirtualNetworkName.Size = new System.Drawing.Size(179, 25);
             this.lblASMVirtualNetworkName.TabIndex = 6;
             this.lblASMVirtualNetworkName.Text = "ASM VNet Name:";
-            // 
-            // lblAddressSpace
-            // 
-            this.lblAddressSpace.AutoSize = true;
-            this.lblAddressSpace.Location = new System.Drawing.Point(201, 112);
-            this.lblAddressSpace.Name = "lblAddressSpace";
-            this.lblAddressSpace.Size = new System.Drawing.Size(120, 25);
-            this.lblAddressSpace.TabIndex = 9;
-            this.lblAddressSpace.Text = "10.0.0.0/16";
             // 
             // label3
             // 
@@ -90,18 +82,28 @@
             this.lblARMVirtualNetworkName.TabIndex = 11;
             this.lblARMVirtualNetworkName.Text = "ARM VNet Name:";
             // 
+            // dgvAddressSpaces
+            // 
+            this.dgvAddressSpaces.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvAddressSpaces.Location = new System.Drawing.Point(206, 112);
+            this.dgvAddressSpaces.Name = "dgvAddressSpaces";
+            this.dgvAddressSpaces.RowTemplate.Height = 20;
+            this.dgvAddressSpaces.Size = new System.Drawing.Size(352, 136);
+            this.dgvAddressSpaces.TabIndex = 12;
+            // 
             // VirtualNetworkProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.dgvAddressSpaces);
             this.Controls.Add(this.lblARMVirtualNetworkName);
             this.Controls.Add(this.txtVirtualNetworkName);
-            this.Controls.Add(this.lblAddressSpace);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblVNetName);
             this.Controls.Add(this.lblASMVirtualNetworkName);
             this.Name = "VirtualNetworkProperties";
-            this.Size = new System.Drawing.Size(592, 272);
+            this.Size = new System.Drawing.Size(625, 262);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAddressSpaces)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -111,9 +113,9 @@
 
         private System.Windows.Forms.Label lblVNetName;
         private System.Windows.Forms.Label lblASMVirtualNetworkName;
-        private System.Windows.Forms.Label lblAddressSpace;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtVirtualNetworkName;
         private System.Windows.Forms.Label lblARMVirtualNetworkName;
+        private System.Windows.Forms.DataGridView dgvAddressSpaces;
     }
 }

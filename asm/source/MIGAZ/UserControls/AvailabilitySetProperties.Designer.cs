@@ -34,7 +34,7 @@
             // 
             // txtTargetName
             // 
-            this.txtTargetName.Location = new System.Drawing.Point(166, 59);
+            this.txtTargetName.Location = new System.Drawing.Point(165, 10);
             this.txtTargetName.Name = "txtTargetName";
             this.txtTargetName.Size = new System.Drawing.Size(328, 31);
             this.txtTargetName.TabIndex = 1;
@@ -43,7 +43,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 59);
+            this.label2.Location = new System.Drawing.Point(5, 10);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(142, 25);
             this.label2.TabIndex = 2;
@@ -56,7 +56,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtTargetName);
             this.Name = "AvailabilitySetProperties";
-            this.Size = new System.Drawing.Size(513, 150);
+            this.Size = new System.Drawing.Size(640, 62);
             this.ResumeLayout(false);
             this.PerformLayout();
 

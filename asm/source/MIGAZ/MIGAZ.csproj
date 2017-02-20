@@ -264,6 +264,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\AvailabilitySetProperties.resx">
+      <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\AzureLoginControl.resx">
       <DependentUpon>AzureLoginControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -278,6 +281,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\SubnetProperties.resx">
       <DependentUpon>SubnetProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\VirtualMachineProperties.resx">
+      <DependentUpon>VirtualMachineProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\VirtualNetworkProperties.resx">
       <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>

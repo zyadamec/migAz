@@ -80,14 +80,14 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 892);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(3, 0, 28, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1924, 37);
+            this.statusStrip1.Size = new System.Drawing.Size(1974, 37);
             this.statusStrip1.TabIndex = 29;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(1662, 32);
+            this.lblStatus.Size = new System.Drawing.Size(1712, 32);
             this.lblStatus.Spring = true;
             this.lblStatus.Text = "Ready";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -104,7 +104,7 @@
             this.btnOptions.Location = new System.Drawing.Point(1220, 755);
             this.btnOptions.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(669, 44);
+            this.btnOptions.Size = new System.Drawing.Size(723, 44);
             this.btnOptions.TabIndex = 6;
             this.btnOptions.Text = "Options...";
             this.btnOptions.UseVisualStyleBackColor = true;
@@ -132,7 +132,7 @@
             this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Location = new System.Drawing.Point(1220, 207);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(675, 473);
+            this.groupBox1.Size = new System.Drawing.Size(723, 473);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Azure Resource Manager Properties";
@@ -143,7 +143,7 @@
             this.panel1.AutoScroll = true;
             this.panel1.Location = new System.Drawing.Point(24, 166);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(629, 286);
+            this.panel1.Size = new System.Drawing.Size(675, 286);
             this.panel1.TabIndex = 3;
             // 
             // lblAzureObjectName
@@ -171,7 +171,7 @@
             this.btnExport.Location = new System.Drawing.Point(1220, 689);
             this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(669, 44);
+            this.btnExport.Size = new System.Drawing.Size(723, 44);
             this.btnExport.TabIndex = 5;
             this.btnExport.Text = "Export 0 objects";
             this.btnExport.UseVisualStyleBackColor = true;
@@ -421,7 +421,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1924, 929);
+            this.ClientSize = new System.Drawing.Size(1974, 929);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.groupASMSubscription);
@@ -433,8 +433,8 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupARMSubscription);
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.MaximumSize = new System.Drawing.Size(1950, 5000);
-            this.MinimumSize = new System.Drawing.Size(1950, 1000);
+            this.MaximumSize = new System.Drawing.Size(2000, 5000);
+            this.MinimumSize = new System.Drawing.Size(2000, 1000);
             this.Name = "AsmToArmForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MigAz";

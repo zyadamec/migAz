@@ -37,7 +37,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 19);
+            this.label1.Location = new System.Drawing.Point(5, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 25);
             this.label1.TabIndex = 0;
@@ -46,7 +46,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 82);
+            this.label2.Location = new System.Drawing.Point(5, 65);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 25);
             this.label2.TabIndex = 1;
@@ -54,7 +54,7 @@
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(132, 19);
+            this.txtName.Location = new System.Drawing.Point(130, 20);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(389, 31);
             this.txtName.TabIndex = 0;
@@ -64,7 +64,7 @@
             // 
             this.cboTargetLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTargetLocation.FormattingEnabled = true;
-            this.cboTargetLocation.Location = new System.Drawing.Point(132, 82);
+            this.cboTargetLocation.Location = new System.Drawing.Point(130, 65);
             this.cboTargetLocation.Margin = new System.Windows.Forms.Padding(4);
             this.cboTargetLocation.Name = "cboTargetLocation";
             this.cboTargetLocation.Size = new System.Drawing.Size(389, 33);
@@ -80,7 +80,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "ResourceGroupProperties";
-            this.Size = new System.Drawing.Size(559, 153);
+            this.Size = new System.Drawing.Size(625, 126);
             this.ResumeLayout(false);
             this.PerformLayout();
 

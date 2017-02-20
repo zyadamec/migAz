@@ -39,7 +39,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 82);
+            this.label2.Location = new System.Drawing.Point(8, 47);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(209, 25);
             this.label2.TabIndex = 4;
@@ -47,7 +47,7 @@
             // 
             // txtTargetName
             // 
-            this.txtTargetName.Location = new System.Drawing.Point(233, 79);
+            this.txtTargetName.Location = new System.Drawing.Point(233, 43);
             this.txtTargetName.Name = "txtTargetName";
             this.txtTargetName.Size = new System.Drawing.Size(318, 31);
             this.txtTargetName.TabIndex = 3;
@@ -75,7 +75,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 44);
+            this.label3.Location = new System.Drawing.Point(8, 82);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(164, 25);
             this.label3.TabIndex = 7;
@@ -84,7 +84,7 @@
             // lblAddressSpace
             // 
             this.lblAddressSpace.AutoSize = true;
-            this.lblAddressSpace.Location = new System.Drawing.Point(228, 44);
+            this.lblAddressSpace.Location = new System.Drawing.Point(228, 82);
             this.lblAddressSpace.Name = "lblAddressSpace";
             this.lblAddressSpace.Size = new System.Drawing.Size(120, 25);
             this.lblAddressSpace.TabIndex = 8;
@@ -101,7 +101,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtTargetName);
             this.Name = "SubnetProperties";
-            this.Size = new System.Drawing.Size(554, 122);
+            this.Size = new System.Drawing.Size(625, 122);
             this.ResumeLayout(false);
             this.PerformLayout();
 

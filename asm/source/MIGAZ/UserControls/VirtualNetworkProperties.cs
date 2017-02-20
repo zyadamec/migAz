@@ -29,7 +29,8 @@ namespace MIGAZ.UserControls
 
             lblVNetName.Text = asmVirtualNetwork.Name.ToString();
             txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
-            lblAddressSpace.Text = asmVirtualNetwork.AddressPrefixes.ToString();
+            dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+
         }
 
         private void txtVirtualNetworkName_TextChanged(object sender, EventArgs e)

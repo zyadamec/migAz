@@ -50,7 +50,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 46);
+            this.label1.Location = new System.Drawing.Point(15, 45);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(122, 25);
             this.label1.TabIndex = 0;
@@ -59,7 +59,7 @@
             // lblDiskName
             // 
             this.lblDiskName.AutoSize = true;
-            this.lblDiskName.Location = new System.Drawing.Point(206, 46);
+            this.lblDiskName.Location = new System.Drawing.Point(200, 45);
             this.lblDiskName.Name = "lblDiskName";
             this.lblDiskName.Size = new System.Drawing.Size(151, 25);
             this.lblDiskName.TabIndex = 1;
@@ -68,7 +68,7 @@
             // lblHostCaching
             // 
             this.lblHostCaching.AutoSize = true;
-            this.lblHostCaching.Location = new System.Drawing.Point(206, 86);
+            this.lblHostCaching.Location = new System.Drawing.Point(200, 80);
             this.lblHostCaching.Name = "lblHostCaching";
             this.lblHostCaching.Size = new System.Drawing.Size(63, 25);
             this.lblHostCaching.TabIndex = 3;
@@ -77,7 +77,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 86);
+            this.label3.Location = new System.Drawing.Point(15, 80);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(147, 25);
             this.label3.TabIndex = 2;
@@ -86,7 +86,7 @@
             // lblLUN
             // 
             this.lblLUN.AutoSize = true;
-            this.lblLUN.Location = new System.Drawing.Point(206, 129);
+            this.lblLUN.Location = new System.Drawing.Point(200, 115);
             this.lblLUN.Name = "lblLUN";
             this.lblLUN.Size = new System.Drawing.Size(24, 25);
             this.lblLUN.TabIndex = 5;
@@ -95,7 +95,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 129);
+            this.label4.Location = new System.Drawing.Point(15, 115);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(60, 25);
             this.label4.TabIndex = 4;
@@ -104,7 +104,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 178);
+            this.label2.Location = new System.Drawing.Point(15, 150);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(177, 25);
             this.label2.TabIndex = 6;
@@ -113,7 +113,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 338);
+            this.label5.Location = new System.Drawing.Point(15, 313);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(121, 25);
             this.label5.TabIndex = 17;
@@ -122,18 +122,18 @@
             // rbExistingARMStorageAccount
             // 
             this.rbExistingARMStorageAccount.AutoSize = true;
-            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(178, 382);
+            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 357);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
-            this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(469, 29);
+            this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(387, 29);
             this.rbExistingARMStorageAccount.TabIndex = 2;
-            this.rbExistingARMStorageAccount.Text = "Existing ARM Storage in Target Subscription";
+            this.rbExistingARMStorageAccount.Text = "ARM Storage in Target Subscription";
             this.rbExistingARMStorageAccount.UseVisualStyleBackColor = true;
             this.rbExistingARMStorageAccount.CheckedChanged += new System.EventHandler(this.rbExistingARMStorageAccount_CheckedChanged);
             // 
             // rbStorageAccountInMigration
             // 
             this.rbStorageAccountInMigration.AutoSize = true;
-            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(178, 338);
+            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 313);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
             this.rbStorageAccountInMigration.Size = new System.Drawing.Size(431, 29);
             this.rbStorageAccountInMigration.TabIndex = 1;
@@ -144,7 +144,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 438);
+            this.label7.Location = new System.Drawing.Point(15, 413);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(161, 25);
             this.label7.TabIndex = 19;
@@ -154,7 +154,7 @@
             // 
             this.cmbTargetStorage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTargetStorage.FormattingEnabled = true;
-            this.cmbTargetStorage.Location = new System.Drawing.Point(178, 435);
+            this.cmbTargetStorage.Location = new System.Drawing.Point(200, 410);
             this.cmbTargetStorage.Name = "cmbTargetStorage";
             this.cmbTargetStorage.Size = new System.Drawing.Size(392, 33);
             this.cmbTargetStorage.TabIndex = 3;
@@ -163,7 +163,7 @@
             // lblAsmStorageAccount
             // 
             this.lblAsmStorageAccount.AutoSize = true;
-            this.lblAsmStorageAccount.Location = new System.Drawing.Point(206, 178);
+            this.lblAsmStorageAccount.Location = new System.Drawing.Point(200, 150);
             this.lblAsmStorageAccount.Name = "lblAsmStorageAccount";
             this.lblAsmStorageAccount.Size = new System.Drawing.Size(83, 25);
             this.lblAsmStorageAccount.TabIndex = 20;
@@ -175,32 +175,32 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(3, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(229, 25);
+            this.label6.Size = new System.Drawing.Size(326, 25);
             this.label6.TabIndex = 21;
-            this.label6.Text = "ASM Disk Properties";
+            this.label6.Text = "ASM (Source) Disk Properties";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(3, 241);
+            this.label8.Location = new System.Drawing.Point(3, 218);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(230, 25);
+            this.label8.Size = new System.Drawing.Size(321, 25);
             this.label8.TabIndex = 22;
-            this.label8.Text = "ARM Disk Properties";
+            this.label8.Text = "ARM (Target) Disk Properties";
             // 
             // txtTargetDiskName
             // 
-            this.txtTargetDiskName.Location = new System.Drawing.Point(178, 286);
+            this.txtTargetDiskName.Location = new System.Drawing.Point(200, 261);
             this.txtTargetDiskName.Name = "txtTargetDiskName";
-            this.txtTargetDiskName.Size = new System.Drawing.Size(431, 31);
+            this.txtTargetDiskName.Size = new System.Drawing.Size(387, 31);
             this.txtTargetDiskName.TabIndex = 0;
             this.txtTargetDiskName.TextChanged += new System.EventHandler(this.txtTargetDiskName_TextChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(9, 289);
+            this.label9.Location = new System.Drawing.Point(15, 264);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(142, 25);
             this.label9.TabIndex = 24;
@@ -228,7 +228,7 @@
             this.Controls.Add(this.lblDiskName);
             this.Controls.Add(this.label1);
             this.Name = "DiskProperties";
-            this.Size = new System.Drawing.Size(643, 486);
+            this.Size = new System.Drawing.Size(640, 458);
             this.ResumeLayout(false);
             this.PerformLayout();
 

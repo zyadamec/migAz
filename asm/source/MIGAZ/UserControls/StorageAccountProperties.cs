@@ -25,7 +25,6 @@ namespace MIGAZ.UserControls
         public void Bind(AzureContext azureContext, TreeNode storageAccountNode)
         {
             _AzureContext = azureContext;
-
             txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
 
             _ArmStorageAccountNode = storageAccountNode;
@@ -33,6 +32,7 @@ namespace MIGAZ.UserControls
             AsmStorageAccount asmStorageAccount = (AsmStorageAccount)asmStorageAccountNode.Tag;
 
             lblAccountType.Text = asmStorageAccount.AccountType;
+            lblSourceASMName.Text = asmStorageAccount.Name;
 
             if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
                 txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
