@@ -31,6 +31,7 @@ namespace MIGAZ.Azure
         private List<ArmVirtualNetwork> _ArmVirtualNetworks;
         private List<ArmStorageAccount> _ArmStorageAccounts;
         private List<ArmAvailabilitySet> _ArmAvailabilitySets;
+        private List<ArmLocation> _ArmLocations;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache;
         private Dictionary<string, JObject> _armJsonDocumentCache;
@@ -49,6 +50,7 @@ namespace MIGAZ.Azure
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
+            _ArmLocations = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
@@ -318,13 +320,13 @@ namespace MIGAZ.Azure
             }
         }
 
-        public async virtual Task<List<AzureLocation>> GetAzureLocations()
+        public async virtual Task<List<AsmLocation>> GetAzureASMLocations()
         {
             XmlNode locationsXml = await this.GetAzureAsmResources("Locations", null);
-            List<AzureLocation> azureLocations = new List<AzureLocation>();
+            List<AsmLocation> azureLocations = new List<AsmLocation>();
             foreach (XmlNode locationXml in locationsXml.SelectNodes("/Locations/Location"))
             {
-                azureLocations.Add(new AzureLocation(_AzureContext, locationXml));
+                azureLocations.Add(new AsmLocation(_AzureContext, locationXml));
             }
 
             return azureLocations;
@@ -605,6 +607,11 @@ namespace MIGAZ.Azure
             string url = null;
             switch (resourceType)
             {
+                case "Locations":
+                    // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions#Subscriptions_ListLocations
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.Locations + "?api-version=2016-06-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Locations for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-03-30";
@@ -731,6 +738,27 @@ namespace MIGAZ.Azure
             }
 
             return _ArmStorageAccounts;
+        }
+
+        public async virtual Task<List<ArmLocation>> GetAzureARMLocations()
+        {
+            if (_ArmLocations != null)
+                return _ArmLocations;
+
+            JObject locationsJson = await this.GetAzureARMResources("Locations", null);
+
+            var locations = from location in locationsJson["value"]
+                                  select location;
+
+            _ArmLocations = new List<ArmLocation>();
+
+            foreach (var location in locations)
+            {
+                ArmLocation armLocation = new ArmLocation(_AzureContext, location);
+                _ArmLocations.Add(armLocation);
+            }
+
+            return _ArmLocations;
         }
 
         internal async Task GetAzureARMStorageAccountKeys(ArmStorageAccount armStorageAccount)

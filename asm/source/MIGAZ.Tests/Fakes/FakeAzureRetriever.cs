@@ -294,7 +294,7 @@ namespace MIGAZ.Tests.Fakes
             return _AsmRouteTable;
         }
 
-        public async override Task<List<AzureLocation>> GetAzureLocations()
+        public async override Task<List<AzureLocation>> GetAzureASMLocations()
         {
             return _AzureLocations;
         }

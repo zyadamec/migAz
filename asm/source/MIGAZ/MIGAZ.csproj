@@ -96,6 +96,7 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="Arm\ArmAvailabilitySet.cs" />
+    <Compile Include="Arm\ArmLocation.cs" />
     <Compile Include="Arm\ArmResourceGroup.cs" />
     <Compile Include="Arm\ArmStorageAccount.cs" />
     <Compile Include="Arm\ArmStorageAccountKey.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Asm\AsmLoadBalancer.cs" />
     <Compile Include="Asm\AsmLoadBalancerRule.cs" />
     <Compile Include="Asm\AsmLocalNetworkSite.cs" />
+    <Compile Include="Asm\AsmLocation.cs" />
     <Compile Include="Asm\AsmNetworkInterface.cs" />
     <Compile Include="Asm\AsmNetworkSecurityGroup.cs" />
     <Compile Include="Asm\AsmNetworkSecurityGroupRule.cs" />

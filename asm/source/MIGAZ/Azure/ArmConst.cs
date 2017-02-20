@@ -9,6 +9,7 @@ namespace MIGAZ.Azure
     public class ArmConst
     {
         public const string ResourceGroupId = "resourceGroup().id";
+        public const string Locations = "/locations";
         public const string ProviderVirtualNetwork = "/providers/Microsoft.Network/virtualNetworks/";
         public const string ProviderLoadBalancers = "/providers/Microsoft.Network/loadBalancers/";
         public const string ProviderPublicIpAddress = "/providers/Microsoft.Network/publicIPAddresses/";

@@ -11,7 +11,7 @@ namespace MIGAZ.Arm
     public class ArmResourceGroup
     {
         private String _Name = String.Empty;
-        private AzureLocation _Location;
+        private ArmLocation _Location;
         private AzureContext _AzureContext;
 
         private ArmResourceGroup() { }
@@ -27,7 +27,7 @@ namespace MIGAZ.Arm
             get { return _Name; }
             set { _Name = value.Trim(); }
         }
-        public AzureLocation Location
+        public ArmLocation Location
         {
             get { return _Location; }
             set { _Location = value; }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MIGAZ.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,31 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace MIGAZ.Azure
+namespace MIGAZ.Asm
 {
-    public class AzureLocation2
+    public class AsmLocation
     {
         #region Properties
 
         private XmlNode _XmlNode;
-        private JToken _LocationToken;
         private AzureContext _AzureContext;
 
         #endregion
 
         #region Constructors
 
-        private AzureLocation2() { }
+        private AsmLocation() { }
 
-        public AzureLocation2(AzureContext azureContext, XmlNode xmlNode)
+        public AsmLocation(AzureContext azureContext, XmlNode xmlNode)
         {
             _XmlNode = xmlNode;
-            _AzureContext = azureContext;
-        }
-
-        public AzureLocation2(AzureContext azureContext, JToken locationToken)
-        {
-            _LocationToken = locationToken;
             _AzureContext = azureContext;
         }
 
@@ -56,3 +49,4 @@ namespace MIGAZ.Azure
         }
     }
 }
+

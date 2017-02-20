@@ -48,12 +48,16 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.diskProperties1 = new MIGAZ.UserControls.DiskProperties();
+            this.label12 = new System.Windows.Forms.Label();
+            this.lblASMVMName = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtARMVMName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 160);
+            this.label1.Location = new System.Drawing.Point(12, 224);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(138, 25);
             this.label1.TabIndex = 0;
@@ -62,7 +66,7 @@
             // lblSubnetName
             // 
             this.lblSubnetName.AutoSize = true;
-            this.lblSubnetName.Location = new System.Drawing.Point(176, 160);
+            this.lblSubnetName.Location = new System.Drawing.Point(176, 224);
             this.lblSubnetName.Name = "lblSubnetName";
             this.lblSubnetName.Size = new System.Drawing.Size(142, 25);
             this.lblSubnetName.TabIndex = 1;
@@ -71,7 +75,7 @@
             // lblStaticIpAddress
             // 
             this.lblStaticIpAddress.AutoSize = true;
-            this.lblStaticIpAddress.Location = new System.Drawing.Point(176, 204);
+            this.lblStaticIpAddress.Location = new System.Drawing.Point(176, 268);
             this.lblStaticIpAddress.Name = "lblStaticIpAddress";
             this.lblStaticIpAddress.Size = new System.Drawing.Size(78, 25);
             this.lblStaticIpAddress.TabIndex = 3;
@@ -80,7 +84,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 204);
+            this.label3.Location = new System.Drawing.Point(12, 268);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(97, 25);
             this.label3.TabIndex = 2;
@@ -89,7 +93,7 @@
             // lblRoleSize
             // 
             this.lblRoleSize.AutoSize = true;
-            this.lblRoleSize.Location = new System.Drawing.Point(176, 4);
+            this.lblRoleSize.Location = new System.Drawing.Point(176, 68);
             this.lblRoleSize.Name = "lblRoleSize";
             this.lblRoleSize.Size = new System.Drawing.Size(56, 25);
             this.lblRoleSize.TabIndex = 5;
@@ -98,7 +102,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 4);
+            this.label4.Location = new System.Drawing.Point(12, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(60, 25);
             this.label4.TabIndex = 4;
@@ -107,7 +111,7 @@
             // lblOS
             // 
             this.lblOS.AutoSize = true;
-            this.lblOS.Location = new System.Drawing.Point(176, 39);
+            this.lblOS.Location = new System.Drawing.Point(176, 103);
             this.lblOS.Name = "lblOS";
             this.lblOS.Size = new System.Drawing.Size(42, 25);
             this.lblOS.TabIndex = 7;
@@ -116,7 +120,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 39);
+            this.label6.Location = new System.Drawing.Point(12, 103);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 25);
             this.label6.TabIndex = 6;
@@ -125,7 +129,7 @@
             // lblVirtualNetworkName
             // 
             this.lblVirtualNetworkName.AutoSize = true;
-            this.lblVirtualNetworkName.Location = new System.Drawing.Point(176, 115);
+            this.lblVirtualNetworkName.Location = new System.Drawing.Point(176, 179);
             this.lblVirtualNetworkName.Name = "lblVirtualNetworkName";
             this.lblVirtualNetworkName.Size = new System.Drawing.Size(121, 25);
             this.lblVirtualNetworkName.TabIndex = 9;
@@ -134,7 +138,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 115);
+            this.label5.Location = new System.Drawing.Point(12, 179);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(117, 25);
             this.label5.TabIndex = 8;
@@ -144,7 +148,7 @@
             // 
             this.cmbExistingArmVNets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbExistingArmVNets.FormattingEnabled = true;
-            this.cmbExistingArmVNets.Location = new System.Drawing.Point(181, 339);
+            this.cmbExistingArmVNets.Location = new System.Drawing.Point(181, 403);
             this.cmbExistingArmVNets.Name = "cmbExistingArmVNets";
             this.cmbExistingArmVNets.Size = new System.Drawing.Size(429, 33);
             this.cmbExistingArmVNets.TabIndex = 2;
@@ -154,7 +158,7 @@
             // 
             this.cmbExistingArmSubnet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbExistingArmSubnet.FormattingEnabled = true;
-            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(181, 389);
+            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(181, 453);
             this.cmbExistingArmSubnet.Name = "cmbExistingArmSubnet";
             this.cmbExistingArmSubnet.Size = new System.Drawing.Size(429, 33);
             this.cmbExistingArmSubnet.TabIndex = 3;
@@ -163,7 +167,7 @@
             // rbVNetInMigration
             // 
             this.rbVNetInMigration.AutoSize = true;
-            this.rbVNetInMigration.Location = new System.Drawing.Point(181, 243);
+            this.rbVNetInMigration.Location = new System.Drawing.Point(181, 307);
             this.rbVNetInMigration.Name = "rbVNetInMigration";
             this.rbVNetInMigration.Size = new System.Drawing.Size(403, 29);
             this.rbVNetInMigration.TabIndex = 0;
@@ -174,7 +178,7 @@
             // rbExistingARMVNet
             // 
             this.rbExistingARMVNet.AutoSize = true;
-            this.rbExistingARMVNet.Location = new System.Drawing.Point(181, 287);
+            this.rbExistingARMVNet.Location = new System.Drawing.Point(181, 351);
             this.rbExistingARMVNet.Name = "rbExistingARMVNet";
             this.rbExistingARMVNet.Size = new System.Drawing.Size(359, 29);
             this.rbExistingARMVNet.TabIndex = 1;
@@ -185,7 +189,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 243);
+            this.label2.Location = new System.Drawing.Point(12, 307);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(121, 25);
             this.label2.TabIndex = 14;
@@ -194,7 +198,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 342);
+            this.label7.Location = new System.Drawing.Point(12, 406);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(133, 25);
             this.label7.TabIndex = 15;
@@ -203,7 +207,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 397);
+            this.label8.Location = new System.Drawing.Point(12, 461);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(154, 25);
             this.label8.TabIndex = 16;
@@ -213,7 +217,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(12, 71);
+            this.label9.Location = new System.Drawing.Point(12, 135);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(164, 25);
             this.label9.TabIndex = 17;
@@ -223,7 +227,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(3, 444);
+            this.label10.Location = new System.Drawing.Point(3, 508);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(97, 25);
             this.label10.TabIndex = 18;
@@ -231,15 +235,54 @@
             // 
             // diskProperties1
             // 
-            this.diskProperties1.Location = new System.Drawing.Point(0, 485);
+            this.diskProperties1.Location = new System.Drawing.Point(0, 549);
             this.diskProperties1.Name = "diskProperties1";
             this.diskProperties1.Size = new System.Drawing.Size(640, 458);
             this.diskProperties1.TabIndex = 19;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 35);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(165, 25);
+            this.label12.TabIndex = 22;
+            this.label12.Text = "ARM VM Name:";
+            // 
+            // lblASMVMName
+            // 
+            this.lblASMVMName.AutoSize = true;
+            this.lblASMVMName.Location = new System.Drawing.Point(176, 0);
+            this.lblASMVMName.Name = "lblASMVMName";
+            this.lblASMVMName.Size = new System.Drawing.Size(158, 25);
+            this.lblASMVMName.TabIndex = 21;
+            this.lblASMVMName.Text = "ASM VM Name";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(12, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(164, 25);
+            this.label14.TabIndex = 20;
+            this.label14.Text = "ASM VM Name:";
+            // 
+            // txtARMVMName
+            // 
+            this.txtARMVMName.Location = new System.Drawing.Point(181, 29);
+            this.txtARMVMName.Name = "txtARMVMName";
+            this.txtARMVMName.Size = new System.Drawing.Size(403, 31);
+            this.txtARMVMName.TabIndex = 23;
+            this.txtARMVMName.TextChanged += new System.EventHandler(this.txtARMVMName_TextChanged);
             // 
             // VirtualMachineProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.txtARMVMName);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.lblASMVMName);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.diskProperties1);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
@@ -261,7 +304,7 @@
             this.Controls.Add(this.lblSubnetName);
             this.Controls.Add(this.label1);
             this.Name = "VirtualMachineProperties";
-            this.Size = new System.Drawing.Size(625, 966);
+            this.Size = new System.Drawing.Size(625, 1005);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -289,5 +332,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private DiskProperties diskProperties1;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label lblASMVMName;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox txtARMVMName;
     }
 }

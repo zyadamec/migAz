@@ -34,7 +34,7 @@ namespace MIGAZ.Tests
             var resource = templateJson["resources"].Single();
             Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
             Assert.AreEqual("mystoragev2", resource["name"].Value<string>());
-            Assert.AreEqual((await azureContextUSCommercialRetriever.GetAzureLocations())[0].Name, resource["location"].Value<string>());
+            Assert.AreEqual((await azureContextUSCommercialRetriever.GetAzureASMLocations())[0].Name, resource["location"].Value<string>());
             Assert.AreEqual("Standard_LRS", resource["properties"]["accountType"].Value<string>());
 
         }

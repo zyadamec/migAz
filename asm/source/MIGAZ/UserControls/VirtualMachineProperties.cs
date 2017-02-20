@@ -33,6 +33,7 @@ namespace MIGAZ.UserControls
             lblVirtualNetworkName.Text = asmVirtualMachine.VirtualNetworkName;
             lblSubnetName.Text = asmVirtualMachine.SubnetName;
             lblStaticIpAddress.Text = asmVirtualMachine.StaticVirtualNetworkIPAddress;
+            txtARMVMName.Text = asmVirtualMachine.TargetName;
 
             this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
 
@@ -187,6 +188,11 @@ namespace MIGAZ.UserControls
                     _AsmVirtualMachine.TargetSubnet = armSubnet;
                 }
             }
+        }
+
+        private void txtARMVMName_TextChanged(object sender, EventArgs e)
+        {
+            _AsmVirtualMachine.TargetName = txtARMVMName.Text;
         }
     }
 }

@@ -32,17 +32,17 @@ namespace MIGAZ.UserControls
             txtName.Text = armResourceGroup.Name;
 
             cboTargetLocation.Items.Clear();
-            foreach (AzureLocation azureLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureLocations())
+            foreach (ArmLocation armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
             {
-                cboTargetLocation.Items.Add(azureLocation);
+                cboTargetLocation.Items.Add(armLocation);
             }
 
             if (armResourceGroup.Location != null)
             {
-                foreach (AzureLocation azureLocation in cboTargetLocation.Items)
+                foreach (ArmLocation armLocation in cboTargetLocation.Items)
                 {
-                    if (azureLocation.Name == armResourceGroup.Location.Name)
-                        cboTargetLocation.SelectedItem = azureLocation;
+                    if (armLocation.Name == armResourceGroup.Location.Name)
+                        cboTargetLocation.SelectedItem = armLocation;
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace MIGAZ.UserControls
             ComboBox cmbSender = (ComboBox)sender;
 
             ArmResourceGroup armResourceGroup = (ArmResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.Location = (AzureLocation)cmbSender.SelectedItem;
+            armResourceGroup.Location = (ArmLocation)cmbSender.SelectedItem;
         }
     }
 }

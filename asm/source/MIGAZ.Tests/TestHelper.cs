@@ -74,9 +74,8 @@ namespace MIGAZ.Tests
 
         internal static async Task<ArmResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
-            List<AzureLocation> azureLocations = await azureContext.AzureRetriever.GetAzureLocations();
+            List<AsmLocation> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
             ArmResourceGroup targetResourceGroup = new ArmResourceGroup(azureContext, "Target Resource Group");
-            targetResourceGroup.Location = azureLocations[0];
             return targetResourceGroup;
         }
     }
