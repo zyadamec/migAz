@@ -95,39 +95,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
-    <Compile Include="Arm\ArmAvailabilitySet.cs" />
-    <Compile Include="Arm\ArmLocation.cs" />
-    <Compile Include="Arm\ArmResourceGroup.cs" />
-    <Compile Include="Arm\ArmStorageAccount.cs" />
-    <Compile Include="Arm\ArmStorageAccountKey.cs" />
-    <Compile Include="Arm\ArmSubnet.cs" />
-    <Compile Include="Arm\ArmVirtualNetwork.cs" />
-    <Compile Include="Asm\AsmAffinityGroup.cs" />
-    <Compile Include="Asm\AsmClientRootCertificate.cs" />
-    <Compile Include="Asm\AsmCloudService.cs" />
-    <Compile Include="Asm\AsmDisk.cs" />
-    <Compile Include="Asm\AsmLoadBalancer.cs" />
-    <Compile Include="Asm\AsmLoadBalancerRule.cs" />
-    <Compile Include="Asm\AsmLocalNetworkSite.cs" />
-    <Compile Include="Asm\AsmLocation.cs" />
-    <Compile Include="Asm\AsmNetworkInterface.cs" />
-    <Compile Include="Asm\AsmNetworkSecurityGroup.cs" />
-    <Compile Include="Asm\AsmNetworkSecurityGroupRule.cs" />
-    <Compile Include="Asm\AsmReservedIP.cs" />
-    <Compile Include="Asm\AsmRoute.cs" />
-    <Compile Include="Asm\AsmRouteTable.cs" />
-    <Compile Include="Asm\AsmStorageAccount.cs" />
-    <Compile Include="Asm\AsmStorageAccountKeys.cs" />
-    <Compile Include="Asm\AsmSubnet.cs" />
-    <Compile Include="Asm\AsmVirtualMachine.cs" />
-    <Compile Include="Asm\AsmVirtualNetwork.cs" />
-    <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
-    <Compile Include="Azure\ArmConst.cs" />
-    <Compile Include="Azure\AzureContext.cs" />
-    <Compile Include="Azure\AzureRetriever.cs" />
-    <Compile Include="Azure\AzureServiceUrls.cs" />
-    <Compile Include="Azure\AzureSubscription.cs" />
-    <Compile Include="Azure\AzureTokenProvider.cs" />
     <Compile Include="Forms\AsmToArmForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -164,30 +131,12 @@
     <Compile Include="Forms\PreExportDialog.Designer.cs">
       <DependentUpon>PreExportDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Generator\AppSettingsProvider.cs" />
-    <Compile Include="Generator\CloudTelemetryProvider.cs" />
-    <Compile Include="Generator\TemplateResult.cs" />
-    <Compile Include="Generator\UISaveSelectionProvider.cs" />
-    <Compile Include="Interface\ILocation.cs" />
-    <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Providers\AppSettingsProvider.cs" />
+    <Compile Include="Providers\CloudTelemetryProvider.cs" />
+    <Compile Include="Providers\UISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
-    <Compile Include="Interface\ISettingsProvider.cs" />
-    <Compile Include="Interface\IStatusProvider.cs" />
-    <Compile Include="Interface\IStorageAccount.cs" />
-    <Compile Include="Interface\ISubnet.cs" />
-    <Compile Include="Interface\ISubscription.cs" />
-    <Compile Include="Interface\ITelemetryProvider.cs" />
-    <Compile Include="Interface\ITokenProvider.cs" />
-    <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="Models\CopyBlobDetail.cs" />
-    <Compile Include="Models\ARM.cs" />
-    <Compile Include="Models\AsmArtifacts.cs" />
-    <Compile Include="Models\CloudServiceVM.cs" />
-    <Compile Include="Generator\FileLogProvider.cs" />
-    <Compile Include="Generator\TemplateGenerator.cs" />
-    <Compile Include="Generator\UIStatusProvider.cs" />
-    <Compile Include="Models\SaveSelection.cs" />
-    <Compile Include="Models\TelemetryRecord.cs" />
+    <Compile Include="Providers\FileLogProvider.cs" />
+    <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserControls\AvailabilitySetProperties.cs">
@@ -334,6 +283,12 @@
     <EmbeddedResource Include="DeployDocTemplate.html" />
     <Content Include="Images\Azure SDK.ico" />
     <None Include="Resources\Resource group.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
+      <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
+      <Name>MigAz.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Asm;
-using MIGAZ.Azure;
-using MIGAZ.Generator;
-using MIGAZ.Models;
+using MIGAZ.Core.Asm;
+using MIGAZ.Core.Azure;
+using MIGAZ.Core.Generator;
+using MIGAZ.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

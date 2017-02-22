@@ -2,15 +2,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MIGAZ.Tests.Fakes;
 using System.Xml;
-using MIGAZ.Generator;
 using System.Collections;
 using System.IO;
-using MIGAZ.Models;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
-using MIGAZ.Azure;
-using MIGAZ.Arm;
+using MIGAZ.Core.Azure;
+using MIGAZ.Core.Models;
+using MIGAZ.Core.Generator;
 
 namespace MIGAZ.Tests
 {

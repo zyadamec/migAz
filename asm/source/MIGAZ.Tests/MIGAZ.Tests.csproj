@@ -194,12 +194,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MIGAZ\MIGAZ.csproj">
-      <Project>{90C588A6-C9CE-41BD-81EB-703A63AEF46C}</Project>
-      <Name>MIGAZ</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +204,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
+      <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
+      <Name>MigAz.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

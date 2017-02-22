@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A794A00C-299A-4E82-BD35-2213E091B8A8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MigAz.Core</RootNamespace>
+    <AssemblyName>MigAz.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arm\ArmAvailabilitySet.cs" />
+    <Compile Include="Arm\ArmLocation.cs" />
+    <Compile Include="Arm\ArmResourceGroup.cs" />
+    <Compile Include="Arm\ArmStorageAccount.cs" />
+    <Compile Include="Arm\ArmStorageAccountKey.cs" />
+    <Compile Include="Arm\ArmSubnet.cs" />
+    <Compile Include="Arm\ArmVirtualNetwork.cs" />
+    <Compile Include="Asm\AsmAffinityGroup.cs" />
+    <Compile Include="Asm\AsmClientRootCertificate.cs" />
+    <Compile Include="Asm\AsmCloudService.cs" />
+    <Compile Include="Asm\AsmDisk.cs" />
+    <Compile Include="Asm\AsmLoadBalancer.cs" />
+    <Compile Include="Asm\AsmLoadBalancerRule.cs" />
+    <Compile Include="Asm\AsmLocalNetworkSite.cs" />
+    <Compile Include="Asm\AsmLocation.cs" />
+    <Compile Include="Asm\AsmNetworkInterface.cs" />
+    <Compile Include="Asm\AsmNetworkSecurityGroup.cs" />
+    <Compile Include="Asm\AsmNetworkSecurityGroupRule.cs" />
+    <Compile Include="Asm\AsmReservedIP.cs" />
+    <Compile Include="Asm\AsmRoute.cs" />
+    <Compile Include="Asm\AsmRouteTable.cs" />
+    <Compile Include="Asm\AsmStorageAccount.cs" />
+    <Compile Include="Asm\AsmStorageAccountKeys.cs" />
+    <Compile Include="Asm\AsmSubnet.cs" />
+    <Compile Include="Asm\AsmVirtualMachine.cs" />
+    <Compile Include="Asm\AsmVirtualNetwork.cs" />
+    <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
+    <Compile Include="Azure\ArmConst.cs" />
+    <Compile Include="Azure\AzureContext.cs" />
+    <Compile Include="Azure\AzureRetriever.cs" />
+    <Compile Include="Azure\AzureServiceUrls.cs" />
+    <Compile Include="Azure\AzureSubscription.cs" />
+    <Compile Include="Azure\AzureTokenProvider.cs" />
+    <Compile Include="Generator\TemplateGenerator.cs" />
+    <Compile Include="Generator\TemplateResult.cs" />
+    <Compile Include="Interface\ILocation.cs" />
+    <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Interface\ISettingsProvider.cs" />
+    <Compile Include="Interface\IStatusProvider.cs" />
+    <Compile Include="Interface\IStorageAccount.cs" />
+    <Compile Include="Interface\ISubnet.cs" />
+    <Compile Include="Interface\ISubscription.cs" />
+    <Compile Include="Interface\ITelemetryProvider.cs" />
+    <Compile Include="Interface\ITokenProvider.cs" />
+    <Compile Include="Interface\IVirtualNetwork.cs" />
+    <Compile Include="Models\ARM.cs" />
+    <Compile Include="Models\AsmArtifacts.cs" />
+    <Compile Include="Models\CloudServiceVM.cs" />
+    <Compile Include="Models\CopyBlobDetail.cs" />
+    <Compile Include="Models\SaveSelection.cs" />
+    <Compile Include="Models\TelemetryRecord.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

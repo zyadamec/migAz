@@ -5,15 +5,16 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MIGAZ.Generator;
+using MIGAZ.Providers;
 using MIGAZ.Forms;
 using System.Threading.Tasks;
 using System.Linq;
 using MIGAZ.UserControls;
+using MIGAZ.Core.Interface;
+using MIGAZ.Core.Azure;
+using MIGAZ.Core.Asm;
+using MIGAZ.Core.Arm;
 using MIGAZ.Interface;
-using MIGAZ.Azure;
-using MIGAZ.Asm;
-using MIGAZ.Arm;
 
 namespace MIGAZ
 {
@@ -217,6 +218,16 @@ namespace MIGAZ
                         cloudServiceNode.Nodes.Add(virtualMachineNode);
                         cloudServiceNode.Expand();
                     }
+                }
+
+                foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
+                {
+                    TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                    TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
+                    tnStorageAccount.Name = tnStorageAccount.Text;
+                    tnStorageAccount.Tag = asmNetworkSecurityGroup;
+                    parentNode.Nodes.Add(tnStorageAccount);
+                    parentNode.Expand();
                 }
 
                 subscriptionNode.ExpandAll();
@@ -850,11 +861,19 @@ namespace MIGAZ
                                 }
 
                             }
-
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(AsmVirtualMachine))
                         {
                             AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+
+                            if (asmVirtualMachine.TargetName == String.Empty)
+                            {
+                                treeARM.SelectedNode = treeNode;
+                                this.Refresh();
+                                MessageBox.Show("Target Name for Virtual Machine must be specified.");
+                                return false;
+                            }
+
                             if (asmVirtualMachine.TargetAvailabilitySet == null)
                             {
                                 treeARM.SelectedNode = treeNode;

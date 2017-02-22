@@ -1,5 +1,5 @@
-﻿using MIGAZ.Asm;
-using MIGAZ.Azure;
+﻿using MIGAZ.Core.Asm;
+using MIGAZ.Core.Azure;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

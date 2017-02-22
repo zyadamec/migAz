@@ -1,11 +1,6 @@
-﻿using MIGAZ.Azure;
-using MIGAZ.Generator;
-using MIGAZ.Interface;
+﻿using MIGAZ.Core.Azure;
+using MIGAZ.Core.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MIGAZ.Tests.Fakes
 {

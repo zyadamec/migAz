@@ -1,5 +1,4 @@
-﻿using MIGAZ.Generator;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +7,9 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Asm;
-using MIGAZ.Interface;
-using MIGAZ.Azure;
+using MIGAZ.Core.Asm;
+using MIGAZ.Core.Interface;
+using MIGAZ.Core.Azure;
 
 namespace MIGAZ.Tests.Fakes
 {
