@@ -18,6 +18,7 @@ namespace MIGAZ.Core.Generator
         private IStatusProvider _statusProvider;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
+        private AsmArtifacts _ASMArtifacts;
 
         private TemplateGenerator() { }
 
@@ -32,6 +33,14 @@ namespace MIGAZ.Core.Generator
 
         public async Task<TemplateResult> GenerateTemplate(ISubscription sourceASMSubscription, ISubscription targetARMSubscription, AsmArtifacts artifacts, ArmResourceGroup targetResourceGroup, string outputPath)
         {
+            _ASMArtifacts = artifacts;
+
+            foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            {
+                if (asmNetworkSecurityGroup.TargetName == String.Empty)
+                    throw new ArgumentException("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
+            }
+
             foreach (AsmVirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
                 if (asmVirtualMachine.TargetName == String.Empty)
@@ -62,11 +71,20 @@ namespace MIGAZ.Core.Generator
 
             _logProvider.WriteLog("GenerateTemplate", "Start - Execution " + templateResult.ExecutionGuid.ToString());
 
+            _logProvider.WriteLog("GenerateTemplate", "Start processing selected Network Security Groups");
+            // process selected virtual networks
+            foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            {
+                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
+                await BuildNetworkSecurityGroup(templateResult, asmNetworkSecurityGroup);
+            }
+            _logProvider.WriteLog("GenerateTemplate", "End processing selected Network Security Groups");
+
             _logProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
             // process selected virtual networks
             foreach (AsmVirtualNetwork asmVirtualNetwork in artifacts.VirtualNetworks)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.Name);
+                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
                 await BuildVirtualNetworkObject(templateResult, asmVirtualNetwork);
             }
             _logProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
@@ -76,7 +94,7 @@ namespace MIGAZ.Core.Generator
             // process selected storage accounts
             foreach (AsmStorageAccount asmStorageAccount in artifacts.StorageAccounts)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.Name);
+                _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(templateResult, asmStorageAccount);
             }
             _logProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
@@ -118,6 +136,8 @@ namespace MIGAZ.Core.Generator
             _statusProvider.UpdateStatus("Ready");
 
             _logProvider.WriteLog("GenerateTemplate", "End - Execution " + templateResult.ExecutionGuid.ToString());
+
+            _ASMArtifacts = null;
 
             return templateResult;
         }
@@ -380,18 +400,25 @@ namespace MIGAZ.Core.Generator
                     // add Network Security Group if exists
                     if (asmSubnet.NetworkSecurityGroup != null)
                     {
-                        NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(templateResult, asmSubnet.NetworkSecurityGroup);
+                        AsmNetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
 
-                        // Add NSG reference to the subnet
-                        Reference networksecuritygroup_ref = new Reference();
-                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
-
-                        properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                        // Add NSG dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                        if (asmNetworkSecurityGroup == null)
                         {
-                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                            templateResult.Messages.Add("Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + asmSubnet.NetworkSecurityGroup.Name + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).");
+                        }
+                        else
+                        {
+                            // Add NSG reference to the subnet
+                            Reference networksecuritygroup_ref = new Reference();
+                            networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.GetFinalTargetName() + "')]";
+
+                            properties.networkSecurityGroup = networksecuritygroup_ref;
+
+                            // Add NSG dependsOn to the Virtual Network object
+                            if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                            {
+                                virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                            }
                         }
                     }
 
@@ -807,19 +834,26 @@ namespace MIGAZ.Core.Generator
 
             if (asmVirtualMachine.NetworkSecurityGroup != null)
             {
-                NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(templateResult, asmVirtualMachine.NetworkSecurityGroup);
+                AsmNetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
 
-                // Add NSG reference to the network interface
-                Reference networksecuritygroup_ref = new Reference();
-                networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
-
-                networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
-                primaryNetworkInterface.properties = networkinterface_properties;
-
-                // Add NSG dependsOn to the Network Interface object
-                if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
+                if (asmNetworkSecurityGroup == null)
                 {
-                    primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
+                    templateResult.Messages.Add("Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + asmVirtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).");
+                }
+                else
+                {
+                    // Add NSG reference to the network interface
+                    Reference networksecuritygroup_ref = new Reference();
+                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.GetFinalTargetName() + "')]";
+
+                    networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
+                    primaryNetworkInterface.properties = networkinterface_properties;
+
+                    // Add NSG dependsOn to the Network Interface object
+                    if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
+                    {
+                        primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
+                    }
                 }
 
             }

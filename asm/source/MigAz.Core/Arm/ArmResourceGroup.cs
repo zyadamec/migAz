@@ -1,4 +1,5 @@
 ﻿using MIGAZ.Core.Azure;
+using MIGAZ.Core.Interface;
 using MIGAZ.Core.Models.ARM;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace MIGAZ.Core.Arm
     public class ArmResourceGroup
     {
         private String _Name = String.Empty;
-        private ArmLocation _Location;
+        private ILocation _Location;
         private AzureContext _AzureContext;
 
         private ArmResourceGroup() { }
@@ -27,7 +28,7 @@ namespace MIGAZ.Core.Arm
             get { return _Name; }
             set { _Name = value.Trim(); }
         }
-        public ArmLocation Location
+        public ILocation Location
         {
             get { return _Location; }
             set { _Location = value; }

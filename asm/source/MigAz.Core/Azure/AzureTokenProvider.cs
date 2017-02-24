@@ -40,7 +40,7 @@ namespace MIGAZ.Core.Azure
             AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetLoginUrl(azureSubscription.AzureEnvironment) + azureSubscription.AzureAdTenantId.ToString());
 
             PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
-            _AuthenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureSubscription.AzureEnvironment), strReturnUrl, new Uri(strReturnUrl), platformParams);
+            _AuthenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureSubscription.AzureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
         }
 
         public static bool operator ==(AzureTokenProvider lhs, AzureTokenProvider rhs)
@@ -65,7 +65,7 @@ namespace MIGAZ.Core.Azure
             AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetLoginUrl(azureEnvironment) + "common");
 
             PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
-            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureEnvironment), strReturnUrl, new Uri(strReturnUrl), platformParams);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
             if (authenticationResult == null)
             {
                 throw new InvalidOperationException("Failed to obtain the token");

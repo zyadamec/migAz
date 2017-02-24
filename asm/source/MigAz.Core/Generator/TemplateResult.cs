@@ -158,7 +158,7 @@ namespace MIGAZ.Core.Generator
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "MIGAZ.DeployDocTemplate.html";
+                var resourceName = "MigAz.Core.DeployDocTemplate.html";
                 string instructionContent;
 
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))

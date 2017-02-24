@@ -81,9 +81,13 @@ namespace MIGAZ.Forms
             foreach (TreeNode selectedNode in selectedNodes)
             {
                 Type tagType = selectedNode.Tag.GetType();
-                if (tagType == typeof(AsmVirtualNetwork))
+                if (tagType == typeof(AsmNetworkSecurityGroup))
                 {
-                    artifacts.VirtualNetworks.Add((AsmVirtualNetwork) selectedNode.Tag);
+                    artifacts.NetworkSecurityGroups.Add((AsmNetworkSecurityGroup)selectedNode.Tag);
+                }
+                else if (tagType == typeof(AsmVirtualNetwork))
+                {
+                    artifacts.VirtualNetworks.Add((AsmVirtualNetwork)selectedNode.Tag);
                 }
                 else if (tagType == typeof(AsmStorageAccount))
                 {

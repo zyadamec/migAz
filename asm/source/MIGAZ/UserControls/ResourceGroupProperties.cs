@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MIGAZ.Core.Azure;
 using MIGAZ.Core.Arm;
+using System.Net;
+using MIGAZ.Core.Asm;
+using MIGAZ.Core.Interface;
 
 namespace MIGAZ.UserControls
 {
@@ -31,10 +34,25 @@ namespace MIGAZ.UserControls
 
             txtName.Text = armResourceGroup.Name;
 
-            cboTargetLocation.Items.Clear();
-            foreach (ArmLocation armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
+            try
             {
-                cboTargetLocation.Items.Add(armLocation);
+                cboTargetLocation.Items.Clear();
+                foreach (ArmLocation armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
+                {
+                    cboTargetLocation.Items.Add(armLocation);
+                }
+            }
+            catch (WebException)
+            {
+                // We are trying to load the ARM defined subscription locations above first; however, this as of Feb 24 2017, this ARM query
+                // does not succeed (503 Forbidden) across all Azure Environments.  For example, it works in Azure Commercial, but Azure US Gov
+                // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
+
+                cboTargetLocation.Items.Clear();
+                foreach (AsmLocation asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
+                {
+                    cboTargetLocation.Items.Add(asmLocation);
+                }
             }
 
             if (armResourceGroup.Location != null)
@@ -63,7 +81,7 @@ namespace MIGAZ.UserControls
             ComboBox cmbSender = (ComboBox)sender;
 
             ArmResourceGroup armResourceGroup = (ArmResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.Location = (ArmLocation)cmbSender.SelectedItem;
+            armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
         }
     }
 }

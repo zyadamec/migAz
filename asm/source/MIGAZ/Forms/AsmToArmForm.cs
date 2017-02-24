@@ -378,6 +378,14 @@ namespace MIGAZ
 
                 return tnCloudServicesNode;
             }
+            else if (containerName == "Network Security Groups")
+            {
+                TreeNode tnNetworkSecurityGroupsNode = new TreeNode("Network Security Groups");
+                dataCenterNode.Nodes.Add(tnNetworkSecurityGroupsNode);
+                tnNetworkSecurityGroupsNode.Expand();
+
+                return tnNetworkSecurityGroupsNode;
+            }
 
             return null;
         }
@@ -451,47 +459,90 @@ namespace MIGAZ
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
-            if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null) && (selectedNode.Tag.GetType() == typeof(AsmVirtualMachine)))
+            if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
-                string cloudServiceName = selectedNode.Parent.Text;
-                string virtualMachineName = selectedNode.Text;
-
-                // Get VM details
-                AsmCloudService asmCloudService = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudService(cloudServiceName);
-                AsmVirtualMachine asmVirtualMachine = asmCloudService.GetVirtualMachine(virtualMachineName);
-
-                // process virtual network
-                if (asmVirtualMachine.VirtualNetworkName != String.Empty)
+                if (selectedNode.Tag.GetType() == typeof(AsmVirtualMachine))
                 {
-                    foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
+                    AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)selectedNode.Tag;
+
+                    #region process virtual network
+                    if (asmVirtualMachine.VirtualNetworkName != String.Empty)
                     {
-                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmVirtualNetwork)))
+                        foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
                         {
-                            if (!treeNode.Checked)
-                                treeNode.Checked = true;
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmVirtualNetwork)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
                         }
                     }
-                }
 
-                // process OS disk
-                foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
-                {
-                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmStorageAccount)))
-                    {
-                        if (!treeNode.Checked)
-                            treeNode.Checked = true;
-                    }
-                }
+                    #endregion
 
-                // process data disks
-                foreach (AsmDisk dataDisk in asmVirtualMachine.DataDisks)
-                {
-                    foreach (TreeNode treeNode in treeASM.Nodes.Find(dataDisk.StorageAccountName, true))
+                    #region OS Disk Storage Account
+
+                    foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
                     {
                         if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmStorageAccount)))
                         {
                             if (!treeNode.Checked)
                                 treeNode.Checked = true;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Data Disk(s) Storage Account(s)
+
+                    foreach (AsmDisk dataDisk in asmVirtualMachine.DataDisks)
+                    {
+                        foreach (TreeNode treeNode in treeASM.Nodes.Find(dataDisk.StorageAccountName, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmStorageAccount)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region Network Security Group
+
+                    if (asmVirtualMachine.NetworkSecurityGroup != null)
+                    {
+                        foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                }
+
+                else if (selectedNode.Tag.GetType() == typeof(AsmVirtualNetwork))
+                {
+                    AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)selectedNode.Tag;
+
+                    foreach (AsmSubnet asmSubnet in asmVirtualNetwork.Subnets)
+                    {
+                        if (asmSubnet.NetworkSecurityGroup != null)
+                        {
+                            foreach (TreeNode treeNode in treeASM.Nodes.Find(asmSubnet.NetworkSecurityGroup.Name, true))
+                            {
+                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup)))
+                                {
+                                    if (!treeNode.Checked)
+                                        treeNode.Checked = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -512,7 +563,7 @@ namespace MIGAZ
 
         private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
         {
-            if (parentNode.Checked && parentNode.Tag != null && (parentNode.Tag.GetType() == typeof(AsmVirtualNetwork) || parentNode.Tag.GetType() == typeof(AsmStorageAccount) || parentNode.Tag.GetType() == typeof(AsmVirtualMachine)))
+            if (parentNode.Checked && parentNode.Tag != null && (parentNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup) || parentNode.Tag.GetType() == typeof(AsmVirtualNetwork) || parentNode.Tag.GetType() == typeof(AsmStorageAccount) || parentNode.Tag.GetType() == typeof(AsmVirtualMachine)))
                 selectedNodes.Add(parentNode);
 
             foreach (TreeNode childNode in parentNode.Nodes)
@@ -606,6 +657,14 @@ namespace MIGAZ
                             properties.Bind(e.Node, this);
                             panel1.Controls.Add(properties);
                         }
+                        else if (asmTreeNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup))
+                        {
+                            pictureBox1.Image = imageList1.Images["NetworkSecurityGroup"];
+
+                            NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
+                            properties.Bind(e.Node, this);
+                            panel1.Controls.Add(properties);
+                        }
                     }
                 }
                 if (e.Node.Tag.GetType() == typeof(AsmSubnet))
@@ -656,7 +715,8 @@ namespace MIGAZ
                 Type tagType = asmTreeNode.Tag.GetType();
                 if ((tagType == typeof(AsmVirtualNetwork)) ||
                     (tagType == typeof(AsmStorageAccount)) ||
-                    (tagType == typeof(AsmVirtualMachine)))
+                    (tagType == typeof(AsmVirtualMachine)) ||
+                    (tagType == typeof(AsmNetworkSecurityGroup)))
                 {
                     if (asmTreeNode.Checked)
                         await AddASMNodeToARMTree(asmTreeNode);
@@ -739,7 +799,7 @@ namespace MIGAZ
             Type tagType = asmTreeNode.Tag.GetType();
             if (tagType == typeof(AsmVirtualNetwork))
             {
-                AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork) asmTreeNode.Tag;
+                AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)asmTreeNode.Tag;
                 TreeNode virtualNetworksNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Virtual Networks", "Virtual Networks", "Virtual Networks", true);
                 TreeNode virtualNetworkNode = SeekARMChildTreeNode(virtualNetworksNode.Nodes, asmTreeNode.Name, asmVirtualNetwork.GetFinalTargetName(), asmTreeNode, true);
 
@@ -785,6 +845,17 @@ namespace MIGAZ
                 treeARM.SelectedNode = virtualMachineNode;
                 treeARM.Focus();
             }
+            else if (tagType == typeof(AsmNetworkSecurityGroup))
+            {
+                AsmNetworkSecurityGroup asmNetworkSecurityGroup = (AsmNetworkSecurityGroup)asmTreeNode.Tag;
+                TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, asmNetworkSecurityGroup.Name, asmNetworkSecurityGroup.Name, asmTreeNode, true);
+
+                treeARM.SelectedNode = networkSecurityGroupNode;
+                treeARM.Focus();
+            }
+            else
+                throw new Exception("Unhandled Node Type: " + tagType);
         }
 
         #endregion
@@ -834,7 +905,20 @@ namespace MIGAZ
 
                     if (asmTreeNode.Tag != null)
                     {
-                        if (asmTreeNode.Tag.GetType() == typeof(AsmVirtualNetwork))
+                        if (asmTreeNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup))
+                        {
+                            AsmNetworkSecurityGroup asmNetworkSecurityGroup = (AsmNetworkSecurityGroup)asmTreeNode.Tag;
+
+                            // Validate the Target Name is not blank
+                            if (asmNetworkSecurityGroup.TargetName == String.Empty)
+                            {
+                                treeARM.SelectedNode = treeNode;
+                                this.Refresh();
+                                MessageBox.Show("Target Name must be selected before exporting.");
+                                return false;
+                            }
+                        }
+                        else if (asmTreeNode.Tag.GetType() == typeof(AsmVirtualNetwork))
                         {
                             AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)asmTreeNode.Tag;
 
