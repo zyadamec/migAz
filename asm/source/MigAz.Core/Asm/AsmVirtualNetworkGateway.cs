@@ -28,6 +28,21 @@ namespace MIGAZ.Core.Asm
             get { return _GatewayXml.SelectSingleNode("//GatewayType").InnerText; }
         }
 
+        public string State
+        {
+            get { return _GatewayXml.SelectSingleNode("//State").InnerText; }
+        }
+
+        public string GatewaySize
+        {
+            get { return _GatewayXml.SelectSingleNode("//GatewaySize").InnerText; }
+        }
+
+        public bool IsProvisioned
+        {
+            get { return this.State != "NotProvisioned"; }
+        }
+
         public string GetFinalTargetname()
         {
             return this._AsmVirtualNetwork.TargetName + this._AzureContext.SettingsProvider.VirtualNetworkGatewaySuffix;

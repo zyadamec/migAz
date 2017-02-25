@@ -460,7 +460,7 @@ namespace MIGAZ.Core.Generator
         private async Task AddGatewaysToVirtualNetwork(TemplateResult templateResult, AsmVirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
         {
             // Process Virtual Network Gateway, if exists
-            if (asmVirtualNetwork.Gateway != null)
+            if (asmVirtualNetwork.Gateway.IsProvisioned)
             {
                 // Gateway Public IP Address
                 PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
