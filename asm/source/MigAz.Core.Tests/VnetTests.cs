@@ -71,6 +71,7 @@ namespace MIGAZ.Tests
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmtest"));
+            artifacts.NetworkSecurityGroups.Add(await azureContextUSCommercialRetriever.GetAzureAsmNetworkSecurityGroup("asmnsg"));
 
             TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 

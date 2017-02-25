@@ -35,6 +35,16 @@ namespace MIGAZ.Core.Generator
         {
             _ASMArtifacts = artifacts;
 
+            if (targetResourceGroup == null)
+            {
+                throw new ArgumentException("Target Resource Group must be provided for template generation.");
+            }
+
+            if (targetResourceGroup.Location == null)
+            {
+                throw new ArgumentException("Target Resource Group Location must be provided for template generation.");
+            }
+
             foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
                 if (asmNetworkSecurityGroup.TargetName == String.Empty)
@@ -460,7 +470,7 @@ namespace MIGAZ.Core.Generator
         private async Task AddGatewaysToVirtualNetwork(TemplateResult templateResult, AsmVirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
         {
             // Process Virtual Network Gateway, if exists
-            if (asmVirtualNetwork.Gateway.IsProvisioned)
+            if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
             {
                 // Gateway Public IP Address
                 PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
