@@ -97,9 +97,6 @@ namespace MIGAZ.UserControls
                     }
                 }
             }
-
-            if (cmbExistingArmSubnet.SelectedItem == null && cmbExistingArmSubnet.Items.Count > 0)
-                cmbExistingArmSubnet.SelectedIndex = 0;
         }
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
@@ -135,10 +132,40 @@ namespace MIGAZ.UserControls
                         if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
                     }
+
+                    if (cmbExistingArmVNets.SelectedItem != null && asmVirtualMachine.TargetSubnet != null)
+                    {
+                        foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                        {
+                            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
+                                cmbExistingArmSubnet.SelectedItem = listSubnet;
+                        }
+                    }
                 }
 
                 if ((cmbExistingArmVNets.SelectedItem == null) && (cmbExistingArmVNets.Items.Count > 0))
-                    cmbExistingArmVNets.SelectedIndex = 0;
+                {
+                    foreach (AsmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                    {
+                        if (listVirtualNetwork.Name == asmVirtualMachine.VirtualNetworkName)
+                            cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                    }
+
+                    if (cmbExistingArmVNets.SelectedItem == null)
+                        cmbExistingArmVNets.SelectedIndex = 0;
+                }
+
+                if ((cmbExistingArmSubnet.SelectedItem == null) && (cmbExistingArmSubnet.Items.Count > 0))
+                {
+                    foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                    {
+                        if (listSubnet.Name == asmVirtualMachine.SubnetName)
+                            cmbExistingArmSubnet.SelectedItem = listSubnet;
+                    }
+
+                    if (cmbExistingArmSubnet.SelectedItem == null)
+                        cmbExistingArmSubnet.SelectedIndex = 0;
+                }
             }
         }
 
