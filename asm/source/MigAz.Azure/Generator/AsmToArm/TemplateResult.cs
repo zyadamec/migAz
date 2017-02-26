@@ -10,7 +10,7 @@ using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 
-namespace MigAz.Azure.Asm.Generator
+namespace MigAz.Azure.Generator.AsmToArm
 {
     public class TemplateResult
     {

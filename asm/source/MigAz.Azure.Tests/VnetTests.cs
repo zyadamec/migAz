@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MIGAZ.Tests.Fakes;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using System.IO;
 using MigAz.Azure.Models;
 using Newtonsoft.Json.Linq;

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MigAz.Azure.Asm.Generator
+namespace MigAz.Azure.Generator.AsmToArm
 {
     public class TemplateGenerator
     {

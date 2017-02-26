@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using MIGAZ.Tests.Fakes;
 using System.IO;
 using MigAz.Azure.Models;

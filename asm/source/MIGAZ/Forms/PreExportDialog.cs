@@ -1,5 +1,5 @@
 ﻿using MigAz.Azure.Asm;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,5 @@
 ﻿using MigAz.Azure.Asm;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using System;
 using System.Collections.Generic;
 using System.Linq;

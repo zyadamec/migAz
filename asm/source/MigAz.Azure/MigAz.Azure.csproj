@@ -85,8 +85,8 @@
     <Compile Include="AzureServiceUrls.cs" />
     <Compile Include="AzureSubscription.cs" />
     <Compile Include="AzureTokenProvider.cs" />
-    <Compile Include="Asm\Generator\TemplateGenerator.cs" />
-    <Compile Include="Asm\Generator\TemplateResult.cs" />
+    <Compile Include="Generator\AsmToArm\TemplateGenerator.cs" />
+    <Compile Include="Generator\AsmToArm\TemplateResult.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
@@ -109,7 +109,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Asm\Generator\DeployDocTemplate.html" />
+    <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,5 @@
 ﻿using MigAz.Azure.Arm;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Models;
 using Newtonsoft.Json;

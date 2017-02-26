@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Models;
-using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure;
 
 namespace MIGAZ.Tests
