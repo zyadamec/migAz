@@ -249,6 +249,14 @@ namespace MIGAZ.Core.Models.ARM
     {
         public string name;
         public InboundNatRule_Properties properties;
+
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(InboundNatRule))
+                return false;
+
+            return ((InboundNatRule)obj).name == this.name;
+        }
     }
 
     public class InboundNatRule_Properties
@@ -263,6 +271,14 @@ namespace MIGAZ.Core.Models.ARM
     {
         public string name;
         public LoadBalancingRule_Properties properties;
+
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(LoadBalancingRule))
+                return false;
+
+            return ((LoadBalancingRule)obj).name == this.name;
+        }
     }
 
     public class LoadBalancingRule_Properties
@@ -282,6 +298,14 @@ namespace MIGAZ.Core.Models.ARM
     {
         public string name;
         public Probe_Properties properties;
+
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(Probe))
+                return false;
+
+            return ((Probe)obj).name == this.name;
+        }
     }
 
     public class Probe_Properties

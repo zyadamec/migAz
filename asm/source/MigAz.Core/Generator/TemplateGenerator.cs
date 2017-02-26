@@ -310,7 +310,8 @@ namespace MIGAZ.Core.Generator
                     inboundnatrule.name = inboundnatrule.name.Replace(" ", String.Empty);  // future enhancement, move to target name
                     inboundnatrule.properties = inboundnatrule_properties;
 
-                    properties.inboundNatRules.Add(inboundnatrule);
+                    if (!properties.inboundNatRules.Contains(inboundnatrule))
+                        properties.inboundNatRules.Add(inboundnatrule);
                 }
                 else // if it's a load balancing rule
                 {
@@ -325,7 +326,8 @@ namespace MIGAZ.Core.Generator
                     probe.name = name;
                     probe.properties = probe_properties;
 
-                    properties.probes.Add(probe);
+                    if (!properties.probes.Contains(probe))
+                        properties.probes.Add(probe);
 
                     // build load balancing rule
                     Reference frontendipconfiguration_ref = new Reference();
@@ -349,7 +351,8 @@ namespace MIGAZ.Core.Generator
                     loadbalancingrule.name = name;
                     loadbalancingrule.properties = loadbalancingrule_properties;
 
-                    properties.loadBalancingRules.Add(loadbalancingrule);
+                    if (!properties.loadBalancingRules.Contains(loadbalancingrule))
+                        properties.loadBalancingRules.Add(loadbalancingrule);
 
                     _logProvider.WriteLog("BuildLoadBalancerRules", ArmConst.ProviderLoadBalancers + loadbalancer.name + "/loadBalancingRules/" + loadbalancingrule.name);
                 }
