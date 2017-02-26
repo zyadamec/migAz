@@ -1,13 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
+using MigAz.Azure.Interface;
 
-namespace MIGAZ.Core.Arm
+namespace MigAz.Azure.Arm
 {
     public class ArmLocation : ILocation
     {

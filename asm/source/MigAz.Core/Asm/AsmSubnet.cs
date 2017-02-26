@@ -1,13 +1,10 @@
-﻿using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
+﻿using MigAz.Azure.Arm;
+using MigAz.Azure.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace MIGAZ.Core.Asm
+namespace MigAz.Azure.Asm
 {
     public class AsmSubnet : ISubnet
     {

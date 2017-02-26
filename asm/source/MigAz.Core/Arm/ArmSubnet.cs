@@ -1,4 +1,4 @@
-﻿using MIGAZ.Core.Interface;
+﻿using MigAz.Azure.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Arm
+namespace MigAz.Azure.Arm
 {
     public class ArmSubnet : ISubnet
     {

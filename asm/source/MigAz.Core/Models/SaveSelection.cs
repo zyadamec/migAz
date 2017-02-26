@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MIGAZ.Core.Models
+namespace MigAz.Azure.Models
 {
     public class SaveSelection
     {

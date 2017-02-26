@@ -1,16 +1,14 @@
-﻿using MIGAZ.Core.Arm;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Models;
-using MIGAZ.Core.Models.ARM;
+﻿using MigAz.Azure.Arm;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Generator
+namespace MigAz.Azure.Asm.Generator
 {
     public class TemplateGenerator
     {

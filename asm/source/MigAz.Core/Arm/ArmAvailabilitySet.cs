@@ -1,14 +1,8 @@
-﻿using MIGAZ.Core.Asm;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Models.ARM;
+﻿using MigAz.Azure.Asm;
+using MigAz.Azure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Arm
+namespace MigAz.Azure.Arm
 {
     public class ArmAvailabilitySet : AvailabilitySet
     {

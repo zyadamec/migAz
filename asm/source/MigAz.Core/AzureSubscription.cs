@@ -1,8 +1,8 @@
-﻿using MIGAZ.Core.Interface;
+﻿using MigAz.Azure.Interface;
 using System;
 using System.Xml;
 
-namespace MIGAZ.Core.Azure
+namespace MigAz.Azure
 {
     public class AzureSubscription : ISubscription
     {

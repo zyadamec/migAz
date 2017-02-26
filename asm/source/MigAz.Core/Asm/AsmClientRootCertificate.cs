@@ -1,12 +1,12 @@
-﻿using MIGAZ.Core.Azure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using MigAz.Azure;
 
-namespace MIGAZ.Core.Asm
+namespace MigAz.Azure.Asm
 {
     public class AsmClientRootCertificate
     {

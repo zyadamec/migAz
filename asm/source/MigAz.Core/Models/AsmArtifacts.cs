@@ -1,8 +1,8 @@
-﻿using MIGAZ.Core.Asm;
+﻿using MigAz.Azure.Asm;
 using System.Collections.Generic;
 using System;
 
-namespace MIGAZ.Core.Models
+namespace MigAz.Azure.Models
 {
     public class AsmArtifacts
     {

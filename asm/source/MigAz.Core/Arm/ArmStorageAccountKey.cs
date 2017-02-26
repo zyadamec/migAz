@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Arm
+namespace MigAz.Azure.Arm
 {
     public class ArmStorageAccountKey
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Interface
+namespace MigAz.Azure.Interface
 {
     public interface ILogProvider
     {

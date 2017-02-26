@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.Core.Interface
+﻿namespace MigAz.Azure.Interface
 {
     public interface ISettingsProvider
     {

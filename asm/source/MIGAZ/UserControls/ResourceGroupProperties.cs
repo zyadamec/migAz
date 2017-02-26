@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Arm;
+using MigAz.Azure;
+using MigAz.Azure.Arm;
 using System.Net;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Interface;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Interface;
 
 namespace MIGAZ.UserControls
 {

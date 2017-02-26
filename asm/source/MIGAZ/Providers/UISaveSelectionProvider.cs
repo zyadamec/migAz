@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System.Windows.Forms;
-using MIGAZ.Core.Models;
+using MigAz.Azure.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
 using System.Threading.Tasks;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Arm;
-using MIGAZ.Core.Azure;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Arm;
+using MigAz.Azure;
 using MIGAZ.Interface;
+using MigAz.Azure;
 
 namespace MIGAZ.Providers
 {

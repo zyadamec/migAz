@@ -10,11 +10,11 @@ using MIGAZ.Forms;
 using System.Threading.Tasks;
 using System.Linq;
 using MIGAZ.UserControls;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Arm;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Arm;
 using MIGAZ.Interface;
+using MigAz.Azure;
 
 namespace MIGAZ
 {

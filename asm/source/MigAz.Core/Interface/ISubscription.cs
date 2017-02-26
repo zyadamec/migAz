@@ -1,11 +1,6 @@
-﻿using MIGAZ.Core.Azure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace MIGAZ.Core.Interface
+namespace MigAz.Azure.Interface
 {
     public interface ISubscription
     {

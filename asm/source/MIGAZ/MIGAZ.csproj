@@ -293,9 +293,9 @@
     <None Include="Resources\Resource group.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
+    <ProjectReference Include="..\MigAz.Core\MigAz.Azure.csproj">
       <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
-      <Name>MigAz.Core</Name>
+      <Name>MigAz.Azure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Core.Arm;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Azure;
+using MigAz.Azure.Arm;
+using MigAz.Azure.Asm;
+using MigAz.Azure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
-using MIGAZ.Core.Generator;
+using MigAz.Azure.Asm.Generator;
 
 namespace MIGAZ.Forms
 {

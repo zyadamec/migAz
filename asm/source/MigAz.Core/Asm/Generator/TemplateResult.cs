@@ -1,8 +1,7 @@
-﻿using MIGAZ.Core.Arm;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Models;
-using MIGAZ.Core.Models.ARM;
+﻿using MigAz.Azure.Arm;
+using MigAz.Azure;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 
-namespace MIGAZ.Core.Generator
+namespace MigAz.Azure.Asm.Generator
 {
     public class TemplateResult
     {
@@ -158,7 +157,7 @@ namespace MIGAZ.Core.Generator
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "MigAz.Core.DeployDocTemplate.html";
+                var resourceName = "MigAz.Core.Asm.Generator.DeployDocTemplate.html";
                 string instructionContent;
 
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))

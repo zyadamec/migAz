@@ -1,17 +1,10 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Azure;
-using MIGAZ.Core.Generator;
-using MIGAZ.Core.Models;
+﻿using MigAz.Azure.Asm;
+using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MIGAZ.Forms

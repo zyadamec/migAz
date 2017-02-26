@@ -1,12 +1,12 @@
-﻿using MIGAZ.Core.Asm;
-using MIGAZ.Core.Generator;
+﻿using MigAz.Azure.Asm;
+using MigAz.Azure.Asm.Generator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Interface
+namespace MigAz.Azure.Interface
 {
     public interface ITelemetryProvider
     {

@@ -7,9 +7,9 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Azure;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Interface;
+using MigAz.Azure;
 
 namespace MIGAZ.Tests.Fakes
 {

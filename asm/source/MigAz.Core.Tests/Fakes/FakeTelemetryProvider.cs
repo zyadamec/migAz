@@ -1,6 +1,5 @@
-﻿using MIGAZ.Core.Asm;
-using MIGAZ.Core.Generator;
-using MIGAZ.Core.Interface;
+﻿using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

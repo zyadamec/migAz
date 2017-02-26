@@ -1,9 +1,9 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Core.Interface;
+using MigAz.Azure.Interface;
 using System;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Core.Azure
+namespace MigAz.Azure
 {
     public enum AzureEnvironment
     {

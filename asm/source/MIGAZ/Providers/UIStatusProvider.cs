@@ -1,4 +1,4 @@
-﻿using MIGAZ.Core.Interface;
+﻿using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

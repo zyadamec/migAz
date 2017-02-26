@@ -1,8 +1,7 @@
-﻿using MIGAZ.Core.Asm;
-using MIGAZ.Core.Generator;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Models;
-using MIGAZ.Core.Models.ARM;
+﻿using MigAz.Azure.Arm;
+using MigAz.Azure.Asm.Generator;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ using System.Windows.Forms;
 
 namespace MIGAZ.Providers
 {
-    public class CloudTelemetryProvider : ITelemetryProvider
+    public class CloudTelemetryProvider : MigAz.Azure.Interface.ITelemetryProvider
     {
         private Dictionary<string,string> GetProcessedItems(TemplateResult templateResult)
         {

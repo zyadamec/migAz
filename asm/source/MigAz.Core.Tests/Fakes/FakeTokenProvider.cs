@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Interface;
-using MIGAZ.Core.Azure;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Interface;
+using MigAz.Azure;
 
 namespace MIGAZ.Tests.Fakes
 {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MIGAZ.Core.Asm;
+using MigAz.Azure.Asm;
 
 namespace MIGAZ.UserControls
 {

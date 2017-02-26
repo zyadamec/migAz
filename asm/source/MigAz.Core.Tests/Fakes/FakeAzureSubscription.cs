@@ -1,5 +1,5 @@
-﻿using MIGAZ.Core.Azure;
-using MIGAZ.Core.Interface;
+﻿using MigAz.Azure;
+using MigAz.Azure.Interface;
 using System;
 
 namespace MIGAZ.Tests.Fakes

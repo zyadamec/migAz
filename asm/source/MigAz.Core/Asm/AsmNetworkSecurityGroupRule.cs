@@ -1,8 +1,7 @@
-﻿using MIGAZ.Core.Azure;
-using System;
+﻿using System;
 using System.Xml;
 
-namespace MIGAZ.Core.Asm
+namespace MigAz.Azure.Asm
 {
     public class AsmNetworkSecurityGroupRule
     {

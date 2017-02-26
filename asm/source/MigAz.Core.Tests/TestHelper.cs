@@ -1,4 +1,4 @@
-﻿using MIGAZ.Core.Azure;
+﻿using MigAz.Azure;
 using MIGAZ.Tests.Fakes;
 using Newtonsoft.Json.Linq;
 using System;
@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MIGAZ.Core.Asm;
-using MIGAZ.Core.Arm;
-using MIGAZ.Core.Models;
-using MIGAZ.Core.Generator;
-using MIGAZ.Core.Interface;
+using MigAz.Azure.Asm;
+using MigAz.Azure.Arm;
+using MigAz.Azure.Models;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Asm.Generator;
 
 namespace MIGAZ.Tests
 {

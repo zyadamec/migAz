@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
-using MIGAZ.Core.Arm;
-using MIGAZ.Core.Asm;
+using MigAz.Azure.Arm;
+using MigAz.Azure.Asm;
 
-namespace MIGAZ.Core.Azure
+namespace MigAz.Azure
 {
     public class AzureRetriever
     {

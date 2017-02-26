@@ -79,14 +79,14 @@
     <Compile Include="Asm\AsmVirtualMachine.cs" />
     <Compile Include="Asm\AsmVirtualNetwork.cs" />
     <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
-    <Compile Include="Azure\ArmConst.cs" />
-    <Compile Include="Azure\AzureContext.cs" />
-    <Compile Include="Azure\AzureRetriever.cs" />
-    <Compile Include="Azure\AzureServiceUrls.cs" />
-    <Compile Include="Azure\AzureSubscription.cs" />
-    <Compile Include="Azure\AzureTokenProvider.cs" />
-    <Compile Include="Generator\TemplateGenerator.cs" />
-    <Compile Include="Generator\TemplateResult.cs" />
+    <Compile Include="Arm\ArmConst.cs" />
+    <Compile Include="AzureContext.cs" />
+    <Compile Include="AzureRetriever.cs" />
+    <Compile Include="AzureServiceUrls.cs" />
+    <Compile Include="AzureSubscription.cs" />
+    <Compile Include="AzureTokenProvider.cs" />
+    <Compile Include="Asm\Generator\TemplateGenerator.cs" />
+    <Compile Include="Asm\Generator\TemplateResult.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="Models\ARM.cs" />
+    <Compile Include="Arm\ARM.cs" />
     <Compile Include="Models\AsmArtifacts.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
     <Compile Include="Models\CopyBlobDetail.cs" />
@@ -109,7 +109,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DeployDocTemplate.html" />
+    <EmbeddedResource Include="Asm\Generator\DeployDocTemplate.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
