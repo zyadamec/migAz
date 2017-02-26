@@ -157,7 +157,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "MigAz.Core.Asm.Generator.DeployDocTemplate.html";
+                var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
                 string instructionContent;
 
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))
