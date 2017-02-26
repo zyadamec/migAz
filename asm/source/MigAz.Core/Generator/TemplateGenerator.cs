@@ -220,66 +220,77 @@ namespace MIGAZ.Core.Generator
         {
             _logProvider.WriteLog("BuildLoadBalancerObject", "Start");
 
-            LoadBalancer loadbalancer = new LoadBalancer(templateResult.ExecutionGuid);
-            loadbalancer.name = asmVirtualMachine.LoadBalancerName;
-            loadbalancer.location = templateResult.TargetResourceGroup.Location.Name;
+            LoadBalancer loadbalancer = (LoadBalancer) templateResult.GetResource(typeof(LoadBalancer), asmVirtualMachine.LoadBalancerName);
 
-            FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
-
-            // if internal load balancer
-            // shouldn't this change to a foreach loop?
-            if (asmCloudService.LoadBalancers.Count > 0)
+            if (loadbalancer == null)
             {
-                string virtualnetworkname = asmCloudService.VirtualNetwork.GetFinalTargetName();
-                string subnetname = asmCloudService.LoadBalancers[0].Subnet.TargetName;
+                loadbalancer = new LoadBalancer(templateResult.ExecutionGuid);
+                loadbalancer.name = asmVirtualMachine.LoadBalancerName;
+                loadbalancer.location = templateResult.TargetResourceGroup.Location.Name;
 
-                frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
-                if (asmCloudService.StaticVirtualNetworkIPAddress != String.Empty)
+                FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
+
+                // if internal load balancer
+                // shouldn't this change to a foreach loop?
+                if (asmCloudService.LoadBalancers.Count > 0)
                 {
-                    frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
-                    frontendipconfiguration_properties.privateIPAddress = asmCloudService.StaticVirtualNetworkIPAddress;
+                    string virtualnetworkname = asmCloudService.VirtualNetwork.GetFinalTargetName();
+                    string subnetname = asmCloudService.LoadBalancers[0].Subnet.TargetName;
+
+                    frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
+                    if (asmCloudService.StaticVirtualNetworkIPAddress != String.Empty)
+                    {
+                        frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
+                        frontendipconfiguration_properties.privateIPAddress = asmCloudService.StaticVirtualNetworkIPAddress;
+                    }
+
+                    List<string> dependson = new List<string>();
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
+                    loadbalancer.dependsOn = dependson;
+
+                    Reference subnet_ref = new Reference();
+                    subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
+                    frontendipconfiguration_properties.subnet = subnet_ref;
+                }
+                // if external load balancer
+                else
+                {
+                    List<string> dependson = new List<string>();
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
+                    loadbalancer.dependsOn = dependson;
+
+                    Reference publicipaddress_ref = new Reference();
+                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
+                    frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
                 }
 
-                List<string> dependson = new List<string>();
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
-                loadbalancer.dependsOn = dependson;
+                LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
 
-                Reference subnet_ref = new Reference();
-                subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
-                frontendipconfiguration_properties.subnet = subnet_ref;
+                FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
+                frontendipconfiguration.properties = frontendipconfiguration_properties;
+
+                List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
+                frontendipconfigurations.Add(frontendipconfiguration);
+                loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
+
+                Hashtable backendaddresspool = new Hashtable();
+                backendaddresspool.Add("name", "default");
+                List<Hashtable> backendaddresspools = new List<Hashtable>();
+                backendaddresspools.Add(backendaddresspool);
+                loadbalancer_properties.backendAddressPools = backendaddresspools;
+
+                List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
+                List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
+                List<Probe> probes = new List<Probe>();
+
+                loadbalancer_properties.inboundNatRules = inboundnatrules;
+                loadbalancer_properties.loadBalancingRules = loadbalancingrules;
+                loadbalancer_properties.probes = probes;
+                loadbalancer.properties = loadbalancer_properties;
             }
-            // if external load balancer
-            else
-            {
-                List<string> dependson = new List<string>();
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
-                loadbalancer.dependsOn = dependson;
 
-                Reference publicipaddress_ref = new Reference();
-                publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
-                frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-            }
+            LoadBalancer_Properties properties = (LoadBalancer_Properties)loadbalancer.properties;
 
-            LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
-
-            FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
-            frontendipconfiguration.properties = frontendipconfiguration_properties;
-
-            List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
-            frontendipconfigurations.Add(frontendipconfiguration);
-            loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
-
-            Hashtable backendaddresspool = new Hashtable();
-            backendaddresspool.Add("name", "default");
-            List<Hashtable> backendaddresspools = new List<Hashtable>();
-            backendaddresspools.Add(backendaddresspool);
-            loadbalancer_properties.backendAddressPools = backendaddresspools;
-
-            List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
-            List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
-            List<Probe> probes = new List<Probe>();
-
-            // BuildLoadBalancerRules(templateResult, asmVirtualMachine, loadbalancer.name, ref inboundnatrules, ref loadbalancingrules, ref probes);
             // Add Load Balancer Rules
             foreach (AsmLoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
             {
@@ -299,12 +310,11 @@ namespace MIGAZ.Core.Generator
                     inboundnatrule.name = inboundnatrule.name.Replace(" ", String.Empty);  // future enhancement, move to target name
                     inboundnatrule.properties = inboundnatrule_properties;
 
-                    inboundnatrules.Add(inboundnatrule);
+                    properties.inboundNatRules.Add(inboundnatrule);
                 }
                 else // if it's a load balancing rule
                 {
                     string name = asmLoadBalancerRule.LoadBalancedEndpointSetName.Replace(" ", String.Empty);
-
 
                     // build probe
                     Probe_Properties probe_properties = new Probe_Properties();
@@ -315,7 +325,7 @@ namespace MIGAZ.Core.Generator
                     probe.name = name;
                     probe.properties = probe_properties;
 
-                    probes.Add(probe);
+                    properties.probes.Add(probe);
 
                     // build load balancing rule
                     Reference frontendipconfiguration_ref = new Reference();
@@ -339,20 +349,14 @@ namespace MIGAZ.Core.Generator
                     loadbalancingrule.name = name;
                     loadbalancingrule.properties = loadbalancingrule_properties;
 
-                    loadbalancingrules.Add(loadbalancingrule);
+                    properties.loadBalancingRules.Add(loadbalancingrule);
 
                     _logProvider.WriteLog("BuildLoadBalancerRules", ArmConst.ProviderLoadBalancers + loadbalancer.name + "/loadBalancingRules/" + loadbalancingrule.name);
                 }
             }
 
-
-            loadbalancer_properties.inboundNatRules = inboundnatrules;
-            loadbalancer_properties.loadBalancingRules = loadbalancingrules;
-            loadbalancer_properties.probes = probes;
-            loadbalancer.properties = loadbalancer_properties;
-
             // Add the load balancer only if there is any Load Balancing rule or Inbound NAT rule
-            if (inboundnatrules.Count > 0 || loadbalancingrules.Count > 0)
+            if (properties.inboundNatRules.Count > 0 || properties.loadBalancingRules.Count > 0)
             {
                 templateResult.AddResource(loadbalancer);
             }

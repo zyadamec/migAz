@@ -232,5 +232,16 @@ namespace MIGAZ.Core.Generator
                 _logProvider.WriteLog("TemplateResult.AddResource", resource.type + resource.name + " already exists.");
 
         }
+
+        internal object GetResource(Type type, string objectName)
+        {
+            foreach (ArmResource armResource in this.Resources)
+            {
+                if (armResource.GetType() == type && armResource.name == objectName)
+                    return armResource;
+            }
+
+            return null;
+        }
     }
 }
