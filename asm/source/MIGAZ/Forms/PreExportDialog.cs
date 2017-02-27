@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace MIGAZ.Forms
+namespace MigAz.Forms
 {
     public partial class PreExportDialog : Form
     {

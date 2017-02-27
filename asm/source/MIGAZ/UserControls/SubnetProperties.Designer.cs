@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.UserControls
+﻿namespace MigAz.UserControls
 {
     partial class SubnetProperties
     {

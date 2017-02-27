@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.Forms
+﻿namespace MigAz.Forms
 {
     partial class PreExportDialog
     {

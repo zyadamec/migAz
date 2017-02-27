@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace MIGAZ.Providers
+namespace MigAz.Providers
 {
     class FileLogProvider : ILogProvider
     {
@@ -17,10 +17,10 @@ namespace MIGAZ.Providers
         {
             lock (lockObject)
             {
-                string logfiledir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MIGAZ";
+                string logfiledir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
                 if (!Directory.Exists(logfiledir)) { Directory.CreateDirectory(logfiledir); }
 
-                string logfilepath = logfiledir + "\\MIGAZ-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
+                string logfilepath = logfiledir + "\\MigAz-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
                 string text = DateTime.Now.ToString() + "   " + function + "  " + message + Environment.NewLine;
                 File.AppendAllText(logfilepath, text);
             }

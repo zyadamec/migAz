@@ -2,7 +2,7 @@
 using MigAz.Azure.Interface;
 using System;
 
-namespace MIGAZ.Tests.Fakes
+namespace MigAz.Tests.Fakes
 {
     class FakeAzureSubscription : ISubscription
     {

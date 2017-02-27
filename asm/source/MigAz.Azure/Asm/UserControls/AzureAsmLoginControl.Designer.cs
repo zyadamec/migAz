@@ -1,6 +1,6 @@
-﻿namespace MIGAZ.UserControls
+﻿namespace MigAz.Azure.Asm.UserControls
 {
-    partial class AzureLoginControl
+    partial class AzureAsmLoginControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -118,7 +118,7 @@
             this.label1.TabIndex = 57;
             this.label1.Text = "Azure Environment:";
             // 
-            // AzureLoginControl
+            // AzureAsmLoginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -129,7 +129,7 @@
             this.Controls.Add(this.btnAuthenticate);
             this.Controls.Add(this.cboAzureEnvironment);
             this.Controls.Add(this.label1);
-            this.Name = "AzureLoginControl";
+            this.Name = "AzureAsmLoginControl";
             this.Size = new System.Drawing.Size(1171, 238);
             this.ResumeLayout(false);
             this.PerformLayout();

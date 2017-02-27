@@ -17,7 +17,7 @@ using System.Windows.Forms;
 using System.Xml;
 using MigAz.Azure.Generator.AsmToArm;
 
-namespace MIGAZ.Forms
+namespace MigAz.Forms
 {
     public partial class ExportResultsDialog : Form
     {

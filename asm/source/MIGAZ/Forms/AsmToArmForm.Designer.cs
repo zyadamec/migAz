@@ -1,4 +1,4 @@
-﻿namespace MIGAZ
+﻿namespace MigAz
 {
     partial class AsmToArmForm
     {

@@ -13,7 +13,7 @@ using System.Net;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 
-namespace MIGAZ.UserControls
+namespace MigAz.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {

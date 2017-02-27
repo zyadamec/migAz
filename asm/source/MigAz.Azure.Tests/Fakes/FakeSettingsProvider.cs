@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Tests.Fakes
+namespace MigAz.Tests.Fakes
 {
     class FakeSettingsProvider : ISettingsProvider
     {

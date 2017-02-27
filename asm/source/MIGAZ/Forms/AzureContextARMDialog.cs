@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MIGAZ.Forms
+namespace MigAz.Forms
 {
     public partial class AzureContextARMDialog : Form
     {

@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.Forms
+﻿namespace MigAz.Forms
 {
     partial class AzureContextASMDialog
     {
@@ -30,7 +30,7 @@
         {
             this.label4 = new System.Windows.Forms.Label();
             this.btnCloseDialog = new System.Windows.Forms.Button();
-            this.azureLoginControl1 = new MIGAZ.UserControls.AzureLoginControl();
+            this.azureAsmLoginControl1 = new MigAz.Azure.Asm.UserControls.AzureAsmLoginControl();
             this.SuspendLayout();
             // 
             // label4
@@ -54,19 +54,19 @@
             this.btnCloseDialog.UseVisualStyleBackColor = true;
             this.btnCloseDialog.Click += new System.EventHandler(this.btnCloseDialog_Click);
             // 
-            // azureLoginControl1
+            // azureAsmLoginControl1
             // 
-            this.azureLoginControl1.Location = new System.Drawing.Point(29, 72);
-            this.azureLoginControl1.Name = "azureLoginControl1";
-            this.azureLoginControl1.Size = new System.Drawing.Size(1171, 238);
-            this.azureLoginControl1.TabIndex = 0;
+            this.azureAsmLoginControl1.Location = new System.Drawing.Point(29, 72);
+            this.azureAsmLoginControl1.Name = "azureAsmLoginControl1";
+            this.azureAsmLoginControl1.Size = new System.Drawing.Size(1171, 238);
+            this.azureAsmLoginControl1.TabIndex = 0;
             // 
             // AzureContextASMDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1212, 417);
-            this.Controls.Add(this.azureLoginControl1);
+            this.Controls.Add(this.azureAsmLoginControl1);
             this.Controls.Add(this.btnCloseDialog);
             this.Controls.Add(this.label4);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -83,6 +83,6 @@
         #endregion
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnCloseDialog;
-        private UserControls.AzureLoginControl azureLoginControl1;
+        private MigAz.Azure.Asm.UserControls.AzureAsmLoginControl azureAsmLoginControl1;
     }
 }

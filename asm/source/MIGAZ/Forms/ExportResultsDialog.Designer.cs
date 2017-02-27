@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.Forms
+﻿namespace MigAz.Forms
 {
     partial class ExportResultsDialog
     {
@@ -89,7 +89,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::MIGAZ.Properties.Resources.Resource_group;
+            this.pictureBox1.Image = global::MigAz.Properties.Resources.Resource_group;
             this.pictureBox1.Location = new System.Drawing.Point(23, 19);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";

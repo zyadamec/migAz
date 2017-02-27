@@ -1,8 +1,8 @@
-﻿using MIGAZ;
+﻿using MigAz;
 using System;
 using System.Windows.Forms;
 
-namespace MIGAZ.Forms
+namespace MigAz.Forms
 {
     public partial class formOptions : Form
     {

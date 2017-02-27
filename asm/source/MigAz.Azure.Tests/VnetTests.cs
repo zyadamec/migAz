@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MIGAZ.Tests.Fakes;
+using MigAz.Tests.Fakes;
 using MigAz.Azure.Generator.AsmToArm;
 using System.IO;
 using MigAz.Azure.Models;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MigAz.Azure;
 
-namespace MIGAZ.Tests
+namespace MigAz.Tests
 {
     /// <summary>
     /// Summary description for VnetTests

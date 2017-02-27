@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MIGAZ.Forms
+namespace MigAz.Forms
 {
     public partial class AzureContextASMDialog : Form
     {
@@ -23,7 +23,7 @@ namespace MIGAZ.Forms
         public async Task InitializeDialog(AsmToArmForm parentForm)
         {
             _ParentForm = parentForm;
-            await this.azureLoginControl1.BindContext(parentForm.AzureContextSourceASM);
+            await this.azureAsmLoginControl1.BindContext(parentForm.AzureContextSourceASM);
             parentForm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 
@@ -38,39 +38,3 @@ namespace MIGAZ.Forms
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        private void AzureLoginControl_EnabledChanged(object sender, EventArgs e)
-//        {
-//            cboAzureEnvironment.Enabled = this.Enabled;
-//            btnAuthenticate.Enabled = this.Enabled;
-//            cmbSubscriptions.Enabled = this.Enabled && cmbSubscriptions.Items.Count > 0;
-//        }
-//    }
-//}

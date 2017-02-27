@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.UserControls
+﻿namespace MigAz.UserControls
 {
     partial class VirtualMachineProperties
     {
@@ -47,7 +47,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.diskProperties1 = new MIGAZ.UserControls.DiskProperties();
+            this.diskProperties1 = new MigAz.UserControls.DiskProperties();
             this.label12 = new System.Windows.Forms.Label();
             this.lblASMVMName = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();

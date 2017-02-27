@@ -1,5 +1,5 @@
 ﻿using MigAz.Azure;
-using MIGAZ.Tests.Fakes;
+using MigAz.Tests.Fakes;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using MigAz.Azure.Models;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Generator.AsmToArm;
 
-namespace MIGAZ.Tests
+namespace MigAz.Tests
 {
     static class TestHelper
     {

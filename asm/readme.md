@@ -1,4 +1,4 @@
-# Classic IaaS to Azure Resource Manager IaaS migration using migAz ASM
+﻿# Classic IaaS to Azure Resource Manager IaaS migration using migAz ASM
 
 This article will show you how to use migAz to migrate or clone classic IaaS solutions to Azure Resource Manager IaaS.
 
@@ -81,7 +81,7 @@ Download the latest zip file from release folder
 
 ### Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
-2. .Net Framework 4.0 or higher
+2. .Net Framework 4.6.2 or higher
 3. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
 4. Login credentials at source Azure subscription
 5. Login credentials at destination Azure subscription
@@ -204,6 +204,7 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 ## Release Notes
 ### v1.5.0.0
+- Upgrade projects to .NET Framework 4.6.2, per [End of Support for Framework 4.5.x](https://blogs.msdn.microsoft.com/dotnet/2015/12/09/support-ending-for-the-net-framework-4-4-5-and-4-5-1/)
 - Updated project package reference and code for Microsoft.IdentityModel.Clients.ActiveDirectory from 2.20.0.0 to 3.13.8.0
 - Moved selection of Azure Environment out from Option Dialog, enabling streamlined selection prior to login as well as ongoing awareness of selected Azure Environment during Asm To Arm process
 - Auto selects (binds to) Azure Subscription if the authenticated Azure ASM Account only has access to a single subscription

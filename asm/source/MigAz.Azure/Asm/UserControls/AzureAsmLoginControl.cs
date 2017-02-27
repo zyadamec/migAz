@@ -10,13 +10,13 @@ using System.Windows.Forms;
 using MigAz.Azure;
 using MigAz.Azure;
 
-namespace MIGAZ.UserControls
+namespace MigAz.Azure.Asm.UserControls
 {
-    public partial class AzureLoginControl : UserControl
+    public partial class AzureAsmLoginControl : UserControl
     {
         private AzureContext _AzureContext;
 
-        public AzureLoginControl()
+        public AzureAsmLoginControl()
         {
             InitializeComponent();
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MigAz.Azure.Generator.AsmToArm;
-using MIGAZ.Tests.Fakes;
+using MigAz.Tests.Fakes;
 using System.IO;
 using MigAz.Azure.Models;
 using System.Xml;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MigAz.Azure;
 
-namespace MIGAZ.Tests
+namespace MigAz.Tests
 {
     [TestClass]
     public class StorageTests

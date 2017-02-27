@@ -5,18 +5,18 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MIGAZ.Providers;
-using MIGAZ.Forms;
+using MigAz.Providers;
+using MigAz.Forms;
 using System.Threading.Tasks;
 using System.Linq;
-using MIGAZ.UserControls;
+using MigAz.UserControls;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
-using MIGAZ.Interface;
+using MigAz.Interface;
 using MigAz.Azure;
 
-namespace MIGAZ
+namespace MigAz
 {
     public partial class AsmToArmForm : Form
     {

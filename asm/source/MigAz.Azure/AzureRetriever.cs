@@ -77,7 +77,7 @@ namespace MigAz.Azure
         {
             lock (_lockObject)
             {
-                string logfilepath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MIGAZ\\MIGAZ-XML-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
+                string logfilepath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz\\MigAz-XML-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
                 string text = DateTime.Now.ToString() + "   " + url + Environment.NewLine;
                 File.AppendAllText(logfilepath, text);
                 text = xml + Environment.NewLine;

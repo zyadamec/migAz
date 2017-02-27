@@ -8,7 +8,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Azure;
 
-namespace MIGAZ.Tests.Fakes
+namespace MigAz.Tests.Fakes
 {
     class FakeTokenProvider : ITokenProvider
     {

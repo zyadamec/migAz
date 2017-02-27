@@ -9,10 +9,10 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
-using MIGAZ.Interface;
+using MigAz.Interface;
 using MigAz.Azure;
 
-namespace MIGAZ.Providers
+namespace MigAz.Providers
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {
@@ -21,10 +21,10 @@ namespace MIGAZ.Providers
 
         public UISaveSelectionProvider()
         {
-            string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MIGAZ";
+            string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
             if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }
 
-            filePath = filedir + "\\MIGAZ-SaveSelection.json";
+            filePath = filedir + "\\MigAz-SaveSelection.json";
         }
 
         public async Task Save(Guid subscriptionId, List<TreeNode> selectedNodes)

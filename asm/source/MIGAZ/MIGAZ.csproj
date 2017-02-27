@@ -7,9 +7,9 @@
     <ProjectGuid>{90C588A6-C9CE-41BD-81EB-703A63AEF46C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MIGAZ</RootNamespace>
-    <AssemblyName>migAz</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>MigAz</RootNamespace>
+    <AssemblyName>MigAz</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -28,6 +28,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -145,12 +146,6 @@
     <Compile Include="UserControls\AvailabilitySetProperties.Designer.cs">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AzureLoginControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AzureLoginControl.Designer.cs">
-      <DependentUpon>AzureLoginControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\DiskProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -223,9 +218,6 @@
     </Compile>
     <EmbeddedResource Include="UserControls\AvailabilitySetProperties.resx">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AzureLoginControl.resx">
-      <DependentUpon>AzureLoginControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>

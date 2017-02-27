@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MIGAZ.Tests.Fakes;
+using MigAz.Tests.Fakes;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Linq;
@@ -10,7 +10,7 @@ using MigAz.Azure.Models;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure;
 
-namespace MIGAZ.Tests
+namespace MigAz.Tests
 {
     [TestClass]
     public class VirtualMachineTests
