@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MIGAZ {
+namespace MigAz {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -100,19 +100,7 @@ namespace MIGAZ {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ExecutionId {
-            get {
-                return ((string)(this["ExecutionId"]));
-            }
-            set {
-                this["ExecutionId"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Azure Cloud")]
+        [global::System.Configuration.DefaultSettingValueAttribute("AzureCloud")]
         public string AzureEnvironment {
             get {
                 return ((string)(this["AzureEnvironment"]));
@@ -143,6 +131,126 @@ namespace MIGAZ {
             }
             set {
                 this["SaveSelection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("v2")]
+        public string StorageAccountSuffix {
+            get {
+                return ((string)(this["StorageAccountSuffix"]));
+            }
+            set {
+                this["StorageAccountSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AvailabilitySetSuffix {
+            get {
+                return ((string)(this["AvailabilitySetSuffix"]));
+            }
+            set {
+                this["AvailabilitySetSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string VirtualMachineSuffix {
+            get {
+                return ((string)(this["VirtualMachineSuffix"]));
+            }
+            set {
+                this["VirtualMachineSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NetworkInterfaceCardSuffix {
+            get {
+                return ((string)(this["NetworkInterfaceCardSuffix"]));
+            }
+            set {
+                this["NetworkInterfaceCardSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ResourceGroupSuffix {
+            get {
+                return ((string)(this["ResourceGroupSuffix"]));
+            }
+            set {
+                this["ResourceGroupSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string VirtualNetworkSuffix {
+            get {
+                return ((string)(this["VirtualNetworkSuffix"]));
+            }
+            set {
+                this["VirtualNetworkSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string VirtualNetworkGatewaySuffix {
+            get {
+                return ((string)(this["VirtualNetworkGatewaySuffix"]));
+            }
+            set {
+                this["VirtualNetworkGatewaySuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NetworkSecurityGroupSuffix {
+            get {
+                return ((string)(this["NetworkSecurityGroupSuffix"]));
+            }
+            set {
+                this["NetworkSecurityGroupSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PublicIPSuffix {
+            get {
+                return ((string)(this["PublicIPSuffix"]));
+            }
+            set {
+                this["PublicIPSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LoadBalancerSuffix {
+            get {
+                return ((string)(this["LoadBalancerSuffix"]));
+            }
+            set {
+                this["LoadBalancerSuffix"] = value;
             }
         }
     }

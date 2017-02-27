@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MIGAZ
+namespace MigAz
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace MIGAZ
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Window());
+            Application.Run(new AsmToArmForm());
         }
     }
 }
