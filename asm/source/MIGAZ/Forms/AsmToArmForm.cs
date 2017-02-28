@@ -5,18 +5,18 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MigAz.Providers;
-using MigAz.Forms;
+using MigAzASM.Providers;
+using MigAzASM.Forms;
 using System.Threading.Tasks;
 using System.Linq;
-using MigAz.UserControls;
+using MigAzASM.UserControls;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
-using MigAz.Interface;
 using MigAz.Azure;
+using MigAzASM.Interface;
 
-namespace MigAz
+namespace MigAzASM
 {
     public partial class AsmToArmForm : Form
     {
@@ -47,6 +47,7 @@ namespace MigAz
             _appSettingsProvider = new AppSettingsProvider();
 
             _AzureContextSourceASM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            azureLoginContextViewer1.Bind(_AzureContextSourceASM);
             _AzureContextSourceASM.AzureEnvironmentChanged += _AzureContextSourceASM_AzureEnvironmentChanged;
             _AzureContextSourceASM.UserAuthenticated += _AzureContextSourceASM_UserAuthenticated;
             _AzureContextSourceASM.BeforeAzureSubscriptionChange += _AzureContextSourceASM_BeforeAzureSubscriptionChange;
@@ -55,11 +56,7 @@ namespace MigAz
             _AzureContextSourceASM.AfterUserSignOut += _AzureContextSourceASM_AfterUserSignOut;
 
             _AzureContextTargetARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
-            _AzureContextTargetARM.AzureEnvironmentChanged += _AzureContextTargetARM_AzureEnvironmentChanged;
-            _AzureContextTargetARM.UserAuthenticated += _AzureContextTargetARM_UserAuthenticated;
-            _AzureContextTargetARM.AfterAzureSubscriptionChange += _AzureContextTargetARM_AfterAzureSubscriptionChange;
-            _AzureContextTargetARM.AfterUserSignOut += _AzureContextTargetARM_AfterUserSignOut;
-
+            azureLoginContextViewer2.Bind(_AzureContextTargetARM);
             _TargetResourceGroup = new ArmResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
         }
 
@@ -71,61 +68,23 @@ namespace MigAz
             await _AzureContextTargetARM.SetSubscriptionContext(null);
         }
 
-        private async Task _AzureContextTargetARM_AfterUserSignOut()
-        {
-            lblTargetUser.Text = "-";
-            lblTargetSubscriptionName.Text = "-";
-            lblTargetSubscriptionId.Text = "-";
-        }
 
-        private async Task _AzureContextTargetARM_AzureEnvironmentChanged(AzureContext sender)
-        {
-            lblTargetEnvironment.Text = sender.AzureEnvironment.ToString();
-        }
+
 
         private async Task _AzureContextSourceASM_AzureEnvironmentChanged(AzureContext sender)
         {
             app.Default.AzureEnvironment = sender.AzureEnvironment.ToString();
             app.Default.Save();
 
-            lblSourceEnvironment.Text = sender.AzureEnvironment.ToString();
-
             if (_AzureContextTargetARM.TokenProvider == null)
                 _AzureContextTargetARM.AzureEnvironment = sender.AzureEnvironment;
         }
 
-        private async Task _AzureContextTargetARM_UserAuthenticated(UserInfo userAuthenticated)
-        {
-            lblTargetEnvironment.Text = _AzureContextTargetARM.AzureEnvironment.ToString();
-            lblTargetUser.Text = userAuthenticated.DisplayableId;
-        }
-
-        private async Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
-        {
-            if (sender.AzureSubscription == null)
-            {
-                lblTargetSubscriptionName.Text = "-";
-                lblTargetSubscriptionId.Text = "-";
-            }
-            else
-            {
-                if (sender.TokenProvider == null)
-                {
-                    lblTargetUser.Text = _AzureContextSourceASM.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
-                }
-
-                lblTargetSubscriptionName.Text = sender.AzureSubscription.Name;
-                lblTargetSubscriptionId.Text = sender.AzureSubscription.SubscriptionId.ToString();
-            }
-        }
 
         private async Task _AzureContextSourceASM_UserAuthenticated(UserInfo userAuthenticated)
         {
-            lblSourceUser.Text = userAuthenticated.DisplayableId;
-
             if (_AzureContextTargetARM.TokenProvider == null)
             {
-                lblTargetUser.Text = userAuthenticated.DisplayableId;
                 _AzureContextTargetARM.TokenProvider = _AzureContextSourceASM.TokenProvider;
             }
         }
@@ -137,10 +96,6 @@ namespace MigAz
 
         private async Task _AzureContextSourceASM_AfterUserSignOut()
         {
-            lblSourceUser.Text = "-";
-            lblSourceSubscriptionName.Text = "-";
-            lblSourceSubscriptionId.Text = "-";
-
             ResetForm();
         }
 
@@ -150,17 +105,12 @@ namespace MigAz
 
             if (sender.AzureSubscription != null)
             {
-                lblSourceSubscriptionName.Text = sender.AzureSubscription.Name;
-                lblSourceSubscriptionId.Text = sender.AzureSubscription.SubscriptionId.ToString();
-
                 if (_AzureContextTargetARM.AzureSubscription == null)
                 {
-                    lblTargetSubscriptionName.Text = sender.AzureSubscription.Name;
-                    lblTargetSubscriptionId.Text = sender.AzureSubscription.SubscriptionId.ToString();
                     await _AzureContextTargetARM.SetSubscriptionContext(_AzureContextSourceASM.AzureSubscription);
                 }
 
-                btnAzureContextARM.Enabled = true;
+                azureLoginContextViewer2.Enabled = true;
 
                 TreeNode subscriptionNode = new TreeNode(sender.AzureSubscription.Name);
                 treeASM.Nodes.Add(subscriptionNode);
@@ -1170,22 +1120,6 @@ namespace MigAz
         private void groupBox1_Resize(object sender, EventArgs e)
         {
             panel1.Height = groupBox1.Height - 95;
-        }
-
-        private async void btnAzureContextASM_Click(object sender, EventArgs e)
-        {
-            AzureContextASMDialog asmDialog = new AzureContextASMDialog();
-            await asmDialog.InitializeDialog(this);
-            asmDialog.ShowDialog();
-            asmDialog.Dispose();
-        }
-
-        private async void btnAzureContextARM_Click(object sender, EventArgs e)
-        {
-            AzureContextARMDialog armDialog = new AzureContextARMDialog();
-            await armDialog.InitializeDialog(this.AzureContextSourceASM, this.AzureContextTargetARM);
-            armDialog.ShowDialog();
-            armDialog.Dispose();
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Providers
+namespace MigAzASM.Providers
 {
     public class AppSettingsProvider : ISettingsProvider
     {

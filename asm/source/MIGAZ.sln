@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz", "MIGAZ\MigAz.csproj", "{90C588A6-C9CE-41BD-81EB-703A63AEF46C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAzASM", "MIGAZ\MigAzASM.csproj", "{90C588A6-C9CE-41BD-81EB-703A63AEF46C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz.Azure", "MigAz.Azure\MigAz.Azure.csproj", "{A794A00C-299A-4E82-BD35-2213E091B8A8}"
 EndProject

@@ -27,10 +27,13 @@ namespace MigAz.Azure
         private List<AsmReservedIP> _AsmReservedIPs;
 
         // ARM Object Cache (Subscription Context Specific)
+        private List<ArmLocation> _ArmLocations;
+        private List<AzureTenant> _ArmTenants;
+        private List<AzureSubscription> _ArmSubscriptions;
+        private List<ArmResourceGroup> _ArmResourceGroups;
         private List<ArmVirtualNetwork> _ArmVirtualNetworks;
         private List<ArmStorageAccount> _ArmStorageAccounts;
         private List<ArmAvailabilitySet> _ArmAvailabilitySets;
-        private List<ArmLocation> _ArmLocations;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache;
         private Dictionary<string, JObject> _armJsonDocumentCache;
@@ -46,10 +49,13 @@ namespace MigAz.Azure
         {
             _asmXmlDocumentCache = null;
             _armJsonDocumentCache = null;
+            _ArmLocations = null;
+            _ArmTenants = null;
+            _ArmSubscriptions = null;
+            _ArmResourceGroups = null;
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
-            _ArmLocations = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
@@ -620,6 +626,18 @@ namespace MigAz.Azure
             string url = null;
             switch (resourceType)
             {
+                case "Tenants":
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "tenants?api-version=2015-01-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
+                    break;
+                case "Subscriptions":
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions?api-version=2015-01-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
+                    break;
+                case "ResourceGroups":
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourcegroups?api-version=2015-01-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Resource Groups...");
+                    break;
                 case "Locations":
                     // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions#Subscriptions_ListLocations
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.Locations + "?api-version=2016-06-01";
@@ -697,6 +715,63 @@ namespace MigAz.Azure
             }
         }
 
+        public async Task<List<AzureTenant>> GetAzureARMTenants()
+        {
+            JObject tenantsJson = await this.GetAzureARMResources("Tenants", null);
+
+            var tenants = from tenant in tenantsJson["value"]
+                                select tenant;
+
+            if (_ArmTenants == null)
+                _ArmTenants = new List<AzureTenant>();
+
+            foreach (JObject tenantJson in tenants)
+            {
+                AzureTenant azureSubscription = new AzureTenant(tenantJson, _AzureContext.AzureEnvironment);
+                _ArmTenants.Add(azureSubscription);
+            }
+
+            return _ArmTenants;
+        }
+
+        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions()
+        {
+            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", null);
+
+            var subscriptions = from subscription in subscriptionsJson["value"]
+                                select subscription;
+
+            if (_ArmSubscriptions == null)
+                _ArmSubscriptions = new List<AzureSubscription>();
+
+            foreach (JObject azureSubscriptionJson in subscriptions)
+            {
+                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, _AzureContext.AzureEnvironment);
+                _ArmSubscriptions.Add(azureSubscription);
+            }
+
+            return _ArmSubscriptions;
+        }
+
+        public async Task<List<ArmResourceGroup>> GetAzureARMResourceGroups()
+        {
+            JObject resourceGroupsJson = await this.GetAzureARMResources("ResourceGroups", null);
+
+            var resourceGroups = from resourceGroup in resourceGroupsJson["value"]
+                                select resourceGroup;
+
+            if (_ArmResourceGroups == null)
+                _ArmResourceGroups = new List<ArmResourceGroup>();
+
+            foreach (JObject resourceGroupJson in resourceGroups)
+            {
+                ArmResourceGroup azureSubscription = new ArmResourceGroup(resourceGroupJson, _AzureContext.AzureEnvironment);
+                _ArmResourceGroups.Add(azureSubscription);
+            }
+
+            return _ArmResourceGroups;
+        }
+
         public async virtual Task<ArmVirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
         {
             foreach (ArmVirtualNetwork armVirtualNetwork in await GetAzureARMVirtualNetworks())
@@ -749,6 +824,12 @@ namespace MigAz.Azure
 
             return _ArmStorageAccounts;
         }
+
+        public Task<IEnumerable<ArmVirtualMachine>> GetAzureARMVirtualMachines()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async virtual Task<List<ArmLocation>> GetAzureARMLocations()
         {

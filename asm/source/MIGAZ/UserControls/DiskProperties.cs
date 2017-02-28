@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 
-namespace MigAz.UserControls
+namespace MigAzASM.UserControls
 {
     public partial class DiskProperties : UserControl
     {

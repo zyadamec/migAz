@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace MigAz.Forms
+namespace MigAzASM.Forms
 {
     public partial class formOptions : Form
     {

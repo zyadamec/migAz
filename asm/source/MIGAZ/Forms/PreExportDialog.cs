@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Asm;
+using MigAz.Azure.Generator;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
 using System;
@@ -7,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace MigAz.Forms
+namespace MigAzASM.Forms
 {
     public partial class PreExportDialog : Form
     {

@@ -57,11 +57,31 @@
   <ItemGroup>
     <Compile Include="Arm\ArmAvailabilitySet.cs" />
     <Compile Include="Arm\ArmLocation.cs" />
+    <Compile Include="Arm\ArmNetworkSecurityGroup.cs" />
     <Compile Include="Arm\ArmResourceGroup.cs" />
     <Compile Include="Arm\ArmStorageAccount.cs" />
     <Compile Include="Arm\ArmStorageAccountKey.cs" />
     <Compile Include="Arm\ArmSubnet.cs" />
+    <Compile Include="Arm\ArmVirtualMachine.cs" />
     <Compile Include="Arm\ArmVirtualNetwork.cs" />
+    <Compile Include="Arm\Forms\AzureLoginContextDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Arm\Forms\AzureLoginContextDialog.Designer.cs">
+      <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureArmLoginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureArmLoginControl.Designer.cs">
+      <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureLoginContextViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureLoginContextViewer.Designer.cs">
+      <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Asm\AsmAffinityGroup.cs" />
     <Compile Include="Asm\AsmClientRootCertificate.cs" />
     <Compile Include="Asm\AsmCloudService.cs" />
@@ -83,19 +103,16 @@
     <Compile Include="Asm\AsmVirtualNetwork.cs" />
     <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
     <Compile Include="Arm\ArmConst.cs" />
-    <Compile Include="Asm\UserControls\AzureAsmLoginControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Asm\UserControls\AzureAsmLoginControl.Designer.cs">
-      <DependentUpon>AzureAsmLoginControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="AzureContext.cs" />
+    <Compile Include="AzureDomain.cs" />
     <Compile Include="AzureRetriever.cs" />
     <Compile Include="AzureServiceUrls.cs" />
     <Compile Include="AzureSubscription.cs" />
+    <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
+    <Compile Include="Generator\ArmToArm\TemplateGenerator.cs" />
     <Compile Include="Generator\AsmToArm\TemplateGenerator.cs" />
-    <Compile Include="Generator\AsmToArm\TemplateResult.cs" />
+    <Compile Include="Generator\TemplateResult.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
@@ -118,10 +135,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Asm\UserControls\AzureAsmLoginControl.resx">
-      <DependentUpon>AzureAsmLoginControl.cs</DependentUpon>
+    <EmbeddedResource Include="Arm\Forms\AzureLoginContextDialog.resx">
+      <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arm\UserControls\AzureArmLoginControl.resx">
+      <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arm\UserControls\AzureLoginContextViewer.resx">
+      <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Generator\ArmToArm\DeployDocTemplate.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

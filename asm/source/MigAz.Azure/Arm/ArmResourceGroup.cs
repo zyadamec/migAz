@@ -1,5 +1,6 @@
 ﻿using MigAz.Azure;
 using MigAz.Azure.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace MigAz.Azure.Arm
@@ -9,6 +10,15 @@ namespace MigAz.Azure.Arm
         private String _Name = String.Empty;
         private ILocation _Location;
         private AzureContext _AzureContext;
+
+        private JObject _ResourceGroupJson;
+        private AzureEnvironment _AzureEnvironment;
+
+        internal ArmResourceGroup(JObject resourceGroupJson, AzureEnvironment azureEnvironment)
+        {
+            _ResourceGroupJson = resourceGroupJson;
+            _AzureEnvironment = azureEnvironment;
+        }
 
         private ArmResourceGroup() { }
 

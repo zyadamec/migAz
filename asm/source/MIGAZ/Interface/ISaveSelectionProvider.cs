@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Interface
+namespace MigAzASM.Interface
 {
     public interface ISaveSelectionProvider
     {

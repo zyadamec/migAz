@@ -9,22 +9,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Forms
+namespace MigAz.Azure.Arm.Forms
 {
-    public partial class AzureContextASMDialog : Form
+    public partial class AzureLoginContextDialog : Form
     {
-        private AsmToArmForm _ParentForm;
-
-        public AzureContextASMDialog()
+        public AzureLoginContextDialog()
         {
             InitializeComponent();
         }
 
-        public async Task InitializeDialog(AsmToArmForm parentForm)
+        public async Task InitializeDialog(AzureContext azureContext)
         {
-            _ParentForm = parentForm;
-            await this.azureAsmLoginControl1.BindContext(parentForm.AzureContextSourceASM);
-            parentForm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            await this.azureArmLoginControl1.BindContext(azureContext);
+            azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)

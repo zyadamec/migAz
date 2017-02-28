@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Xml;
 
@@ -7,6 +8,7 @@ namespace MigAz.Azure
     public class AzureSubscription : ISubscription
     {
         private XmlNode _XmlNode;
+        private JObject _SubscriptionJson;
         private AzureEnvironment _AzureEnvironment;
 
         private AzureSubscription() { }
@@ -14,6 +16,12 @@ namespace MigAz.Azure
         internal AzureSubscription(XmlNode xmlNode, AzureEnvironment azureEnvironment)
         {
             _XmlNode = xmlNode;
+            _AzureEnvironment = azureEnvironment;
+        }
+
+        internal AzureSubscription(JObject subscriptionJson, AzureEnvironment azureEnvironment)
+        {
+            _SubscriptionJson = subscriptionJson;
             _AzureEnvironment = azureEnvironment;
         }
 

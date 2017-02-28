@@ -11,7 +11,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
 
-namespace MigAz.UserControls
+namespace MigAzASM.UserControls
 {
     public partial class VirtualMachineProperties : UserControl
     {

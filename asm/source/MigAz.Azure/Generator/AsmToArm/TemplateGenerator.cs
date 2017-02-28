@@ -138,7 +138,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             if (_settingsProvider.AllowTelemetry)
             {
                 _statusProvider.UpdateStatus("BUSY: saving telemetry information");
-                _telemetryProvider.PostTelemetryRecord(templateResult);
+                //_telemetryProvider.PostTelemetryRecord(templateResult);// TODO
             }
 
             _statusProvider.UpdateStatus("Ready");

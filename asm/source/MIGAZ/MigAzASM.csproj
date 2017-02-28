@@ -7,8 +7,8 @@
     <ProjectGuid>{90C588A6-C9CE-41BD-81EB-703A63AEF46C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MigAz</RootNamespace>
-    <AssemblyName>MigAz</AssemblyName>
+    <RootNamespace>MigAzASM</RootNamespace>
+    <AssemblyName>MigAzASM</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -108,12 +108,6 @@
     <Compile Include="Forms\AzureContextARMDialog.Designer.cs">
       <DependentUpon>AzureContextARMDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\AzureContextASMDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AzureContextASMDialog.Designer.cs">
-      <DependentUpon>AzureContextASMDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ExportResultsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -193,9 +187,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AzureContextARMDialog.resx">
       <DependentUpon>AzureContextARMDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AzureContextASMDialog.resx">
-      <DependentUpon>AzureContextASMDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportResultsDialog.resx">
       <DependentUpon>ExportResultsDialog.cs</DependentUpon>

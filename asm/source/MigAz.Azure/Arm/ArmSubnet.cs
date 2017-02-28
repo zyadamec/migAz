@@ -46,6 +46,14 @@ namespace MigAz.Azure.Arm
             get { return _Parent; }
         }
 
+        public ArmNetworkSecurityGroup NetworkSecurityGroup
+        {
+            get
+            {
+                return null; // TODO
+            }
+        }
+
         public override string ToString()
         {
             return this.Name;

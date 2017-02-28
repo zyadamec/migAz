@@ -1,4 +1,4 @@
-﻿namespace MigAz.Forms
+﻿namespace MigAzASM.Forms
 {
     partial class AzureContextARMDialog
     {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
 
-namespace MigAz.UserControls
+namespace MigAzASM.UserControls
 {
     public partial class NetworkSecurityGroupProperties : UserControl
     {

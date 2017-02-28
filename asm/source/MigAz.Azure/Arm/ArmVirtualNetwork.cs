@@ -39,6 +39,11 @@ namespace MigAz.Azure.Arm
             get { return (string)_VirtualNetwork["id"]; }
         }
 
+        public string Location
+        {
+            get { return "TODO"; }
+        }
+
         public string TargetId
         {
             get { return this.Id; }

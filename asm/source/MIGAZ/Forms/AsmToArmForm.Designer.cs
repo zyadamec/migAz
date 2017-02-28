@@ -1,4 +1,4 @@
-﻿namespace MigAz
+﻿namespace MigAzASM
 {
     partial class AsmToArmForm
     {
@@ -42,33 +42,13 @@
             this.btnExport = new System.Windows.Forms.Button();
             this.treeASM = new System.Windows.Forms.TreeView();
             this.treeARM = new System.Windows.Forms.TreeView();
-            this.groupASMSubscription = new System.Windows.Forms.GroupBox();
-            this.lblSourceSubscriptionId = new System.Windows.Forms.Label();
-            this.lblSourceSubscriptionName = new System.Windows.Forms.Label();
-            this.lblSourceUser = new System.Windows.Forms.Label();
-            this.lblSourceEnvironment = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.btnAzureContextASM = new System.Windows.Forms.Button();
-            this.groupARMSubscription = new System.Windows.Forms.GroupBox();
-            this.lblTargetSubscriptionId = new System.Windows.Forms.Label();
-            this.lblTargetSubscriptionName = new System.Windows.Forms.Label();
-            this.lblTargetUser = new System.Windows.Forms.Label();
-            this.lblTargetEnvironment = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.btnAzureContextARM = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.azureLoginContextViewer1 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewer2 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupASMSubscription.SuspendLayout();
-            this.groupARMSubscription.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -195,207 +175,6 @@
             this.treeARM.TabIndex = 3;
             this.treeARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeARM_AfterSelect);
             // 
-            // groupASMSubscription
-            // 
-            this.groupASMSubscription.Controls.Add(this.lblSourceSubscriptionId);
-            this.groupASMSubscription.Controls.Add(this.lblSourceSubscriptionName);
-            this.groupASMSubscription.Controls.Add(this.lblSourceUser);
-            this.groupASMSubscription.Controls.Add(this.lblSourceEnvironment);
-            this.groupASMSubscription.Controls.Add(this.label4);
-            this.groupASMSubscription.Controls.Add(this.label3);
-            this.groupASMSubscription.Controls.Add(this.label2);
-            this.groupASMSubscription.Controls.Add(this.label1);
-            this.groupASMSubscription.Controls.Add(this.btnAzureContextASM);
-            this.groupASMSubscription.Location = new System.Drawing.Point(20, 25);
-            this.groupASMSubscription.Name = "groupASMSubscription";
-            this.groupASMSubscription.Size = new System.Drawing.Size(883, 158);
-            this.groupASMSubscription.TabIndex = 0;
-            this.groupASMSubscription.TabStop = false;
-            this.groupASMSubscription.Text = "Source (ASM) Subscription";
-            // 
-            // lblSourceSubscriptionId
-            // 
-            this.lblSourceSubscriptionId.AutoSize = true;
-            this.lblSourceSubscriptionId.Location = new System.Drawing.Point(224, 117);
-            this.lblSourceSubscriptionId.Name = "lblSourceSubscriptionId";
-            this.lblSourceSubscriptionId.Size = new System.Drawing.Size(19, 25);
-            this.lblSourceSubscriptionId.TabIndex = 8;
-            this.lblSourceSubscriptionId.Text = "-";
-            // 
-            // lblSourceSubscriptionName
-            // 
-            this.lblSourceSubscriptionName.AutoSize = true;
-            this.lblSourceSubscriptionName.Location = new System.Drawing.Point(224, 90);
-            this.lblSourceSubscriptionName.Name = "lblSourceSubscriptionName";
-            this.lblSourceSubscriptionName.Size = new System.Drawing.Size(19, 25);
-            this.lblSourceSubscriptionName.TabIndex = 7;
-            this.lblSourceSubscriptionName.Text = "-";
-            // 
-            // lblSourceUser
-            // 
-            this.lblSourceUser.AutoSize = true;
-            this.lblSourceUser.Location = new System.Drawing.Point(224, 65);
-            this.lblSourceUser.Name = "lblSourceUser";
-            this.lblSourceUser.Size = new System.Drawing.Size(19, 25);
-            this.lblSourceUser.TabIndex = 6;
-            this.lblSourceUser.Text = "-";
-            // 
-            // lblSourceEnvironment
-            // 
-            this.lblSourceEnvironment.AutoSize = true;
-            this.lblSourceEnvironment.Location = new System.Drawing.Point(224, 38);
-            this.lblSourceEnvironment.Name = "lblSourceEnvironment";
-            this.lblSourceEnvironment.Size = new System.Drawing.Size(19, 25);
-            this.lblSourceEnvironment.TabIndex = 5;
-            this.lblSourceEnvironment.Text = "-";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 120);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(160, 25);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Subscription Id:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 91);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(199, 25);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Subscription Name:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 65);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 25);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "User:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 38);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(138, 25);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Environment:";
-            // 
-            // btnAzureContextASM
-            // 
-            this.btnAzureContextASM.Location = new System.Drawing.Point(736, 23);
-            this.btnAzureContextASM.Name = "btnAzureContextASM";
-            this.btnAzureContextASM.Size = new System.Drawing.Size(141, 40);
-            this.btnAzureContextASM.TabIndex = 0;
-            this.btnAzureContextASM.Text = "Change";
-            this.btnAzureContextASM.UseVisualStyleBackColor = true;
-            this.btnAzureContextASM.Click += new System.EventHandler(this.btnAzureContextASM_Click);
-            // 
-            // groupARMSubscription
-            // 
-            this.groupARMSubscription.Controls.Add(this.lblTargetSubscriptionId);
-            this.groupARMSubscription.Controls.Add(this.lblTargetSubscriptionName);
-            this.groupARMSubscription.Controls.Add(this.lblTargetUser);
-            this.groupARMSubscription.Controls.Add(this.lblTargetEnvironment);
-            this.groupARMSubscription.Controls.Add(this.label9);
-            this.groupARMSubscription.Controls.Add(this.label10);
-            this.groupARMSubscription.Controls.Add(this.label11);
-            this.groupARMSubscription.Controls.Add(this.label12);
-            this.groupARMSubscription.Controls.Add(this.btnAzureContextARM);
-            this.groupARMSubscription.Location = new System.Drawing.Point(943, 25);
-            this.groupARMSubscription.Name = "groupARMSubscription";
-            this.groupARMSubscription.Size = new System.Drawing.Size(883, 158);
-            this.groupARMSubscription.TabIndex = 1;
-            this.groupARMSubscription.TabStop = false;
-            this.groupARMSubscription.Text = "Target (ARM) Subscription";
-            // 
-            // lblTargetSubscriptionId
-            // 
-            this.lblTargetSubscriptionId.AutoSize = true;
-            this.lblTargetSubscriptionId.Location = new System.Drawing.Point(231, 117);
-            this.lblTargetSubscriptionId.Name = "lblTargetSubscriptionId";
-            this.lblTargetSubscriptionId.Size = new System.Drawing.Size(19, 25);
-            this.lblTargetSubscriptionId.TabIndex = 16;
-            this.lblTargetSubscriptionId.Text = "-";
-            // 
-            // lblTargetSubscriptionName
-            // 
-            this.lblTargetSubscriptionName.AutoSize = true;
-            this.lblTargetSubscriptionName.Location = new System.Drawing.Point(231, 90);
-            this.lblTargetSubscriptionName.Name = "lblTargetSubscriptionName";
-            this.lblTargetSubscriptionName.Size = new System.Drawing.Size(19, 25);
-            this.lblTargetSubscriptionName.TabIndex = 15;
-            this.lblTargetSubscriptionName.Text = "-";
-            // 
-            // lblTargetUser
-            // 
-            this.lblTargetUser.AutoSize = true;
-            this.lblTargetUser.Location = new System.Drawing.Point(231, 65);
-            this.lblTargetUser.Name = "lblTargetUser";
-            this.lblTargetUser.Size = new System.Drawing.Size(19, 25);
-            this.lblTargetUser.TabIndex = 14;
-            this.lblTargetUser.Text = "-";
-            // 
-            // lblTargetEnvironment
-            // 
-            this.lblTargetEnvironment.AutoSize = true;
-            this.lblTargetEnvironment.Location = new System.Drawing.Point(231, 38);
-            this.lblTargetEnvironment.Name = "lblTargetEnvironment";
-            this.lblTargetEnvironment.Size = new System.Drawing.Size(19, 25);
-            this.lblTargetEnvironment.TabIndex = 13;
-            this.lblTargetEnvironment.Text = "-";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(29, 120);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(160, 25);
-            this.label9.TabIndex = 12;
-            this.label9.Text = "Subscription Id:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(29, 91);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(199, 25);
-            this.label10.TabIndex = 11;
-            this.label10.Text = "Subscription Name:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(29, 65);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 25);
-            this.label11.TabIndex = 10;
-            this.label11.Text = "User:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(29, 38);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(138, 25);
-            this.label12.TabIndex = 9;
-            this.label12.Text = "Environment:";
-            // 
-            // btnAzureContextARM
-            // 
-            this.btnAzureContextARM.Enabled = false;
-            this.btnAzureContextARM.Location = new System.Drawing.Point(733, 23);
-            this.btnAzureContextARM.Name = "btnAzureContextARM";
-            this.btnAzureContextARM.Size = new System.Drawing.Size(144, 40);
-            this.btnAzureContextARM.TabIndex = 0;
-            this.btnAzureContextARM.Text = "Change";
-            this.btnAzureContextARM.UseVisualStyleBackColor = true;
-            this.btnAzureContextARM.Click += new System.EventHandler(this.btnAzureContextARM_Click);
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -416,22 +195,38 @@
             this.label6.TabIndex = 52;
             this.label6.Text = "Target (ARM) Resources";
             // 
+            // azureLoginContextViewer1
+            // 
+            this.azureLoginContextViewer1.Location = new System.Drawing.Point(20, 12);
+            this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
+            this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 168);
+            this.azureLoginContextViewer1.TabIndex = 53;
+            this.azureLoginContextViewer1.Title = "Azure Subscription";
+            // 
+            // azureLoginContextViewer2
+            // 
+            this.azureLoginContextViewer2.Location = new System.Drawing.Point(1049, 12);
+            this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
+            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 168);
+            this.azureLoginContextViewer2.TabIndex = 54;
+            this.azureLoginContextViewer2.Title = "Azure Subscription";
+            // 
             // AsmToArmForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1974, 929);
+            this.Controls.Add(this.azureLoginContextViewer2);
+            this.Controls.Add(this.azureLoginContextViewer1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.groupASMSubscription);
             this.Controls.Add(this.treeARM);
             this.Controls.Add(this.treeASM);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.groupARMSubscription);
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.MaximumSize = new System.Drawing.Size(2000, 5000);
             this.MinimumSize = new System.Drawing.Size(2000, 1000);
@@ -446,10 +241,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupASMSubscription.ResumeLayout(false);
-            this.groupASMSubscription.PerformLayout();
-            this.groupARMSubscription.ResumeLayout(false);
-            this.groupARMSubscription.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -468,28 +259,10 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TreeView treeASM;
         private System.Windows.Forms.TreeView treeARM;
-        private System.Windows.Forms.GroupBox groupASMSubscription;
-        private System.Windows.Forms.GroupBox groupARMSubscription;
-        private System.Windows.Forms.Button btnAzureContextASM;
-        private System.Windows.Forms.Button btnAzureContextARM;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblSourceSubscriptionId;
-        private System.Windows.Forms.Label lblSourceSubscriptionName;
-        private System.Windows.Forms.Label lblSourceUser;
-        private System.Windows.Forms.Label lblSourceEnvironment;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblTargetSubscriptionId;
-        private System.Windows.Forms.Label lblTargetSubscriptionName;
-        private System.Windows.Forms.Label lblTargetUser;
-        private System.Windows.Forms.Label lblTargetEnvironment;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private MigAz.Azure.Arm.UserControls.AzureLoginContextViewer azureLoginContextViewer1;
+        private MigAz.Azure.Arm.UserControls.AzureLoginContextViewer azureLoginContextViewer2;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using MigAz.Azure.Generator.AsmToArm;
+﻿using MigAz.Azure.Generator;
 using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;

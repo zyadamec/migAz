@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls
+﻿namespace MigAzASM.UserControls
 {
     partial class StorageAccountProperties
     {

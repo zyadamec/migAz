@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace MigAz.Providers
+namespace MigAzASM.Providers
 {
     class FileLogProvider : ILogProvider
     {
