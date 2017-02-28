@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAzARM", "arm\source\MigA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz.Core", "MigAz.Core\MigAz.Core.csproj", "{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAzAWS", "aws\source\MigAzAWS.csproj", "{1961B738-59E7-4047-BC91-D34CAC31A70D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,22 @@ Global
 		{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}.Release|x64.Build.0 = Release|Any CPU
 		{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}.Release|x86.ActiveCfg = Release|Any CPU
 		{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}.Release|x86.Build.0 = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|x64.Build.0 = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Debug|x86.Build.0 = Debug|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|ARM.Build.0 = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|x64.ActiveCfg = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|x64.Build.0 = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|x86.ActiveCfg = Release|Any CPU
+		{1961B738-59E7-4047-BC91-D34CAC31A70D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
