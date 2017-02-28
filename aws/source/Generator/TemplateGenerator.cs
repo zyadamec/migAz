@@ -1,5 +1,5 @@
 ﻿using MIGAZ.Models;
-using MIGAZ.Models.ARM;
+using MigAz.Azure.Arm;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows.Forms;
+using MigAz.Azure.Generator;
 
 namespace MIGAZ.Generator
 {
@@ -17,7 +18,7 @@ namespace MIGAZ.Generator
         private IStatusProvider _statusProvider;
         private ITelemetryProvider _telemetryProvider;
         private ITokenProvider _tokenProvider;
-        private List<Resource> _resources;
+        private List<ArmResource> _resources;
         private Dictionary<string, Parameter> _parameters;
         private List<CopyBlobDetail> _copyBlobDetails;
         private Dictionary<string, string> _processedItems;
@@ -38,8 +39,10 @@ namespace MIGAZ.Generator
         {
             _logProvider.WriteLog("GenerateTemplate", "Start");
 
+            TemplateResult templateResult = null;
+
             app.Default.ExecutionId = Guid.NewGuid().ToString();
-            _resources = new List<Resource>();
+            _resources = new List<ArmResource>();
             _parameters = new Dictionary<string, Parameter>();
 
             _processedItems = new Dictionary<string, string>();
@@ -65,7 +68,7 @@ namespace MIGAZ.Generator
                    var vpc = _awsObjectRetriever.Vpcs.Vpcs.Find(x => x.VpcId == virtualnetworkname.VpcId); // Picking the Subnets selected by the user out of all the available subnets
                     List<Amazon.EC2.Model.DhcpOptions> dhcpOptions = _awsObjectRetriever.getDhcpOptions(vpc.DhcpOptionsId);
                     //_awsRetriever.GetAwsResources("Dhcp Options", virtualnetworksite.SelectSingleNode("dhcpOptionsId").InnerText);
-                    BuildVirtualNetworkObject(vpc, subnets, dhcpOptions,artefacts);
+                    BuildVirtualNetworkObject(templateResult, vpc, subnets, dhcpOptions,artefacts);
                 }
                 Application.DoEvents();
 
@@ -78,7 +81,7 @@ namespace MIGAZ.Generator
             {
                 _logProvider.WriteLog("GenerateTemplate", "Start processing storage accounts");    
 
-                BuildStorageAccountObject(storageAccountName);
+                BuildStorageAccountObject(templateResult, storageAccountName);
 
                 _logProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
             }
@@ -113,20 +116,20 @@ namespace MIGAZ.Generator
                             {
                                 if(LB.Scheme == "internet-facing")
                                 {
-                                    BuildPublicIPAddressObject(LB);
+                                    BuildPublicIPAddressObject(templateResult, LB);
                                 }
 
                                 instanceLBName = LB.LoadBalancerName;
-                                BuildLoadBalancerObject(LB, instance.InstanceId.ToString());
+                                BuildLoadBalancerObject(templateResult, LB, instance.InstanceId.ToString());
                             }
                         }
                     }
 
                     //Process Network Interface
-                    BuildNetworkInterfaceObject(selectedInstances.Instances[0], ref networkinterfaces, LBs);
+                    BuildNetworkInterfaceObject(templateResult, selectedInstances.Instances[0], ref networkinterfaces, LBs);
 
                     //Process EC2 Instance
-                    BuildVirtualMachineObject(selectedInstances.Instances[0], networkinterfaces, storageAccountName, instanceLBName);
+                    BuildVirtualMachineObject(templateResult, selectedInstances.Instances[0], networkinterfaces, storageAccountName, instanceLBName);
                 }
                 Application.DoEvents();
 
@@ -158,7 +161,7 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("GenerateTemplate", "End");
         }
 
-        private void BuildPublicIPAddressObject(ref NetworkInterface networkinterface)
+        private void BuildPublicIPAddressObject(TemplateResult templateResult, ref NetworkInterface networkinterface)
         {
             _logProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
@@ -172,7 +175,7 @@ namespace MIGAZ.Generator
             publicipaddress_properties.dnsSettings = dnssettings;
             publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
 
-            PublicIPAddress publicipaddress = new PublicIPAddress();
+            PublicIPAddress publicipaddress = new PublicIPAddress(templateResult.ExecutionGuid);
             publicipaddress.name = networkinterface.name + "-PIP";
            // publicipaddress.location = "";
             publicipaddress.properties = publicipaddress_properties;
@@ -195,7 +198,7 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildPublicIPAddressObject(dynamic resource)
+        private void BuildPublicIPAddressObject(TemplateResult templateResult, dynamic resource)
         {
             _logProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
@@ -211,7 +214,7 @@ namespace MIGAZ.Generator
             publicipaddress_properties.dnsSettings = dnssettings;
             publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
 
-            PublicIPAddress publicipaddress = new PublicIPAddress();
+            PublicIPAddress publicipaddress = new PublicIPAddress(templateResult.ExecutionGuid);
             publicipaddress.name = publicipaddress_name;
            // publicipaddress.location = "";
             publicipaddress.properties = publicipaddress_properties;
@@ -227,11 +230,11 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildAvailabilitySetObject(dynamic loadbalancer)
+        private void BuildAvailabilitySetObject(TemplateResult templateResult, dynamic loadbalancer)
         {
             _logProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
-            AvailabilitySet availabilityset = new AvailabilitySet();
+            AvailabilitySet availabilityset = new AvailabilitySet(templateResult.ExecutionGuid);
             availabilityset.name = loadbalancer.name + "-AS";
 
             try // it fails if this availability set was already processed. safe to continue.
@@ -245,11 +248,11 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("BuildAvailabilitySetObject", "End");
         }
 
-        private void BuildLoadBalancerObject(dynamic LB,string instance)
+        private void BuildLoadBalancerObject(TemplateResult templateResult, dynamic LB,string instance)
         {
             _logProvider.WriteLog("BuildLoadBalancerObject", "Start");
 
-            LoadBalancer loadbalancer = new LoadBalancer();
+            LoadBalancer loadbalancer = new LoadBalancer(templateResult.ExecutionGuid);
             loadbalancer.name = LB.LoadBalancerName;
 
             FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
@@ -340,7 +343,7 @@ namespace MIGAZ.Generator
                     _resources.Add(loadbalancer);
                     
                     // Add an Availability Set per load balancer
-                    BuildAvailabilitySetObject(loadbalancer);
+                    BuildAvailabilitySetObject(templateResult, loadbalancer);
 
                     _logProvider.WriteLog("BuildLoadBalancerObject", "Microsoft.Network/loadBalancers/" + loadbalancer.name);
                 }
@@ -444,7 +447,7 @@ namespace MIGAZ.Generator
         }
 
         
-        private void BuildVirtualNetworkObject(Amazon.EC2.Model.Vpc vpc, List<Amazon.EC2.Model.Subnet> subnetNode, List<Amazon.EC2.Model.DhcpOptions> dhcpNode, AWSArtefacts artefacts)
+        private void BuildVirtualNetworkObject(TemplateResult templateResult, Amazon.EC2.Model.Vpc vpc, List<Amazon.EC2.Model.Subnet> subnetNode, List<Amazon.EC2.Model.DhcpOptions> dhcpNode, AWSArtefacts artefacts)
         {
             _logProvider.WriteLog("BuildVirtualNetworkObject", "Start");
 
@@ -481,7 +484,7 @@ namespace MIGAZ.Generator
                 dhcpoptions = null;
             }
             //VirtualNetworks
-            VirtualNetwork virtualnetwork = new VirtualNetwork();
+            VirtualNetwork virtualnetwork = new VirtualNetwork(templateResult.ExecutionGuid);
             virtualnetwork.name = GetVPCName(vpc.VpcId);
             virtualnetwork.dependsOn = dependson;
 
@@ -509,7 +512,7 @@ namespace MIGAZ.Generator
 
                 if (networkAcls.Count > 0)
                 {
-                    NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(networkAcls[0]);
+                    NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(templateResult, networkAcls[0]);
 
                     //NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(subnet.name);
 
@@ -529,7 +532,7 @@ namespace MIGAZ.Generator
 
                 if (routeTable.Count > 0)
                 {
-                    RouteTable routetable = BuildRouteTable(routeTable[0]);
+                    RouteTable routetable = BuildRouteTable(templateResult, routeTable[0]);
 
                     if (routetable.properties != null)
                     {
@@ -563,7 +566,7 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("BuildVirtualNetworkObject", "End");
         }
 
-        private NetworkSecurityGroup BuildNetworkSecurityGroup(Amazon.EC2.Model.NetworkAcl securitygroup)
+        private NetworkSecurityGroup BuildNetworkSecurityGroup(TemplateResult templateResult, Amazon.EC2.Model.NetworkAcl securitygroup)
         {
             _logProvider.WriteLog("BuildNetworkSecurityGroup", "Start");
 
@@ -571,7 +574,7 @@ namespace MIGAZ.Generator
             nsginfo.Add("name", GetSGName(securitygroup));
             //XmlDocument resource = _awsRetriever.GetAwsResources("DescribeNetworkAcls", "");
 
-            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup();
+            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(templateResult.ExecutionGuid);
             networksecuritygroup.name = GetSGName(securitygroup);
             //networksecuritygroup.location = securitygroup.SelectSingleNode("//Location").InnerText;
 
@@ -647,11 +650,11 @@ namespace MIGAZ.Generator
 
         }
 
-        private NetworkSecurityGroup BuildNetworkSecurityGroup(Amazon.EC2.Model.GroupIdentifier securitygroupidentifier, ref NetworkInterface networkinterface)
+        private NetworkSecurityGroup BuildNetworkSecurityGroup(TemplateResult templateResult, Amazon.EC2.Model.GroupIdentifier securitygroupidentifier, ref NetworkInterface networkinterface)
         {
             _logProvider.WriteLog("BuildNetworkSecurityGroup", "Start");
 
-            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup();
+            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(templateResult.ExecutionGuid);
             networksecuritygroup.name = securitygroupidentifier.GroupName;
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
@@ -755,7 +758,7 @@ namespace MIGAZ.Generator
             return networksecuritygroup;
         }
 
-        private RouteTable BuildRouteTable(Amazon.EC2.Model.RouteTable routeTable)
+        private RouteTable BuildRouteTable(TemplateResult templateResult, Amazon.EC2.Model.RouteTable routeTable)
         {
             _logProvider.WriteLog("BuildRouteTable", "Start");
 
@@ -763,7 +766,7 @@ namespace MIGAZ.Generator
             info.Add("name", GetRouteName(routeTable));
            // XmlDocument resource = _awsRetriever.GetAwsResources("RouteTable", subscriptionId, info, token);
 
-            RouteTable routetable = new RouteTable();
+            RouteTable routetable = new RouteTable(templateResult.ExecutionGuid);
             routetable.name = GetRouteName(routeTable);
            // routetable.location = resource.SelectSingleNode("//Location").InnerText;
 
@@ -824,7 +827,7 @@ namespace MIGAZ.Generator
             return routetable;
         }
 
-        private void BuildNetworkInterfaceObject(dynamic resource, ref List<NetworkProfile_NetworkInterface> networkinterfaces, dynamic LBs)
+        private void BuildNetworkInterfaceObject(TemplateResult templateResult, dynamic resource, ref List<NetworkProfile_NetworkInterface> networkinterfaces, dynamic LBs)
         {
             _logProvider.WriteLog("BuildNetworkInterfaceObject", "Start");
 
@@ -912,7 +915,7 @@ namespace MIGAZ.Generator
                 string networkinterfacename = GetNICName(NICDetails[0]);
 
                 string networkinterface_name = networkinterfacename;
-                NetworkInterface networkinterface = new NetworkInterface();
+                NetworkInterface networkinterface = new NetworkInterface(templateResult.ExecutionGuid);
                 networkinterface.name = networkinterface_name;
               //  networkinterface.location = "";
                 networkinterface.properties = networkinterface_properties;
@@ -927,14 +930,14 @@ namespace MIGAZ.Generator
 
                 if (resource.PublicIpAddress != null)
                 {
-                    BuildPublicIPAddressObject(ref networkinterface);
+                    BuildPublicIPAddressObject(templateResult, ref networkinterface);
                 }
 
                 // Process Network Interface Security Group
                 foreach (var group in additionalnetworkinterface.Groups)
                 {
-                    NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup();
-                    networksecuritygroup = BuildNetworkSecurityGroup(group, ref networkinterface);
+                    NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(templateResult.ExecutionGuid);
+                    networksecuritygroup = BuildNetworkSecurityGroup(templateResult, group, ref networkinterface);
                     networkinterface_properties.NetworkSecurityGroup = new Reference();
                     networkinterface_properties.NetworkSecurityGroup.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
                     networkinterface.dependsOn.Add(networkinterface_properties.NetworkSecurityGroup.id);
@@ -959,7 +962,7 @@ namespace MIGAZ.Generator
 
         
 
-        private void BuildVirtualMachineObject(Amazon.EC2.Model.Instance selectedInstance, List<NetworkProfile_NetworkInterface> networkinterfaces, String newstorageaccountname, string instanceLBName)
+        private void BuildVirtualMachineObject(TemplateResult templateResult, Amazon.EC2.Model.Instance selectedInstance, List<NetworkProfile_NetworkInterface> networkinterfaces, String newstorageaccountname, string instanceLBName)
         {
             _logProvider.WriteLog("BuildVirtualMachineObject", "Start");
 
@@ -1129,12 +1132,12 @@ namespace MIGAZ.Generator
                 }
             }
 
-            VirtualMachine virtualmachine = new VirtualMachine();
+            VirtualMachine virtualmachine = new VirtualMachine(templateResult.ExecutionGuid);
             virtualmachine.name = virtualmachinename;
             //virtualmachine.location = virtualmachineinfo["location"].ToString();
             virtualmachine.properties = virtualmachine_properties;
             virtualmachine.dependsOn = dependson;
-            virtualmachine.resources = new List<Resource>();
+            virtualmachine.resources = new List<ArmResource>();
             //if (extension_iaasdiagnostics != null) { virtualmachine.resources.Add(extension_iaasdiagnostics); }
 
             _processedItems.Add("Microsoft.Compute/virtualMachines/" + virtualmachine.name, virtualmachine.location);
@@ -1144,14 +1147,14 @@ namespace MIGAZ.Generator
             _logProvider.WriteLog("BuildVirtualMachineObject", "End");
         }
 
-        private void BuildStorageAccountObject(String StorageAccountName)
+        private void BuildStorageAccountObject(TemplateResult templateResult, String StorageAccountName)
         {
             _logProvider.WriteLog("BuildStorageAccountObject", "Start");
 
             StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
             storageaccount_properties.accountType = "Standard_LRS" ;
 
-            StorageAccount storageaccount = new StorageAccount();
+            StorageAccount storageaccount = new StorageAccount(templateResult.ExecutionGuid);
             storageaccount.name = GetNewStorageAccountName(StorageAccountName);
            // storageaccount.location = "";
             storageaccount.properties = storageaccount_properties;
