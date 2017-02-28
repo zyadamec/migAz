@@ -121,7 +121,7 @@ namespace MigAzASM
                 {
                     if (asmVirtualNetwork.HasNonGatewaySubnet)
                     {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmVirtualNetwork.Location, "Virtual Networks");
+                        TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, asmVirtualNetwork.Location, "Virtual Networks");
                         TreeNode tnVirtualNetwork = new TreeNode(asmVirtualNetwork.Name);
                         tnVirtualNetwork.Name = asmVirtualNetwork.Name;
                         tnVirtualNetwork.Tag = asmVirtualNetwork;
@@ -132,7 +132,7 @@ namespace MigAzASM
 
                 foreach (AsmStorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
                 {
-                    TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
+                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
                     TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
                     tnStorageAccount.Name = tnStorageAccount.Text;
                     tnStorageAccount.Tag = asmStorageAccount;
@@ -145,7 +145,7 @@ namespace MigAzASM
                 {
                     foreach (AsmVirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                     {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
+                        TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
                         TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
                         TreeNode cloudServiceNode = null;
                         if (cloudServiceNodeSearch.Count() == 1)
@@ -172,7 +172,7 @@ namespace MigAzASM
 
                 foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
                 {
-                    TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
                     TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
                     tnStorageAccount.Name = tnStorageAccount.Text;
                     tnStorageAccount.Tag = asmNetworkSecurityGroup;
@@ -277,68 +277,6 @@ namespace MigAzASM
         #endregion
 
         #region ASM TreeView Methods
-
-        private TreeNode GetDataCenterTreeViewNode(TreeNode subscriptionNode, string dataCenter, string containerName)
-        {
-            TreeNode dataCenterNode = null;
-
-            foreach (TreeNode treeNode in subscriptionNode.Nodes)
-            {
-                if (treeNode.Text == dataCenter && treeNode.Tag.ToString() == "DataCenter")
-                {
-                    dataCenterNode = treeNode;
-
-                    foreach (TreeNode dataCenterContainerNode in treeNode.Nodes)
-                    {
-                        if (dataCenterContainerNode.Text == containerName)
-                            return dataCenterContainerNode;
-                    }
-                }
-            }
-
-            if (dataCenterNode == null)
-            { 
-                dataCenterNode = new TreeNode(dataCenter);
-                dataCenterNode.Tag = "DataCenter";
-                subscriptionNode.Nodes.Add(dataCenterNode);
-                dataCenterNode.Expand();
-            }
-
-            if (containerName == "Virtual Networks")
-            {
-                TreeNode tnVirtualNetworks = new TreeNode("Virtual Networks");
-                dataCenterNode.Nodes.Add(tnVirtualNetworks);
-                tnVirtualNetworks.Expand();
-
-                return tnVirtualNetworks;
-            }
-            else if (containerName == "Storage Accounts")
-            {
-                TreeNode tnStorageAccounts = new TreeNode("Storage Accounts");
-                dataCenterNode.Nodes.Add(tnStorageAccounts);
-                tnStorageAccounts.Expand();
-
-                return tnStorageAccounts;
-            }
-            else if (containerName == "Cloud Services")
-            {
-                TreeNode tnCloudServicesNode = new TreeNode("Cloud Services");
-                dataCenterNode.Nodes.Add(tnCloudServicesNode);
-                tnCloudServicesNode.Expand();
-
-                return tnCloudServicesNode;
-            }
-            else if (containerName == "Network Security Groups")
-            {
-                TreeNode tnNetworkSecurityGroupsNode = new TreeNode("Network Security Groups");
-                dataCenterNode.Nodes.Add(tnNetworkSecurityGroupsNode);
-                tnNetworkSecurityGroupsNode.Expand();
-
-                return tnNetworkSecurityGroupsNode;
-            }
-
-            return null;
-        }
 
         private void FillUpIfFullDown(TreeNode node)
         {
