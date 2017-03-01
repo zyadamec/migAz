@@ -114,21 +114,19 @@ namespace MigAz.Core
             return true;
         }
 
-        public async static void RecursiveCheckToggleDown(TreeNode node, bool isChecked)
+        public async static Task RecursiveCheckToggleDown(TreeNode node, bool isChecked)
         {
             if (node.Checked != isChecked)
             {
                 node.Checked = isChecked;
             }
 
-            // TODO.... Event or something??  await AutoSelectDependencies(node);
-
             foreach (TreeNode subNode in node.Nodes)
             {
-                RecursiveCheckToggleDown(subNode, isChecked);
+                await RecursiveCheckToggleDown(subNode, isChecked);
             }
         }
-        public static void RecursiveCheckToggleUp(TreeNode node, bool isChecked)
+        public async static Task RecursiveCheckToggleUp(TreeNode node, bool isChecked)
         {
             if (node.Checked != isChecked)
             {
@@ -136,7 +134,7 @@ namespace MigAz.Core
             }
 
             if (node.Parent != null)
-                RecursiveCheckToggleUp(node.Parent, isChecked);
+                await RecursiveCheckToggleUp(node.Parent, isChecked);
         }
     }
 }

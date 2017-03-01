@@ -23,7 +23,7 @@ namespace MigAzASM.UserControls
             InitializeComponent();
         }
 
-        public async void Bind(TreeNode armVirtualMachineNode, AsmToArmForm asmToArmForm)
+        public async Task Bind(TreeNode armVirtualMachineNode, AsmToArmForm asmToArmForm)
         {
             _VirtualMachineNode = armVirtualMachineNode;
             _AsmToArmForm = asmToArmForm;
@@ -40,8 +40,20 @@ namespace MigAzASM.UserControls
 
             this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
 
+            try
+            {
+                List<ArmVirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
+                rbExistingARMVNet.Enabled = a.Count() > 0;
+            }
+            catch (Exception exc)
+            {
+                _AsmToArmForm.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
+                rbExistingARMVNet.Enabled = false;
+            }
+
             if ((asmVirtualMachine.TargetSubnet == null) ||
-                    (asmVirtualMachine.TargetSubnet.GetType() == typeof(AsmSubnet)))
+                    (asmVirtualMachine.TargetSubnet.GetType() == typeof(AsmSubnet)) ||
+                    (rbExistingARMVNet.Enabled == false))
             {
                 rbVNetInMigration.Checked = true;
             }
@@ -49,7 +61,6 @@ namespace MigAzASM.UserControls
             {
                 rbExistingARMVNet.Checked = true;
             }
-            
         }
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)

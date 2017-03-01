@@ -301,7 +301,7 @@ namespace MigAz.Azure
             }
             catch (Exception exception)
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "EXCEPTION " + exception.Message);
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "EXCEPTION: " + exception.Message + "  URL: " + url);
                 throw exception;
             }
 
@@ -645,6 +645,7 @@ namespace MigAz.Azure
                     break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
+                    // https://docs.microsoft.com/en-us/rest/api/network/list-virtual-networks-within-a-subscription
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
@@ -691,7 +692,7 @@ namespace MigAz.Azure
             }
             catch (Exception exception)
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "EXCEPTION " + exception.Message);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "EXCEPTION: " + exception.Message + "  URL: " + url);
                 throw exception;
             }
 
@@ -717,13 +718,15 @@ namespace MigAz.Azure
 
         public async Task<List<AzureTenant>> GetAzureARMTenants()
         {
+            if (_ArmTenants != null)
+                return _ArmTenants;
+
             JObject tenantsJson = await this.GetAzureARMResources("Tenants", null);
 
             var tenants = from tenant in tenantsJson["value"]
                                 select tenant;
 
-            if (_ArmTenants == null)
-                _ArmTenants = new List<AzureTenant>();
+            _ArmTenants = new List<AzureTenant>();
 
             foreach (JObject tenantJson in tenants)
             {
@@ -736,13 +739,15 @@ namespace MigAz.Azure
 
         public async Task<List<AzureSubscription>> GetAzureARMSubscriptions()
         {
+            if (_ArmSubscriptions != null)
+                return _ArmSubscriptions;
+
             JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", null);
 
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
 
-            if (_ArmSubscriptions == null)
-                _ArmSubscriptions = new List<AzureSubscription>();
+            _ArmSubscriptions = new List<AzureSubscription>();
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
@@ -755,13 +760,15 @@ namespace MigAz.Azure
 
         public async Task<List<ArmResourceGroup>> GetAzureARMResourceGroups()
         {
+            if (_ArmResourceGroups != null)
+                return _ArmResourceGroups;
+
             JObject resourceGroupsJson = await this.GetAzureARMResources("ResourceGroups", null);
 
             var resourceGroups = from resourceGroup in resourceGroupsJson["value"]
                                 select resourceGroup;
 
-            if (_ArmResourceGroups == null)
-                _ArmResourceGroups = new List<ArmResourceGroup>();
+            _ArmResourceGroups = new List<ArmResourceGroup>();
 
             foreach (JObject resourceGroupJson in resourceGroups)
             {
@@ -785,13 +792,15 @@ namespace MigAz.Azure
 
         public async virtual Task<List<ArmVirtualNetwork>> GetAzureARMVirtualNetworks()
         {
+            if (_ArmVirtualNetworks != null)
+                return _ArmVirtualNetworks;
+
             JObject virtualNetworksJson = await this.GetAzureARMResources("VirtualNetworks", null);
 
             var virtualNetworks = from vnet in virtualNetworksJson["value"]
                                   select vnet;
 
-            if (_ArmVirtualNetworks == null)
-                _ArmVirtualNetworks = new List<ArmVirtualNetwork>();
+            _ArmVirtualNetworks = new List<ArmVirtualNetwork>();
 
             foreach (var virtualNetwork in virtualNetworks)
             {
@@ -823,11 +832,6 @@ namespace MigAz.Azure
             }
 
             return _ArmStorageAccounts;
-        }
-
-        public Task<IEnumerable<ArmVirtualMachine>> GetAzureARMVirtualMachines()
-        {
-            throw new NotImplementedException();
         }
 
 

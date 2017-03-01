@@ -98,6 +98,10 @@ namespace MigAzASM
         private async Task _AzureContextSourceASM_AfterUserSignOut()
         {
             ResetForm();
+            await _AzureContextTargetARM.SetSubscriptionContext(null);
+            await _AzureContextTargetARM.Logout();
+            azureLoginContextViewer2.Enabled = false;
+            azureLoginContextViewer2.Refresh();
         }
 
         private async Task _AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)
@@ -412,7 +416,7 @@ namespace MigAzASM
 
                 if (e.Node.Checked)
                 {
-                    MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                     MigAz.Core.TreeView.FillUpIfFullDown(e.Node);
                     treeASM.SelectedNode = e.Node;
 
@@ -420,8 +424,8 @@ namespace MigAzASM
                 }
                 else
                 {
-                    MigAz.Core.TreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
-                    MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    await MigAz.Core.TreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
                 _sourceCascadeNode = null;
@@ -477,7 +481,7 @@ namespace MigAzASM
                             pictureBox1.Image = imageList1.Images["VirtualMachine"];
 
                             VirtualMachineProperties properties = new VirtualMachineProperties();
-                            properties.Bind(e.Node, this);
+                            await properties.Bind(e.Node, this);
                             panel1.Controls.Add(properties);
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(AsmNetworkSecurityGroup))

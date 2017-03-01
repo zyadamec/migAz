@@ -120,7 +120,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "AzureSubscriptionContextDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Azure Target Subscription";
+            this.Text = "Azure Subscription";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AzureContextARMDialog_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
