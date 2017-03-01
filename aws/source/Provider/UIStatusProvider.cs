@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAzAWS.Generator
+namespace MigAzAWS.Provider
 {
     class UIStatusProvider : IStatusProvider
     {

@@ -4,8 +4,9 @@ using MigAzAWS.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using MigAzAWS.Interface;
 
-namespace MigAzAWS.Generator
+namespace MigAzAWS.Provider
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {

@@ -1,4 +1,5 @@
-﻿using MigAzAWS.Models;
+﻿using MigAzAWS.Interface;
+using MigAzAWS.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAzAWS.Generator
+namespace MigAzAWS.Provider
 {
     public class CloudTelemetryProvider : ITelemetryProvider
     {

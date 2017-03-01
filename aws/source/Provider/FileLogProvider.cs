@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace MigAzAWS.Generator
+namespace MigAzAWS.Provider
 {
     class FileLogProvider : ILogProvider
     {

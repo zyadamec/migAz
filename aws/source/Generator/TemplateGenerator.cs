@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Generator;
 using MigAz.AWS;
 using MigAz.Core.Interface;
+using MigAzAWS.Interface;
 
 namespace MigAzAWS.Generator
 {

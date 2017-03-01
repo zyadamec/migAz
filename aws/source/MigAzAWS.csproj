@@ -120,14 +120,14 @@
     <Compile Include="Forms\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="Generator\CloudTelemetryProvider.cs" />
-    <Compile Include="Generator\FileLogProvider.cs" />
-    <Compile Include="Generator\ISaveSelectionProvider.cs" />
-    <Compile Include="Generator\ITelemetryProvider.cs" />
-    <Compile Include="Generator\ITokenProvider.cs" />
+    <Compile Include="Provider\CloudTelemetryProvider.cs" />
+    <Compile Include="Provider\FileLogProvider.cs" />
+    <Compile Include="Interface\ISaveSelectionProvider.cs" />
+    <Compile Include="Interface\ITelemetryProvider.cs" />
+    <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Generator\ServiceUrls.cs" />
-    <Compile Include="Generator\UISaveSelectionProvider.cs" />
-    <Compile Include="Generator\UIStatusProvider.cs" />
+    <Compile Include="Provider\UISaveSelectionProvider.cs" />
+    <Compile Include="Provider\UIStatusProvider.cs" />
     <Compile Include="Models\AWSArtefacts.cs" />
     <Compile Include="Models\CopyBlobDetail.cs" />
     <Compile Include="Models\Ec2Instance.cs" />

@@ -12,6 +12,8 @@ using System.Xml;
 using System.Collections;
 using MigAz.AWS;
 using MigAz.Core.Interface;
+using MigAzAWS.Interface;
+using MigAzAWS.Provider;
 
 namespace MigAzAWS
 {

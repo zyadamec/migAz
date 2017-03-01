@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAzAWS.Generator
+namespace MigAzAWS.Interface
 {
     public interface ITelemetryProvider
     {
