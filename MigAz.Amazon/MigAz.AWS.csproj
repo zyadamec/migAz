@@ -46,11 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AWSArtefacts.cs" />
     <Compile Include="AwsObjectRetriever.cs" />
     <Compile Include="AwsRetriever.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="EbsVolume.cs" />
+    <Compile Include="Ec2Instance.cs" />
+    <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="ParamComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VPC.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

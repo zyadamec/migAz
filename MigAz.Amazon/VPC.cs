@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAzAWS.Models
+namespace MigAz.AWS
 {
     public class VPC
     {

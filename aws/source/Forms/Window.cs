@@ -4,7 +4,7 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MigAzAWS.Generator;
+using MigAz.AWS.Generator;
 using MigAzAWS.Forms;
 using System.Net.NetworkInformation;
 using MigAzAWS.Models;

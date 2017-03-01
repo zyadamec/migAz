@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MigAzAWS.Models
+namespace MigAz.AWS
 {
     public class AWSArtefacts
     {

@@ -1,41 +1,26 @@
-﻿using MigAzAWS.Models;
-using MigAz.Azure.Arm;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Windows.Forms;
-using MigAz.Azure.Generator;
-using MigAz.AWS;
 using MigAz.Core.Interface;
-using MigAzAWS.Interface;
 
-namespace MigAzAWS.Generator
+namespace MigAz.AWS.Generator
 {
     public class TemplateGenerator
     {
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
-        private ITelemetryProvider _telemetryProvider;
-        private ITokenProvider _tokenProvider;
-        private List<ArmResource> _resources;
-        private Dictionary<string, Parameter> _parameters;
-        private List<CopyBlobDetail> _copyBlobDetails;
-        private Dictionary<string, string> _processedItems;
+        //private Dictionary<string, Parameter> _parameters;
         public Dictionary<string, string> _storageAccountNames;
-        private AwsRetriever _awsRetriever;
         private AwsObjectRetriever _awsObjectRetriever;
   
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever, ITelemetryProvider telemetryProvider)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever)
         {
             _logProvider = logProvider;
             _statusProvider = statusProvider;
-            _telemetryProvider = telemetryProvider;
-            //_tokenProvider = tokenProvider;
             _awsObjectRetriever = awsObjectRetriever;
         }
         public void GenerateTemplate(AWSArtefacts artefacts, AwsObjectRetriever _awsObjectRetriever, StreamWriter templateWriter, Hashtable teleinfo)
