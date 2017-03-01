@@ -278,73 +278,7 @@ namespace MigAzASM
         #endregion
 
         #region ASM TreeView Methods
-
-        private void FillUpIfFullDown(TreeNode node)
-        {
-            if (IsSelectedFullDown(node) && (node.Parent != null))
-            {
-                node = node.Parent;
-
-                while (node != null)
-                {
-                    if (AllChildrenChecked(node))
-                    {
-                        node.Checked = true;
-                        node = node.Parent;
-                    }
-                    else
-                        node = null;
-                }
-            }
-        }
-
-        private bool AllChildrenChecked(TreeNode node)
-        {
-            foreach (TreeNode childNode in node.Nodes)
-                if (!childNode.Checked)
-                    return false;
-
-            return true;
-        }
-
-        private bool IsSelectedFullDown(TreeNode node)
-        {
-            if (!node.Checked)
-                return false;
-
-            foreach (TreeNode childNode in node.Nodes)
-            {
-                if (!IsSelectedFullDown(childNode))
-                    return false;
-            }
-
-            return true;
-        }
-
-        private async void RecursiveCheckToggleDown(TreeNode node, bool isChecked)
-        {
-            if (node.Checked != isChecked)
-            {
-                node.Checked = isChecked;
-            }
-
-            await AutoSelectDependencies(node);
-
-            foreach (TreeNode subNode in node.Nodes)
-            {
-                RecursiveCheckToggleDown(subNode, isChecked);
-            }
-        }
-        private void RecursiveCheckToggleUp(TreeNode node, bool isChecked)
-        {
-            if (node.Checked != isChecked)
-            {
-                node.Checked = isChecked;
-            }
-
-            if (node.Parent != null)
-                RecursiveCheckToggleUp(node.Parent, isChecked);
-        }
+        
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
@@ -478,16 +412,16 @@ namespace MigAzASM
 
                 if (e.Node.Checked)
                 {
-                    RecursiveCheckToggleDown(e.Node, e.Node.Checked);
-                    FillUpIfFullDown(e.Node);
+                    MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    MigAz.Core.TreeView.FillUpIfFullDown(e.Node);
                     treeASM.SelectedNode = e.Node;
 
                     await AutoSelectDependencies(e.Node);
                 }
                 else
                 {
-                    RecursiveCheckToggleUp(e.Node, e.Node.Checked);
-                    RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    MigAz.Core.TreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
                 _sourceCascadeNode = null;

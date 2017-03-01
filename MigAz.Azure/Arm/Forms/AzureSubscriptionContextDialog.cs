@@ -9,29 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAzASM.Forms
+namespace MigAz.Azure.Arm.Forms
 {
-    public partial class AzureContextARMDialog : Form
+    public partial class AzureSubscriptionContextDialog : Form
     {
-        AzureContext _AsmAzureContext;
-        AzureContext _ArmAzureContext;
+        AzureContext _AzureContext;
 
-        public AzureContextARMDialog()
+        public AzureSubscriptionContextDialog()
         {
             InitializeComponent();
         }
 
-        public async Task InitializeDialog(AzureContext asmAzureContext, AzureContext armAzureContext)
+        public async Task InitializeDialog(AzureContext azureContext)
         {
-            _AsmAzureContext = asmAzureContext;
-            _ArmAzureContext = armAzureContext;
+            _AzureContext = azureContext;
 
-            lblAzureEnvironment.Text = _AsmAzureContext.AzureEnvironment.ToString();
-            lblAzureUsername.Text = _AsmAzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+            lblAzureEnvironment.Text = _AzureContext.AzureEnvironment.ToString();
+            lblAzureUsername.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
 
-            _ArmAzureContext.AzureEnvironment = _AsmAzureContext.AzureEnvironment;
-
-            foreach (AzureSubscription azureSubscription in await _ArmAzureContext.AzureRetriever.GetSubscriptions())
+            foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetSubscriptions())
             {
                 cmbSubscriptions.Items.Add(azureSubscription);
             }
@@ -40,7 +36,7 @@ namespace MigAzASM.Forms
 
             foreach (AzureSubscription azureSubscription in cmbSubscriptions.Items)
             {
-                if (_ArmAzureContext.AzureSubscription != null && azureSubscription == _ArmAzureContext.AzureSubscription)
+                if (_AzureContext.AzureSubscription != null && azureSubscription == _AzureContext.AzureSubscription)
                     cmbSubscriptions.SelectedItem = azureSubscription;
             }
         }
@@ -52,14 +48,14 @@ namespace MigAzASM.Forms
 
         private void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _ArmAzureContext.SetSubscriptionContext((AzureSubscription)cmbSubscriptions.SelectedItem);
+            _AzureContext.SetSubscriptionContext((AzureSubscription)cmbSubscriptions.SelectedItem);
         }
 
         private void AzureContextARMDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
-                if (_ArmAzureContext.AzureSubscription == null && cmbSubscriptions.Items.Count > 0)
+                if (_AzureContext.AzureSubscription == null && cmbSubscriptions.Items.Count > 0)
                     e.Cancel = true;
 
                 if (e.Cancel)

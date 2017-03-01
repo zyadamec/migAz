@@ -1,6 +1,6 @@
-﻿namespace MigAzASM.Forms
+﻿namespace MigAz.Azure.Arm.Forms
 {
-    partial class AzureContextARMDialog
+    partial class AzureSubscriptionContextDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -105,7 +105,7 @@
             this.lblAzureUsername.TabIndex = 65;
             this.lblAzureUsername.Text = "-";
             // 
-            // AzureContextARMDialog
+            // AzureSubscriptionContextDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -118,9 +118,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Name = "AzureContextARMDialog";
+            this.Name = "AzureSubscriptionContextDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Azure Classic (ARM) Target Subscription";
+            this.Text = "Azure Target Subscription";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AzureContextARMDialog_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

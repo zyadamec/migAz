@@ -197,19 +197,22 @@
             // 
             // azureLoginContextViewer1
             // 
+            this.azureLoginContextViewer1.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.Full;
             this.azureLoginContextViewer1.Location = new System.Drawing.Point(20, 12);
             this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
             this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 168);
             this.azureLoginContextViewer1.TabIndex = 53;
-            this.azureLoginContextViewer1.Title = "Azure Subscription";
+            this.azureLoginContextViewer1.Title = "Azure ASM (Source) Subscription";
             // 
             // azureLoginContextViewer2
             // 
+            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.SubscriptionOnly;
+            this.azureLoginContextViewer2.Enabled = false;
             this.azureLoginContextViewer2.Location = new System.Drawing.Point(1049, 12);
             this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
             this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 168);
             this.azureLoginContextViewer2.TabIndex = 54;
-            this.azureLoginContextViewer2.Title = "Azure Subscription";
+            this.azureLoginContextViewer2.Title = "Azure ARM (Target) Subscription";
             // 
             // AsmToArmForm
             // 

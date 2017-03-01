@@ -72,9 +72,71 @@ namespace MigAz.Core
             return null;
         }
 
-        public static TreeNode GetDataCenterTreeViewNode(TreeNode subscriptionNode, object location, string v)
+        public static void FillUpIfFullDown(TreeNode node)
         {
-            throw new NotImplementedException();
+            if (IsSelectedFullDown(node) && (node.Parent != null))
+            {
+                node = node.Parent;
+
+                while (node != null)
+                {
+                    if (AllChildrenChecked(node))
+                    {
+                        node.Checked = true;
+                        node = node.Parent;
+                    }
+                    else
+                        node = null;
+                }
+            }
+        }
+
+        public static bool AllChildrenChecked(TreeNode node)
+        {
+            foreach (TreeNode childNode in node.Nodes)
+                if (!childNode.Checked)
+                    return false;
+
+            return true;
+        }
+
+        public static bool IsSelectedFullDown(TreeNode node)
+        {
+            if (!node.Checked)
+                return false;
+
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                if (!IsSelectedFullDown(childNode))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public async static void RecursiveCheckToggleDown(TreeNode node, bool isChecked)
+        {
+            if (node.Checked != isChecked)
+            {
+                node.Checked = isChecked;
+            }
+
+            // TODO.... Event or something??  await AutoSelectDependencies(node);
+
+            foreach (TreeNode subNode in node.Nodes)
+            {
+                RecursiveCheckToggleDown(subNode, isChecked);
+            }
+        }
+        public static void RecursiveCheckToggleUp(TreeNode node, bool isChecked)
+        {
+            if (node.Checked != isChecked)
+            {
+                node.Checked = isChecked;
+            }
+
+            if (node.Parent != null)
+                RecursiveCheckToggleUp(node.Parent, isChecked);
         }
     }
 }

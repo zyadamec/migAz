@@ -102,12 +102,6 @@
     <Compile Include="Forms\AsmToArmForm.Designer.cs">
       <DependentUpon>AsmToArmForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\AzureContextARMDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AzureContextARMDialog.Designer.cs">
-      <DependentUpon>AzureContextARMDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ExportResultsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -184,9 +178,6 @@
     </Compile>
     <EmbeddedResource Include="Forms\AsmToArmForm.resx">
       <DependentUpon>AsmToArmForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AzureContextARMDialog.resx">
-      <DependentUpon>AzureContextARMDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportResultsDialog.resx">
       <DependentUpon>ExportResultsDialog.cs</DependentUpon>

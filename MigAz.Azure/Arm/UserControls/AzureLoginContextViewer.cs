@@ -11,9 +11,16 @@ using MigAz.Azure.Arm.Forms;
 
 namespace MigAz.Azure.Arm.UserControls
 {
+    public enum ChangeType
+    {
+        Full,
+        SubscriptionOnly
+    }
+
     public partial class AzureLoginContextViewer : UserControl
     {
         private AzureContext _AzureContext;
+        private ChangeType _ChangeType = ChangeType.Full;
 
         public AzureLoginContextViewer()
         {
@@ -66,12 +73,28 @@ namespace MigAz.Azure.Arm.UserControls
             set { this.groupSubscription.Text = value; }
         }
 
+        public ChangeType ChangeType
+        {
+            get { return _ChangeType; }
+            set { _ChangeType = value; }
+        }
+
         private async void btnAzureContext_Click(object sender, EventArgs e)
         {
-            AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
-            await azureLoginContextDialog.InitializeDialog(_AzureContext);
-            azureLoginContextDialog.ShowDialog();
-            azureLoginContextDialog.Dispose();
+            if (_ChangeType == ChangeType.Full)
+            {
+                AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
+                await azureLoginContextDialog.InitializeDialog(_AzureContext);
+                azureLoginContextDialog.ShowDialog();
+                azureLoginContextDialog.Dispose();
+            }
+            else
+            {
+                AzureSubscriptionContextDialog azureSubscriptionContextDialog = new AzureSubscriptionContextDialog();
+                await azureSubscriptionContextDialog.InitializeDialog(_AzureContext);
+                azureSubscriptionContextDialog.ShowDialog();
+                azureSubscriptionContextDialog.Dispose();
+            }
         }
 
         private void AzureLoginContextViewer_EnabledChanged(object sender, EventArgs e)
