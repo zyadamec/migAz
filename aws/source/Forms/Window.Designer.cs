@@ -1,4 +1,4 @@
-﻿namespace MIGAZ
+﻿namespace MigAzAWS
 {
     partial class Window
     {

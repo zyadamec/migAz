@@ -15,6 +15,7 @@ using MigAz.Azure.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Providers;
 using System.Threading.Tasks;
+using MigAz.Core.Interface;
 
 namespace MigAz
 {

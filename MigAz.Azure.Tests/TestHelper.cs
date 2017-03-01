@@ -12,6 +12,7 @@ using MigAz.Azure.Arm;
 using MigAz.Azure.Models;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Core.Interface;
 
 namespace MigAz.Tests
 {

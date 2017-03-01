@@ -2,6 +2,7 @@
 using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Models;
+using MigAz.Core.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;

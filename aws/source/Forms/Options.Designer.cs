@@ -1,4 +1,4 @@
-﻿namespace MIGAZ.Forms
+﻿namespace MigAzAWS.Forms
 {
     partial class formOptions
     {

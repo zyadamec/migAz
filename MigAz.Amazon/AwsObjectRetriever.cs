@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ElasticLoadBalancing;
-using MIGAZ.Forms;
 using Amazon.ElasticLoadBalancing.Model;
-using System.Windows.Forms;
+using MigAz.Core.Interface;
 
-namespace MIGAZ.Generator
+namespace MigAz.AWS
 {
     public class AwsObjectRetriever
     {
-
-        
         ILogProvider _logProvider;
         IStatusProvider _statusProvider;
         static IAmazonEC2 _service;
@@ -94,23 +91,11 @@ namespace MIGAZ.Generator
                 createLBClient(accessKeyID, secretKeyID, region);
                 REGION = region.SystemName;
 
-            try
-            {
                 _vpcs = GetAllVpcs();
-                Application.DoEvents();
                 _instances = GetAllInstances();
-                Application.DoEvents();
                 // _volumes = GetAllVolumes();
                 // Application.DoEvents();
                 _Loadbalancers = GetAllLBs();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error during accessing the AWS Resources. Error Message: " + ex.Message,"Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-            }
-                 
-
         }
 
  

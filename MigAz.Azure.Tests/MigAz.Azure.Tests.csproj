@@ -210,6 +210,10 @@
       <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
       <Name>MigAz.Azure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
+      <Project>{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}</Project>
+      <Name>MigAz.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

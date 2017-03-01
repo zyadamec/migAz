@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using System;
 using System.Threading.Tasks;
 

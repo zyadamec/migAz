@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz.Core", "MigAz.Core\Mi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAzAWS", "aws\source\MigAzAWS.csproj", "{1961B738-59E7-4047-BC91-D34CAC31A70D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz.Amazon", "MigAz.Amazon\MigAz.Amazon.csproj", "{9752882B-FD87-495E-92FA-33243DF8EE68}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigAz.AWS", "MigAz.Amazon\MigAz.AWS.csproj", "{9752882B-FD87-495E-92FA-33243DF8EE68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

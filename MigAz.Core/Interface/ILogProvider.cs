@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MIGAZ.Generator
+namespace MigAz.Core.Interface
 {
-    public interface IStatusProvider
+    public interface ILogProvider
     {
-        void UpdateStatus(string v);
+        void WriteLog(string function, string message);
     }
 }

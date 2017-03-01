@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Generator
 {

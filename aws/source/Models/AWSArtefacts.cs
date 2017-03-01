@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Amazon.EC2.Model;
 
-namespace MIGAZ.Models
+namespace MigAzAWS.Models
 {
     public class AWSArtefacts
     {

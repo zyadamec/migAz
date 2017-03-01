@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System.Windows.Forms;
-using MIGAZ.Models;
+using MigAzAWS.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace MIGAZ.Generator
+namespace MigAzAWS.Generator
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {

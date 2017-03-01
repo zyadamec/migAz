@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MIGAZ.Generator
+namespace MigAzAWS.Generator
 {
     class UIStatusProvider : IStatusProvider
     {

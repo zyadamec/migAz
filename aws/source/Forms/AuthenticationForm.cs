@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MIGAZ.Generator;
+using MigAzAWS.Generator;
 
-namespace MIGAZ.Forms
+namespace MigAzAWS.Forms
 {
     public partial class AuthenticationForm : Form
     {

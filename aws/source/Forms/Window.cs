@@ -4,29 +4,29 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MIGAZ.Generator;
-using MIGAZ.Forms;
-using Amazon.EC2.Model;
-using Amazon.EC2;
+using MigAzAWS.Generator;
+using MigAzAWS.Forms;
 using System.Net.NetworkInformation;
-using MIGAZ.Models;
+using MigAzAWS.Models;
 using System.Xml;
 using System.Collections;
+using MigAz.AWS;
+using MigAz.Core.Interface;
 
-namespace MIGAZ
+namespace MigAzAWS
 {
     public partial class Window : Form
     {
         private ILogProvider _logProvider;
         //private EC2Operation ec2 = null;
-        static IAmazonEC2 service;
-        DescribeInstancesResponse instResponse;
-        DescribeVpcsResponse vpcResponse;
-        DescribeVolumesResponse ebsVolumesResponse;
+        // TODO WHERE?? static IAmazonEC2 service;
+        // TODO DescribeInstancesResponse instResponse;
+        // TODO DescribeVpcsResponse vpcResponse;
+        // TODO DescribeVolumesResponse ebsVolumesResponse;
         string accessKeyID;
         string secretKeyID;
         string selectedregion;
-        List<Amazon.RegionEndpoint> Regions;
+        // TODO List<Amazon.RegionEndpoint> Regions;
 
         //private string subscriptionid;
         //private Dictionary<string, string> subscriptionsAndTenants;
@@ -45,11 +45,12 @@ namespace MIGAZ
             telemetryProvider = new CloudTelemetryProvider();
             _saveSelectionProvider = new UISaveSelectionProvider();
 
-            Regions = new List<Amazon.RegionEndpoint>();
-            foreach (var region in Amazon.RegionEndpoint.EnumerableAllRegions)
-            {
-                Regions.Add(region);
-            }
+            // TODO
+            //Regions = new List<Amazon.RegionEndpoint>();
+            //foreach (var region in Amazon.RegionEndpoint.EnumerableAllRegions)
+            //{
+            //    Regions.Add(region);
+            //}
            
             
            
@@ -60,11 +61,10 @@ namespace MIGAZ
         private void Window_Load(object sender, EventArgs e)
         {
             writeLog("Window_Load", "Program start");
-            instResponse = new DescribeInstancesResponse();
+            // TODO instResponse = new DescribeInstancesResponse();
             this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
-            cmbRegion.DataSource = Regions;
-           // cmbRegion.Enabled = true;
+            // TODO cmbRegion.DataSource = Regions;
             NewVersionAvailable(); // check if there a new version of the app
         }
 
@@ -90,7 +90,7 @@ namespace MIGAZ
                 cmbRegion.Enabled = true;
 
                 //Load Items
-                Load_Items();
+                 // TODO Load_Items();
 
                 lblSignInText.Text = $"Signed in as {accessKeyID}";
 
@@ -105,31 +105,7 @@ namespace MIGAZ
         }
 
 
-        private void createEC2Client()
-        {
-
-            _awsObjectRetriever = new AwsObjectRetriever(accessKeyID, secretKeyID, (Amazon.RegionEndpoint)cmbRegion.SelectedValue, _logProvider, _statusProvider);
-            _templateGenerator = new TemplateGenerator(_logProvider, _statusProvider, _awsObjectRetriever, telemetryProvider);
-        }
-        private DescribeVolumesResponse getEbsVolumes()
-        {
-            return _awsObjectRetriever.Volumes;
-        }
-
-        public string GetRegion()
-        {
-            return selectedregion;
-        }
-
-        private DescribeVpcsResponse getVPCs()
-        {
-            return _awsObjectRetriever.Vpcs;
-        }
-
-        private DescribeInstancesResponse getEC2Instances()
-        {
-            return _awsObjectRetriever.Instances;
-        }
+       
 
         private void authenticate()
         {
@@ -279,27 +255,28 @@ namespace MIGAZ
 
         private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)
         {
-            string InstanceId = listViewRow.Item.ListView.Items[listViewRow.Item.Index].SubItems[0].Text;
+            // TODO
+            //string InstanceId = listViewRow.Item.ListView.Items[listViewRow.Item.Index].SubItems[0].Text;
 
-            var availableInstances = _awsObjectRetriever.Instances;
-            //var selectedVolumes;
-            if (InstanceId != null)
-            {
+            //var availableInstances = _awsObjectRetriever.Instances;
+            ////var selectedVolumes;
+            //if (InstanceId != null)
+            //{
                     
-                //var selectedInstances = availableInstances.Reservations[0].Instances.Find(x => x.InstanceId == InstanceId);
-                var selectedInstances = _awsObjectRetriever.getInstancebyId(InstanceId);
+            //    //var selectedInstances = availableInstances.Reservations[0].Instances.Find(x => x.InstanceId == InstanceId);
+            //    var selectedInstances = _awsObjectRetriever.getInstancebyId(InstanceId);
 
-                foreach (ListViewItem virtualNetwork in lvwVirtualNetworks.Items)
-                {
-                        if (selectedInstances.Instances[0].VpcId == virtualNetwork.SubItems[0].Text)
-                        {
-                            virtualNetwork.Checked = true;
-                            virtualNetwork.Selected = true;
-                        }
+            //    foreach (ListViewItem virtualNetwork in lvwVirtualNetworks.Items)
+            //    {
+            //            if (selectedInstances.Instances[0].VpcId == virtualNetwork.SubItems[0].Text)
+            //            {
+            //                virtualNetwork.Checked = true;
+            //                virtualNetwork.Selected = true;
+            //            }
                     
-                }
+            //    }
 
-            }
+            //}
         }
 
         private void cmbRegion_SelectedIndexChanged(object sender, EventArgs e)
@@ -307,7 +284,7 @@ namespace MIGAZ
             if(cmbRegion.Enabled == true)
             {
                 //Load the Region Items
-                Load_Items();
+                // TODO Load_Items();
             }
 
             // If save selection option is enabled
@@ -319,74 +296,7 @@ namespace MIGAZ
 
         }
 
-        private void Load_Items()
-        {
-            writeLog("GetToken_Click", "Start");
-
-            lvwVirtualNetworks.Items.Clear();
-            lvwVirtualMachines.Items.Clear();
-
-            createEC2Client();
-
-         
-            instResponse = getEC2Instances();
-            Application.DoEvents();
-
-            //lblStatus.Text = "BUSY: Getting the VPC details";
-            vpcResponse = getVPCs();
-            Application.DoEvents();
-            //List Instances
-
-
-            if (instResponse != null)
-            {
-                lblStatus.Text = "BUSY: Processing Instances";
-                if (instResponse.Reservations.Count > 0)
-                {
-                    foreach (var instanceResp in instResponse.Reservations)
-                    {
-                        foreach (var instance in instanceResp.Instances)
-                        {
-                            ListViewItem listItem = new ListViewItem(instance.InstanceId);
-                            string name = "";
-                            foreach (var tag in instance.Tags)
-                            {
-                                if (tag.Key == "Name")
-                                {
-                                    name = tag.Value;
-                                }
-                            }
-
-                            listItem.SubItems.AddRange(new[] { name });
-                            lvwVirtualMachines.Items.Add(listItem);
-                            Application.DoEvents();
-                        }
-                    }
-                }
-                //List VPCs
-                lblStatus.Text = "BUSY: Processing VPC";
-                foreach (var vpc in vpcResponse.Vpcs)
-                {
-
-                    ListViewItem listItem = new ListViewItem(vpc.VpcId);
-                    string VpcName = "";
-                    foreach (var tag in vpc.Tags)
-                    {
-                        if (tag.Key == "Name")
-                        {
-                            VpcName = tag.Value;
-                        }
-                    }
-
-                    listItem.SubItems.AddRange(new[] { VpcName });
-                    lvwVirtualNetworks.Items.Add(listItem);
-                    Application.DoEvents();
-                }
-            }
-            btnChoosePath.Enabled = true;
-            lblStatus.Text = "Ready";
-            
-        }
+       
 
         private void lvwVirtualMachines_SelectedIndexChanged(object sender, EventArgs e)
         {

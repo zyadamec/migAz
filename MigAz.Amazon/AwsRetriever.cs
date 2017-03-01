@@ -1,5 +1,4 @@
-﻿using MIGAZ.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,12 +7,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Configuration;
+using MigAz.Core.Interface;
 
-namespace MIGAZ.Generator
+namespace MigAz.AWS
 {
     public class AwsRetriever
     {
@@ -28,11 +27,9 @@ namespace MIGAZ.Generator
             _statusProvider = statusProvider;
         }
 
-        public XmlDocument GetAwsResources(string resourceType, string resourceId)
+        public XmlDocument GetAwsResources(string endpoint, string resourceType, string resourceId)
         {
             _logProvider.WriteLog("GetAwsResources", "Start");
-
-            string endpoint = ConfigurationManager.AppSettings["endpoint"];
 
             ParamComparer pc = new ParamComparer();
             SortedDictionary<string, string> sortedRequestPars =

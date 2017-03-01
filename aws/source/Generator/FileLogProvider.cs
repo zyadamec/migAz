@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.IO;
 
-namespace MIGAZ.Generator
+namespace MigAzAWS.Generator
 {
     class FileLogProvider : ILogProvider
     {

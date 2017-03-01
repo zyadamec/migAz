@@ -15,6 +15,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
 using MigAzASM.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAzASM
 {
