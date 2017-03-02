@@ -203,6 +203,9 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v1.5.0.1
+- Correction to ARM API URL Endpoints
+
 ### v1.5.0.0
 - Upgrade projects to .NET Framework 4.6.2, per [End of Support for Framework 4.5.x](https://blogs.msdn.microsoft.com/dotnet/2015/12/09/support-ending-for-the-net-framework-4-4-5-and-4-5-1/)
 - Updated project package reference and code for Microsoft.IdentityModel.Clients.ActiveDirectory from 2.20.0.0 to 3.13.8.0
