@@ -14,7 +14,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Forms.ASM;
 
-namespace MigAzASM.UserControls
+namespace MigAz.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {

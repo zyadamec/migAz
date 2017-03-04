@@ -123,9 +123,7 @@
     </Compile>
     <Compile Include="Forms\ARM\Providers\AppSettingsProvider.cs" />
     <Compile Include="Forms\ARM\Providers\CloudTelemetryProvider.cs" />
-    <Compile Include="Forms\ARM\Providers\FileLogProvider.cs" />
     <Compile Include="Forms\ARM\Providers\UISaveSelectionProvider.cs" />
-    <Compile Include="Forms\ARM\Providers\UIStatusProvider.cs" />
     <Compile Include="Forms\ARM\Window.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -157,7 +155,6 @@
     <Compile Include="Forms\AWS\SaveSelection.cs" />
     <Compile Include="Forms\AWS\TelemetryRecord.cs" />
     <Compile Include="Forms\AWS\UISaveSelectionProvider.cs" />
-    <Compile Include="Forms\AWS\UIStatusProvider.cs" />
     <Compile Include="Forms\AWS\Window.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -181,6 +178,12 @@
     </Compile>
     <Compile Include="Forms\ASM\PreExportDialog.Designer.cs">
       <DependentUpon>PreExportDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MigAzMDIParent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MigAzMDIParent.Designer.cs">
+      <DependentUpon>MigAzMDIParent.cs</DependentUpon>
     </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\CloudTelemetryProvider.cs" />
@@ -269,6 +272,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ASM\PreExportDialog.resx">
       <DependentUpon>PreExportDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MigAzMDIParent.resx">
+      <DependentUpon>MigAzMDIParent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

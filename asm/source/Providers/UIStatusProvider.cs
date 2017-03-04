@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAzASM.Providers
+namespace MigAz.Providers
 {
     class UIStatusProvider : IStatusProvider
     {

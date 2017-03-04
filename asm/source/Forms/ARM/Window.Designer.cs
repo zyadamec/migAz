@@ -1,4 +1,4 @@
-﻿namespace MigAz
+﻿namespace MigAz.Forms.ARM
 {
     partial class Window
     {
@@ -31,13 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
             this.btnExport = new System.Windows.Forms.Button();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnOptions = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.treeSource = new System.Windows.Forms.TreeView();
             this.azureLoginContextViewer1 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer2();
-            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnExport
@@ -55,24 +52,6 @@
             // folderBrowserDialog
             // 
             this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 1060);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(3, 0, 28, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1912, 37);
-            this.statusStrip1.TabIndex = 29;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(79, 32);
-            this.lblStatus.Text = "Ready";
             // 
             // btnOptions
             // 
@@ -121,7 +100,6 @@
             this.Controls.Add(this.treeSource);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.azureLoginContextViewer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -131,8 +109,6 @@
             this.Text = "migAz";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Window_FormClosing);
             this.Load += new System.EventHandler(this.Window_Load);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -141,8 +117,6 @@
         #endregion
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TreeView treeSource;

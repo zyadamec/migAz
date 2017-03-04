@@ -3,7 +3,7 @@ using MigAz.Core.Interface;
 using System;
 using System.IO;
 
-namespace MigAzASM.Providers
+namespace MigAz.Providers
 {
     class FileLogProvider : ILogProvider
     {

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Forms.ASM;
 
-namespace MigAzASM.UserControls
+namespace MigAz.UserControls
 {
     public partial class NetworkSecurityGroupProperties : UserControl
     {

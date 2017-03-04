@@ -15,6 +15,7 @@ using MigAz.Core.Interface;
 using MigAzAWS.Interface;
 using MigAzAWS.Provider;
 using MigAz.AWS.Forms;
+using MigAz.Forms.AWS.Provider;
 
 namespace MigAz.Forms.AWS
 {
@@ -40,11 +41,13 @@ namespace MigAz.Forms.AWS
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
 
-        public Window()
+        private Window() { }
+
+        public Window(IStatusProvider statusProvider)
         {
             InitializeComponent();
+            _statusProvider = statusProvider;
             _logProvider = new FileLogProvider();
-            _statusProvider = new UIStatusProvider(lblStatus);
             telemetryProvider = new CloudTelemetryProvider();
             _saveSelectionProvider = new UISaveSelectionProvider();
 
@@ -202,7 +205,7 @@ namespace MigAz.Forms.AWS
                 // If save selection option is enabled
                 if (app.Default.SaveSelection)
                 {
-                    lblStatus.Text = "BUSY: Reading saved selection";
+                    _statusProvider.UpdateStatus("BUSY: Reading saved selection");
                     _saveSelectionProvider.Save(cmbRegion.Text, lvwVirtualNetworks, lvwVirtualMachines);
                 }
 
@@ -293,7 +296,7 @@ namespace MigAz.Forms.AWS
             // If save selection option is enabled
             if (app.Default.SaveSelection)
             {
-                lblStatus.Text = "BUSY: Reading saved selection";
+                _statusProvider.UpdateStatus("BUSY: Reading saved selection");
                 _saveSelectionProvider.Read(cmbRegion.Text,ref  lvwVirtualNetworks, ref lvwVirtualMachines);
             }
 

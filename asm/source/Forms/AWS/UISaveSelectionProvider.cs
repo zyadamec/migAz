@@ -6,7 +6,7 @@ using System.IO;
 using System;
 using MigAzAWS.Interface;
 
-namespace MigAzAWS.Provider
+namespace MigAz.Forms.AWS.Provider
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {

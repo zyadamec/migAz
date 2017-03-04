@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure;
 
-namespace MigAzASM.UserControls
+namespace MigAz.UserControls
 {
     public partial class StorageAccountProperties : UserControl
     {

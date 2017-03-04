@@ -35,8 +35,6 @@
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
             this.lblOutputFolder = new System.Windows.Forms.Label();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnOptions = new System.Windows.Forms.Button();
             this.lvwVirtualNetworks = new System.Windows.Forms.ListView();
             this.colVpcId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -50,7 +48,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.cmbRegion = new System.Windows.Forms.ComboBox();
             this.azureLoginContextViewer21 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer2();
-            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGetToken
@@ -111,24 +108,6 @@
             // folderBrowserDialog
             // 
             this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 1060);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(3, 0, 28, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1413, 37);
-            this.statusStrip1.TabIndex = 29;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(79, 32);
-            this.lblStatus.Text = "Ready";
             // 
             // btnOptions
             // 
@@ -272,7 +251,6 @@
             this.Controls.Add(this.lvwVirtualMachines);
             this.Controls.Add(this.lvwVirtualNetworks);
             this.Controls.Add(this.btnOptions);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnChoosePath);
             this.Controls.Add(this.txtDestinationFolder);
@@ -285,8 +263,6 @@
             this.Text = "migAz";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Window_FormClosing);
             this.Load += new System.EventHandler(this.Window_Load);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -299,8 +275,6 @@
         private System.Windows.Forms.TextBox txtDestinationFolder;
         private System.Windows.Forms.Label lblOutputFolder;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.ListView lvwVirtualNetworks;
         private System.Windows.Forms.Label label1;

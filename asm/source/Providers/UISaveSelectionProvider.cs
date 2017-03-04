@@ -9,10 +9,10 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
-using MigAzASM.Interface;
+using MigAz.Interface;
 using MigAz.Azure;
 
-namespace MigAzASM.Providers
+namespace MigAz.Providers
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {

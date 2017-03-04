@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace MigAz.Interface
+namespace MigAz.Forms.ARM.Interface
 {
     public interface ISaveSelectionProvider
     {

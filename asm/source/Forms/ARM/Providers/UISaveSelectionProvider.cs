@@ -4,9 +4,9 @@ using MigAz.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using MigAz.Interface;
+using MigAz.Forms.ARM.Interface;
 
-namespace MigAz.Providers
+namespace MigAz.Forms.ARM.Providers
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {

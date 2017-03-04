@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
 
-namespace MigAzASM.UserControls
+namespace MigAz.UserControls
 {
     public partial class VirtualNetworkProperties : UserControl
     {

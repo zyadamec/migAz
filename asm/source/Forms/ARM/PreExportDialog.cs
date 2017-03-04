@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Forms
+namespace MigAz.Forms.ARM
 {
     public partial class PreExportDialog : Form
     {

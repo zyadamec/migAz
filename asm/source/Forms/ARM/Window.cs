@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Collections;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Net;
 using System.IO;
 using System.Xml;
@@ -9,30 +8,32 @@ using System.Collections.Generic;
 using System.Reflection;
 using MigAz.Models;
 using MigAz.Interface;
-using Newtonsoft.Json;
 using MigAz.Azure;
-using MigAz.Azure.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Providers;
 using System.Threading.Tasks;
 using MigAz.Core.Interface;
+using MigAz.Forms.ARM.Interface;
 
-namespace MigAz
+namespace MigAz.Forms.ARM
 {
     public partial class Window : Form
     {
         private AzureRetriever _AzureRetriever;
         private AsmArtefacts _asmArtefacts;
         private AppSettingsProvider _appSettingsProvider;
-        private ISaveSelectionProvider _saveSelectionProvider;
+        private Interface.ISaveSelectionProvider _saveSelectionProvider;
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
-        private Interface.ITelemetryProvider _telemetryProvider;
+        private MigAz.Forms.ARM.Interface.ITelemetryProvider _telemetryProvider;
         private AzureContext _AzureContextARM;
 
-        public Window()
+        private Window() { }
+
+        public Window(IStatusProvider statusProvider)
         {
             InitializeComponent();
+            _statusProvider = statusProvider;
         }
 
         private async void Window_Load(object sender, EventArgs e)
@@ -44,9 +45,8 @@ namespace MigAz
             NewVersionAvailable(); // check if there a new version of the app
 
             _logProvider = new FileLogProvider();
-            _statusProvider = new UIStatusProvider(lblStatus);
-            _saveSelectionProvider = new UISaveSelectionProvider();
-            _telemetryProvider = new CloudTelemetryProvider();
+            _saveSelectionProvider = new MigAz.Forms.ARM.Providers.UISaveSelectionProvider();
+            _telemetryProvider = new MigAz.Forms.ARM.Providers.CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
 
             _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
@@ -259,7 +259,7 @@ namespace MigAz
             // If save selection option is enabled
             if (app.Default.SaveSelection)
             {
-                lblStatus.Text = "BUSY: Reading saved selection";
+                _statusProvider.UpdateStatus("BUSY: Reading saved selection");
 
                 // TODO _saveSelectionProvider.Save(Guid.Parse(subscriptionid), lvwVirtualNetworks, lvwStorageAccounts, lvwVirtualMachines);
                 Application.DoEvents();
@@ -313,7 +313,7 @@ namespace MigAz
             //        });
             //}
 
-            lblStatus.Text = "Done";
+            _statusProvider.UpdateStatus("Done");
             btnExport.Enabled = true;
         }
 
@@ -374,7 +374,7 @@ namespace MigAz
 
             //// Get Subscription from ComboBox
             //var token = GetToken(subscriptionsAndTenants[subscriptionid], PromptBehavior.Auto);
-            
+
             //// Get VM details
             //_AzureRetriever.GetARMVMDetails(subscriptionid, RGName, virtualMachineName, token, out virtualNetworkName);
 
@@ -382,7 +382,7 @@ namespace MigAz
             //virtualmachineinfo.Add("resourcegroup", RGName);
             //virtualmachineinfo.Add("virtualmachineName", virtualMachineName);
             //virtualmachineinfo.Add("virtualnetworkname", virtualNetworkName);
- 
+
 
             ////Listing VMDetails
             //var VMDetails = _AzureRetriever.GetAzureARMResources("VirtualMachine", subscriptionid, virtualmachineinfo, token, RGName);
@@ -404,9 +404,9 @@ namespace MigAz
 
 
             ////Process OS Disk
-          
+
             //string OSDiskuri = virtualmachine.properties.storageProfile.osDisk.vhd.uri;
-                                     
+
             //string[] splitarray = OSDiskuri.Split(new char[] { '/' });
             //string storageaccountname = splitarray[2].Split(new char[] { '.' })[0];
 
@@ -441,7 +441,7 @@ namespace MigAz
             //}
 
 
-                lblStatus.Text = "Ready";
+            _statusProvider.UpdateStatus("Ready");
         }
 
            private async void cmbTenants_SelectedIndexChanged(object sender, EventArgs e)
@@ -476,7 +476,7 @@ namespace MigAz
             get { return _statusProvider; }
         }
 
-        public Interface.ITelemetryProvider TelemetryProvider
+        public ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
         }

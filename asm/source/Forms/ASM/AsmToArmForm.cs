@@ -5,17 +5,15 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
-using MigAzASM.Providers;
+using MigAz.Providers;
 using System.Threading.Tasks;
 using System.Linq;
-using MigAzASM.UserControls;
-using MigAz.Azure.Interface;
+using MigAz.UserControls;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
-using MigAzASM.Interface;
+using MigAz.Interface;
 using MigAz.Core.Interface;
-using MigAz.Forms.AWS.Providers;
 
 namespace MigAz.Forms.ASM
 {
@@ -37,12 +35,13 @@ namespace MigAz.Forms.ASM
         #endregion
 
         #region Constructors
+        private AsmToArmForm() { }
 
-        public AsmToArmForm()
+        public AsmToArmForm(IStatusProvider statusProvider)
         {
             InitializeComponent();
             _logProvider = new FileLogProvider();
-            _statusProvider = new UIStatusProvider(lblStatus);
+            _statusProvider = statusProvider;
             _saveSelectionProvider = new UISaveSelectionProvider();
             _telemetryProvider = new CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
@@ -235,7 +234,7 @@ namespace MigAz.Forms.ASM
             get { return _statusProvider; }
         }
 
-        public ITelemetryProvider TelemetryProvider
+        public Azure.Interface.ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
         }
@@ -374,7 +373,7 @@ namespace MigAz.Forms.ASM
                     }
                 }
 
-                lblStatus.Text = "Ready";
+                _statusProvider.UpdateStatus("Ready");
             }
         }
 

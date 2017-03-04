@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 
-namespace MigAzASM.UserControls
+namespace MigAz.UserControls
 {
     public partial class AvailabilitySetProperties : UserControl
     {

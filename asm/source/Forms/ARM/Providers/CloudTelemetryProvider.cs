@@ -1,4 +1,5 @@
-﻿using MigAz.Interface;
+﻿using MigAz.Forms.ARM.Interface;
+using MigAz.Interface;
 using MigAz.Models;
 using Newtonsoft.Json;
 using System;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Providers
+namespace MigAz.Forms.ARM.Providers
 {
     public class CloudTelemetryProvider : ITelemetryProvider
     {

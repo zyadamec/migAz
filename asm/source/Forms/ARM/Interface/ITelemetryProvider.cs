@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Interface
+namespace MigAz.Forms.ARM.Interface
 {
     public interface ITelemetryProvider
     {
