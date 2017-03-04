@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MigAzASM {
+namespace MigAz {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

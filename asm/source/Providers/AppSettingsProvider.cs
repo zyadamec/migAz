@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAzASM.Providers
+namespace MigAz.Forms.AWS.Providers
 {
     public class AppSettingsProvider : ISettingsProvider
     {
