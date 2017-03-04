@@ -35,7 +35,7 @@ namespace MigAz.Azure
                 return;
             }
 
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetLoginUrl(azureSubscription.AzureEnvironment) + azureSubscription.AzureAdTenantId.ToString());
+            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureSubscription.AzureEnvironment) + azureSubscription.AzureAdTenantId.ToString());
 
             PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
             _AuthenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureSubscription.AzureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
@@ -60,7 +60,7 @@ namespace MigAz.Azure
 
         internal async static Task<AzureTokenProvider> LoginAzureProvider(AzureEnvironment azureEnvironment)
         {
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetLoginUrl(azureEnvironment) + "common");
+            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + "common");
 
             PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
             AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
@@ -70,6 +70,20 @@ namespace MigAz.Azure
             }
 
             return new AzureTokenProvider(authenticationResult);
+        }
+
+        internal async Task<AuthenticationResult> GetGraphToken(AzureEnvironment azureEnvironment, string tenantId)
+        {
+            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId);
+
+            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetGraphApiUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+            if (authenticationResult == null)
+            {
+                throw new InvalidOperationException("Failed to obtain the token");
+            }
+
+            return authenticationResult;
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Asm;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure
 {
@@ -624,11 +625,20 @@ namespace MigAz.Azure
             string methodType = "GET";
 
             string url = null;
+            AuthenticationResult authenticationResult = _AzureContext.TokenProvider.AuthenticationResult;
+            bool useCached = true;
+
             switch (resourceType)
             {
                 case "Tenants":
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "tenants?api-version=2015-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
+                    break;
+                case "Domains":
+                    url = AzureServiceUrls.GetGraphApiUrl(this._AzureContext.AzureEnvironment) + "myorganization/domains?api-version=1.6";
+                    authenticationResult = await _AzureContext.TokenProvider.GetGraphToken(this._AzureContext.AzureEnvironment, info["tenantId"].ToString());
+                    useCached = false;
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
                     break;
                 case "Subscriptions":
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions?api-version=2015-01-01";
@@ -667,7 +677,7 @@ namespace MigAz.Azure
             if (_armJsonDocumentCache == null)
                 _armJsonDocumentCache = new Dictionary<string, JObject>();
 
-            if (_armJsonDocumentCache.ContainsKey(url))
+            if (useCached && _armJsonDocumentCache.ContainsKey(url))
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "FROM JSON CACHE");
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End");
@@ -676,7 +686,7 @@ namespace MigAz.Azure
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-            request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + _AzureContext.TokenProvider.AuthenticationResult.AccessToken);
+            request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + authenticationResult.AccessToken);
             request.ContentType = "application/json";
             request.Method = methodType;
 
@@ -703,7 +713,7 @@ namespace MigAz.Azure
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End");
                 writeRetreiverResultToLog(url, webRequesetResult);
 
-                if (!_armJsonDocumentCache.ContainsKey(url))
+                if (useCached && !_armJsonDocumentCache.ContainsKey(url))
                     _armJsonDocumentCache.Add(url, webRequestResultJson);
 
                 return webRequestResultJson;
@@ -730,11 +740,33 @@ namespace MigAz.Azure
 
             foreach (JObject tenantJson in tenants)
             {
-                AzureTenant azureSubscription = new AzureTenant(tenantJson, _AzureContext.AzureEnvironment);
-                _ArmTenants.Add(azureSubscription);
+                AzureTenant azureTenant = new AzureTenant(tenantJson, _AzureContext);
+                await azureTenant.InitializeChildren();
+                _ArmTenants.Add(azureTenant);
             }
 
             return _ArmTenants;
+        }
+
+        public async Task<List<AzureDomain>> GetAzureARMDomains(string tenantId)
+        {
+            Hashtable info = new Hashtable();
+            info.Add("tenantId", tenantId);
+
+            JObject domainsJson = await this.GetAzureARMResources("Domains", info);
+
+            var domains = from domain in domainsJson["value"]
+                          select domain;
+
+            List<AzureDomain> armTenantDomains = new List<AzureDomain>();
+
+            foreach (JObject domainJson in domains)
+            {
+                AzureDomain azureDomain = new AzureDomain(domainJson, _AzureContext);
+                armTenantDomains.Add(azureDomain);
+            }
+
+            return armTenantDomains;
         }
 
         public async Task<List<AzureSubscription>> GetAzureARMSubscriptions()

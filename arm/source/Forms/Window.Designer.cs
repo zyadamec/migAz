@@ -36,7 +36,7 @@
             this.btnOptions = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.treeSource = new System.Windows.Forms.TreeView();
-            this.azureLoginContextViewer1 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewer1 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer2();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,10 +105,11 @@
             // 
             // azureLoginContextViewer1
             // 
-            this.azureLoginContextViewer1.Location = new System.Drawing.Point(18, 12);
+            this.azureLoginContextViewer1.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.Full;
+            this.azureLoginContextViewer1.Location = new System.Drawing.Point(477, 150);
             this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
-            this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 168);
-            this.azureLoginContextViewer1.TabIndex = 42;
+            this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 211);
+            this.azureLoginContextViewer1.TabIndex = 44;
             this.azureLoginContextViewer1.Title = "Azure Subscription";
             // 
             // Window
@@ -117,8 +118,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1912, 1097);
-            this.Controls.Add(this.treeSource);
             this.Controls.Add(this.azureLoginContextViewer1);
+            this.Controls.Add(this.treeSource);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
@@ -144,8 +145,8 @@
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.Label label1;
-        private Azure.Arm.UserControls.AzureLoginContextViewer azureLoginContextViewer1;
         private System.Windows.Forms.TreeView treeSource;
+        private Azure.Arm.UserControls.AzureLoginContextViewer2 azureLoginContextViewer1;
     }
 }
 

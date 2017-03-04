@@ -64,6 +64,12 @@
     <Compile Include="Arm\ArmSubnet.cs" />
     <Compile Include="Arm\ArmVirtualMachine.cs" />
     <Compile Include="Arm\ArmVirtualNetwork.cs" />
+    <Compile Include="Arm\Forms\AzureLoginContextDialog2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Arm\Forms\AzureLoginContextDialog2.Designer.cs">
+      <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Arm\Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,11 +82,23 @@
     <Compile Include="Arm\Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Arm\UserControls\AzureArmLoginControl2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureArmLoginControl2.Designer.cs">
+      <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Arm\UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Arm\UserControls\AzureArmLoginControl.Designer.cs">
       <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureLoginContextViewer2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arm\UserControls\AzureLoginContextViewer2.Designer.cs">
+      <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
     </Compile>
     <Compile Include="Arm\UserControls\AzureLoginContextViewer.cs">
       <SubType>UserControl</SubType>
@@ -139,14 +157,23 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Arm\Forms\AzureLoginContextDialog2.resx">
+      <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Arm\Forms\AzureLoginContextDialog.resx">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Arm\Forms\AzureSubscriptionContextDialog.resx">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Arm\UserControls\AzureArmLoginControl2.resx">
+      <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Arm\UserControls\AzureArmLoginControl.resx">
       <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arm\UserControls\AzureLoginContextViewer2.resx">
+      <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Arm\UserControls\AzureLoginContextViewer.resx">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>

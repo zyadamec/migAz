@@ -10,30 +10,57 @@ namespace MigAz.Azure
     public class AzureTenant
     {
         private JObject _TenantJson;
-        private AzureEnvironment _AzureEnvironment;
+        private AzureContext _AzureContext;
+        private List<AzureDomain> _Domains;
 
-        internal AzureTenant(JObject tenantsJson, AzureEnvironment azureEnvironment)
+        internal AzureTenant(JObject tenantsJson, AzureContext azureContext)
         {
             _TenantJson = tenantsJson;
-            _AzureEnvironment = azureEnvironment;
+            _AzureContext = azureContext;
         }
 
         public string Id
         {
-            get { return String.Empty; }
+            get { return (string)_TenantJson["id"]; }
+        }
+        public string TenantId
+        {
+            get { return (string)_TenantJson["tenantId"]; }
+        }
+        public AzureDomain DefaultDomain
+        {
+            get
+            {
+                if (Domains == null)
+                    return null;
+
+                foreach (AzureDomain azureDomain in Domains)
+                {
+                    if (azureDomain.IsDefault)
+                        return azureDomain;
+                }
+
+                return null;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (DefaultDomain == null)
+                return TenantId;
+            else
+                return DefaultDomain.Name + " (" + TenantId + ")";
         }
 
         public List<AzureDomain> Domains
         {
-            get { return new List<AzureDomain>(); }
+            get { return _Domains; }
 
-        //                        //Gathering the Token for Graph to list the Tenant Information
-        //            var token_grpah = GetToken(azureTenant.Id, PromptBehavior.Auto, false, "GraphAuth");
+        }
 
-        //var DomDetails = _AzureRetriever.GetAzureARMResources("Domains", null, null, token_grpah, null);
-        //var Domresults = JsonConvert.DeserializeObject<dynamic>(DomDetails);
-
-
+        public async Task InitializeChildren()
+        {
+            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(TenantId);
+        }
     }
-}
 }
