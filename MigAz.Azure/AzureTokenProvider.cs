@@ -85,5 +85,18 @@ namespace MigAz.Azure
 
             return authenticationResult;
         }
+        internal async Task<AuthenticationResult> GetAzureToken(AzureEnvironment azureEnvironment, string tenantId)
+        {
+            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId);
+
+            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetARMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+            if (authenticationResult == null)
+            {
+                throw new InvalidOperationException("Failed to obtain the token");
+            }
+
+            return authenticationResult;
+        }
     }
 }

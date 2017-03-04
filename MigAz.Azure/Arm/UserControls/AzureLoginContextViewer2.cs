@@ -26,9 +26,18 @@ namespace MigAz.Azure.Arm.UserControls
         {
             _AzureContext = azureContext;
             _AzureContext.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
+            _AzureContext.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContext.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContext.AfterUserSignOut += _AzureContext_AfterUserSignOut;
             _AzureContext.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
+        }
+
+        private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
+        {
+            if (sender.AzureTenant == null)
+                lblTenantName.Text = "-";
+            else
+                lblTenantName.Text = sender.AzureTenant.ToString();
         }
 
         private async Task _AzureContext_AfterUserSignOut()

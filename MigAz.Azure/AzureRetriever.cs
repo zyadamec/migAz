@@ -634,7 +634,7 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "tenants?api-version=2015-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
                     break;
-                case "Domains":
+                case "Domains": // todo, move to graph class
                     url = AzureServiceUrls.GetGraphApiUrl(this._AzureContext.AzureEnvironment) + "myorganization/domains?api-version=1.6";
                     authenticationResult = await _AzureContext.TokenProvider.GetGraphToken(this._AzureContext.AzureEnvironment, info["tenantId"].ToString());
                     useCached = false;
@@ -642,6 +642,13 @@ namespace MigAz.Azure
                     break;
                 case "Subscriptions":
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions?api-version=2015-01-01";
+
+                    if (info != null && info["tenantId"] != null)
+                    {
+                        authenticationResult = await _AzureContext.TokenProvider.GetAzureToken(this._AzureContext.AzureEnvironment, info["tenantId"].ToString());
+                        useCached = false;
+                    }
+
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
                     break;
                 case "ResourceGroups":
@@ -748,10 +755,10 @@ namespace MigAz.Azure
             return _ArmTenants;
         }
 
-        public async Task<List<AzureDomain>> GetAzureARMDomains(string tenantId)
+        public async Task<List<AzureDomain>> GetAzureARMDomains(AzureTenant azureTenant)
         {
             Hashtable info = new Hashtable();
-            info.Add("tenantId", tenantId);
+            info.Add("tenantId", azureTenant.TenantId);
 
             JObject domainsJson = await this.GetAzureARMResources("Domains", info);
 
@@ -783,11 +790,32 @@ namespace MigAz.Azure
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
-                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, _AzureContext.AzureEnvironment);
+                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, null, _AzureContext.AzureEnvironment);
                 _ArmSubscriptions.Add(azureSubscription);
             }
 
             return _ArmSubscriptions;
+        }
+
+        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureTenant azureTenant)
+        {
+            Hashtable info = new Hashtable();
+            info.Add("tenantId", azureTenant.TenantId);
+
+            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", info);
+
+            var subscriptions = from subscription in subscriptionsJson["value"]
+                                select subscription;
+
+            List<AzureSubscription> tenantSubscriptions = new List<AzureSubscription>();
+
+            foreach (JObject azureSubscriptionJson in subscriptions)
+            {
+                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, azureTenant, _AzureContext.AzureEnvironment);
+                tenantSubscriptions.Add(azureSubscription);
+            }
+
+            return tenantSubscriptions;
         }
 
         public async Task<List<ArmResourceGroup>> GetAzureARMResourceGroups()

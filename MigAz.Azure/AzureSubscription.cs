@@ -10,6 +10,7 @@ namespace MigAz.Azure
         private XmlNode _XmlNode;
         private JObject _SubscriptionJson;
         private AzureEnvironment _AzureEnvironment;
+        private AzureTenant _ParentTenant;
 
         private AzureSubscription() { }
 
@@ -19,15 +20,29 @@ namespace MigAz.Azure
             _AzureEnvironment = azureEnvironment;
         }
 
-        internal AzureSubscription(JObject subscriptionJson, AzureEnvironment azureEnvironment)
+        internal AzureSubscription(JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
         {
             _SubscriptionJson = subscriptionJson;
+            _ParentTenant = parentAzureTenant;
             _AzureEnvironment = azureEnvironment;
         }
 
         public string Name
         {
-            get { return _XmlNode.SelectSingleNode("SubscriptionName").InnerText; }
+            get
+            {
+                if (_XmlNode != null)
+                    return _XmlNode.SelectSingleNode("SubscriptionName").InnerText;
+                else if (_SubscriptionJson != null)
+                    return (string)_SubscriptionJson["displayName"];
+                else
+                    return String.Empty;
+            }
+        }
+
+        public AzureTenant Parent
+        {
+            get { return _ParentTenant; }
         }
 
         public AzureEnvironment AzureEnvironment
@@ -37,12 +52,29 @@ namespace MigAz.Azure
 
         public Guid AzureAdTenantId
         {
-            get { return new Guid(_XmlNode.SelectSingleNode("AADTenantID").InnerText); }
+            get
+            {
+                if (this.Parent != null)
+                    return this.Parent.TenantId;
+                else if (_XmlNode != null)
+                    return new Guid(_XmlNode.SelectSingleNode("AADTenantID").InnerText);
+                else
+                    return Guid.Empty;
+            }
         }
 
         public Guid SubscriptionId
         {
-            get { return new Guid(_XmlNode.SelectSingleNode("SubscriptionID").InnerText); }
+            get
+            {
+                if (_XmlNode != null)
+                    return new Guid(_XmlNode.SelectSingleNode("SubscriptionID").InnerText);
+                else if (_SubscriptionJson != null)
+                    return new Guid((string)_SubscriptionJson["subscriptionId"]);
+                else
+                    return Guid.Empty;
+
+            }
         }
 
         public string offercategories

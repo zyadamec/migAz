@@ -12,6 +12,7 @@ namespace MigAz.Azure
         private JObject _TenantJson;
         private AzureContext _AzureContext;
         private List<AzureDomain> _Domains;
+        private List<AzureSubscription> _Subscriptions;
 
         internal AzureTenant(JObject tenantsJson, AzureContext azureContext)
         {
@@ -23,9 +24,9 @@ namespace MigAz.Azure
         {
             get { return (string)_TenantJson["id"]; }
         }
-        public string TenantId
+        public Guid TenantId
         {
-            get { return (string)_TenantJson["tenantId"]; }
+            get { return new Guid((string)_TenantJson["tenantId"]); }
         }
         public AzureDomain DefaultDomain
         {
@@ -47,7 +48,7 @@ namespace MigAz.Azure
         public override string ToString()
         {
             if (DefaultDomain == null)
-                return TenantId;
+                return TenantId.ToString();
             else
                 return DefaultDomain.Name + " (" + TenantId + ")";
         }
@@ -55,12 +56,33 @@ namespace MigAz.Azure
         public List<AzureDomain> Domains
         {
             get { return _Domains; }
+        }
 
+        public List<AzureSubscription> Subscriptions
+        {
+            get { return _Subscriptions; }
         }
 
         public async Task InitializeChildren()
         {
-            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(TenantId);
+            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(this);
+            _Subscriptions = await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(this);
+        }
+
+        public static bool operator ==(AzureTenant lhs, AzureTenant rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.TenantId == rhs.TenantId))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(AzureTenant lhs, AzureTenant rhs)
+        {
+            return !(lhs == rhs);
         }
     }
 }

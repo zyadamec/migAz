@@ -88,7 +88,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 196);
+            this.label1.Location = new System.Drawing.Point(13, 230);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(168, 25);
@@ -97,7 +97,7 @@
             // 
             // treeSource
             // 
-            this.treeSource.Location = new System.Drawing.Point(18, 224);
+            this.treeSource.Location = new System.Drawing.Point(18, 258);
             this.treeSource.Name = "treeSource";
             this.treeSource.Size = new System.Drawing.Size(700, 455);
             this.treeSource.TabIndex = 43;
@@ -106,7 +106,7 @@
             // azureLoginContextViewer1
             // 
             this.azureLoginContextViewer1.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.Full;
-            this.azureLoginContextViewer1.Location = new System.Drawing.Point(477, 150);
+            this.azureLoginContextViewer1.Location = new System.Drawing.Point(18, 12);
             this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
             this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 211);
             this.azureLoginContextViewer1.TabIndex = 44;
@@ -118,12 +118,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1912, 1097);
-            this.Controls.Add(this.azureLoginContextViewer1);
             this.Controls.Add(this.treeSource);
             this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnExport);
+            this.Controls.Add(this.azureLoginContextViewer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "Window";

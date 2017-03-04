@@ -17,12 +17,19 @@ namespace MigAz.Azure
     public class AzureContext
     {
         private AzureEnvironment _AzureEnvironment = Azure.AzureEnvironment.AzureCloud;
+        private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
         private AzureTokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
         private ISettingsProvider _SettingsProvider;
+
+        public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
+        public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
+
+        public delegate Task AfterAzureTenantChangedHandler(AzureContext sender);
+        public event AfterAzureTenantChangedHandler AfterAzureTenantChange;
 
         public delegate Task BeforeAzureSubscriptionChangedHandler(AzureContext sender);
         public event BeforeAzureSubscriptionChangedHandler BeforeAzureSubscriptionChange;
@@ -68,6 +75,11 @@ namespace MigAz.Azure
 
                 AzureEnvironmentChanged?.Invoke(this);
             }
+        }
+
+        public AzureTenant AzureTenant
+        {
+            get { return _AzureTenant; }
         }
 
         public AzureSubscription AzureSubscription
@@ -117,6 +129,20 @@ namespace MigAz.Azure
             this._AzureRetriever = new AzureRetriever(this);
         }
 
+        public async Task SetTenantContext(AzureTenant azureTenant)
+        {
+            if (azureTenant == null && this._AzureSubscription != null)
+                await this.SetSubscriptionContext(null);
+
+            if (BeforeAzureTenantChange != null)
+                await BeforeAzureTenantChange?.Invoke(this);
+
+            _AzureTenant = azureTenant;
+
+            if (AfterAzureTenantChange != null)
+                await AfterAzureTenantChange?.Invoke(this);
+        }
+
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             if (BeforeAzureSubscriptionChange != null)
@@ -139,24 +165,13 @@ namespace MigAz.Azure
                 await AfterAzureSubscriptionChange?.Invoke(this);
         }
 
-        //internal void SetAzureContext(AzureContext azureContext)
-        //{
-        //    this.AzureEnvironment = azureContext.AzureEnvironment;
-        //    _AzureRetriever = azureContext.AzureRetriever;
-        //    _TokenProvider = azureContext.TokenProvider;
-
-        //    if (this.TokenProvider != null)
-        //    {
-        //        UserAuthenticated?.Invoke(this.TokenProvider.AuthenticationResult.UserInfo);
-        //    }
-        //}
-
         public async Task Logout()
         {
             if (BeforeUserSignOut != null)
                 await BeforeUserSignOut.Invoke();
 
-            await this.SetSubscriptionContext(null);
+            await this.SetTenantContext(null);
+
             _AzureRetriever = null;
             _TokenProvider = null;
 
