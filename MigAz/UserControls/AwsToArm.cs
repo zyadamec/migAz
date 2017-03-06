@@ -14,11 +14,13 @@ using MigAz.AWS.Forms;
 using System.Collections;
 using System.Net;
 using System.IO;
+using MigAz.Azure;
 
 namespace MigAz.UserControls
 {
     public partial class AwsToArm : UserControl
     {
+        private AzureContext _AzureContextARM;
         private ILogProvider _logProvider;
         //private EC2Operation ec2 = null;
         // TODO WHERE?? static IAmazonEC2 service;
@@ -38,19 +40,23 @@ namespace MigAz.UserControls
         private IStatusProvider _statusProvider;
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
+        private Forms.AWS.Providers.AppSettingsProvider _appSettingsProvider;
 
         public AwsToArm()
         {
             InitializeComponent();
         }
 
-        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider)
         {
-            InitializeComponent();
             _statusProvider = statusProvider;
             _logProvider = logProvider;
-            telemetryProvider = new Forms.AWS.Provider.CloudTelemetryProvider();
-            _saveSelectionProvider = new Forms.AWS.Provider.UISaveSelectionProvider();
+
+            _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            await azureLoginContextViewer21.Bind(_AzureContextARM);
+
+            //telemetryProvider = new Forms.AWS.Provider.CloudTelemetryProvider();
+            //saveSelectionProvider = new Forms.AWS.Provider.UISaveSelectionProvider();
 
             // TODO
             //Regions = new List<Amazon.RegionEndpoint>();
@@ -67,12 +73,13 @@ namespace MigAz.UserControls
 
         private void AwsToArm_Load(object sender, EventArgs e)
         {
-            _logProvider.WriteLog("Window_Load", "Program start");
+            if (_logProvider != null)
+                _logProvider.WriteLog("Window_Load", "Program start");
             // TODO instResponse = new DescribeInstancesResponse();
-            this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
+           // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
             // TODO cmbRegion.DataSource = Regions;
-            NewVersionAvailable(); // check if there a new version of the app
+            //NewVersionAvailable(); // check if there a new version of the app
         }
 
         //TODO CHECK

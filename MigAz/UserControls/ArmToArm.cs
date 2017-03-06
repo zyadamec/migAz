@@ -34,10 +34,13 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider)
         {
             _statusProvider = statusProvider;
             _logProvider = logProvider;
+
+            _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            await azureLoginContextViewer1.Bind(_AzureContextARM);
         }
 
         private async void ArmToArm_Load(object sender, EventArgs e)

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Net;
-using System.IO;
 using System.Collections.Generic;
-using System.Reflection;
 using MigAz.Providers;
 using System.Threading.Tasks;
 using System.Linq;
@@ -13,6 +10,7 @@ using MigAz.Azure.Arm;
 using MigAz.Azure;
 using MigAz.Interface;
 using MigAz.Core.Interface;
+using System.Reflection;
 
 namespace MigAz
 {
@@ -33,7 +31,7 @@ namespace MigAz
             _logProvider = new FileLogProvider();
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
-            this.asmToArm1.Bind(_statusProvider, _logProvider);
+            //awsToArm1.Bind(_statusProvider, _logProvider);
         }
 
         #endregion
@@ -57,44 +55,12 @@ namespace MigAz
 
         #endregion
 
-        #region New Version Check
-
-        private async Task NewVersionAvailable()
-        {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/version");
-            request.Method = "GET";
-            request.ContentType = "application/x-www-form-urlencoded";
-
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                string result = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-                string version = "\"" + Assembly.GetEntryAssembly().GetName().Version.ToString() + "\"";
-                string availableversion = result.ToString();
-
-                if (version != availableversion)
-                {
-                    DialogResult dialogresult = MessageBox.Show("New version " + availableversion + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception exception)
-            {
-                DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        #endregion
-
         #region Form Events
 
-        private async void MigAzForm_Load(object sender, EventArgs e)
+        private void MigAzForm_Load(object sender, EventArgs e)
         {
             _logProvider.WriteLog("MigAzForm_Load", "Program start");
-
             this.Text = "MigAz (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
-
-            await NewVersionAvailable(); // check if there a new version of the app
         }
 
         #endregion
@@ -102,6 +68,45 @@ namespace MigAz
         private void toolStripStatusLabel2_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://aka.ms/MigAz");
+        }
+
+        private void splitContainer2_Panel2_Resize(object sender, EventArgs e)
+        {
+            this.tabControl1.Width = splitContainer2.Panel2.Width - 5;
+            this.tabControl1.Height = splitContainer2.Panel2.Height - 5;
+        }
+
+        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AsmToArm asmToArm = new AsmToArm();
+            asmToArm.Bind(this.StatusProvider, this.LogProvider);
+            parent.Controls.Add(asmToArm);
+        }
+
+        private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            ArmToArm armToArm = new ArmToArm();
+            armToArm.Bind(this.StatusProvider, this.LogProvider);
+            parent.Controls.Add(armToArm);
+        }
+
+        private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AwsToArm awsToArm = new AwsToArm();
+            awsToArm.Bind(this.StatusProvider, this.LogProvider);
+            parent.Controls.Add(awsToArm);
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
