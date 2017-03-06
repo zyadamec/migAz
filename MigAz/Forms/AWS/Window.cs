@@ -13,7 +13,6 @@ using System.Collections;
 using MigAz.AWS;
 using MigAz.Core.Interface;
 using MigAzAWS.Interface;
-using MigAzAWS.Provider;
 using MigAz.AWS.Forms;
 using MigAz.Forms.AWS.Provider;
 
@@ -43,11 +42,11 @@ namespace MigAz.Forms.AWS
 
         private Window() { }
 
-        public Window(IStatusProvider statusProvider)
+        public Window(IStatusProvider statusProvider, ILogProvider logProvider)
         {
             InitializeComponent();
             _statusProvider = statusProvider;
-            _logProvider = new FileLogProvider();
+            _logProvider = logProvider;
             telemetryProvider = new CloudTelemetryProvider();
             _saveSelectionProvider = new UISaveSelectionProvider();
 

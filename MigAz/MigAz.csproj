@@ -135,8 +135,6 @@
       <DependentUpon>AsmToArmForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\AWS\CloudTelemetryProvider.cs" />
-    <Compile Include="Forms\AWS\CopyBlobDetail.cs" />
-    <Compile Include="Forms\AWS\FileLogProvider.cs" />
     <Compile Include="Forms\AWS\ISaveSelectionProvider.cs" />
     <Compile Include="Forms\AWS\ITelemetryProvider.cs" />
     <Compile Include="Forms\AWS\Options.cs">
@@ -301,7 +299,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>app.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Forms\ARM\Scripts\BlobCopy.ps1" />
     <None Include="Forms\AWS\Prepare.ps1" />
     <None Include="Scripts\BlobCopy.ps1" />
     <None Include="packages.config" />
