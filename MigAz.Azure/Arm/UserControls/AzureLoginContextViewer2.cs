@@ -52,9 +52,10 @@ namespace MigAz.Azure.Arm.UserControls
             lblSourceEnvironment.Text = sender.AzureEnvironment.ToString();
         }
 
-        private async Task _AzureContext_UserAuthenticated(Microsoft.IdentityModel.Clients.ActiveDirectory.UserInfo userAuthenticated)
+        private async Task _AzureContext_UserAuthenticated(AzureContext sender)
         {
-            lblSourceUser.Text = userAuthenticated.DisplayableId;
+            AzureContext azureContext = (AzureContext)sender;
+            lblSourceUser.Text = azureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
         }
 
         private async Task _AzureContext_AfterAzureSubscriptionChange(AzureContext sender)

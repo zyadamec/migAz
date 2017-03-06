@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
@@ -81,7 +80,7 @@ namespace MigAz.Forms.ASM
         }
 
 
-        private async Task _AzureContextSourceASM_UserAuthenticated(UserInfo userAuthenticated)
+        private async Task _AzureContextSourceASM_UserAuthenticated(AzureContext sender)
         {
             if (_AzureContextTargetARM.TokenProvider == null)
             {

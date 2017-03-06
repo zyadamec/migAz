@@ -65,14 +65,6 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -95,6 +87,12 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
+    </Compile>
+    <Compile Include="MigAzForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MigAzForm.Designer.cs">
+      <DependentUpon>MigAzForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ARM\ExportResultsDialog.cs">
       <SubType>Form</SubType>
@@ -130,11 +128,6 @@
     <Compile Include="Forms\ARM\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ARM\_aaaaa\ARM.cs" />
-    <Compile Include="Forms\ARM\_aaaaa\AsmRetriever.cs" />
-    <Compile Include="Forms\ARM\_aaaaa\InteractiveTokenProvider.cs" />
-    <Compile Include="Forms\ARM\_aaaaa\ITokenProvider.cs" />
-    <Compile Include="Forms\ARM\_aaaaa\ServiceUrls.cs" />
     <Compile Include="Forms\ASM\AsmToArmForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -178,12 +171,6 @@
     </Compile>
     <Compile Include="Forms\ASM\PreExportDialog.Designer.cs">
       <DependentUpon>PreExportDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MigAzMDIParent.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MigAzMDIParent.Designer.cs">
-      <DependentUpon>MigAzMDIParent.cs</DependentUpon>
     </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\CloudTelemetryProvider.cs" />
@@ -241,6 +228,9 @@
     <Compile Include="UserControls\VirtualNetworkProperties.Designer.cs">
       <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="MigAzForm.resx">
+      <DependentUpon>MigAzForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ARM\ExportResultsDialog.resx">
       <DependentUpon>ExportResultsDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -272,9 +262,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ASM\PreExportDialog.resx">
       <DependentUpon>PreExportDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MigAzMDIParent.resx">
-      <DependentUpon>MigAzMDIParent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -357,15 +344,15 @@
     <None Include="Resources\Resource group.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MigAz.Amazon\MigAz.AWS.csproj">
+    <ProjectReference Include="..\MigAz.Amazon\MigAz.AWS.csproj">
       <Project>{9752882b-fd87-495e-92fa-33243df8ee68}</Project>
       <Name>MigAz.AWS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MigAz.Azure\MigAz.Azure.csproj">
+    <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">
       <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
       <Name>MigAz.Azure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MigAz.Core\MigAz.Core.csproj">
+    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
       <Project>{1bdc90e2-902b-4397-8b4f-7dff2d486fc2}</Project>
       <Name>MigAz.Core</Name>
     </ProjectReference>

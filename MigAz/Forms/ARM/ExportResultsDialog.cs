@@ -1,8 +1,4 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MigAz.Azure.Arm;
-using MigAz.Azure.Asm;
-using MigAz.Azure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,9 +11,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using MigAz.Azure;
 using MigAz.Azure.Generator;
 
-namespace MigAz.Forms.ASM
+namespace MigAz.Forms
 {
     public partial class ExportResultsDialog : Form
     {
@@ -30,21 +27,18 @@ namespace MigAz.Forms.ASM
             InitializeComponent();
             _TemplateResult = templateResult;
         }
-        
+
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-        
-        private void btnViewTemplate_Click(object sender, EventArgs e)
+
+        private void ExportResults_Load(object sender, EventArgs e)
         {
-            ProcessStartInfo pInfo = new ProcessStartInfo();
-            pInfo.FileName = _TemplateResult.GetTemplatePath();
-            pInfo.UseShellExecute = true;
-            Process p = Process.Start(pInfo);
+            System.Media.SystemSounds.Asterisk.Play();
         }
 
-        private void btnGenerateInstructions_Click(object sender, EventArgs e)
+        private void btnGenerateInstructions_Click_1(object sender, EventArgs e)
         {
             ProcessStartInfo pInfo = new ProcessStartInfo();
             pInfo.FileName = _TemplateResult.GetInstructionPath();
@@ -52,9 +46,12 @@ namespace MigAz.Forms.ASM
             Process p = Process.Start(pInfo);
         }
 
-        private void ExportResults_Load(object sender, EventArgs e)
+        private void btnViewTemplate_Click_1(object sender, EventArgs e)
         {
-           
+            ProcessStartInfo pInfo = new ProcessStartInfo();
+            pInfo.FileName = _TemplateResult.GetInstructionPath();
+            pInfo.UseShellExecute = true;
+            Process p = Process.Start(pInfo);
         }
     }
 }

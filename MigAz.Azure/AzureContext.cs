@@ -40,7 +40,7 @@ namespace MigAz.Azure
         public delegate Task AzureEnvironmentChangedHandler(AzureContext sender);
         public event AzureEnvironmentChangedHandler AzureEnvironmentChanged;
 
-        public delegate Task UserAuthenticatedHandler(UserInfo userAuthenticated);
+        public delegate Task UserAuthenticatedHandler(AzureContext sender);
         public event UserAuthenticatedHandler UserAuthenticated;
 
         public delegate Task BeforeUserSignOutHandler();
@@ -100,7 +100,7 @@ namespace MigAz.Azure
             {
                 _TokenProvider = value;
                 if (_TokenProvider != null)
-                    UserAuthenticated?.Invoke(_TokenProvider.AuthenticationResult.UserInfo);
+                    UserAuthenticated?.Invoke(this);
             }
         }
 
