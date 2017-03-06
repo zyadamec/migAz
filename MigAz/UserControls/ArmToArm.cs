@@ -1,50 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Collections;
+using MigAz.Azure;
+using MigAz.Models;
+using MigAz.Providers;
+using MigAz.Core.Interface;
+using System.Reflection;
+using MigAz.Azure.Arm;
 using System.Net;
 using System.IO;
-using System.Xml;
-using System.Collections.Generic;
-using System.Reflection;
-using MigAz.Models;
-using MigAz.Interface;
-using MigAz.Azure;
-using MigAz.Azure.Arm;
-using MigAz.Providers;
-using System.Threading.Tasks;
-using MigAz.Core.Interface;
-using MigAz.Forms.ARM.Interface;
 
-namespace MigAz.Forms.ARM
+namespace MigAz.UserControls
 {
-    public partial class Window : Form
+    public partial class ArmToArm : UserControl
     {
         private AzureRetriever _AzureRetriever;
         private AsmArtefacts _asmArtefacts;
         private AppSettingsProvider _appSettingsProvider;
-        private Interface.ISaveSelectionProvider _saveSelectionProvider;
+        private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private MigAz.Forms.ARM.Interface.ITelemetryProvider _telemetryProvider;
         private AzureContext _AzureContextARM;
 
-        private Window() { }
-
-        public Window(IStatusProvider statusProvider)
+        public ArmToArm()
         {
             InitializeComponent();
-            _statusProvider = statusProvider;
         }
 
-        private async void Window_Load(object sender, EventArgs e)
+        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
         {
-            writeLog("Window_Load", "Program start");
+            _statusProvider = statusProvider;
+            _logProvider = logProvider;
+        }
+
+        private async void ArmToArm_Load(object sender, EventArgs e)
+        {
+            _logProvider.WriteLog("ArmToArm_Load", "Program start");
 
             this.Text = "MigAz ARM (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
             NewVersionAvailable(); // check if there a new version of the app
 
-            _logProvider = new FileLogProvider();
             _saveSelectionProvider = new MigAz.Forms.ARM.Providers.UISaveSelectionProvider();
             _telemetryProvider = new MigAz.Forms.ARM.Providers.CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
@@ -158,7 +161,8 @@ namespace MigAz.Forms.ARM
                     // TODO
                     //_saveSelectionProvider.Save(Guid.Parse(subscriptionid), lvwVirtualNetworks, lvwStorageAccounts, lvwVirtualMachines);
                 }
-                catch { //Ignore save selection if no objects are selected
+                catch
+                { //Ignore save selection if no objects are selected
                 }
             }
         }
@@ -218,7 +222,7 @@ namespace MigAz.Forms.ARM
 
             //    lblStatus.Text = "Ready";
 
-                
+
             //    writeLog("Subscriptions_SelectionChanged", "End");
             //}
         }
@@ -245,7 +249,7 @@ namespace MigAz.Forms.ARM
                     AutoSelectDependencies(e);
                 }
             }
-            
+
         }
 
         private void UpdateExportItemsCount()
@@ -266,7 +270,7 @@ namespace MigAz.Forms.ARM
             }
 
             btnExport.Enabled = false;
-            
+
             var artefacts = new AsmArtefacts();
             //foreach (var selectedItem in lvwStorageAccounts.CheckedItems)
             //{
@@ -317,16 +321,6 @@ namespace MigAz.Forms.ARM
             btnExport.Enabled = true;
         }
 
-        
-
-        private void writeLog(string function, string message)
-        {
-            string logfilepath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz\\MigAz-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
-            string text = DateTime.Now.ToString() + "   " + function + "  " + message + Environment.NewLine;
-            File.AppendAllText(logfilepath, text);
-        }
-
-
 
         private void NewVersionAvailable()
         {
@@ -353,7 +347,7 @@ namespace MigAz.Forms.ARM
             }
         }
 
-       
+
 
         private void btnOptions_Click(object sender, EventArgs e)
         {
@@ -362,7 +356,7 @@ namespace MigAz.Forms.ARM
         }
 
 
-        private void AutoSelectDependencies (ItemCheckedEventArgs listViewRow)
+        private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)
         {
             // TODO
 
@@ -444,7 +438,7 @@ namespace MigAz.Forms.ARM
             _statusProvider.UpdateStatus("Ready");
         }
 
-           private async void cmbTenants_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cmbTenants_SelectedIndexChanged(object sender, EventArgs e)
         {
 
 
@@ -476,7 +470,7 @@ namespace MigAz.Forms.ARM
             get { return _statusProvider; }
         }
 
-        public ITelemetryProvider TelemetryProvider
+        public Forms.ARM.Interface.ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
         }
@@ -492,4 +486,3 @@ namespace MigAz.Forms.ARM
         }
     }
 }
-

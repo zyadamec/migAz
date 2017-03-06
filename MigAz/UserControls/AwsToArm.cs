@@ -1,24 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Core.Interface;
+using MigAz.AWS;
+using System.Reflection;
+using MigAz.AWS.Forms;
+using System.Collections;
 using System.Net;
 using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
-using MigAz.AWS.Generator;
-using MigAz.Forms.AWS;
-using System.Net.NetworkInformation;
-using MigAzAWS.Models;
-using System.Xml;
-using System.Collections;
-using MigAz.AWS;
-using MigAz.Core.Interface;
-using MigAzAWS.Interface;
-using MigAz.AWS.Forms;
-using MigAz.Forms.AWS.Provider;
 
-namespace MigAz.Forms.AWS
+namespace MigAz.UserControls
 {
-    public partial class Window : Form
+    public partial class AwsToArm : UserControl
     {
         private ILogProvider _logProvider;
         //private EC2Operation ec2 = null;
@@ -34,21 +33,24 @@ namespace MigAz.Forms.AWS
         //private string subscriptionid;
         //private Dictionary<string, string> subscriptionsAndTenants;
         private AwsRetriever _awsRetriever;
-        private TemplateGenerator _templateGenerator;
-        private ISaveSelectionProvider _saveSelectionProvider;
+        private AWS.Generator.TemplateGenerator _templateGenerator;
+        private MigAzAWS.Interface.ISaveSelectionProvider _saveSelectionProvider;
         private IStatusProvider _statusProvider;
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
 
-        private Window() { }
+        public AwsToArm()
+        {
+            InitializeComponent();
+        }
 
-        public Window(IStatusProvider statusProvider, ILogProvider logProvider)
+        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
         {
             InitializeComponent();
             _statusProvider = statusProvider;
             _logProvider = logProvider;
-            telemetryProvider = new CloudTelemetryProvider();
-            _saveSelectionProvider = new UISaveSelectionProvider();
+            telemetryProvider = new Forms.AWS.Provider.CloudTelemetryProvider();
+            _saveSelectionProvider = new Forms.AWS.Provider.UISaveSelectionProvider();
 
             // TODO
             //Regions = new List<Amazon.RegionEndpoint>();
@@ -56,16 +58,16 @@ namespace MigAz.Forms.AWS
             //{
             //    Regions.Add(region);
             //}
-           
-            
-           
+
+
+
             //var tokenProvider = new InteractiveTokenProvider();
             //
         }
 
-        private void Window_Load(object sender, EventArgs e)
+        private void AwsToArm_Load(object sender, EventArgs e)
         {
-            writeLog("Window_Load", "Program start");
+            _logProvider.WriteLog("Window_Load", "Program start");
             // TODO instResponse = new DescribeInstancesResponse();
             this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
@@ -85,7 +87,7 @@ namespace MigAz.Forms.AWS
 
         private void btnGetToken_Click(object sender, EventArgs e)
         {
-            writeLog("GetToken_Click", "Start");
+            _logProvider.WriteLog("GetToken_Click", "Start");
 
             try
             {
@@ -95,34 +97,29 @@ namespace MigAz.Forms.AWS
                 cmbRegion.Enabled = true;
 
                 //Load Items
-                 // TODO Load_Items();
+                // TODO Load_Items();
 
                 lblSignInText.Text = $"Signed in as {accessKeyID}";
 
 
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-                        
+
         }
 
 
-       
+
 
         private void authenticate()
         {
             AuthenticationForm authForm = new AuthenticationForm();
-            if (authForm.ShowDialog(this) != DialogResult.OK)
-            {
-                this.Close();
-            }
 
             accessKeyID = authForm.GetAWSAccessKeyID();
             secretKeyID = authForm.GetAWSSecretKeyID();
-
         }
 
 
@@ -156,13 +153,6 @@ namespace MigAz.Forms.AWS
             btnExport.Text = "Export " + numofobjects.ToString() + " objects";
         }
 
-        private void btnChoosePath_Click(object sender, EventArgs e)
-        {
-            DialogResult result = folderBrowserDialog.ShowDialog();
-            if (result == DialogResult.OK)
-                txtDestinationFolder.Text = folderBrowserDialog.SelectedPath;
-        }
-
         private void txtDestinationFolder_TextChanged(object sender, EventArgs e)
         {
             if (txtDestinationFolder.Text == "")
@@ -190,41 +180,34 @@ namespace MigAz.Forms.AWS
             foreach (var selectedItem in lvwVirtualMachines.CheckedItems)
             {
                 var listItem = (ListViewItem)selectedItem;
-                artefacts.Instances.Add(new Ec2Instance(listItem.Text,listItem.SubItems[1].Text));
+                artefacts.Instances.Add(new Ec2Instance(listItem.Text, listItem.SubItems[1].Text));
             }
 
 
+            // TODO Move
 
-            if (!Directory.Exists(txtDestinationFolder.Text))
-            {
-                MessageBox.Show("The chosen output folder does not exist.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                // If save selection option is enabled
-                if (app.Default.SaveSelection)
-                {
-                    _statusProvider.UpdateStatus("BUSY: Reading saved selection");
-                    _saveSelectionProvider.Save(cmbRegion.Text, lvwVirtualNetworks, lvwVirtualMachines);
-                }
+            //if (!Directory.Exists(txtDestinationFolder.Text))
+            //{
+            //    MessageBox.Show("The chosen output folder does not exist.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
+            //else
+            //{
+            //    // If save selection option is enabled
+            //    if (app.Default.SaveSelection)
+            //    {
+            //        _statusProvider.UpdateStatus("BUSY: Reading saved selection");
+            //        _saveSelectionProvider.Save(cmbRegion.Text, lvwVirtualNetworks, lvwVirtualMachines);
+            //    }
 
-                var templateWriter = new StreamWriter(Path.Combine(txtDestinationFolder.Text, "export.json"));
-                //var blobDetailWriter = new StreamWriter(Path.Combine(txtDestinationFolder.Text, "copyblobdetails.json"));
+            //    var templateWriter = new StreamWriter(Path.Combine(txtDestinationFolder.Text, "export.json"));
+            //    //var blobDetailWriter = new StreamWriter(Path.Combine(txtDestinationFolder.Text, "copyblobdetails.json"));
 
-                _templateGenerator.GenerateTemplate(artefacts, _awsObjectRetriever, templateWriter, teleinfo);
-                
-                MessageBox.Show("Template has been generated successfully.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            //    _templateGenerator.GenerateTemplate(artefacts, _awsObjectRetriever, templateWriter, teleinfo);
+
+            //    MessageBox.Show("Template has been generated successfully.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
 
             btnExport.Enabled = true;
-        }
-
-
-        private void writeLog(string function, string message)
-        {
-            string logfilepath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MIGAZ-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
-            string text = DateTime.Now.ToString() + "   " + function + "  " + message + Environment.NewLine;
-            File.AppendAllText(logfilepath, text);
         }
 
         private void NewVersionAvailable()
@@ -254,7 +237,7 @@ namespace MigAz.Forms.AWS
 
         private void btnOptions_Click(object sender, EventArgs e)
         {
-            formOptions formoptions = new formOptions();
+            Forms.AWS.formOptions formoptions = new Forms.AWS.formOptions();
             formoptions.ShowDialog(this);
         }
 
@@ -267,7 +250,7 @@ namespace MigAz.Forms.AWS
             ////var selectedVolumes;
             //if (InstanceId != null)
             //{
-                    
+
             //    //var selectedInstances = availableInstances.Reservations[0].Instances.Find(x => x.InstanceId == InstanceId);
             //    var selectedInstances = _awsObjectRetriever.getInstancebyId(InstanceId);
 
@@ -278,7 +261,7 @@ namespace MigAz.Forms.AWS
             //                virtualNetwork.Checked = true;
             //                virtualNetwork.Selected = true;
             //            }
-                    
+
             //    }
 
             //}
@@ -286,7 +269,7 @@ namespace MigAz.Forms.AWS
 
         private void cmbRegion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(cmbRegion.Enabled == true)
+            if (cmbRegion.Enabled == true)
             {
                 //Load the Region Items
                 // TODO Load_Items();
@@ -296,17 +279,17 @@ namespace MigAz.Forms.AWS
             if (app.Default.SaveSelection)
             {
                 _statusProvider.UpdateStatus("BUSY: Reading saved selection");
-                _saveSelectionProvider.Read(cmbRegion.Text,ref  lvwVirtualNetworks, ref lvwVirtualMachines);
+                _saveSelectionProvider.Read(cmbRegion.Text, ref lvwVirtualNetworks, ref lvwVirtualMachines);
             }
 
         }
 
-       
+
 
         private void lvwVirtualMachines_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
+
     }
 }
-

@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Generator;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,8 @@ namespace MigAz.Forms.ARM
 {
     public partial class PreExportDialog : Form
     {
+        private ILogProvider _LogProvider;
+
         public PreExportDialog()
         {
             InitializeComponent();
@@ -35,8 +38,6 @@ namespace MigAz.Forms.ARM
                 return;
             }
 
-            Window parentForm = (Window)this.Owner;
-
             try
             {
                 //TemplateGenerator templateGenerator = new TemplateGenerator(parentForm.LogProvider, parentForm.StatusProvider, parentForm.TelemetryProvider, parentForm.AppSettingsProviders);
@@ -47,7 +48,7 @@ namespace MigAz.Forms.ARM
             }
             catch (Exception ex)
             {
-                parentForm.LogProvider.WriteLog("btnExport_Click", "Error generating template : " + ex.ToString());
+                _LogProvider.WriteLog("btnExport_Click", "Error generating template : " + ex.ToString());
                 MessageBox.Show("Something went wrong when generating the template. Check the log file for details.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnExport.Enabled = true;
                 btnCancel.Enabled = true;
