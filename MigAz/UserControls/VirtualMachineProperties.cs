@@ -16,7 +16,7 @@ namespace MigAz.UserControls
 {
     public partial class VirtualMachineProperties : UserControl
     {
-        private AsmToArmForm _AsmToArmForm;
+        private AsmToArm _AsmToArmForm;
         private TreeNode _VirtualMachineNode;
 
         public VirtualMachineProperties()
@@ -24,7 +24,7 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(TreeNode armVirtualMachineNode, AsmToArmForm asmToArmForm)
+        public async Task Bind(TreeNode armVirtualMachineNode, AsmToArm asmToArmForm)
         {
             _VirtualMachineNode = armVirtualMachineNode;
             _AsmToArmForm = asmToArmForm;

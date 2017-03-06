@@ -1,13 +1,13 @@
-﻿namespace MigAz.Forms.ASM
+﻿namespace MigAz.UserControls
 {
-    partial class AsmToArmForm
+    partial class AsmToArm
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
+        /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -20,28 +20,28 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AsmToArmForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AsmToArm));
             this.btnOptions = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.treeASM = new System.Windows.Forms.TreeView();
-            this.treeARM = new System.Windows.Forms.TreeView();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.azureLoginContextViewer2 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.treeARM = new System.Windows.Forms.TreeView();
+            this.treeASM = new System.Windows.Forms.TreeView();
+            this.btnExport = new System.Windows.Forms.Button();
             this.azureLoginContextViewer21 = new MigAz.Azure.Arm.UserControls.AzureLoginContextViewer2();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -49,14 +49,13 @@
             // 
             // btnOptions
             // 
-            this.btnOptions.Location = new System.Drawing.Point(1220, 755);
+            this.btnOptions.Location = new System.Drawing.Point(1203, 746);
             this.btnOptions.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.btnOptions.Name = "btnOptions";
             this.btnOptions.Size = new System.Drawing.Size(723, 44);
-            this.btnOptions.TabIndex = 6;
+            this.btnOptions.TabIndex = 60;
             this.btnOptions.Text = "Options...";
             this.btnOptions.UseVisualStyleBackColor = true;
-            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
             // imageList1
             // 
@@ -78,13 +77,12 @@
             this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Controls.Add(this.lblAzureObjectName);
             this.groupBox1.Controls.Add(this.pictureBox1);
-            this.groupBox1.Location = new System.Drawing.Point(1220, 207);
+            this.groupBox1.Location = new System.Drawing.Point(1203, 198);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(723, 473);
-            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Azure Resource Manager Properties";
-            this.groupBox1.Resize += new System.EventHandler(this.groupBox1_Resize);
             // 
             // panel1
             // 
@@ -113,99 +111,86 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // btnExport
+            // azureLoginContextViewer2
             // 
-            this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(1220, 689);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(723, 44);
-            this.btnExport.TabIndex = 5;
-            this.btnExport.Text = "Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
-            // treeASM
-            // 
-            this.treeASM.CheckBoxes = true;
-            this.treeASM.Location = new System.Drawing.Point(20, 230);
-            this.treeASM.Name = "treeASM";
-            this.treeASM.Size = new System.Drawing.Size(597, 570);
-            this.treeASM.TabIndex = 2;
-            this.treeASM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
-            this.treeASM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);
-            // 
-            // treeARM
-            // 
-            this.treeARM.Location = new System.Drawing.Point(635, 230);
-            this.treeARM.Name = "treeARM";
-            this.treeARM.Size = new System.Drawing.Size(561, 570);
-            this.treeARM.TabIndex = 3;
-            this.treeARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeARM_AfterSelect);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(20, 199);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(255, 25);
-            this.label5.TabIndex = 51;
-            this.label5.Text = "Source (ASM) Resources";
+            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.SubscriptionOnly;
+            this.azureLoginContextViewer2.Enabled = false;
+            this.azureLoginContextViewer2.Location = new System.Drawing.Point(1032, 3);
+            this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
+            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 168);
+            this.azureLoginContextViewer2.TabIndex = 63;
+            this.azureLoginContextViewer2.Title = "Azure ARM (Target) Subscription";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(630, 199);
+            this.label6.Location = new System.Drawing.Point(613, 190);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(250, 25);
-            this.label6.TabIndex = 52;
+            this.label6.TabIndex = 62;
             this.label6.Text = "Target (ARM) Resources";
             // 
-            // azureLoginContextViewer2
+            // label5
             // 
-            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.SubscriptionOnly;
-            this.azureLoginContextViewer2.Enabled = false;
-            this.azureLoginContextViewer2.Location = new System.Drawing.Point(1049, 12);
-            this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
-            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 168);
-            this.azureLoginContextViewer2.TabIndex = 54;
-            this.azureLoginContextViewer2.Title = "Azure ARM (Target) Subscription";
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(3, 190);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(255, 25);
+            this.label5.TabIndex = 61;
+            this.label5.Text = "Source (ASM) Resources";
+            // 
+            // treeARM
+            // 
+            this.treeARM.Location = new System.Drawing.Point(618, 221);
+            this.treeARM.Name = "treeARM";
+            this.treeARM.Size = new System.Drawing.Size(561, 570);
+            this.treeARM.TabIndex = 57;
+            // 
+            // treeASM
+            // 
+            this.treeASM.CheckBoxes = true;
+            this.treeASM.Location = new System.Drawing.Point(3, 221);
+            this.treeASM.Name = "treeASM";
+            this.treeASM.Size = new System.Drawing.Size(597, 570);
+            this.treeASM.TabIndex = 56;
+            // 
+            // btnExport
+            // 
+            this.btnExport.Enabled = false;
+            this.btnExport.Location = new System.Drawing.Point(1203, 680);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(723, 44);
+            this.btnExport.TabIndex = 59;
+            this.btnExport.Text = "Export 0 objects";
+            this.btnExport.UseVisualStyleBackColor = true;
             // 
             // azureLoginContextViewer21
             // 
             this.azureLoginContextViewer21.ChangeType = MigAz.Azure.Arm.UserControls.ChangeType.Full;
-            this.azureLoginContextViewer21.Location = new System.Drawing.Point(20, 12);
+            this.azureLoginContextViewer21.Location = new System.Drawing.Point(3, 3);
             this.azureLoginContextViewer21.Name = "azureLoginContextViewer21";
             this.azureLoginContextViewer21.Size = new System.Drawing.Size(894, 211);
-            this.azureLoginContextViewer21.TabIndex = 55;
+            this.azureLoginContextViewer21.TabIndex = 64;
             this.azureLoginContextViewer21.Title = "Azure Subscription";
             // 
-            // AsmToArmForm
+            // AsmToArm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1974, 929);
+            this.Controls.Add(this.btnOptions);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.azureLoginContextViewer2);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.treeARM);
             this.Controls.Add(this.treeASM);
             this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.azureLoginContextViewer21);
-            this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.MaximumSize = new System.Drawing.Size(2000, 5000);
-            this.MinimumSize = new System.Drawing.Size(2000, 1000);
-            this.Name = "AsmToArmForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MigAz";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AsmToArmForm_FormClosing);
-            this.Load += new System.EventHandler(this.AsmToArmForm_Load);
-            this.Resize += new System.EventHandler(this.AsmToArmForm_Resize);
+            this.Name = "AsmToArm";
+            this.Size = new System.Drawing.Size(1947, 915);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -215,19 +200,19 @@
         }
 
         #endregion
+
         private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblAzureObjectName;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TreeView treeASM;
-        private System.Windows.Forms.TreeView treeARM;
-        private System.Windows.Forms.Label label5;
+        private Azure.Arm.UserControls.AzureLoginContextViewer azureLoginContextViewer2;
         private System.Windows.Forms.Label label6;
-        private MigAz.Azure.Arm.UserControls.AzureLoginContextViewer azureLoginContextViewer2;
-        private MigAz.Azure.Arm.UserControls.AzureLoginContextViewer2 azureLoginContextViewer21;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TreeView treeARM;
+        private System.Windows.Forms.TreeView treeASM;
+        private System.Windows.Forms.Button btnExport;
+        private Azure.Arm.UserControls.AzureLoginContextViewer2 azureLoginContextViewer21;
     }
 }
-

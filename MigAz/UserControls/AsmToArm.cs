@@ -1,26 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Providers;
+using MigAz.Azure;
+using MigAz.Azure.Arm;
+using MigAz.Core.Interface;
+using MigAz.Forms.ARM.Interface;
+using MigAz.Azure.Asm;
 using System.Net;
 using System.IO;
-using System.Collections.Generic;
 using System.Reflection;
-using MigAz.Providers;
-using System.Threading.Tasks;
-using System.Linq;
-using MigAz.UserControls;
-using MigAz.Azure.Asm;
-using MigAz.Azure.Arm;
-using MigAz.Azure;
-using MigAz.Interface;
-using MigAz.Core.Interface;
+using MigAz.Forms.ASM;
 
-namespace MigAz.Forms.ASM
+namespace MigAz.UserControls
 {
-    public partial class AsmToArmForm : Form
+    public partial class AsmToArm : UserControl
     {
         #region Variables
 
-        private ISaveSelectionProvider _saveSelectionProvider;
+        private UISaveSelectionProvider _saveSelectionProvider;
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private TreeNode _sourceCascadeNode;
@@ -34,13 +38,16 @@ namespace MigAz.Forms.ASM
         #endregion
 
         #region Constructors
-        private AsmToArmForm() { }
 
-        public AsmToArmForm(IStatusProvider statusProvider)
+        public AsmToArm()
         {
             InitializeComponent();
-            _logProvider = new FileLogProvider();
+        }
+
+        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
+        {
             _statusProvider = statusProvider;
+            _logProvider = logProvider;
             _saveSelectionProvider = new UISaveSelectionProvider();
             _telemetryProvider = new CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
@@ -59,6 +66,8 @@ namespace MigAz.Forms.ASM
             _TargetResourceGroup = new ArmResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
         }
 
+        #endregion
+
         private async Task _AzureContextSourceASM_BeforeAzureSubscriptionChange(AzureContext sender)
         {
             await SaveSubscriptionSettings(sender.AzureSubscription);
@@ -66,9 +75,6 @@ namespace MigAz.Forms.ASM
 
             await _AzureContextTargetARM.SetSubscriptionContext(null);
         }
-
-
-
 
         private async Task _AzureContextSourceASM_AzureEnvironmentChanged(AzureContext sender)
         {
@@ -189,7 +195,7 @@ namespace MigAz.Forms.ASM
                 treeARM.Enabled = true;
                 treeASM.Enabled = true;
             }
-            
+
             _statusProvider.UpdateStatus("Ready");
         }
 
@@ -203,8 +209,6 @@ namespace MigAz.Forms.ASM
             treeARM.Enabled = false;
             treeASM.Enabled = false;
         }
-
-        #endregion
 
         #region Properties
 
@@ -280,7 +284,7 @@ namespace MigAz.Forms.ASM
         #endregion
 
         #region ASM TreeView Methods
-        
+
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
@@ -899,7 +903,7 @@ namespace MigAz.Forms.ASM
 
             await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
 
-            PreExportDialog preExportDialog = new PreExportDialog();
+            PreExportDialog preExportDialog = new PreExportDialog(this.LogProvider, this.StatusProvider, this.TelemetryProvider, this.AppSettingsProviders, this.AzureContextSourceASM.AzureSubscription, this.AzureContextSourceASM.AzureSubscription, this.TargetResourceGroup, this.SelectedNodes);
             preExportDialog.ShowDialog(this);
 
             btnExport.Enabled = true;
@@ -921,8 +925,8 @@ namespace MigAz.Forms.ASM
             ResetForm();
 
             try
-            { 
-            _AzureContextSourceASM.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), app.Default.AzureEnvironment);
+            {
+                _AzureContextSourceASM.AzureEnvironment = (AzureEnvironment)Enum.Parse(typeof(AzureEnvironment), app.Default.AzureEnvironment);
             }
             catch
             {

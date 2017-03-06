@@ -33,6 +33,7 @@ namespace MigAz
             _logProvider = new FileLogProvider();
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
+            this.asmToArm1.Bind(_statusProvider, _logProvider);
         }
 
         #endregion

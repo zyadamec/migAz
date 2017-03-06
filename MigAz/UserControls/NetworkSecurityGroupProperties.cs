@@ -21,7 +21,7 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TreeNode networkSecurityGroupNode, AsmToArmForm asmToArmForm)
+        internal void Bind(TreeNode networkSecurityGroupNode, AsmToArm asmToArmForm)
         {
             _NetworkSecurityGroupNode = networkSecurityGroupNode;
 

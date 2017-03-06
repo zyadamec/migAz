@@ -1,7 +1,13 @@
-﻿using MigAz.Azure.Asm;
+﻿using MigAz.Azure;
+using MigAz.Azure.Arm;
+using MigAz.Azure.Asm;
 using MigAz.Azure.Generator;
 using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Azure.Interface;
 using MigAz.Azure.Models;
+using MigAz.Core.Interface;
+using MigAz.Providers;
+using MigAz.UserControls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +18,38 @@ namespace MigAz.Forms.ASM
 {
     public partial class PreExportDialog : Form
     {
-        AsmToArmForm parentForm;
         AsmArtifacts artifacts;
+        ILogProvider _LogProvider;
+        IStatusProvider _StatusProvider;
+        ITelemetryProvider _TelemetryProvider;
+        AppSettingsProvider _AppSettingProvider;
+        AzureSubscription _AsmSourceSubscription;
+        AzureSubscription _ArmTargetSubscription;
+        ArmResourceGroup _ArmResourceGroup;
+        List<TreeNode> _SelectedNodes;
 
-        public PreExportDialog()
+        private PreExportDialog() { }
+
+        public PreExportDialog(
+            ILogProvider logProvider, 
+            IStatusProvider statusProvider,
+            ITelemetryProvider telemetryProvider,
+            AppSettingsProvider appSettingsProvider,
+            AzureSubscription asmSourceSubscription,
+            AzureSubscription armTargetSubscription,
+            ArmResourceGroup targetResourceGroup,
+            List<TreeNode> selectedNodes
+            )
         {
             InitializeComponent();
+            _LogProvider = logProvider;
+            _StatusProvider = statusProvider;
+            _TelemetryProvider = telemetryProvider;
+            _AppSettingProvider = appSettingsProvider;
+            _AsmSourceSubscription = asmSourceSubscription;
+            _ArmTargetSubscription = armTargetSubscription;
+            _ArmResourceGroup = targetResourceGroup;
+            _SelectedNodes = selectedNodes;
         }
 
         private async void btnExport_Click(object sender, EventArgs e)
@@ -40,16 +72,15 @@ namespace MigAz.Forms.ASM
 
             try
             {
-                AsmToArmForm parentForm = (AsmToArmForm)this.Owner;
-                TemplateGenerator templateGenerator = new TemplateGenerator(parentForm.LogProvider, parentForm.StatusProvider, parentForm.TelemetryProvider, parentForm.AppSettingsProviders);
-                TemplateResult templateResult = await templateGenerator.GenerateTemplate(parentForm.AzureContextSourceASM.AzureSubscription, parentForm.AzureContextTargetARM.AzureSubscription, artifacts, parentForm.TargetResourceGroup, txtDestinationFolder.Text);
+                TemplateGenerator templateGenerator = new TemplateGenerator(_LogProvider, _StatusProvider, _TelemetryProvider, _AppSettingProvider);
+                TemplateResult templateResult = await templateGenerator.GenerateTemplate(_AsmSourceSubscription, _ArmTargetSubscription, artifacts, _ArmResourceGroup, txtDestinationFolder.Text);
                 var exportResults = new ExportResultsDialog(templateResult);
                 exportResults.ShowDialog(this);
                 this.Close();
             }
             catch (Exception ex)
             {
-                parentForm.LogProvider.WriteLog("btnExport_Click", "Error generating template : " + ex.ToString());
+                _LogProvider.WriteLog("btnExport_Click", "Error generating template : " + ex.ToString());
                 MessageBox.Show("Something went wrong when generating the template. Check the log file for details.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnExport.Enabled = true;
                 btnCancel.Enabled = true;
@@ -65,10 +96,9 @@ namespace MigAz.Forms.ASM
 
         private async void PreExportForm_Load(object sender, EventArgs e)
         {
-            parentForm = (AsmToArmForm) this.Owner;
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
 
-            List<TreeNode> selectedNodes = parentForm.SelectedNodes;
+            List<TreeNode> selectedNodes = _SelectedNodes;
             btnExport.Text = btnExport.Text.Replace("0", selectedNodes.Count().ToString());
 
             artifacts = new AsmArtifacts();

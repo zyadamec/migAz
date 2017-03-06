@@ -15,7 +15,7 @@ namespace MigAz.UserControls
 {
     public partial class DiskProperties : UserControl
     {
-        private AsmToArmForm _AsmToArmForm;
+        private AsmToArm _AsmToArmForm;
         private TreeNode _ARMDataDiskNode;
         private AsmDisk _AsmDataDisk;
 
@@ -24,7 +24,7 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(AsmToArmForm asmToArmForm, AsmDisk asmDisk)
+        internal void Bind(AsmToArm asmToArmForm, AsmDisk asmDisk)
         {
             _AsmToArmForm = asmToArmForm;
             _AsmDataDisk = asmDisk;
@@ -32,7 +32,7 @@ namespace MigAz.UserControls
             BindCommon();
         }
 
-        internal void Bind(AsmToArmForm asmToArmForm, TreeNode armDataDiskNode)
+        internal void Bind(AsmToArm asmToArmForm, TreeNode armDataDiskNode)
         {
             _AsmToArmForm = asmToArmForm;
             _ARMDataDiskNode = armDataDiskNode;

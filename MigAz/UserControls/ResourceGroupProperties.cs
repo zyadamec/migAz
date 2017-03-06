@@ -18,7 +18,7 @@ namespace MigAz.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
-        private AsmToArmForm _ParentForm;
+        private AsmToArm _ParentForm;
         private TreeNode _ResourceGroupNode;
 
         public ResourceGroupProperties()
@@ -26,7 +26,7 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AsmToArmForm parentForm, TreeNode resourceGroupNode)
+        internal async Task Bind(AsmToArm parentForm, TreeNode resourceGroupNode)
         {
             _ParentForm = parentForm;
             _ResourceGroupNode = resourceGroupNode;

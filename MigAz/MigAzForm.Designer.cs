@@ -34,6 +34,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.asmToArm1 = new MigAz.UserControls.AsmToArm();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,9 +59,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 892);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 931);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1974, 37);
+            this.statusStrip1.Size = new System.Drawing.Size(1993, 37);
             this.statusStrip1.TabIndex = 56;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -79,12 +80,20 @@
             this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
             // 
+            // asmToArm1
+            // 
+            this.asmToArm1.Location = new System.Drawing.Point(0, 0);
+            this.asmToArm1.Name = "asmToArm1";
+            this.asmToArm1.Size = new System.Drawing.Size(1947, 915);
+            this.asmToArm1.TabIndex = 57;
+            // 
             // MigAzForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1974, 929);
+            this.ClientSize = new System.Drawing.Size(1993, 968);
+            this.Controls.Add(this.asmToArm1);
             this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
@@ -107,6 +116,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private UserControls.AsmToArm asmToArm1;
     }
 }
 
