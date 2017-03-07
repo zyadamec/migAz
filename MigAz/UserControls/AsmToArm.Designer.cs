@@ -56,6 +56,7 @@
             this.btnOptions.TabIndex = 60;
             this.btnOptions.Text = "Options...";
             this.btnOptions.UseVisualStyleBackColor = true;
+            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
             // imageList1
             // 
@@ -83,6 +84,7 @@
             this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Azure Resource Manager Properties";
+            this.groupBox1.Resize += new System.EventHandler(this.groupBox1_Resize);
             // 
             // panel1
             // 
@@ -147,6 +149,7 @@
             this.treeARM.Name = "treeARM";
             this.treeARM.Size = new System.Drawing.Size(561, 570);
             this.treeARM.TabIndex = 57;
+            this.treeARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeARM_AfterSelect);
             // 
             // treeASM
             // 
@@ -155,6 +158,8 @@
             this.treeASM.Name = "treeASM";
             this.treeASM.Size = new System.Drawing.Size(597, 570);
             this.treeASM.TabIndex = 56;
+            this.treeASM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
+            this.treeASM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);
             // 
             // btnExport
             // 
@@ -166,6 +171,7 @@
             this.btnExport.TabIndex = 59;
             this.btnExport.Text = "Export 0 objects";
             this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // azureLoginContextViewer21
             // 
@@ -191,6 +197,8 @@
             this.Controls.Add(this.azureLoginContextViewer21);
             this.Name = "AsmToArm";
             this.Size = new System.Drawing.Size(1947, 915);
+            this.Load += new System.EventHandler(this.AsmToArmForm_Load);
+            this.Resize += new System.EventHandler(this.AsmToArmForm_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

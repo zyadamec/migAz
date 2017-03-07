@@ -104,13 +104,13 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 40);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 889);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -126,8 +126,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 889);
-            this.splitContainer2.SplitterDistance = 601;
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
+            this.splitContainer2.SplitterDistance = 602;
             this.splitContainer2.TabIndex = 0;
             // 
             // tabControl1
@@ -167,7 +167,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1993, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(1993, 40);
             this.menuStrip1.TabIndex = 58;
             this.menuStrip1.Text = "menuStrip1";
             // 

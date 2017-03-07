@@ -691,15 +691,6 @@ namespace MigAz.UserControls
 
         #region Form Controls
 
-        #region ToolStrip Events
-
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://aka.ms/MigAz");
-        }
-
-        #endregion
-
         #region Options Button
 
         private void btnOptions_Click(object sender, EventArgs e)
@@ -934,11 +925,6 @@ namespace MigAz.UserControls
             }
 
             await NewVersionAvailable(); // check if there a new version of the app
-        }
-
-        private async void AsmToArmForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
         }
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
