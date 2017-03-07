@@ -13,7 +13,7 @@ namespace MigAz.Azure
         private AzureContext _AzureContext;
         private List<AzureDomain> _Domains;
 
-        internal AzureDomain(JObject domainJson, AzureContext azureContext)
+        public AzureDomain(JObject domainJson, AzureContext azureContext)
         {
             _DomainJson = domainJson;
             _AzureContext = azureContext;

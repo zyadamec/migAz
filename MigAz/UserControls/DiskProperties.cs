@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
-using MigAz.Forms.ASM;
+using MigAz.UserControls.Migrators;
 
 namespace MigAz.UserControls
 {

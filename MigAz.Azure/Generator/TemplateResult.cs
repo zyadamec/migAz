@@ -95,9 +95,11 @@ namespace MigAz.Azure.Generator
 
         public string GetTemplateString()
         {
-            Template template = new Template();
-            template.resources = this.Resources;
-            template.parameters = this.Parameters;
+            Template template = new Template()
+            {
+                resources = this.Resources,
+                parameters = this.Parameters
+            };
 
             // save JSON template
             string jsontext = JsonConvert.SerializeObject(template, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });

@@ -42,11 +42,11 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aRMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -122,6 +122,10 @@
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.AutoScroll = true;
+            // 
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
@@ -178,7 +182,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -191,38 +195,38 @@
             this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
             this.newMigrationToolStripMenuItem.Text = "&New Migration";
             // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
-            // 
             // aSMToARMToolStripMenuItem
             // 
             this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
             this.aSMToARMToolStripMenuItem.Text = "ASM To ARM";
             this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
             // 
             // aRMToARMToolStripMenuItem
             // 
             this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
             this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
             this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
             // 
             // aWSToARMToolStripMenuItem
             // 
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
-            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
             this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // MigAzForm
             // 

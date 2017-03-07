@@ -107,6 +107,8 @@ namespace MigAz.Azure.Arm.UserControls
                 else
                     _AzureContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
             }
+
+            Application.DoEvents();
         }
 
         private async void btnAuthenticate_Click(object sender, EventArgs e)
@@ -138,6 +140,8 @@ namespace MigAz.Azure.Arm.UserControls
 
                         cboAzureEnvironment.Enabled = false;
                         cboTenant.Enabled = true;
+
+                        Application.DoEvents();
 
                         if (cboTenant.Items.Count == 0)
                         {
@@ -225,6 +229,8 @@ namespace MigAz.Azure.Arm.UserControls
             cmbSubscriptions.Enabled = true;
 
             _AzureContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "End");
+
+            Application.DoEvents();
         }
     }
 }

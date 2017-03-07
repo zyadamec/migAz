@@ -160,16 +160,16 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserControls\ArmToArm.cs">
+    <Compile Include="UserControls\Migrators\ArmToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\ArmToArm.Designer.cs">
+    <Compile Include="UserControls\Migrators\ArmToArm.Designer.cs">
       <DependentUpon>ArmToArm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AsmToArm.cs">
+    <Compile Include="UserControls\Migrators\AsmToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\AsmToArm.Designer.cs">
+    <Compile Include="UserControls\Migrators\AsmToArm.Designer.cs">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\AvailabilitySetProperties.cs">
@@ -178,10 +178,10 @@
     <Compile Include="UserControls\AvailabilitySetProperties.Designer.cs">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AwsToArm.cs">
+    <Compile Include="UserControls\Migrators\AwsToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\AwsToArm.Designer.cs">
+    <Compile Include="UserControls\Migrators\AwsToArm.Designer.cs">
       <DependentUpon>AwsToArm.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\DiskProperties.cs">
@@ -260,16 +260,16 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UserControls\ArmToArm.resx">
+    <EmbeddedResource Include="UserControls\Migrators\ArmToArm.resx">
       <DependentUpon>ArmToArm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AsmToArm.resx">
+    <EmbeddedResource Include="UserControls\Migrators\AsmToArm.resx">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\AvailabilitySetProperties.resx">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AwsToArm.resx">
+    <EmbeddedResource Include="UserControls\Migrators\AwsToArm.resx">
       <DependentUpon>AwsToArm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\DiskProperties.resx">

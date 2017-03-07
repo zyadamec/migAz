@@ -18,7 +18,7 @@ using System.IO;
 using System.Reflection;
 using MigAz.Forms.ASM;
 
-namespace MigAz.UserControls
+namespace MigAz.UserControls.Migrators
 {
     public partial class AsmToArm : UserControl
     {

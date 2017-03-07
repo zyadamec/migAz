@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls
+﻿namespace MigAz.UserControls.Migrators
 {
     partial class AwsToArm
     {

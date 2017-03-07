@@ -12,7 +12,7 @@ using MigAz.Azure.Arm;
 using System.Net;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
-using MigAz.Forms.ASM;
+using MigAz.UserControls.Migrators;
 
 namespace MigAz.UserControls
 {

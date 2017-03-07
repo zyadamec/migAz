@@ -11,6 +11,7 @@ using MigAz.Azure;
 using MigAz.Interface;
 using MigAz.Core.Interface;
 using System.Reflection;
+using MigAz.UserControls.Migrators;
 
 namespace MigAz
 {

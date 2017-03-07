@@ -16,7 +16,7 @@ using System.Net;
 using System.IO;
 using MigAz.Azure;
 
-namespace MigAz.UserControls
+namespace MigAz.UserControls.Migrators
 {
     public partial class AwsToArm : UserControl
     {

@@ -55,15 +55,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arm\AddressSpace.cs" />
     <Compile Include="Arm\ArmAvailabilitySet.cs" />
     <Compile Include="Arm\ArmLocation.cs" />
     <Compile Include="Arm\ArmNetworkSecurityGroup.cs" />
+    <Compile Include="Arm\ArmResource.cs" />
     <Compile Include="Arm\ArmResourceGroup.cs" />
     <Compile Include="Arm\ArmStorageAccount.cs" />
     <Compile Include="Arm\ArmStorageAccountKey.cs" />
     <Compile Include="Arm\ArmSubnet.cs" />
     <Compile Include="Arm\ArmVirtualMachine.cs" />
     <Compile Include="Arm\ArmVirtualNetwork.cs" />
+    <Compile Include="Arm\AvailabilitySet.cs" />
+    <Compile Include="Arm\BootDiagnostics.cs" />
+    <Compile Include="Arm\DataDisk.cs" />
+    <Compile Include="Arm\DiagnosticsProfile.cs" />
+    <Compile Include="Arm\Extension.cs" />
+    <Compile Include="Arm\Extension_Properties.cs" />
     <Compile Include="Arm\Forms\AzureLoginContextDialog2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +90,49 @@
     <Compile Include="Arm\Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Arm\FrontendIPConfiguration.cs" />
+    <Compile Include="Arm\FrontendIPConfiguration_Properties.cs" />
+    <Compile Include="Arm\GatewayConnection.cs" />
+    <Compile Include="Arm\GatewayConnection_Properties.cs" />
+    <Compile Include="Arm\HardwareProfile.cs" />
+    <Compile Include="Arm\ImageReference.cs" />
+    <Compile Include="Arm\InboundNatRule.cs" />
+    <Compile Include="Arm\InboundNatRule_Properties.cs" />
+    <Compile Include="Arm\IpConfiguration.cs" />
+    <Compile Include="Arm\IpConfiguration_Properties.cs" />
+    <Compile Include="Arm\LoadBalancer.cs" />
+    <Compile Include="Arm\LoadBalancer_Properties.cs" />
+    <Compile Include="Arm\LoadBalancingRule.cs" />
+    <Compile Include="Arm\LoadBalancingRule_Properties.cs" />
+    <Compile Include="Arm\LocalNetworkGateway.cs" />
+    <Compile Include="Arm\LocalNetworkGateway_Properties.cs" />
+    <Compile Include="Arm\NetworkInterface.cs" />
+    <Compile Include="Arm\NetworkInterface_Properties.cs" />
+    <Compile Include="Arm\NetworkProfile.cs" />
+    <Compile Include="Arm\NetworkProfile_NetworkInterface.cs" />
+    <Compile Include="Arm\NetworkProfile_NetworkInterface_Properties.cs" />
+    <Compile Include="Arm\NetworkSecurityGroup.cs" />
+    <Compile Include="Arm\NetworkSecurityGroup_Properties.cs" />
+    <Compile Include="Arm\OsDisk.cs" />
+    <Compile Include="Arm\OsProfile.cs" />
+    <Compile Include="Arm\Parameter.cs" />
+    <Compile Include="Arm\Probe.cs" />
+    <Compile Include="Arm\Probe_Properties.cs" />
+    <Compile Include="Arm\PublicIPAddress.cs" />
+    <Compile Include="Arm\PublicIPAddress_Properties.cs" />
+    <Compile Include="Arm\Reference.cs" />
+    <Compile Include="Arm\Route.cs" />
+    <Compile Include="Arm\RouteTable.cs" />
+    <Compile Include="Arm\RouteTable_Properties.cs" />
+    <Compile Include="Arm\Route_Properties.cs" />
+    <Compile Include="Arm\SecurityRule.cs" />
+    <Compile Include="Arm\SecurityRule_Properties.cs" />
+    <Compile Include="Arm\StorageAccount.cs" />
+    <Compile Include="Arm\StorageAccount_Properties.cs" />
+    <Compile Include="Arm\StorageProfile.cs" />
+    <Compile Include="Arm\Subnet.cs" />
+    <Compile Include="Arm\Subnet_Properties.cs" />
+    <Compile Include="Arm\Template.cs" />
     <Compile Include="Arm\UserControls\AzureArmLoginControl2.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -106,6 +157,18 @@
     <Compile Include="Arm\UserControls\AzureLoginContextViewer.Designer.cs">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Arm\Vhd.cs" />
+    <Compile Include="Arm\VirtualMachine.cs" />
+    <Compile Include="Arm\VirtualMachine_Properties.cs" />
+    <Compile Include="Arm\VirtualNetwork.cs" />
+    <Compile Include="Arm\VirtualNetworkGateway.cs" />
+    <Compile Include="Arm\VirtualNetworkGateway_Properties.cs" />
+    <Compile Include="Arm\VirtualNetworkGateway_Sku.cs" />
+    <Compile Include="Arm\VirtualNetwork_dhcpOptions.cs" />
+    <Compile Include="Arm\VirtualNetwork_Properties.cs" />
+    <Compile Include="Arm\VPNClientCertificate.cs" />
+    <Compile Include="Arm\VPNClientCertificate_Properties.cs" />
+    <Compile Include="Arm\VPNClientConfiguration.cs" />
     <Compile Include="Asm\AsmAffinityGroup.cs" />
     <Compile Include="Asm\AsmClientRootCertificate.cs" />
     <Compile Include="Asm\AsmCloudService.cs" />
@@ -145,7 +208,6 @@
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="Arm\ARM.cs" />
     <Compile Include="Models\AsmArtifacts.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
     <Compile Include="Models\CopyBlobDetail.cs" />
