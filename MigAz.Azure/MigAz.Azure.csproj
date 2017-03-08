@@ -84,12 +84,6 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AzureArmLoginControl2.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AzureArmLoginControl2.Designer.cs">
-      <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -160,9 +154,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AzureSubscriptionContextDialog.resx">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AzureArmLoginControl2.resx">
-      <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\AzureArmLoginControl.resx">
       <DependentUpon>AzureArmLoginControl.cs</DependentUpon>

@@ -35,6 +35,8 @@
             this.btnAuthenticate = new System.Windows.Forms.Button();
             this.cboAzureEnvironment = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cboTenant = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // lblAuthenticatedUser
@@ -59,7 +61,7 @@
             // lblSubscriptions
             // 
             this.lblSubscriptions.AutoSize = true;
-            this.lblSubscriptions.Location = new System.Drawing.Point(8, 194);
+            this.lblSubscriptions.Location = new System.Drawing.Point(8, 220);
             this.lblSubscriptions.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblSubscriptions.Name = "lblSubscriptions";
             this.lblSubscriptions.Size = new System.Drawing.Size(137, 25);
@@ -72,7 +74,7 @@
             this.cmbSubscriptions.Enabled = false;
             this.cmbSubscriptions.FormattingEnabled = true;
             this.cmbSubscriptions.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cmbSubscriptions.Location = new System.Drawing.Point(241, 186);
+            this.cmbSubscriptions.Location = new System.Drawing.Point(241, 212);
             this.cmbSubscriptions.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.cmbSubscriptions.MaxDropDownItems = 15;
             this.cmbSubscriptions.Name = "cmbSubscriptions";
@@ -118,10 +120,37 @@
             this.label1.TabIndex = 57;
             this.label1.Text = "Azure Environment:";
             // 
-            // AzureArmLoginControl
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 172);
+            this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 25);
+            this.label3.TabIndex = 62;
+            this.label3.Text = "Tenant:";
+            // 
+            // cboTenant
+            // 
+            this.cboTenant.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTenant.Enabled = false;
+            this.cboTenant.FormattingEnabled = true;
+            this.cboTenant.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.cboTenant.Location = new System.Drawing.Point(241, 164);
+            this.cboTenant.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.cboTenant.MaxDropDownItems = 15;
+            this.cboTenant.Name = "cboTenant";
+            this.cboTenant.Size = new System.Drawing.Size(921, 33);
+            this.cboTenant.Sorted = true;
+            this.cboTenant.TabIndex = 61;
+            this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
+            // 
+            // AzureArmLoginControl2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cboTenant);
             this.Controls.Add(this.lblAuthenticatedUser);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblSubscriptions);
@@ -129,8 +158,8 @@
             this.Controls.Add(this.btnAuthenticate);
             this.Controls.Add(this.cboAzureEnvironment);
             this.Controls.Add(this.label1);
-            this.Name = "AzureArmLoginControl";
-            this.Size = new System.Drawing.Size(1171, 238);
+            this.Name = "AzureArmLoginControl2";
+            this.Size = new System.Drawing.Size(1171, 267);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -145,5 +174,7 @@
         private System.Windows.Forms.Button btnAuthenticate;
         private System.Windows.Forms.ComboBox cboAzureEnvironment;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cboTenant;
     }
 }

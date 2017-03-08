@@ -30,7 +30,7 @@
         {
             this.label4 = new System.Windows.Forms.Label();
             this.btnCloseDialog = new System.Windows.Forms.Button();
-            this.azureArmLoginControl21 = new MigAz.Azure.UserControls.AzureArmLoginControl2();
+            this.azureArmLoginControl21 = new MigAz.Azure.UserControls.AzureArmLoginControl();
             this.SuspendLayout();
             // 
             // label4
@@ -83,6 +83,6 @@
         #endregion
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnCloseDialog;
-        private UserControls.AzureArmLoginControl2 azureArmLoginControl21;
+        private UserControls.AzureArmLoginControl azureArmLoginControl21;
     }
 }
