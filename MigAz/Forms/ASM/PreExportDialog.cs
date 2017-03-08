@@ -61,7 +61,7 @@ namespace MigAz.Forms.ASM
                 return;
             }
 
-            if (TemplateResult.OutputFilesExist(txtDestinationFolder.Text))
+            if (AsmToArmGenerator.OutputFilesExist(txtDestinationFolder.Text))
             {
                 if (MessageBox.Show("The target export path already contains export files.  Do you want proceed and overwrite the existing files?", "Overwrite Existing Export", MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
@@ -72,9 +72,8 @@ namespace MigAz.Forms.ASM
 
             try
             {
-                TemplateGenerator templateGenerator = new TemplateGenerator(_LogProvider, _StatusProvider, _TelemetryProvider, _AppSettingProvider);
-                TemplateResult templateResult = await templateGenerator.GenerateTemplate(_AsmSourceSubscription, _ArmTargetSubscription, artifacts, _ArmResourceGroup, txtDestinationFolder.Text);
-                var exportResults = new ExportResultsDialog(templateResult);
+                AsmToArmGenerator templateGenerator = new AsmToArmGenerator(_AsmSourceSubscription, _ArmTargetSubscription, _ArmResourceGroup, _LogProvider, _StatusProvider, _TelemetryProvider, _AppSettingProvider);
+                var exportResults = new ExportResultsDialog(templateGenerator);
                 exportResults.ShowDialog(this);
                 this.Close();
             }

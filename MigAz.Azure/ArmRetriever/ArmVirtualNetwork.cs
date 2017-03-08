@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmVirtualNetwork : ArmTemplate.VirtualNetwork, IVirtualNetwork
+    public class ArmVirtualNetwork : Core.ArmTemplate.VirtualNetwork, IVirtualNetwork
     {
         private JToken _VirtualNetwork;
         private List<ISubnet> _Subnets = new List<ISubnet>();

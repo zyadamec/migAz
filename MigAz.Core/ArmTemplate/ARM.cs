@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace MigAz.Azure.ArmTemplate
+namespace MigAz.Core.ArmTemplate
 {
     public class Extension : ArmResource
     {

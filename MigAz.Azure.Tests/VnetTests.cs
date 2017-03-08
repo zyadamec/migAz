@@ -22,14 +22,14 @@ namespace MigAz.Tests
         public async Task ValidateComplexSingleVnet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET1"));
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("10.2.0.0"));
 
-            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             JObject templateJson = templateResult.GenerateTemplate();
 
@@ -66,7 +66,7 @@ namespace MigAz.Tests
         public async Task ValidateSingleVnetWithNsgAndRT()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET2"));
 
@@ -74,7 +74,7 @@ namespace MigAz.Tests
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmtest"));
             artifacts.NetworkSecurityGroups.Add(await azureContextUSCommercialRetriever.GetAzureAsmNetworkSecurityGroup("asmnsg"));
 
-            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             JObject templateJson = templateResult.GenerateTemplate();
 
@@ -119,14 +119,14 @@ namespace MigAz.Tests
         public async Task ValidateSingleVnetWithExpressRouteGateway()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET3"));
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("vnet3"));
 
-            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             JObject templateJson = templateResult.GenerateTemplate();
 
@@ -169,14 +169,14 @@ namespace MigAz.Tests
         public async Task ValidateSingleVnetWithNoSubnetsGetsNewDefaultSubet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET4"));
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmnet"));
 
-            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             JObject templateJson = templateResult.GenerateTemplate();
 

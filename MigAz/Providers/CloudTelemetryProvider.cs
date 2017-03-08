@@ -1,6 +1,6 @@
-﻿using MigAz.Azure.ArmTemplate;
-using MigAz.Azure.Generator;
+﻿using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
+using MigAz.Core.ArmTemplate;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,9 +12,9 @@ using System.Windows.Forms;
 
 namespace MigAz.Providers
 {
-    public class CloudTelemetryProvider : MigAz.Azure.Interface.ITelemetryProvider
+    public class CloudTelemetryProvider : Azure.Interface.ITelemetryProvider
     {
-        private Dictionary<string,string> GetProcessedItems(TemplateResult templateResult)
+        private Dictionary<string,string> GetProcessedItems(AsmToArmGenerator templateResult)
         {
             Dictionary<string, string> processedItems = new Dictionary<string, string>();
 
@@ -27,7 +27,7 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(TemplateResult templateResult)
+        public void PostTelemetryRecord(AsmToArmGenerator templateResult)
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
             telemetryrecord.ExecutionId = templateResult.ExecutionGuid;

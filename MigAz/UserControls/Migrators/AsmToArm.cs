@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Providers;
 using MigAz.Azure;
 using MigAz.Azure.Arm;
 using MigAz.Core.Interface;
-using MigAz.Forms.ARM.Interface;
 using MigAz.Azure.Asm;
-using System.Net;
-using System.IO;
-using System.Reflection;
 using MigAz.Forms.ASM;
 
 namespace MigAz.UserControls.Migrators
@@ -258,27 +250,12 @@ namespace MigAz.UserControls.Migrators
 
         private async Task NewVersionAvailable()
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/version");
-            request.Method = "GET";
-            request.ContentType = "application/x-www-form-urlencoded";
-
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                string result = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-                string version = "\"" + Assembly.GetEntryAssembly().GetName().Version.ToString() + "\"";
-                string availableversion = result.ToString();
-
-                if (version != availableversion)
-                {
-                    DialogResult dialogresult = MessageBox.Show("New version " + availableversion + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception exception)
-            {
-                DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
+            //if (version != availableversion)
+            //{
+                DialogResult dialogresult = MessageBox.Show("New version " + "x.x.x.x" + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
+            
         }
 
         #endregion
@@ -910,8 +887,6 @@ namespace MigAz.UserControls.Migrators
         {
             _logProvider.WriteLog("AsmToArmForm_Load", "Program start");
 
-            this.Text = "MigAz (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
-            lblAzureObjectName.Text = String.Empty;
             AsmToArmForm_Resize(null, null);
             ResetForm();
 

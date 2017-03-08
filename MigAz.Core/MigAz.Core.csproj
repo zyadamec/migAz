@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArmTemplate\ARM.cs" />
+    <Compile Include="ArmTemplate\ArmConst.cs" />
+    <Compile Include="Generator\TemplateResult.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />
     <Compile Include="TreeView.cs" />

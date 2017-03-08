@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.AWS;
-using System.Reflection;
 using MigAz.AWS.Forms;
 using System.Collections;
-using System.Net;
-using System.IO;
 using MigAz.Azure;
 
 namespace MigAz.UserControls.Migrators
@@ -219,27 +210,17 @@ namespace MigAz.UserControls.Migrators
 
         private void NewVersionAvailable()
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/version/AWStoARM");
-            request.Method = "GET";
-            request.ContentType = "application/x-www-form-urlencoded";
-
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                string result = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-                string version = "\"" + Assembly.GetEntryAssembly().GetName().Version.ToString() + "\"";
-                string availableversion = result.ToString();
-
-                if (version != availableversion)
-                {
-                    DialogResult dialogresult = MessageBox.Show("New version " + availableversion + " is available at http://aka.ms/MIGAZ", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception exception)
-            {
-                DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //try
+            //{
+                //if (version != availableversion)
+                //{
+                    DialogResult dialogresult = MessageBox.Show("New version " + "x.x.x.x" + " is available at http://aka.ms/MIGAZ", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    }
+            //}
+            //catch (Exception exception)
+            //{
+            //    DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         private void btnOptions_Click(object sender, EventArgs e)

@@ -44,7 +44,7 @@
             // 
             // btnOptions
             // 
-            this.btnOptions.Location = new System.Drawing.Point(1400, 892);
+            this.btnOptions.Location = new System.Drawing.Point(741, 305);
             this.btnOptions.Margin = new System.Windows.Forms.Padding(6);
             this.btnOptions.Name = "btnOptions";
             this.btnOptions.Size = new System.Drawing.Size(258, 44);
@@ -60,12 +60,12 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(168, 25);
             this.label1.TabIndex = 47;
-            this.label1.Text = "Virtual Networks";
+            this.label1.Text = "ARM Resources";
             // 
             // btnExport
             // 
             this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(1217, 836);
+            this.btnExport.Location = new System.Drawing.Point(729, 249);
             this.btnExport.Margin = new System.Windows.Forms.Padding(6);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(656, 44);
@@ -80,7 +80,7 @@
             this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
             this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 211);
             this.azureLoginContextViewer1.TabIndex = 49;
-            this.azureLoginContextViewer1.Title = "Azure Subscription";
+            this.azureLoginContextViewer1.Title = "ARM (Source) Subscription";
             // 
             // ArmToArm
             // 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Azure.ArmTemplate
+namespace MigAz.Core.ArmTemplate
 {
     public class ArmConst
     {

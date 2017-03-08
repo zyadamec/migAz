@@ -13,16 +13,17 @@ using System.Windows.Forms;
 using System.Xml;
 using MigAz.Azure;
 using MigAz.Azure.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 
 namespace MigAz.Forms
 {
     public partial class ExportResultsDialog : Form
     {
-        private TemplateResult _TemplateResult;
+        private AsmToArmGenerator _TemplateResult;
 
         private ExportResultsDialog() { }
 
-        public ExportResultsDialog(TemplateResult templateResult)
+        public ExportResultsDialog(AsmToArmGenerator templateResult)
         {
             InitializeComponent();
             _TemplateResult = templateResult;

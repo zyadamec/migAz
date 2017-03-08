@@ -21,7 +21,7 @@ namespace MigAz.Tests
 
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM1"));
 
@@ -29,7 +29,7 @@ namespace MigAz.Tests
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
-            TemplateResult tempalteResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator tempalteResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             return tempalteResult.GenerateTemplate();
         }
@@ -65,7 +65,7 @@ namespace MigAz.Tests
         public async Task ValidateSingleVMWithDataDisksNotInVnet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM2"));
 
@@ -73,7 +73,7 @@ namespace MigAz.Tests
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
-            TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
 
             JObject templateJson = templateResult.GenerateTemplate();
 
@@ -97,7 +97,7 @@ namespace MigAz.Tests
         public async Task ValidateVMInVnetButNotInTargetVNet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM3"));
 
@@ -107,7 +107,7 @@ namespace MigAz.Tests
             bool exceptionThrown = false;
             try
             {
-                TemplateResult templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+                AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
             }
             catch (Exception exc)
             {
@@ -122,7 +122,7 @@ namespace MigAz.Tests
         public async Task ValidateVMInExistingArmSubnetId()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM3"));
 
@@ -130,7 +130,7 @@ namespace MigAz.Tests
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
-            TemplateResult templateReault = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            AsmToArmGenerator templateReault = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
             JObject templateJson = templateReault.GenerateTemplate();
 
             // Validate VM
@@ -153,7 +153,7 @@ namespace MigAz.Tests
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
             AzureContext azureContextUSGovernment = TestHelper.SetupAzureContext(AzureEnvironment.AzureUSGovernment);
-            TemplateGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM3"));
             FakeAzureRetriever azureContextUSGovernmentRetriever = (FakeAzureRetriever)azureContextUSGovernment.AzureRetriever;

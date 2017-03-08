@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmStorageAccount : ArmTemplate.StorageAccount, IStorageAccount
+    public class ArmStorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount
     {
         private AzureContext _AzureContext;
         private JToken _StorageAccount;

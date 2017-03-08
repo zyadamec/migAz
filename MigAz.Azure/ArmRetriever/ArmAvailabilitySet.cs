@@ -2,7 +2,7 @@
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmAvailabilitySet : ArmTemplate.AvailabilitySet
+    public class ArmAvailabilitySet : Core.ArmTemplate.AvailabilitySet
     {
         private String _TargetName = String.Empty;
         private AzureContext _AzureContext;

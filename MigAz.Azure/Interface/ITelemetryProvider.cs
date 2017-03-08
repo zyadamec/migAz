@@ -1,15 +1,9 @@
-﻿using MigAz.Azure.Asm;
-using MigAz.Azure.Generator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MigAz.Azure.Generator.AsmToArm;
 
 namespace MigAz.Azure.Interface
 {
     public interface ITelemetryProvider
     {
-        void PostTelemetryRecord(TemplateResult templateResult);
+        void PostTelemetryRecord(AsmToArmGenerator templateResult);
     }
 }

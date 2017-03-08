@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MigAz.Core
@@ -13,6 +10,11 @@ namespace MigAz.Core
     {
         public async Task NewVersionAvailable()
         {
+            // AWS
+            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/version/AWStoARM");
+            //request.Method = "GET";
+            //request.ContentType = "application/x-www-form-urlencoded";
+
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/version");
             request.Method = "GET";
             request.ContentType = "application/x-www-form-urlencoded";

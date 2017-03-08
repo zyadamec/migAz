@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Generator;
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace MigAz.Tests.Fakes
 {
     class FakeTelemetryProvider : ITelemetryProvider
     {
-        public void PostTelemetryRecord(TemplateResult templateResult)
+        public void PostTelemetryRecord(AsmToArmGenerator templateResult)
         {
         }
     }

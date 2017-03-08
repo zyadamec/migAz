@@ -64,8 +64,6 @@
     <Compile Include="ArmRetriever\ArmSubnet.cs" />
     <Compile Include="ArmRetriever\ArmVirtualMachine.cs" />
     <Compile Include="ArmRetriever\ArmVirtualNetwork.cs" />
-    <Compile Include="ArmTemplate\ARM.cs" />
-    <Compile Include="ArmTemplate\ArmConst.cs" />
     <Compile Include="Forms\AzureLoginContextDialog2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,8 +123,7 @@
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
     <Compile Include="Generator\ArmToArm\TemplateGenerator.cs" />
-    <Compile Include="Generator\AsmToArm\TemplateGenerator.cs" />
-    <Compile Include="Generator\TemplateResult.cs" />
+    <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStorageAccount.cs" />
