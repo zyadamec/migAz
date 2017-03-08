@@ -29,7 +29,7 @@ namespace MigAz.UserControls
 
             _ArmStorageAccountNode = storageAccountNode;
             TreeNode asmStorageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
-            AsmStorageAccount asmStorageAccount = (AsmStorageAccount)asmStorageAccountNode.Tag;
+            StorageAccount asmStorageAccount = (StorageAccount)asmStorageAccountNode.Tag;
 
             lblAccountType.Text = asmStorageAccount.AccountType;
             lblSourceASMName.Text = asmStorageAccount.Name;
@@ -45,7 +45,7 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             TreeNode asmStorageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
-            AsmStorageAccount asmStorageAccount = (AsmStorageAccount)asmStorageAccountNode.Tag;
+            StorageAccount asmStorageAccount = (StorageAccount)asmStorageAccountNode.Tag;
 
             asmStorageAccount.TargetName = txtSender.Text;
             _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();

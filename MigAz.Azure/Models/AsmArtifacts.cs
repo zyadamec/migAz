@@ -8,20 +8,20 @@ namespace MigAz.Azure.Models
     {
         public AsmArtifacts()
         {
-            NetworkSecurityGroups = new List<AsmNetworkSecurityGroup>();
-            StorageAccounts = new List<AsmStorageAccount>();
-            VirtualNetworks = new List<AsmVirtualNetwork>();
-            VirtualMachines = new List<AsmVirtualMachine>();
+            NetworkSecurityGroups = new List<NetworkSecurityGroup>();
+            StorageAccounts = new List<StorageAccount>();
+            VirtualNetworks = new List<VirtualNetwork>();
+            VirtualMachines = new List<VirtualMachine>();
         }
 
-        public List<AsmNetworkSecurityGroup> NetworkSecurityGroups { get; private set; }
-        public List<AsmStorageAccount> StorageAccounts { get; private set; }
-        public List<AsmVirtualNetwork> VirtualNetworks { get; private set; }
-        public List<AsmVirtualMachine> VirtualMachines { get; private set; }
+        public List<NetworkSecurityGroup> NetworkSecurityGroups { get; private set; }
+        public List<StorageAccount> StorageAccounts { get; private set; }
+        public List<VirtualNetwork> VirtualNetworks { get; private set; }
+        public List<VirtualMachine> VirtualMachines { get; private set; }
 
-        internal AsmNetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
+        internal NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {
-            foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in NetworkSecurityGroups)
+            foreach (NetworkSecurityGroup asmNetworkSecurityGroup in NetworkSecurityGroups)
             {
                 if (asmNetworkSecurityGroup.Name == sourceName)
                     return asmNetworkSecurityGroup;

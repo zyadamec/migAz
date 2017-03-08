@@ -16,14 +16,14 @@ namespace MigAz.Tests.Fakes
     class FakeAzureRetriever : AzureRetriever
     {
         private AzureContext _AzureContext;
-        private List<AsmLocation> _AzureASMLocations = new List<AsmLocation>();
-        private List<AsmCloudService> _CloudServices = new List<AsmCloudService>();
-        private List<AsmStorageAccount> _StorageAccounts = new List<AsmStorageAccount>();
-        private List<AsmVirtualNetwork> _VirtualNetworks = new List<AsmVirtualNetwork>();
-        private List<AsmClientRootCertificate> _ClientRootCertificates = new List<AsmClientRootCertificate>();
-        private AsmVirtualNetworkGateway _VirtualNetworkGateway;
-        private AsmNetworkSecurityGroup _NetworkSecurityGroup;
-        private AsmRouteTable _AsmRouteTable;
+        private List<Location> _AzureASMLocations = new List<Location>();
+        private List<CloudService> _CloudServices = new List<CloudService>();
+        private List<StorageAccount> _StorageAccounts = new List<StorageAccount>();
+        private List<VirtualNetwork> _VirtualNetworks = new List<VirtualNetwork>();
+        private List<ClientRootCertificate> _ClientRootCertificates = new List<ClientRootCertificate>();
+        private VirtualNetworkGateway _VirtualNetworkGateway;
+        private NetworkSecurityGroup _NetworkSecurityGroup;
+        private RouteTable _AsmRouteTable;
 
         private Dictionary<string, string[]> _keyProperties = new Dictionary<string, string[]>
         {
@@ -72,7 +72,7 @@ namespace MigAz.Tests.Fakes
 
                         foreach (XmlNode azureLocationXml in doc.SelectNodes("/Locations/Location"))
                         {
-                            _AzureASMLocations.Add(new AsmLocation(_AzureContext, azureLocationXml));
+                            _AzureASMLocations.Add(new Location(_AzureContext, azureLocationXml));
                         }
 
                         break;
@@ -80,7 +80,7 @@ namespace MigAz.Tests.Fakes
                         resourceType = "CloudService";
                         info.Add("name", parts[2]);
 
-                        _CloudServices.Add(new AsmCloudService(_AzureContext, doc));
+                        _CloudServices.Add(new CloudService(_AzureContext, doc));
 
                         break;
                     case "virtualmachine":
@@ -90,14 +90,14 @@ namespace MigAz.Tests.Fakes
                         info.Add("deploymentname", parts[4]);
                         info.Add("loadbalancername", String.Empty);
                         info.Add("virtualnetworkname", String.Empty);
-                        AsmCloudService parentCloudService = this.GetAzureAsmCloudService(parts[2]).Result;
-                        AsmVirtualMachine asmVirtualMachine = new AsmVirtualMachine(_AzureContext, parentCloudService, this._AzureContext.SettingsProvider, doc, info);
+                        CloudService parentCloudService = this.GetAzureAsmCloudService(parts[2]).Result;
+                        VirtualMachine asmVirtualMachine = new VirtualMachine(_AzureContext, parentCloudService, this._AzureContext.SettingsProvider, doc, info);
                         await asmVirtualMachine.InitializeChildren();
                         asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
                         asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
                         asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
 
-                        foreach (AsmDisk dataDisk in asmVirtualMachine.DataDisks)
+                        foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
                         {
                             dataDisk.TargetStorageAccount = dataDisk.SourceStorageAccount;
                         }
@@ -109,19 +109,19 @@ namespace MigAz.Tests.Fakes
                         resourceType = "StorageAccountKeys";
                         info.Add("name", parts[2]);
 
-                        this.GetAzureAsmStorageAccount(parts[2]).Result.Keys = new AsmStorageAccountKeys(_AzureContext, doc);
+                        this.GetAzureAsmStorageAccount(parts[2]).Result.Keys = new StorageAccountKeys(_AzureContext, doc);
                         break;
                     case "storageaccount":
                         resourceType = "StorageAccount";
                         info.Add("name", parts[2]);
 
-                        _StorageAccounts.Add(new AsmStorageAccount(_AzureContext, doc));
+                        _StorageAccounts.Add(new StorageAccount(_AzureContext, doc));
                         break;
                     case "virtualnetworks":
                         resourceType = "VirtualNetworks";
                         foreach (XmlNode virtualnetworksite in doc.SelectNodes("//VirtualNetworkSite"))
                         {
-                            AsmVirtualNetwork asmVirtualNetwork = new AsmVirtualNetwork(_AzureContext, virtualnetworksite);
+                            VirtualNetwork asmVirtualNetwork = new VirtualNetwork(_AzureContext, virtualnetworksite);
                             await asmVirtualNetwork.InitializeChildrenAsync();
                             _VirtualNetworks.Add(asmVirtualNetwork);
                         }
@@ -132,7 +132,7 @@ namespace MigAz.Tests.Fakes
 
                         foreach (XmlNode clientRootCertificateXml in doc.SelectNodes("//ClientRootCertificate"))
                         {
-                            _ClientRootCertificates.Add(new AsmClientRootCertificate(_AzureContext, _VirtualNetworks[0], clientRootCertificateXml));
+                            _ClientRootCertificates.Add(new ClientRootCertificate(_AzureContext, _VirtualNetworks[0], clientRootCertificateXml));
                         }
 
                         break;
@@ -145,7 +145,7 @@ namespace MigAz.Tests.Fakes
                         resourceType = "VirtualNetworkGateway";
                         info.Add("virtualnetworkname", parts[2]);
 
-                        _VirtualNetworkGateway = new AsmVirtualNetworkGateway(_AzureContext, _VirtualNetworks[0], doc);
+                        _VirtualNetworkGateway = new VirtualNetworkGateway(_AzureContext, _VirtualNetworks[0], doc);
                         _VirtualNetworks[0].Gateway = _VirtualNetworkGateway;
 
                         break;
@@ -158,14 +158,14 @@ namespace MigAz.Tests.Fakes
                         resourceType = "NetworkSecurityGroup";
                         info.Add("name", parts[2]);
 
-                        _NetworkSecurityGroup = new AsmNetworkSecurityGroup(_AzureContext, doc.SelectSingleNode("NetworkSecurityGroup"));
+                        _NetworkSecurityGroup = new NetworkSecurityGroup(_AzureContext, doc.SelectSingleNode("NetworkSecurityGroup"));
 
                         break;
                     case "routetable":
                         resourceType = "RouteTable";
                         info.Add("name", parts[2]);
 
-                        _AsmRouteTable = new AsmRouteTable(_AzureContext, doc);
+                        _AsmRouteTable = new RouteTable(_AzureContext, doc);
 
                         break;
                     case "reservedips":
@@ -223,16 +223,16 @@ namespace MigAz.Tests.Fakes
             return sb.ToString();
         }
 
-        public async override Task<List<AsmCloudService>> GetAzureAsmCloudServices()
+        public async override Task<List<CloudService>> GetAzureAsmCloudServices()
         {
             return _CloudServices;
         }
 
-        public async override Task<AsmCloudService> GetAzureAsmCloudService(string cloudServiceName)
+        public async override Task<CloudService> GetAzureAsmCloudService(string cloudServiceName)
         {
             if (_CloudServices != null)
             {
-                foreach (AsmCloudService asmCloudService in _CloudServices)
+                foreach (CloudService asmCloudService in _CloudServices)
                 {
                     if (asmCloudService.ServiceName == cloudServiceName)
                         return asmCloudService;
@@ -242,19 +242,19 @@ namespace MigAz.Tests.Fakes
             return null;
         }
 
-        public async override Task<List<AsmReservedIP>> GetAzureAsmReservedIPs()
+        public async override Task<List<ReservedIP>> GetAzureAsmReservedIPs()
         {
-            return new List<AsmReservedIP>();
+            return new List<ReservedIP>();
         }
 
-        public async override Task<List<AsmStorageAccount>> GetAzureAsmStorageAccounts()
+        public async override Task<List<StorageAccount>> GetAzureAsmStorageAccounts()
         {
-            return new List<AsmStorageAccount>();
+            return new List<StorageAccount>();
         }
 
-        public async override Task<AsmStorageAccount> GetAzureAsmStorageAccount(string storageAccountName)
+        public async override Task<StorageAccount> GetAzureAsmStorageAccount(string storageAccountName)
         {
-            foreach (AsmStorageAccount asmStorageAccount in _StorageAccounts)
+            foreach (StorageAccount asmStorageAccount in _StorageAccounts)
             {
                 if (asmStorageAccount.Name == storageAccountName)
                     return asmStorageAccount;
@@ -263,17 +263,17 @@ namespace MigAz.Tests.Fakes
             return null;
         }
 
-        public async override Task<List<AsmVirtualNetwork>> GetAzureAsmVirtualNetworks()
+        public async override Task<List<VirtualNetwork>> GetAzureAsmVirtualNetworks()
         {
             return _VirtualNetworks;
         }
 
-        public async override Task<List<AsmClientRootCertificate>> GetAzureAsmClientRootCertificates(AsmVirtualNetwork asmVirtualNetwork)
+        public async override Task<List<ClientRootCertificate>> GetAzureAsmClientRootCertificates(VirtualNetwork asmVirtualNetwork)
         {
             return _ClientRootCertificates;
         }
 
-        public async override Task<AsmVirtualNetworkGateway> GetAzureAsmVirtualNetworkGateway(AsmVirtualNetwork asmVirtualNetwork)
+        public async override Task<VirtualNetworkGateway> GetAzureAsmVirtualNetworkGateway(VirtualNetwork asmVirtualNetwork)
         {
             return _VirtualNetworkGateway;
         }
@@ -283,17 +283,17 @@ namespace MigAz.Tests.Fakes
             return String.Empty;
         }
 
-        public async override Task<AsmNetworkSecurityGroup> GetAzureAsmNetworkSecurityGroup(string networkSecurityGroupName)
+        public async override Task<NetworkSecurityGroup> GetAzureAsmNetworkSecurityGroup(string networkSecurityGroupName)
         {
             return _NetworkSecurityGroup;
         }
 
-        public async override Task<AsmRouteTable> GetAzureAsmRouteTable(string routeTableName)
+        public async override Task<RouteTable> GetAzureAsmRouteTable(string routeTableName)
         {
             return _AsmRouteTable;
         }
 
-        public async override Task<List<AsmLocation>> GetAzureASMLocations()
+        public async override Task<List<Location>> GetAzureASMLocations()
         {
             return _AzureASMLocations;
         }

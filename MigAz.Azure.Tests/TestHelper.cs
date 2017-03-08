@@ -49,7 +49,7 @@ namespace MigAz.Tests
 
             ArmVirtualNetwork armVirtualNetwork = new ArmVirtualNetwork(webRequestResultJson);
 
-            foreach (AsmVirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            foreach (Azure.Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
                 if (asmVirtualMachine.TargetVirtualNetwork == null)
                     asmVirtualMachine.TargetVirtualNetwork = armVirtualNetwork;
@@ -75,7 +75,7 @@ namespace MigAz.Tests
 
         internal static async Task<ArmResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
-            List<AsmLocation> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
+            List<Location> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
             ArmResourceGroup targetResourceGroup = new ArmResourceGroup(azureContext, "Target Resource Group");
             targetResourceGroup.Location = azureLocations[0];
             return targetResourceGroup;

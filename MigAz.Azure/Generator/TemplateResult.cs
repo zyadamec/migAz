@@ -9,6 +9,7 @@ using System.Reflection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using MigAz.Core.Interface;
+using MigAz.Azure.ArmTemplate;
 
 namespace MigAz.Azure.Generator
 {
@@ -18,7 +19,7 @@ namespace MigAz.Azure.Generator
         private String _OutputPath = AppDomain.CurrentDomain.BaseDirectory;
         private List<ArmResource> _Resources = new List<ArmResource>();
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
-        private Dictionary<string, Parameter> _Parameters = new Dictionary<string, Parameter>();
+        private Dictionary<string, ArmTemplate.Parameter> _Parameters = new Dictionary<string, ArmTemplate.Parameter>();
         private List<String> _Messages = new List<string>();
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
@@ -54,7 +55,7 @@ namespace MigAz.Azure.Generator
 
         public List<ArmResource> Resources { get { return _Resources; } }
         public List<CopyBlobDetail> CopyBlobDetails { get { return _CopyBlobDetails; } }
-        public Dictionary<string, Parameter> Parameters { get { return _Parameters; } }
+        public Dictionary<string, ArmTemplate.Parameter> Parameters { get { return _Parameters; } }
         public ISubscription SourceSubscription { get { return _SourceSubscription; } }
         public ArmResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
@@ -95,7 +96,7 @@ namespace MigAz.Azure.Generator
 
         public string GetTemplateString()
         {
-            Template template = new Template()
+            ArmTemplate.Template template = new ArmTemplate.Template()
             {
                 resources = this.Resources,
                 parameters = this.Parameters

@@ -17,14 +17,14 @@ namespace MigAz.UserControls
     {
         private AsmToArm _AsmToArmForm;
         private TreeNode _ARMDataDiskNode;
-        private AsmDisk _AsmDataDisk;
+        private Disk _AsmDataDisk;
 
         public DiskProperties()
         {
             InitializeComponent();
         }
 
-        internal void Bind(AsmToArm asmToArmForm, AsmDisk asmDisk)
+        internal void Bind(AsmToArm asmToArmForm, Disk asmDisk)
         {
             _AsmToArmForm = asmToArmForm;
             _AsmDataDisk = asmDisk;
@@ -36,7 +36,7 @@ namespace MigAz.UserControls
         {
             _AsmToArmForm = asmToArmForm;
             _ARMDataDiskNode = armDataDiskNode;
-            _AsmDataDisk = (AsmDisk)_ARMDataDiskNode.Tag;
+            _AsmDataDisk = (Disk)_ARMDataDiskNode.Tag;
 
             BindCommon();
         }
@@ -49,7 +49,7 @@ namespace MigAz.UserControls
             lblLUN.Text = _AsmDataDisk.Lun.ToString();
             txtTargetDiskName.Text = _AsmDataDisk.TargetName;
 
-            if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(AsmStorageAccount))
+            if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
                 rbStorageAccountInMigration.Checked = true;
             else
                 rbExistingARMStorageAccount.Checked = true;
@@ -77,7 +77,7 @@ namespace MigAz.UserControls
 
                 if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(ArmStorageAccount)))
                 {
-                    foreach (AsmStorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                    foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
                     {
                         if (asmStorageAccount.Name == _AsmDataDisk.StorageAccountName)
                         {
@@ -94,7 +94,7 @@ namespace MigAz.UserControls
                 }
                 else
                 {
-                    foreach (AsmStorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                    foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
                     {
                         if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
                         {
@@ -123,7 +123,7 @@ namespace MigAz.UserControls
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
 
-                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(AsmStorageAccount)))
+                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
                 {
                     if (cmbTargetStorage.Items.Count > 0)
                         cmbTargetStorage.SelectedIndex = 0;
@@ -149,9 +149,9 @@ namespace MigAz.UserControls
             }
             else
             {
-                if (cmbSender.SelectedItem.GetType() == typeof(AsmStorageAccount))
+                if (cmbSender.SelectedItem.GetType() == typeof(Azure.Asm.StorageAccount))
                 {
-                    AsmStorageAccount asmStorageAccount = (AsmStorageAccount)cmbSender.SelectedItem;
+                    Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)cmbSender.SelectedItem;
                     _AsmDataDisk.TargetStorageAccount = asmStorageAccount;
                 }
                 else if (cmbSender.SelectedItem.GetType() == typeof(ArmStorageAccount))
@@ -171,8 +171,8 @@ namespace MigAz.UserControls
             if (_ARMDataDiskNode != null)
             {
                 TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
-                AsmVirtualMachine parentVirtualMachine = (AsmVirtualMachine)parentNode.Tag;
-                foreach (AsmDisk parentDisk in parentVirtualMachine.DataDisks)
+                Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
+                foreach (Disk parentDisk in parentVirtualMachine.DataDisks)
                 {
                     if (parentDisk.DiskName == _AsmDataDisk.DiskName)
                     {

@@ -26,7 +26,7 @@ namespace MigAz.UserControls
             _NetworkSecurityGroupNode = networkSecurityGroupNode;
 
             TreeNode asmNetworkSecurityGroupNode = (TreeNode)_NetworkSecurityGroupNode.Tag;
-            AsmNetworkSecurityGroup asmNetworkSecurityGroup = (AsmNetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
+            NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
 
             lblSourceName.Text = asmNetworkSecurityGroup.Name;
             txtTargetName.Text = asmNetworkSecurityGroup.TargetName;
@@ -36,7 +36,7 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
             TreeNode asmNetworkSecurityGroupNode = (TreeNode)_NetworkSecurityGroupNode.Tag;
-            AsmNetworkSecurityGroup asmNetworkSecurityGroup = (AsmNetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
+            NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
 
             asmNetworkSecurityGroup.TargetName = txtSender.Text;
             _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.GetFinalTargetName();

@@ -105,21 +105,21 @@ namespace MigAz.Forms.ASM
             foreach (TreeNode selectedNode in selectedNodes)
             {
                 Type tagType = selectedNode.Tag.GetType();
-                if (tagType == typeof(AsmNetworkSecurityGroup))
+                if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
                 {
-                    artifacts.NetworkSecurityGroups.Add((AsmNetworkSecurityGroup)selectedNode.Tag);
+                    artifacts.NetworkSecurityGroups.Add((Azure.Asm.NetworkSecurityGroup)selectedNode.Tag);
                 }
-                else if (tagType == typeof(AsmVirtualNetwork))
+                else if (tagType == typeof(Azure.Asm.VirtualNetwork))
                 {
-                    artifacts.VirtualNetworks.Add((AsmVirtualNetwork)selectedNode.Tag);
+                    artifacts.VirtualNetworks.Add((Azure.Asm.VirtualNetwork)selectedNode.Tag);
                 }
-                else if (tagType == typeof(AsmStorageAccount))
+                else if (tagType == typeof(Azure.Asm.StorageAccount))
                 {
-                    artifacts.StorageAccounts.Add((AsmStorageAccount) selectedNode.Tag);
+                    artifacts.StorageAccounts.Add((Azure.Asm.StorageAccount) selectedNode.Tag);
                 }
-                else if (tagType == typeof(AsmVirtualMachine))
+                else if (tagType == typeof(Azure.Asm.VirtualMachine))
                 {
-                    artifacts.VirtualMachines.Add((AsmVirtualMachine)selectedNode.Tag);
+                    artifacts.VirtualMachines.Add((Azure.Asm.VirtualMachine)selectedNode.Tag);
                 }
             }
 

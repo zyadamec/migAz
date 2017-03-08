@@ -25,7 +25,7 @@ namespace MigAz.UserControls
             _ARMVirtualNetowrkNode = armVirtualNetworkNode;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)asmVirtualNetworkNode.Tag;
+            VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
 
             lblVNetName.Text = asmVirtualNetwork.Name.ToString();
             txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
@@ -38,7 +38,7 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            AsmVirtualNetwork asmVirtualNetwork = (AsmVirtualNetwork)asmVirtualNetworkNode.Tag;
+            VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
 
             asmVirtualNetwork.TargetName = txtSender.Text.Trim();
             _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();

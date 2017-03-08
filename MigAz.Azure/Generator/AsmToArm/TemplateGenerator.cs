@@ -1,12 +1,10 @@
-﻿using MigAz.Azure.Arm;
-using MigAz.Azure.Asm;
-using MigAz.Azure.Interface;
+﻿using MigAz.Azure.Interface;
 using MigAz.Azure.Models;
 using MigAz.Core.Interface;
+using MigAz.Azure.ArmTemplate;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace MigAz.Azure.Generator.AsmToArm
@@ -30,7 +28,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _settingsProvider = settingsProvider;
         }
 
-        public async Task<TemplateResult> GenerateTemplate(ISubscription sourceASMSubscription, ISubscription targetARMSubscription, AsmArtifacts artifacts, ArmResourceGroup targetResourceGroup, string outputPath)
+        public async Task<TemplateResult> GenerateTemplate(ISubscription sourceASMSubscription, ISubscription targetARMSubscription, AsmArtifacts artifacts, Arm.ArmResourceGroup targetResourceGroup, string outputPath)
         {
             _ASMArtifacts = artifacts;
 
@@ -44,15 +42,15 @@ namespace MigAz.Azure.Generator.AsmToArm
                 throw new ArgumentException("Target Resource Group Location must be provided for template generation.");
             }
 
-            foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
-                if (asmNetworkSecurityGroup.TargetName == String.Empty)
+                if (asmNetworkSecurityGroup.TargetName == string.Empty)
                     throw new ArgumentException("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
             }
 
-            foreach (AsmVirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
-                if (asmVirtualMachine.TargetName == String.Empty)
+                if (asmVirtualMachine.TargetName == string.Empty)
                     throw new ArgumentException("Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
 
                 if (asmVirtualMachine.TargetAvailabilitySet == null)
@@ -67,7 +65,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                     throw new ArgumentException("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.");
 
-                foreach (AsmDisk dataDisk in asmVirtualMachine.DataDisks)
+                foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                 {
                     if (dataDisk.TargetStorageAccount == null)
                     {
@@ -82,7 +80,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             _logProvider.WriteLog("GenerateTemplate", "Start processing selected Network Security Groups");
             // process selected virtual networks
-            foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
                 _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
                 await BuildNetworkSecurityGroup(templateResult, asmNetworkSecurityGroup);
@@ -91,7 +89,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             _logProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
             // process selected virtual networks
-            foreach (AsmVirtualNetwork asmVirtualNetwork in artifacts.VirtualNetworks)
+            foreach (Asm.VirtualNetwork asmVirtualNetwork in artifacts.VirtualNetworks)
             {
                 _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
                 await BuildVirtualNetworkObject(templateResult, asmVirtualNetwork);
@@ -101,7 +99,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
 
             // process selected storage accounts
-            foreach (AsmStorageAccount asmStorageAccount in artifacts.StorageAccounts)
+            foreach (Asm.StorageAccount asmStorageAccount in artifacts.StorageAccounts)
             {
                 _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(templateResult, asmStorageAccount);
@@ -111,13 +109,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
 
             // process selected cloud services and virtual machines
-            foreach (AsmVirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
                 _statusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
 
                 BuildPublicIPAddressObject(templateResult, asmVirtualMachine);
                 BuildLoadBalancerObject(templateResult, asmVirtualMachine.Parent, asmVirtualMachine, artifacts);
-        
+
                 // process availability set
                 BuildAvailabilitySetObject(templateResult, asmVirtualMachine);
 
@@ -151,18 +149,18 @@ namespace MigAz.Azure.Generator.AsmToArm
             return templateResult;
         }
 
-        private void BuildPublicIPAddressObject(TemplateResult templateResult, ref NetworkInterface networkinterface)
+        private void BuildPublicIPAddressObject(TemplateResult templateResult, ref ArmTemplate.NetworkInterface networkinterface)
         {
             _logProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
             PublicIPAddress publicipaddress = new PublicIPAddress(templateResult.ExecutionGuid);
             publicipaddress.name = networkinterface.name;
             publicipaddress.location = templateResult.TargetResourceGroup.Location.Name;
-            publicipaddress.properties = new PublicIPAddress_Properties();
+            publicipaddress.properties = new ArmTemplate.PublicIPAddress_Properties();
 
             templateResult.AddResource(publicipaddress);
 
-            NetworkInterface_Properties networkinterface_properties = (NetworkInterface_Properties)networkinterface.properties;
+            ArmTemplate.NetworkInterface_Properties networkinterface_properties = (ArmTemplate.NetworkInterface_Properties)networkinterface.properties;
             networkinterface_properties.ipConfigurations[0].properties.publicIPAddress = new Reference();
             networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
             networkinterface.properties = networkinterface_properties;
@@ -171,7 +169,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildPublicIPAddressObject(TemplateResult templateResult, AsmVirtualMachine asmVirtualMachine)
+        private void BuildPublicIPAddressObject(TemplateResult templateResult, Asm.VirtualMachine asmVirtualMachine)
         {
             _logProvider.WriteLog("BuildPublicIPAddressObject", "Start");
             
@@ -198,7 +196,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildAvailabilitySetObject(TemplateResult templateResult, AsmVirtualMachine asmVirtualMachine)
+        private void BuildAvailabilitySetObject(TemplateResult templateResult, Asm.VirtualMachine asmVirtualMachine)
         {
             _logProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
@@ -215,7 +213,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildAvailabilitySetObject", "End");
         }
 
-        private void BuildLoadBalancerObject(TemplateResult templateResult, AsmCloudService asmCloudService, AsmVirtualMachine asmVirtualMachine, AsmArtifacts artifacts)
+        private void BuildLoadBalancerObject(TemplateResult templateResult, Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, AsmArtifacts artifacts)
         {
             _logProvider.WriteLog("BuildLoadBalancerObject", "Start");
 
@@ -291,7 +289,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LoadBalancer_Properties properties = (LoadBalancer_Properties)loadbalancer.properties;
 
             // Add Load Balancer Rules
-            foreach (AsmLoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
+            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
             {
                 if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // if it's a inbound nat rule
                 {
@@ -370,7 +368,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildLoadBalancerObject", "End");
         }
 
-        private async Task BuildVirtualNetworkObject(TemplateResult templateResult, AsmVirtualNetwork asmVirtualNetwork)
+        private async Task BuildVirtualNetworkObject(TemplateResult templateResult, Asm.VirtualNetwork asmVirtualNetwork)
         {
             _logProvider.WriteLog("BuildVirtualNetworkObject", "Start");
 
@@ -402,7 +400,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
             else
             {
-                foreach (AsmSubnet asmSubnet in asmVirtualNetwork.Subnets)
+                foreach (Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
                 {
                     Subnet_Properties properties = new Subnet_Properties();
                     properties.addressPrefix = asmSubnet.AddressPrefix;
@@ -416,7 +414,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (asmSubnet.NetworkSecurityGroup != null)
                     {
-                        AsmNetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
+                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
 
                         if (asmNetworkSecurityGroup == null)
                         {
@@ -473,7 +471,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildVirtualNetworkObject", "End");
         }
 
-        private async Task AddGatewaysToVirtualNetwork(TemplateResult templateResult, AsmVirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
+        private async Task AddGatewaysToVirtualNetwork(TemplateResult templateResult, Asm.VirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
         {
             // Process Virtual Network Gateway, if exists
             if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
@@ -531,7 +529,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     //Process vpnClientRootCertificates
                     List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
-                    foreach (AsmClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
+                    foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
                     {
                         VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
                         vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
@@ -584,10 +582,10 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
         }
 
-        private async Task AddLocalSiteToGateway(TemplateResult templateResult, AsmVirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork, VirtualNetworkGateway virtualnetworkgateway)
+        private async Task AddLocalSiteToGateway(TemplateResult templateResult, Asm.VirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork, VirtualNetworkGateway virtualnetworkgateway)
         {
             // Local Network Gateways & Connections
-            foreach (AsmLocalNetworkSite asmLocalNetworkSite in asmVirtualNetwork.LocalNetworkSites)
+            foreach (Asm.LocalNetworkSite asmLocalNetworkSite in asmVirtualNetwork.LocalNetworkSites)
             {
                 GatewayConnection_Properties gatewayconnection_properties = new GatewayConnection_Properties();
                 var dependson = new List<string>();
@@ -657,7 +655,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
         }
 
-        private async Task<NetworkSecurityGroup> BuildNetworkSecurityGroup(TemplateResult templateResult, AsmNetworkSecurityGroup asmNetworkSecurityGroup)
+        private async Task<NetworkSecurityGroup> BuildNetworkSecurityGroup(TemplateResult templateResult, Asm.NetworkSecurityGroup asmNetworkSecurityGroup)
         {
             _logProvider.WriteLog("BuildNetworkSecurityGroup", "Start");
 
@@ -669,7 +667,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             // for each rule
-            foreach (AsmNetworkSecurityGroupRule asmNetworkSecurityGroupRule in asmNetworkSecurityGroup.Rules)
+            foreach (Asm.NetworkSecurityGroupRule asmNetworkSecurityGroupRule in asmNetworkSecurityGroup.Rules)
             {
                 // if not system rule
                 if (!asmNetworkSecurityGroupRule.IsSystemRule)
@@ -702,7 +700,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             return networksecuritygroup;
         }
 
-        private async Task<RouteTable> BuildRouteTable(TemplateResult templateResult, AsmRouteTable asmRouteTable)
+        private async Task<RouteTable> BuildRouteTable(TemplateResult templateResult, Asm.RouteTable asmRouteTable)
         {
             _logProvider.WriteLog("BuildRouteTable", "Start");
 
@@ -714,7 +712,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             routetable_properties.routes = new List<Route>();
 
             // for each route
-            foreach (AsmRoute asmRoute in asmRouteTable.Routes)
+            foreach (Asm.Route asmRoute in asmRouteTable.Routes)
             {
                 //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
                 Route_Properties route_properties = new Route_Properties();
@@ -758,7 +756,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             return routetable;
         }
 
-        private async Task BuildNetworkInterfaceObject(TemplateResult templateResult, AsmVirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private async Task BuildNetworkInterfaceObject(TemplateResult templateResult, Asm.VirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
             _logProvider.WriteLog("BuildNetworkInterfaceObject", "Start");
 
@@ -776,7 +774,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
 
             List<string> dependson = new List<string>();
-            if (asmVirtualMachine.TargetVirtualNetwork != null && asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(AsmVirtualNetwork))
+            if (asmVirtualMachine.TargetVirtualNetwork != null && asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
                 dependson.Add(asmVirtualMachine.TargetVirtualNetwork.TargetId);
 
             // If there is at least one endpoint add the reference to the LB backend pool
@@ -793,7 +791,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             // Adds the references to the inboud nat rules
             List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-            foreach (AsmLoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
+            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
             {
                 if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
                 {
@@ -825,17 +823,17 @@ namespace MigAz.Azure.Generator.AsmToArm
             ipconfiguration.name = ipconfiguration_name;
             ipconfiguration.properties = ipconfiguration_properties;
 
-            List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
+            List<ArmTemplate.IpConfiguration> ipConfigurations = new List<ArmTemplate.IpConfiguration>();
             ipConfigurations.Add(ipconfiguration);
 
-            NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
+            ArmTemplate.NetworkInterface_Properties networkinterface_properties = new ArmTemplate.NetworkInterface_Properties();
             networkinterface_properties.ipConfigurations = ipConfigurations;
             if (asmVirtualMachine.EnabledIpForwarding)
             {
                 networkinterface_properties.enableIPForwarding = true;
             }
 
-            NetworkInterface primaryNetworkInterface = new NetworkInterface(templateResult.ExecutionGuid);
+            ArmTemplate.NetworkInterface primaryNetworkInterface = new ArmTemplate.NetworkInterface(templateResult.ExecutionGuid);
             primaryNetworkInterface.name = asmVirtualMachine.PrimaryNetworkInterface.GetFinalTargetName();
             primaryNetworkInterface.location = templateResult.TargetResourceGroup.Location.Name;
             primaryNetworkInterface.properties = networkinterface_properties;
@@ -850,7 +848,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (asmVirtualMachine.NetworkSecurityGroup != null)
             {
-                AsmNetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
+                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
 
                 if (asmNetworkSecurityGroup == null)
                 {
@@ -883,14 +881,14 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             templateResult.AddResource(primaryNetworkInterface);
 
-            foreach (AsmNetworkInterface asmNetworkInterface in asmVirtualMachine.NetworkInterfaces)
+            foreach (Asm.NetworkInterface asmNetworkInterface in asmVirtualMachine.NetworkInterfaces)
             {
                 subnet_ref = new Reference();
                 subnet_ref.id = asmNetworkInterface.Parent.TargetSubnet.TargetId;
 
                 privateIPAllocationMethod = "Dynamic";
                 privateIPAddress = null;
-                if (asmNetworkInterface.StaticVirtualNetworkIPAddress != String.Empty)
+                if (asmNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
                 {
                     privateIPAllocationMethod = "Static";
                     privateIPAddress = asmNetworkInterface.StaticVirtualNetworkIPAddress;
@@ -902,14 +900,14 @@ namespace MigAz.Azure.Generator.AsmToArm
                 ipconfiguration_properties.subnet = subnet_ref;
 
                 ipconfiguration_name = "ipconfig1";
-                ipconfiguration = new IpConfiguration();
+                ipconfiguration = new ArmTemplate.IpConfiguration();
                 ipconfiguration.name = ipconfiguration_name;
                 ipconfiguration.properties = ipconfiguration_properties;
 
-                ipConfigurations = new List<IpConfiguration>();
+                ipConfigurations = new List<ArmTemplate.IpConfiguration>();
                 ipConfigurations.Add(ipconfiguration);
 
-                networkinterface_properties = new NetworkInterface_Properties();
+                networkinterface_properties = new ArmTemplate.NetworkInterface_Properties();
                 networkinterface_properties.ipConfigurations = ipConfigurations;
                 if (asmNetworkInterface.EnableIPForwarding)
                 {
@@ -919,7 +917,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 dependson = new List<string>();
                 dependson.Add(asmNetworkInterface.Parent.TargetVirtualNetwork.TargetId);
 
-                NetworkInterface additionalNetworkInterface = new NetworkInterface(templateResult.ExecutionGuid);
+                ArmTemplate.NetworkInterface additionalNetworkInterface = new ArmTemplate.NetworkInterface(templateResult.ExecutionGuid);
                 additionalNetworkInterface.name = asmNetworkInterface.GetFinalTargetName();
                 additionalNetworkInterface.location = templateResult.TargetResourceGroup.Location.Name;
                 additionalNetworkInterface.properties = networkinterface_properties;
@@ -940,7 +938,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildNetworkInterfaceObject", "End");
         }
 
-        private async Task BuildVirtualMachineObject(TemplateResult templateResult, AsmVirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private async Task BuildVirtualMachineObject(TemplateResult templateResult, Asm.VirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
             _logProvider.WriteLog("BuildVirtualMachineObject", "Start");
 
@@ -948,14 +946,14 @@ namespace MigAz.Azure.Generator.AsmToArm
             string ostype = asmVirtualMachine.OSVirtualHardDiskOS;
 
             string osDiskTargetStorageAccountName = String.Empty;
-            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(AsmStorageAccount))
+            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
             {
-                AsmStorageAccount asmStorageAccount = (AsmStorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                 osDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
             }
-            else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(ArmStorageAccount))
+            else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.ArmStorageAccount))
             {
-                ArmStorageAccount armStorageAccount = (ArmStorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                Arm.ArmStorageAccount armStorageAccount = (Arm.ArmStorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                 osDiskTargetStorageAccountName = armStorageAccount.Name;
             }
 
@@ -1047,17 +1045,17 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             // process data disks
             List<DataDisk> datadisks = new List<DataDisk>();
-            foreach (AsmDisk dataDisk in asmVirtualMachine.DataDisks)
+            foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
             {
                 string dataDiskTargetStorageAccountName = String.Empty;
-                if (dataDisk.TargetStorageAccount.GetType() == typeof(AsmStorageAccount))
+                if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
                 {
-                    AsmStorageAccount asmStorageAccount = (AsmStorageAccount)dataDisk.TargetStorageAccount;
+                    Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
                     dataDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
                 }
-                else if (dataDisk.TargetStorageAccount.GetType() == typeof(ArmStorageAccount))
+                else if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.ArmStorageAccount))
                 {
-                    ArmStorageAccount armStorageAccount = (ArmStorageAccount)dataDisk.TargetStorageAccount;
+                    Arm.ArmStorageAccount armStorageAccount = (Arm.ArmStorageAccount)dataDisk.TargetStorageAccount;
                     dataDiskTargetStorageAccountName = armStorageAccount.Name;
                 }
 
@@ -1167,7 +1165,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             foreach (IStorageAccount storageaccountdependency in storageaccountdependencies)
             {
-                if (storageaccountdependency.GetType() == typeof(AsmStorageAccount))
+                if (storageaccountdependency.GetType() == typeof(Asm.StorageAccount))
                     dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
@@ -1184,7 +1182,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _logProvider.WriteLog("BuildVirtualMachineObject", "End");
         }
 
-        private void BuildStorageAccountObject(TemplateResult templateResult, AsmStorageAccount asmStorageAccount)
+        private void BuildStorageAccountObject(TemplateResult templateResult, Asm.StorageAccount asmStorageAccount)
         {
             _logProvider.WriteLog("BuildStorageAccountObject", "Start");
 

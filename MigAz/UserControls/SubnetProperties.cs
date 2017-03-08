@@ -24,7 +24,7 @@ namespace MigAz.UserControls
         {
             _AsmSubnetNode = asmSubnetNode;
 
-            AsmSubnet asmSubnet = (AsmSubnet)_AsmSubnetNode.Tag;
+            Subnet asmSubnet = (Subnet)_AsmSubnetNode.Tag;
 
             lblSourceName.Text = asmSubnet.Name;
             lblAddressSpace.Text = asmSubnet.AddressPrefix;
@@ -34,7 +34,7 @@ namespace MigAz.UserControls
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-            AsmSubnet asmSubnet = (AsmSubnet)_AsmSubnetNode.Tag;
+            Subnet asmSubnet = (Subnet)_AsmSubnetNode.Tag;
 
             asmSubnet.TargetName = txtSender.Text;
             _AsmSubnetNode.Text = asmSubnet.TargetName;

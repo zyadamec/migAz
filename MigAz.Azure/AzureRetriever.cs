@@ -22,10 +22,10 @@ namespace MigAz.Azure
         private List<AzureSubscription> _AzureSubscriptions;
 
         // ASM Object Cache (Subscription Context Specific)
-        private List<AsmVirtualNetwork> _VirtualNetworks;
-        private List<AsmStorageAccount> _StorageAccounts;
-        private List<AsmCloudService> _CloudServices;
-        private List<AsmReservedIP> _AsmReservedIPs;
+        private List<Asm.VirtualNetwork> _VirtualNetworks;
+        private List<Asm.StorageAccount> _StorageAccounts;
+        private List<CloudService> _CloudServices;
+        private List<ReservedIP> _AsmReservedIPs;
 
         // ARM Object Cache (Subscription Context Specific)
         private List<ArmLocation> _ArmLocations;
@@ -94,7 +94,7 @@ namespace MigAz.Azure
             }
         }
 
-        internal ArmAvailabilitySet GetAzureARMAvailabilitySet(AsmVirtualMachine asmVirtualMachine)
+        internal ArmAvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
         {
             if (_ArmAvailabilitySets == null)
                 _ArmAvailabilitySets = new List<ArmAvailabilitySet>();
@@ -326,49 +326,49 @@ namespace MigAz.Azure
             }
         }
 
-        public async virtual Task<List<AsmLocation>> GetAzureASMLocations()
+        public async virtual Task<List<Location>> GetAzureASMLocations()
         {
             XmlNode locationsXml = await this.GetAzureAsmResources("Locations", null);
-            List<AsmLocation> azureLocations = new List<AsmLocation>();
+            List<Location> azureLocations = new List<Location>();
             foreach (XmlNode locationXml in locationsXml.SelectNodes("/Locations/Location"))
             {
-                azureLocations.Add(new AsmLocation(_AzureContext, locationXml));
+                azureLocations.Add(new Location(_AzureContext, locationXml));
             }
 
             return azureLocations;
         }
 
-        public async virtual Task<List<AsmReservedIP>> GetAzureAsmReservedIPs()
+        public async virtual Task<List<ReservedIP>> GetAzureAsmReservedIPs()
         {
             if (_AsmReservedIPs != null)
                 return _AsmReservedIPs;
 
-            _AsmReservedIPs = new List<AsmReservedIP>();
+            _AsmReservedIPs = new List<ReservedIP>();
             XmlDocument reservedIPsXml = await this.GetAzureAsmResources("ReservedIPs", null);
             foreach (XmlNode reservedIPXml in reservedIPsXml.SelectNodes("/ReservedIPs/ReservedIP"))
             {
-                _AsmReservedIPs.Add(new AsmReservedIP(_AzureContext, reservedIPXml));
+                _AsmReservedIPs.Add(new ReservedIP(_AzureContext, reservedIPXml));
             }
 
             return _AsmReservedIPs;
         }
 
-        public async virtual Task<List<AsmStorageAccount>> GetAzureAsmStorageAccounts()
+        public async virtual Task<List<Asm.StorageAccount>> GetAzureAsmStorageAccounts()
         {
             if (_StorageAccounts != null)
                 return _StorageAccounts;
 
-            _StorageAccounts = new List<AsmStorageAccount>();
+            _StorageAccounts = new List<Asm.StorageAccount>();
             XmlDocument storageAccountsXml = await this.GetAzureAsmResources("StorageAccounts", null);
             foreach (XmlNode storageAccountXml in storageAccountsXml.SelectNodes("//StorageService"))
             {
-                AsmStorageAccount asmStorageAccount = new AsmStorageAccount(_AzureContext, storageAccountXml);
+                Asm.StorageAccount asmStorageAccount = new Asm.StorageAccount(_AzureContext, storageAccountXml);
                 _StorageAccounts.Add(asmStorageAccount);
             }
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Loading Storage Account Keys");
             List<Task> storageAccountKeyTasks = new List<Task>();
-            foreach (AsmStorageAccount asmStorageAccount in _StorageAccounts)
+            foreach (Asm.StorageAccount asmStorageAccount in _StorageAccounts)
             {
                 storageAccountKeyTasks.Add(asmStorageAccount.LoadStorageAccountKeysAsynch());
             }
@@ -377,9 +377,9 @@ namespace MigAz.Azure
             return _StorageAccounts;
         }
 
-        public async virtual Task<AsmStorageAccount> GetAzureAsmStorageAccount(string storageAccountName)
+        public async virtual Task<Asm.StorageAccount> GetAzureAsmStorageAccount(string storageAccountName)
         {
-            foreach (AsmStorageAccount asmStorageAccount in await this.GetAzureAsmStorageAccounts())
+            foreach (Asm.StorageAccount asmStorageAccount in await this.GetAzureAsmStorageAccounts())
             {
                 if (asmStorageAccount.Name == storageAccountName)
                     return asmStorageAccount;
@@ -388,24 +388,24 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async virtual Task<List<AsmVirtualNetwork>> GetAzureAsmVirtualNetworks()
+        public async virtual Task<List<Asm.VirtualNetwork>> GetAzureAsmVirtualNetworks()
         {
             if (_VirtualNetworks != null)
                 return _VirtualNetworks;
 
-            _VirtualNetworks = new List<AsmVirtualNetwork>();
+            _VirtualNetworks = new List<Asm.VirtualNetwork>();
             foreach (XmlNode virtualnetworksite in (await this.GetAzureAsmResources("VirtualNetworks", null)).SelectNodes("//VirtualNetworkSite"))
             {
-                AsmVirtualNetwork asmVirtualNetwork = new AsmVirtualNetwork(_AzureContext, virtualnetworksite);
+                Asm.VirtualNetwork asmVirtualNetwork = new Asm.VirtualNetwork(_AzureContext, virtualnetworksite);
                 await asmVirtualNetwork.InitializeChildrenAsync();
                 _VirtualNetworks.Add(asmVirtualNetwork);
             }
             return _VirtualNetworks;
         }
 
-        public async Task<AsmVirtualNetwork> GetAzureAsmVirtualNetwork(string virtualNetworkName)
+        public async Task<Asm.VirtualNetwork> GetAzureAsmVirtualNetwork(string virtualNetworkName)
         {
-            foreach (AsmVirtualNetwork asmVirtualNetwork in await this.GetAzureAsmVirtualNetworks())
+            foreach (Asm.VirtualNetwork asmVirtualNetwork in await this.GetAzureAsmVirtualNetworks())
             {
                 if (asmVirtualNetwork.Name == virtualNetworkName)
                 {
@@ -416,53 +416,53 @@ namespace MigAz.Azure
             return null;
         }
 
-        internal async Task<AsmAffinityGroup> GetAzureAsmAffinityGroup(string affinityGroupName)
+        internal async Task<AffinityGroup> GetAzureAsmAffinityGroup(string affinityGroupName)
         {
             Hashtable affinitygroupinfo = new Hashtable();
             affinitygroupinfo.Add("affinitygroupname", affinityGroupName);
 
             XmlNode affinityGroupXml = await this.GetAzureAsmResources("AffinityGroup", affinitygroupinfo);
-            AsmAffinityGroup asmAffinityGroup = new AsmAffinityGroup(_AzureContext, affinityGroupXml.SelectSingleNode("AffinityGroup"));
+            AffinityGroup asmAffinityGroup = new AffinityGroup(_AzureContext, affinityGroupXml.SelectSingleNode("AffinityGroup"));
             return asmAffinityGroup;
         }
 
-        public async virtual Task<AsmNetworkSecurityGroup> GetAzureAsmNetworkSecurityGroup(string networkSecurityGroupName)
+        public async virtual Task<Asm.NetworkSecurityGroup> GetAzureAsmNetworkSecurityGroup(string networkSecurityGroupName)
         {
             Hashtable networkSecurityGroupInfo = new Hashtable();
             networkSecurityGroupInfo.Add("name", networkSecurityGroupName);
 
             XmlNode networkSecurityGroupXml = await this.GetAzureAsmResources("NetworkSecurityGroup", networkSecurityGroupInfo);
-            AsmNetworkSecurityGroup asmNetworkSecurityGroup = new AsmNetworkSecurityGroup(_AzureContext, networkSecurityGroupXml.SelectSingleNode("NetworkSecurityGroup"));
+            Asm.NetworkSecurityGroup asmNetworkSecurityGroup = new Asm.NetworkSecurityGroup(_AzureContext, networkSecurityGroupXml.SelectSingleNode("NetworkSecurityGroup"));
             return asmNetworkSecurityGroup;
         }
 
-        public async virtual Task<List<AsmNetworkSecurityGroup>> GetAzureAsmNetworkSecurityGroups()
+        public async virtual Task<List<Asm.NetworkSecurityGroup>> GetAzureAsmNetworkSecurityGroups()
         {
-            List<AsmNetworkSecurityGroup> networkSecurityGroups = new List<AsmNetworkSecurityGroup>();
+            List<Asm.NetworkSecurityGroup> networkSecurityGroups = new List<Asm.NetworkSecurityGroup>();
 
             XmlDocument x = await this.GetAzureAsmResources("NetworkSecurityGroups", null);
             foreach (XmlNode networkSecurityGroupNode in (await this.GetAzureAsmResources("NetworkSecurityGroups", null)).SelectNodes("//NetworkSecurityGroup"))
             {
-                AsmNetworkSecurityGroup asmNetworkSecurityGroup = new AsmNetworkSecurityGroup(_AzureContext, networkSecurityGroupNode);
+                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = new Asm.NetworkSecurityGroup(_AzureContext, networkSecurityGroupNode);
                 networkSecurityGroups.Add(asmNetworkSecurityGroup);
             }
 
             return networkSecurityGroups;
         }
 
-        public async virtual Task<AsmRouteTable> GetAzureAsmRouteTable(string routeTableName)
+        public async virtual Task<Asm.RouteTable> GetAzureAsmRouteTable(string routeTableName)
         {
             Hashtable info = new Hashtable();
             info.Add("name", routeTableName);
             XmlDocument routeTableXml = await this.GetAzureAsmResources("RouteTable", info);
-            return new AsmRouteTable(_AzureContext, routeTableXml);
+            return new Asm.RouteTable(_AzureContext, routeTableXml);
         }
 
-        internal async Task<AsmVirtualMachine> GetAzureAsmVirtualMachine(AsmCloudService asmCloudService, string virtualMachineName)
+        internal async Task<Asm.VirtualMachine> GetAzureAsmVirtualMachine(CloudService asmCloudService, string virtualMachineName)
         {
             Hashtable vmDetails = await this.GetVMDetails(asmCloudService.ServiceName, virtualMachineName);
             XmlDocument virtualMachineXml = await this.GetAzureAsmResources("VirtualMachine", vmDetails);
-            AsmVirtualMachine asmVirtualMachine = new AsmVirtualMachine(this._AzureContext, asmCloudService, this._AzureContext.SettingsProvider, virtualMachineXml, vmDetails);
+            Asm.VirtualMachine asmVirtualMachine = new Asm.VirtualMachine(this._AzureContext, asmCloudService, this._AzureContext.SettingsProvider, virtualMachineXml, vmDetails);
             await asmVirtualMachine.InitializeChildren();
 
             return asmVirtualMachine;
@@ -516,27 +516,27 @@ namespace MigAz.Azure
             throw new InvalidOperationException("Requested VM could not be found");
         }
 
-        public async virtual Task<List<AsmCloudService>> GetAzureAsmCloudServices()
+        public async virtual Task<List<CloudService>> GetAzureAsmCloudServices()
         {
             if (_CloudServices != null)
                 return _CloudServices;
 
             XmlDocument cloudServicesXml = await this.GetAzureAsmResources("CloudServices", null);
-            _CloudServices = new List<AsmCloudService>();
+            _CloudServices = new List<CloudService>();
             foreach (XmlNode cloudServiceXml in cloudServicesXml.SelectNodes("//HostedService"))
             {
-                AsmCloudService tempCloudService = new AsmCloudService(_AzureContext, cloudServiceXml);
+                CloudService tempCloudService = new CloudService(_AzureContext, cloudServiceXml);
 
                 Hashtable cloudServiceInfo = new Hashtable();
                 cloudServiceInfo.Add("name", tempCloudService.ServiceName);
                 XmlDocument cloudServiceDetailXml = await this.GetAzureAsmResources("CloudService", cloudServiceInfo);
-                AsmCloudService asmCloudService = new AsmCloudService(_AzureContext, cloudServiceDetailXml);
+                CloudService asmCloudService = new CloudService(_AzureContext, cloudServiceDetailXml);
 
                 _CloudServices.Add(asmCloudService);
             }
 
             List<Task> cloudServiceVMTasks = new List<Task>();
-            foreach (AsmCloudService asmCloudService in _CloudServices)
+            foreach (CloudService asmCloudService in _CloudServices)
             {
                 cloudServiceVMTasks.Add(asmCloudService.LoadChildrenAsync());
             }
@@ -546,9 +546,9 @@ namespace MigAz.Azure
             return _CloudServices;
         }
 
-        public async virtual Task<AsmCloudService> GetAzureAsmCloudService(string cloudServiceName)
+        public async virtual Task<CloudService> GetAzureAsmCloudService(string cloudServiceName)
         {
-            foreach (AsmCloudService asmCloudService in await this.GetAzureAsmCloudServices())
+            foreach (CloudService asmCloudService in await this.GetAzureAsmCloudServices())
             {
                 if (asmCloudService.ServiceName == cloudServiceName)
                     return asmCloudService;
@@ -557,25 +557,25 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<AsmStorageAccountKeys> GetAzureAsmStorageAccountKeys(string storageAccountName)
+        public async Task<StorageAccountKeys> GetAzureAsmStorageAccountKeys(string storageAccountName)
         {
             Hashtable storageAccountInfo = new Hashtable();
             storageAccountInfo.Add("name", storageAccountName);
 
             XmlDocument storageAccountKeysXml = await this.GetAzureAsmResources("StorageAccountKeys", storageAccountInfo);
-            return new AsmStorageAccountKeys(_AzureContext, storageAccountKeysXml);
+            return new StorageAccountKeys(_AzureContext, storageAccountKeysXml);
         }
 
-        public async virtual Task<List<AsmClientRootCertificate>> GetAzureAsmClientRootCertificates(AsmVirtualNetwork asmVirtualNetwork)
+        public async virtual Task<List<ClientRootCertificate>> GetAzureAsmClientRootCertificates(Asm.VirtualNetwork asmVirtualNetwork)
         {
             Hashtable virtualNetworkInfo = new Hashtable();
             virtualNetworkInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
             XmlDocument clientRootCertificatesXml = await this.GetAzureAsmResources("ClientRootCertificates", virtualNetworkInfo);
 
-            List<AsmClientRootCertificate> asmClientRootCertificates = new List<AsmClientRootCertificate>();
+            List<ClientRootCertificate> asmClientRootCertificates = new List<ClientRootCertificate>();
             foreach (XmlNode clientRootCertificateXml in clientRootCertificatesXml.SelectNodes("//ClientRootCertificate"))
             {
-                AsmClientRootCertificate asmClientRootCertificate = new AsmClientRootCertificate(_AzureContext, asmVirtualNetwork, clientRootCertificateXml);
+                ClientRootCertificate asmClientRootCertificate = new ClientRootCertificate(_AzureContext, asmVirtualNetwork, clientRootCertificateXml);
                 await asmClientRootCertificate.InitializeChildrenAsync();
                 asmClientRootCertificates.Add(asmClientRootCertificate);
             }
@@ -583,7 +583,7 @@ namespace MigAz.Azure
             return asmClientRootCertificates;
         }
 
-        public async Task<XmlDocument> GetAzureAsmClientRootCertificateData(AsmVirtualNetwork asmVirtualNetwork, string certificateThumbprint)
+        public async Task<XmlDocument> GetAzureAsmClientRootCertificateData(Asm.VirtualNetwork asmVirtualNetwork, string certificateThumbprint)
         {
             Hashtable certificateInfo = new Hashtable();
             certificateInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
@@ -592,14 +592,14 @@ namespace MigAz.Azure
             return clientRootCertificateXml;
         }
 
-        public async virtual Task<AsmVirtualNetworkGateway> GetAzureAsmVirtualNetworkGateway(AsmVirtualNetwork asmVirtualNetwork)
+        public async virtual Task<Asm.VirtualNetworkGateway> GetAzureAsmVirtualNetworkGateway(Asm.VirtualNetwork asmVirtualNetwork)
         {
             Hashtable virtualNetworkGatewayInfo = new Hashtable();
             virtualNetworkGatewayInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
             virtualNetworkGatewayInfo.Add("localnetworksitename", String.Empty);
 
             XmlDocument gatewayXml = await this.GetAzureAsmResources("VirtualNetworkGateway", virtualNetworkGatewayInfo);
-            return new AsmVirtualNetworkGateway(_AzureContext, asmVirtualNetwork, gatewayXml);
+            return new Asm.VirtualNetworkGateway(_AzureContext, asmVirtualNetwork, gatewayXml);
         }
 
         public async virtual Task<string> GetAzureAsmVirtualNetworkSharedKey(string virtualNetworkName, string localNetworkSiteName)

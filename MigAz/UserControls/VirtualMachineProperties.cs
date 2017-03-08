@@ -29,7 +29,7 @@ namespace MigAz.UserControls
             _AsmToArmForm = asmToArmForm;
 
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
 
             lblRoleSize.Text = asmVirtualMachine.RoleSize;
             lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
@@ -52,7 +52,7 @@ namespace MigAz.UserControls
             }
 
             if ((asmVirtualMachine.TargetSubnet == null) ||
-                    (asmVirtualMachine.TargetSubnet.GetType() == typeof(AsmSubnet)) ||
+                    (asmVirtualMachine.TargetSubnet.GetType() == typeof(Azure.Asm.Subnet)) ||
                     (rbExistingARMVNet.Enabled == false))
             {
                 rbVNetInMigration.Checked = true;
@@ -66,15 +66,15 @@ namespace MigAz.UserControls
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
 
             cmbExistingArmSubnet.Items.Clear();
 
             if (rbVNetInMigration.Checked)
             {
-                AsmVirtualNetwork selectedAsmVirtualNetwork = (AsmVirtualNetwork)cmbExistingArmVNets.SelectedItem;
+                Azure.Asm.VirtualNetwork selectedAsmVirtualNetwork = (Azure.Asm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
                 
-                foreach (AsmSubnet asmSubnet in selectedAsmVirtualNetwork.Subnets)
+                foreach (Azure.Asm.Subnet asmSubnet in selectedAsmVirtualNetwork.Subnets)
                 {
                     if (asmSubnet.Name != ArmConst.GatewaySubnetName)
                         cmbExistingArmSubnet.Items.Add(asmSubnet);
@@ -82,7 +82,7 @@ namespace MigAz.UserControls
 
                 if (asmVirtualMachine.TargetSubnet != null)
                 {
-                    foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                    foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
                     {
                         if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
@@ -113,7 +113,7 @@ namespace MigAz.UserControls
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
             RadioButton rb = (RadioButton)sender;
 
             if (rb.Checked)
@@ -130,7 +130,7 @@ namespace MigAz.UserControls
                     {
                         TreeNode asmVirtualNetworkAsmParentNode = (TreeNode)asmVirtualNetworkNode.Tag;
 
-                        if (((AsmVirtualNetwork)asmVirtualNetworkAsmParentNode.Tag).HasNonGatewaySubnet)
+                        if (((Azure.Asm.VirtualNetwork)asmVirtualNetworkAsmParentNode.Tag).HasNonGatewaySubnet)
                             cmbExistingArmVNets.Items.Add(asmVirtualNetworkAsmParentNode.Tag);
                     }
                 }
@@ -138,7 +138,7 @@ namespace MigAz.UserControls
                 if (asmVirtualMachine.TargetVirtualNetwork != null)
                 {
                     // Attempt to match target to list items
-                    foreach (AsmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                    foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                     {
                         if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
@@ -146,7 +146,7 @@ namespace MigAz.UserControls
 
                     if (cmbExistingArmVNets.SelectedItem != null && asmVirtualMachine.TargetSubnet != null)
                     {
-                        foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                        foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
                         {
                             if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
                                 cmbExistingArmSubnet.SelectedItem = listSubnet;
@@ -156,7 +156,7 @@ namespace MigAz.UserControls
 
                 if ((cmbExistingArmVNets.SelectedItem == null) && (cmbExistingArmVNets.Items.Count > 0))
                 {
-                    foreach (AsmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                    foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                     {
                         if (listVirtualNetwork.Name == asmVirtualMachine.VirtualNetworkName)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
@@ -168,7 +168,7 @@ namespace MigAz.UserControls
 
                 if ((cmbExistingArmSubnet.SelectedItem == null) && (cmbExistingArmSubnet.Items.Count > 0))
                 {
-                    foreach (AsmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                    foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
                     {
                         if (listSubnet.Name == asmVirtualMachine.SubnetName)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
@@ -183,7 +183,7 @@ namespace MigAz.UserControls
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
             RadioButton rb = (RadioButton)sender;
 
             if (rb.Checked)
@@ -215,7 +215,7 @@ namespace MigAz.UserControls
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
             ComboBox cmbSender = (ComboBox)sender;
 
             if (cmbSender.SelectedItem == null)
@@ -225,9 +225,9 @@ namespace MigAz.UserControls
             }
             else
             {
-                if (cmbSender.SelectedItem.GetType() == typeof(AsmSubnet))
+                if (cmbSender.SelectedItem.GetType() == typeof(Azure.Asm.Subnet))
                 {
-                    AsmSubnet asmSubnet = (AsmSubnet)cmbSender.SelectedItem;
+                    Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)cmbSender.SelectedItem;
                     asmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
                     asmVirtualMachine.TargetSubnet = asmSubnet;
                 }
@@ -243,7 +243,7 @@ namespace MigAz.UserControls
         private void txtARMVMName_TextChanged(object sender, EventArgs e)
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
-            AsmVirtualMachine asmVirtualMachine = (AsmVirtualMachine)asmTreeNode.Tag;
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
 
             asmVirtualMachine.TargetName = txtARMVMName.Text;
             _VirtualMachineNode.Text = asmVirtualMachine.TargetName;

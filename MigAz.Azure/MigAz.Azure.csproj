@@ -55,141 +55,80 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arm\AddressSpace.cs" />
-    <Compile Include="Arm\ArmAvailabilitySet.cs" />
-    <Compile Include="Arm\ArmLocation.cs" />
-    <Compile Include="Arm\ArmNetworkSecurityGroup.cs" />
-    <Compile Include="Arm\ArmResource.cs" />
-    <Compile Include="Arm\ArmResourceGroup.cs" />
-    <Compile Include="Arm\ArmStorageAccount.cs" />
-    <Compile Include="Arm\ArmStorageAccountKey.cs" />
-    <Compile Include="Arm\ArmSubnet.cs" />
-    <Compile Include="Arm\ArmVirtualMachine.cs" />
-    <Compile Include="Arm\ArmVirtualNetwork.cs" />
-    <Compile Include="Arm\AvailabilitySet.cs" />
-    <Compile Include="Arm\BootDiagnostics.cs" />
-    <Compile Include="Arm\DataDisk.cs" />
-    <Compile Include="Arm\DiagnosticsProfile.cs" />
-    <Compile Include="Arm\Extension.cs" />
-    <Compile Include="Arm\Extension_Properties.cs" />
-    <Compile Include="Arm\Forms\AzureLoginContextDialog2.cs">
+    <Compile Include="ArmRetriever\ArmAvailabilitySet.cs" />
+    <Compile Include="ArmRetriever\ArmLocation.cs" />
+    <Compile Include="ArmRetriever\ArmNetworkSecurityGroup.cs" />
+    <Compile Include="ArmRetriever\ArmResourceGroup.cs" />
+    <Compile Include="ArmRetriever\ArmStorageAccount.cs" />
+    <Compile Include="ArmRetriever\ArmStorageAccountKey.cs" />
+    <Compile Include="ArmRetriever\ArmSubnet.cs" />
+    <Compile Include="ArmRetriever\ArmVirtualMachine.cs" />
+    <Compile Include="ArmRetriever\ArmVirtualNetwork.cs" />
+    <Compile Include="ArmTemplate\ARM.cs" />
+    <Compile Include="ArmTemplate\ArmConst.cs" />
+    <Compile Include="Forms\AzureLoginContextDialog2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Arm\Forms\AzureLoginContextDialog2.Designer.cs">
+    <Compile Include="Forms\AzureLoginContextDialog2.Designer.cs">
       <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\Forms\AzureLoginContextDialog.cs">
+    <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Arm\Forms\AzureLoginContextDialog.Designer.cs">
+    <Compile Include="Forms\AzureLoginContextDialog.Designer.cs">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\Forms\AzureSubscriptionContextDialog.cs">
+    <Compile Include="Forms\AzureSubscriptionContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Arm\Forms\AzureSubscriptionContextDialog.Designer.cs">
+    <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\FrontendIPConfiguration.cs" />
-    <Compile Include="Arm\FrontendIPConfiguration_Properties.cs" />
-    <Compile Include="Arm\GatewayConnection.cs" />
-    <Compile Include="Arm\GatewayConnection_Properties.cs" />
-    <Compile Include="Arm\HardwareProfile.cs" />
-    <Compile Include="Arm\ImageReference.cs" />
-    <Compile Include="Arm\InboundNatRule.cs" />
-    <Compile Include="Arm\InboundNatRule_Properties.cs" />
-    <Compile Include="Arm\IpConfiguration.cs" />
-    <Compile Include="Arm\IpConfiguration_Properties.cs" />
-    <Compile Include="Arm\LoadBalancer.cs" />
-    <Compile Include="Arm\LoadBalancer_Properties.cs" />
-    <Compile Include="Arm\LoadBalancingRule.cs" />
-    <Compile Include="Arm\LoadBalancingRule_Properties.cs" />
-    <Compile Include="Arm\LocalNetworkGateway.cs" />
-    <Compile Include="Arm\LocalNetworkGateway_Properties.cs" />
-    <Compile Include="Arm\NetworkInterface.cs" />
-    <Compile Include="Arm\NetworkInterface_Properties.cs" />
-    <Compile Include="Arm\NetworkProfile.cs" />
-    <Compile Include="Arm\NetworkProfile_NetworkInterface.cs" />
-    <Compile Include="Arm\NetworkProfile_NetworkInterface_Properties.cs" />
-    <Compile Include="Arm\NetworkSecurityGroup.cs" />
-    <Compile Include="Arm\NetworkSecurityGroup_Properties.cs" />
-    <Compile Include="Arm\OsDisk.cs" />
-    <Compile Include="Arm\OsProfile.cs" />
-    <Compile Include="Arm\Parameter.cs" />
-    <Compile Include="Arm\Probe.cs" />
-    <Compile Include="Arm\Probe_Properties.cs" />
-    <Compile Include="Arm\PublicIPAddress.cs" />
-    <Compile Include="Arm\PublicIPAddress_Properties.cs" />
-    <Compile Include="Arm\Reference.cs" />
-    <Compile Include="Arm\Route.cs" />
-    <Compile Include="Arm\RouteTable.cs" />
-    <Compile Include="Arm\RouteTable_Properties.cs" />
-    <Compile Include="Arm\Route_Properties.cs" />
-    <Compile Include="Arm\SecurityRule.cs" />
-    <Compile Include="Arm\SecurityRule_Properties.cs" />
-    <Compile Include="Arm\StorageAccount.cs" />
-    <Compile Include="Arm\StorageAccount_Properties.cs" />
-    <Compile Include="Arm\StorageProfile.cs" />
-    <Compile Include="Arm\Subnet.cs" />
-    <Compile Include="Arm\Subnet_Properties.cs" />
-    <Compile Include="Arm\Template.cs" />
-    <Compile Include="Arm\UserControls\AzureArmLoginControl2.cs">
+    <Compile Include="UserControls\AzureArmLoginControl2.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureArmLoginControl2.Designer.cs">
+    <Compile Include="UserControls\AzureArmLoginControl2.Designer.cs">
       <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureArmLoginControl.cs">
+    <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureArmLoginControl.Designer.cs">
+    <Compile Include="UserControls\AzureArmLoginControl.Designer.cs">
       <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureLoginContextViewer2.cs">
+    <Compile Include="UserControls\AzureLoginContextViewer2.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureLoginContextViewer2.Designer.cs">
+    <Compile Include="UserControls\AzureLoginContextViewer2.Designer.cs">
       <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureLoginContextViewer.cs">
+    <Compile Include="UserControls\AzureLoginContextViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Arm\UserControls\AzureLoginContextViewer.Designer.cs">
+    <Compile Include="UserControls\AzureLoginContextViewer.Designer.cs">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arm\Vhd.cs" />
-    <Compile Include="Arm\VirtualMachine.cs" />
-    <Compile Include="Arm\VirtualMachine_Properties.cs" />
-    <Compile Include="Arm\VirtualNetwork.cs" />
-    <Compile Include="Arm\VirtualNetworkGateway.cs" />
-    <Compile Include="Arm\VirtualNetworkGateway_Properties.cs" />
-    <Compile Include="Arm\VirtualNetworkGateway_Sku.cs" />
-    <Compile Include="Arm\VirtualNetwork_dhcpOptions.cs" />
-    <Compile Include="Arm\VirtualNetwork_Properties.cs" />
-    <Compile Include="Arm\VPNClientCertificate.cs" />
-    <Compile Include="Arm\VPNClientCertificate_Properties.cs" />
-    <Compile Include="Arm\VPNClientConfiguration.cs" />
-    <Compile Include="Asm\AsmAffinityGroup.cs" />
-    <Compile Include="Asm\AsmClientRootCertificate.cs" />
-    <Compile Include="Asm\AsmCloudService.cs" />
-    <Compile Include="Asm\AsmDisk.cs" />
-    <Compile Include="Asm\AsmLoadBalancer.cs" />
-    <Compile Include="Asm\AsmLoadBalancerRule.cs" />
-    <Compile Include="Asm\AsmLocalNetworkSite.cs" />
-    <Compile Include="Asm\AsmLocation.cs" />
-    <Compile Include="Asm\AsmNetworkInterface.cs" />
-    <Compile Include="Asm\AsmNetworkSecurityGroup.cs" />
-    <Compile Include="Asm\AsmNetworkSecurityGroupRule.cs" />
-    <Compile Include="Asm\AsmReservedIP.cs" />
-    <Compile Include="Asm\AsmRoute.cs" />
-    <Compile Include="Asm\AsmRouteTable.cs" />
-    <Compile Include="Asm\AsmStorageAccount.cs" />
-    <Compile Include="Asm\AsmStorageAccountKeys.cs" />
-    <Compile Include="Asm\AsmSubnet.cs" />
-    <Compile Include="Asm\AsmVirtualMachine.cs" />
-    <Compile Include="Asm\AsmVirtualNetwork.cs" />
-    <Compile Include="Asm\AsmVirtualNetworkGateway.cs" />
-    <Compile Include="Arm\ArmConst.cs" />
+    <Compile Include="AsmRetriever\AffinityGroup.cs" />
+    <Compile Include="ArmRetriever\ArmConst.cs" />
+    <Compile Include="AsmRetriever\ClientRootCertificate.cs" />
+    <Compile Include="AsmRetriever\CloudService.cs" />
+    <Compile Include="AsmRetriever\Disk.cs" />
+    <Compile Include="AsmRetriever\LoadBalancer.cs" />
+    <Compile Include="AsmRetriever\LoadBalancerRule.cs" />
+    <Compile Include="AsmRetriever\LocalNetworkSite.cs" />
+    <Compile Include="AsmRetriever\Location.cs" />
+    <Compile Include="AsmRetriever\NetworkInterface.cs" />
+    <Compile Include="AsmRetriever\NetworkSecurityGroup.cs" />
+    <Compile Include="AsmRetriever\NetworkSecurityGroupRule.cs" />
+    <Compile Include="AsmRetriever\ReservedIP.cs" />
+    <Compile Include="AsmRetriever\Route.cs" />
+    <Compile Include="AsmRetriever\RouteTable.cs" />
+    <Compile Include="AsmRetriever\StorageAccount.cs" />
+    <Compile Include="AsmRetriever\StorageAccountKeys.cs" />
+    <Compile Include="AsmRetriever\Subnet.cs" />
+    <Compile Include="AsmRetriever\VirtualMachine.cs" />
+    <Compile Include="AsmRetriever\VirtualNetwork.cs" />
+    <Compile Include="AsmRetriever\VirtualNetworkGateway.cs" />
     <Compile Include="AzureContext.cs" />
     <Compile Include="AzureDomain.cs" />
     <Compile Include="AzureRetriever.cs" />
@@ -219,25 +158,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Arm\Forms\AzureLoginContextDialog2.resx">
+    <EmbeddedResource Include="Forms\AzureLoginContextDialog2.resx">
       <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\Forms\AzureLoginContextDialog.resx">
+    <EmbeddedResource Include="Forms\AzureLoginContextDialog.resx">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\Forms\AzureSubscriptionContextDialog.resx">
+    <EmbeddedResource Include="Forms\AzureSubscriptionContextDialog.resx">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\UserControls\AzureArmLoginControl2.resx">
+    <EmbeddedResource Include="UserControls\AzureArmLoginControl2.resx">
       <DependentUpon>AzureArmLoginControl2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\UserControls\AzureArmLoginControl.resx">
+    <EmbeddedResource Include="UserControls\AzureArmLoginControl.resx">
       <DependentUpon>AzureArmLoginControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\UserControls\AzureLoginContextViewer2.resx">
+    <EmbeddedResource Include="UserControls\AzureLoginContextViewer2.resx">
       <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arm\UserControls\AzureLoginContextViewer.resx">
+    <EmbeddedResource Include="UserControls\AzureLoginContextViewer.resx">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
@@ -251,6 +190,7 @@
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

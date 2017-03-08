@@ -50,7 +50,7 @@ namespace MigAz.UserControls
                 // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
 
                 cboTargetLocation.Items.Clear();
-                foreach (AsmLocation asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
+                foreach (Location asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
                 {
                     cboTargetLocation.Items.Add(asmLocation);
                 }
