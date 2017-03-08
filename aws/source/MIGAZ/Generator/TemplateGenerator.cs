@@ -25,6 +25,7 @@ namespace MIGAZ.Generator
         private AwsObjectRetriever _awsObjectRetriever;
   
 
+
         public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever, ITelemetryProvider telemetryProvider)
         {
             _logProvider = logProvider;
