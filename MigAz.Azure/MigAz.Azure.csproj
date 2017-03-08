@@ -102,12 +102,6 @@
     <Compile Include="UserControls\AzureLoginContextViewer2.Designer.cs">
       <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AzureLoginContextViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AzureLoginContextViewer.Designer.cs">
-      <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
-    </Compile>
     <Compile Include="AsmRetriever\AffinityGroup.cs" />
     <Compile Include="ArmRetriever\ArmConst.cs" />
     <Compile Include="AsmRetriever\ClientRootCertificate.cs" />
@@ -175,9 +169,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\AzureLoginContextViewer2.resx">
       <DependentUpon>AzureLoginContextViewer2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AzureLoginContextViewer.resx">
-      <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
   </ItemGroup>
