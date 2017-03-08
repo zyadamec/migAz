@@ -5,13 +5,17 @@ using MigAz.Azure.Forms;
 
 namespace MigAz.Azure.UserControls
 {
-
-    public partial class AzureLoginContextViewer2 : UserControl
+    public enum AzureLoginChangeType
+    {
+        Full,
+        SubscriptionOnly
+    }
+    public partial class AzureLoginContextViewer : UserControl
     {
         private AzureContext _AzureContext;
-        private ChangeType _ChangeType = ChangeType.Full;
+        private AzureLoginChangeType _ChangeType = AzureLoginChangeType.Full;
 
-        public AzureLoginContextViewer2()
+        public AzureLoginContextViewer()
         {
             InitializeComponent();
         }
@@ -72,7 +76,7 @@ namespace MigAz.Azure.UserControls
             set { this.groupSubscription.Text = value; }
         }
 
-        public ChangeType ChangeType
+        public AzureLoginChangeType ChangeType
         {
             get { return _ChangeType; }
             set { _ChangeType = value; }
@@ -80,7 +84,7 @@ namespace MigAz.Azure.UserControls
 
         private async void btnAzureContext_Click(object sender, EventArgs e)
         {
-            if (_ChangeType == ChangeType.Full)
+            if (_ChangeType == AzureLoginChangeType.Full)
             {
                 AzureLoginContextDialog2 azureLoginContextDialog = new AzureLoginContextDialog2();
                 await azureLoginContextDialog.InitializeDialog(_AzureContext);

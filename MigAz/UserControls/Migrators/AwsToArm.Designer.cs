@@ -45,7 +45,7 @@
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
             this.lblOutputFolder = new System.Windows.Forms.Label();
             this.btnGetToken = new System.Windows.Forms.Button();
-            this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer2();
+            this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // cmbRegion
@@ -214,7 +214,7 @@
             // 
             // azureLoginContextViewer21
             // 
-            this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.ChangeType.Full;
+            this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
             this.azureLoginContextViewer21.Location = new System.Drawing.Point(741, 16);
             this.azureLoginContextViewer21.Name = "azureLoginContextViewer21";
             this.azureLoginContextViewer21.Size = new System.Drawing.Size(894, 211);
@@ -265,7 +265,7 @@
         private System.Windows.Forms.Button btnChoosePath;
         private System.Windows.Forms.TextBox txtDestinationFolder;
         private System.Windows.Forms.Label lblOutputFolder;
-        private Azure.UserControls.AzureLoginContextViewer2 azureLoginContextViewer21;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer21;
         private System.Windows.Forms.Button btnGetToken;
     }
 }

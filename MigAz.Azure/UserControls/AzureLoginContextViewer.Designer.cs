@@ -1,6 +1,6 @@
 ﻿namespace MigAz.Azure.UserControls
 {
-    partial class AzureLoginContextViewer2
+    partial class AzureLoginContextViewer
     {
         /// <summary> 
         /// Required designer variable.

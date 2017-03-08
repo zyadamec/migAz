@@ -42,7 +42,7 @@
             this.treeARM = new System.Windows.Forms.TreeView();
             this.treeASM = new System.Windows.Forms.TreeView();
             this.btnExport = new System.Windows.Forms.Button();
-            this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer2();
+            this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -115,7 +115,7 @@
             // 
             // azureLoginContextViewer2
             // 
-            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.UserControls.ChangeType.SubscriptionOnly;
+            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.SubscriptionOnly;
             this.azureLoginContextViewer2.Enabled = false;
             this.azureLoginContextViewer2.Location = new System.Drawing.Point(1032, 3);
             this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
@@ -175,7 +175,7 @@
             // 
             // azureLoginContextViewer21
             // 
-            this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.ChangeType.Full;
+            this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
             this.azureLoginContextViewer21.Location = new System.Drawing.Point(3, 3);
             this.azureLoginContextViewer21.Name = "azureLoginContextViewer21";
             this.azureLoginContextViewer21.Size = new System.Drawing.Size(894, 211);
@@ -221,6 +221,6 @@
         private System.Windows.Forms.TreeView treeARM;
         private System.Windows.Forms.TreeView treeASM;
         private System.Windows.Forms.Button btnExport;
-        private Azure.UserControls.AzureLoginContextViewer2 azureLoginContextViewer21;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer21;
     }
 }

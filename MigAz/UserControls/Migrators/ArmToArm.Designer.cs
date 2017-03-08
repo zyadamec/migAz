@@ -32,7 +32,7 @@
             this.btnOptions = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.btnExport = new System.Windows.Forms.Button();
-            this.azureLoginContextViewer1 = new MigAz.Azure.UserControls.AzureLoginContextViewer2();
+            this.azureLoginContextViewer1 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // treeSource
@@ -75,7 +75,7 @@
             // 
             // azureLoginContextViewer1
             // 
-            this.azureLoginContextViewer1.ChangeType = MigAz.Azure.UserControls.ChangeType.Full;
+            this.azureLoginContextViewer1.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
             this.azureLoginContextViewer1.Location = new System.Drawing.Point(3, 3);
             this.azureLoginContextViewer1.Name = "azureLoginContextViewer1";
             this.azureLoginContextViewer1.Size = new System.Drawing.Size(894, 211);
@@ -105,6 +105,6 @@
         private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnExport;
-        private Azure.UserControls.AzureLoginContextViewer2 azureLoginContextViewer1;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer1;
     }
 }
