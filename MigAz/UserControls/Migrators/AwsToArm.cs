@@ -26,7 +26,7 @@ namespace MigAz.UserControls.Migrators
         //private string subscriptionid;
         //private Dictionary<string, string> subscriptionsAndTenants;
         private AwsRetriever _awsRetriever;
-        private AWS.Generator.TemplateGenerator _templateGenerator;
+        private AWS.Generator.AwsToArmGenerator _TemplateGenerator;
         private MigAzAWS.Interface.ISaveSelectionProvider _saveSelectionProvider;
         private IStatusProvider _statusProvider;
         private AwsObjectRetriever _awsObjectRetriever;

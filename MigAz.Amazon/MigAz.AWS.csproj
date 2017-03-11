@@ -60,7 +60,7 @@
     <Compile Include="Forms\AuthenticationForm.Designer.cs">
       <DependentUpon>AuthenticationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Generator\TemplateGenerator.cs" />
+    <Compile Include="Generator\AwsToArmGenerator.cs" />
     <Compile Include="ParamComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VPC.cs" />

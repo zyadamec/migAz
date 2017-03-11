@@ -15,7 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MigAz.Azure.Generator.AsmToArm
 {
-    public class AsmToArmGenerator : TemplateResult
+    public class AsmToArmGenerator : TemplateGenerator
     {
         private IStatusProvider _statusProvider;
         private ITelemetryProvider _telemetryProvider;
@@ -28,6 +28,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private List<CopyBlobDetail> CopyBlobDetails { get { return _CopyBlobDetails; } }
 
+        private AsmToArmGenerator() : base(null) { }
+
         public AsmToArmGenerator(
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
@@ -35,7 +37,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
-            ISettingsProvider settingsProvider) : base(logProvider, "TODO")
+            ISettingsProvider settingsProvider) : base(logProvider)
         {
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
@@ -52,45 +54,46 @@ namespace MigAz.Azure.Generator.AsmToArm
         public async void UpdateArtifacts(AsmArtifacts artifacts)
         {
             _ASMArtifacts = artifacts;
+            Messages.Clear();
 
             if (_TargetResourceGroup == null)
             {
-                throw new ArgumentException("Target Resource Group must be provided for template generation.");
+                Messages.Add("Target Resource Group must be provided for template generation.");
             }
 
             if (_TargetResourceGroup.Location == null)
             {
-                throw new ArgumentException("Target Resource Group Location must be provided for template generation.");
+                Messages.Add("Target Resource Group Location must be provided for template generation.");
             }
 
             foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
                 if (asmNetworkSecurityGroup.TargetName == string.Empty)
-                    throw new ArgumentException("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
+                    Messages.Add("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
             }
 
             foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
                 if (asmVirtualMachine.TargetName == string.Empty)
-                    throw new ArgumentException("Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    Messages.Add("Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
 
                 if (asmVirtualMachine.TargetAvailabilitySet == null)
-                    throw new ArgumentException("Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    Messages.Add("Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
 
                 if (asmVirtualMachine.TargetVirtualNetwork == null)
-                    throw new ArgumentException("Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    Messages.Add("Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
 
                 if (asmVirtualMachine.TargetSubnet == null)
-                    throw new ArgumentException("Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    Messages.Add("Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
 
                 if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    throw new ArgumentException("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.");
+                    Messages.Add("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.");
 
                 foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                 {
                     if (dataDisk.TargetStorageAccount == null)
                     {
-                        throw new ArgumentException("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.");
+                        Messages.Add("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.");
                     }
                 }
             }
@@ -192,6 +195,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             instructionStream.Write(c, 0, c.Length);
             TemplateStreams.Add("c", instructionStream);
 
+            OnTemplateChanged();
+
             // post Telemetry Record to ASMtoARMToolAPI
             if (_settingsProvider.AllowTelemetry)
             {
@@ -204,6 +209,12 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("GenerateTemplate", "End - Execution " + this.ExecutionGuid.ToString());
 
             _ASMArtifacts = null;
+        }
+
+        protected override void OnTemplateChanged()
+        {
+            // Call the base class event invocation method.
+            base.OnTemplateChanged();
         }
 
         private void BuildPublicIPAddressObject(ref Core.ArmTemplate.NetworkInterface networkinterface)

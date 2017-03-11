@@ -104,18 +104,10 @@ namespace MigAz.Tests
             var artifacts = new AsmArtifacts();
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
 
-            bool exceptionThrown = false;
-            try
-            {
-                templateGenerator.UpdateArtifacts(artifacts);
-            }
-            catch (Exception exc)
-            {
-                if (exc.GetType() == typeof(ArgumentException) && exc.Message == "Target Virtual Network for ASM Virtual Machine 'VM3' must be specified.")
-                    exceptionThrown = true;
-            }
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            Assert.IsFalse(!exceptionThrown, "Did not receive Null Target Virtual Network Argument Exception");
+            bool messageExists = templateGenerator.Messages.Contains("Target Virtual Network for ASM Virtual Machine 'VM3' must be specified.");
+            Assert.IsFalse(!messageExists, "Did not receive Null Target Virtual Network Argument Exception");
         }
 
         [TestMethod]

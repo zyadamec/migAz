@@ -9,6 +9,8 @@ using MigAz.Azure.Arm;
 using MigAz.Core.Interface;
 using MigAz.Azure.Asm;
 using MigAz.Forms.ASM;
+using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Azure.Models;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -26,6 +28,7 @@ namespace MigAz.UserControls.Migrators
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
         private ArmResourceGroup _TargetResourceGroup;
+        private AsmToArmGenerator _TemplateGenerator;
 
         #endregion
 
@@ -55,8 +58,19 @@ namespace MigAz.UserControls.Migrators
 
             _AzureContextTargetARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
             azureLoginContextViewer2.Bind(_AzureContextTargetARM);
+
             _TargetResourceGroup = new ArmResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
+
+            _TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, _logProvider, _statusProvider, _telemetryProvider, _appSettingsProvider);
+            _TemplateGenerator.AfterTemplateChanged += _TemplateGenerator_AfterTemplateChanged;
         }
+
+        private void _TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         #endregion
 
@@ -411,9 +425,37 @@ namespace MigAz.UserControls.Migrators
 
                 _SelectedNodes = this.UpdateSelectedNodes();
                 UpdateExportItemsCount();
+                _TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
             }
 
             await UpdateARMTree(e.Node);
+        }
+
+        private AsmArtifacts GetAsmArtifacts()
+        {
+            AsmArtifacts artifacts = new AsmArtifacts();
+            foreach (TreeNode selectedNode in _SelectedNodes)
+            {
+                Type tagType = selectedNode.Tag.GetType();
+                if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
+                {
+                    artifacts.NetworkSecurityGroups.Add((Azure.Asm.NetworkSecurityGroup)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Asm.VirtualNetwork))
+                {
+                    artifacts.VirtualNetworks.Add((Azure.Asm.VirtualNetwork)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Asm.StorageAccount))
+                {
+                    artifacts.StorageAccounts.Add((Azure.Asm.StorageAccount)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Asm.VirtualMachine))
+                {
+                    artifacts.VirtualMachines.Add((Azure.Asm.VirtualMachine)selectedNode.Tag);
+                }
+            }
+
+            return artifacts;
         }
 
         #endregion

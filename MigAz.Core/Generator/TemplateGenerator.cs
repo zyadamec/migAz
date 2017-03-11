@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using MigAz.Core.Interface;
 using MigAz.Core.ArmTemplate;
+using System.Threading.Tasks;
 
 namespace MigAz.Core.Generator
 {
-    public class TemplateResult
+    public abstract class TemplateGenerator
     {
         private Guid _ExecutionGuid = Guid.NewGuid();
-        private String _OutputPath = AppDomain.CurrentDomain.BaseDirectory;
         private List<ArmResource> _Resources = new List<ArmResource>();
         private Dictionary<string, ArmTemplate.Parameter> _Parameters = new Dictionary<string, ArmTemplate.Parameter>();
         private List<String> _Messages = new List<string>();
         private ILogProvider _logProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
 
-        private TemplateResult() { }
+        public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
+        public event EventHandler AfterTemplateChanged;
 
-        public TemplateResult(ILogProvider logProvider, string outputPath)
+        private TemplateGenerator() { }
+
+        public TemplateGenerator(ILogProvider logProvider)
         {
-            _OutputPath = outputPath;
             _logProvider = logProvider;
         }
 
@@ -32,12 +34,6 @@ namespace MigAz.Core.Generator
         public Guid ExecutionGuid
         {
             get { return _ExecutionGuid; }
-        }
-
-        public string OutputPath
-        {
-            get { return _OutputPath; }
-            set { _OutputPath = value; }
         }
 
         public List<String> Messages
@@ -79,6 +75,19 @@ namespace MigAz.Core.Generator
             }
 
             return null;
+        }
+
+        //The event-invoking method that derived classes can override.
+        protected virtual void OnTemplateChanged()
+        {
+            // Make a temporary copy of the event to avoid possibility of
+            // a race condition if the last subscriber unsubscribes
+            // immediately after the null check and before the event is raised.
+            EventHandler handler = AfterTemplateChanged;
+            if (handler != null)
+            {
+                handler(this, null);
+            }
         }
     }
 }

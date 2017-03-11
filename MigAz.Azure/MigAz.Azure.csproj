@@ -122,7 +122,7 @@
     <Compile Include="AzureSubscription.cs" />
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
-    <Compile Include="Generator\ArmToArm\TemplateGenerator.cs" />
+    <Compile Include="Generator\ArmToArm\ArmToArmGenerator.cs" />
     <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />

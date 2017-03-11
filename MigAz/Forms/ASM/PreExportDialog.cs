@@ -100,27 +100,7 @@ namespace MigAz.Forms.ASM
             List<TreeNode> selectedNodes = _SelectedNodes;
             btnExport.Text = btnExport.Text.Replace("0", selectedNodes.Count().ToString());
 
-            artifacts = new AsmArtifacts();
-            foreach (TreeNode selectedNode in selectedNodes)
-            {
-                Type tagType = selectedNode.Tag.GetType();
-                if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
-                {
-                    artifacts.NetworkSecurityGroups.Add((Azure.Asm.NetworkSecurityGroup)selectedNode.Tag);
-                }
-                else if (tagType == typeof(Azure.Asm.VirtualNetwork))
-                {
-                    artifacts.VirtualNetworks.Add((Azure.Asm.VirtualNetwork)selectedNode.Tag);
-                }
-                else if (tagType == typeof(Azure.Asm.StorageAccount))
-                {
-                    artifacts.StorageAccounts.Add((Azure.Asm.StorageAccount) selectedNode.Tag);
-                }
-                else if (tagType == typeof(Azure.Asm.VirtualMachine))
-                {
-                    artifacts.VirtualMachines.Add((Azure.Asm.VirtualMachine)selectedNode.Tag);
-                }
-            }
+            
 
         }
     }

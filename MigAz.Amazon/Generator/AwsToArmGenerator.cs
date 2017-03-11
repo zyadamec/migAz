@@ -5,21 +5,21 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using MigAz.Core.Interface;
+using MigAz.Core.Generator;
 
 namespace MigAz.AWS.Generator
 {
-    public class TemplateGenerator
+    public class AwsToArmGenerator : TemplateGenerator
     {
-        private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         //private Dictionary<string, Parameter> _parameters;
         public Dictionary<string, string> _storageAccountNames;
         private AwsObjectRetriever _awsObjectRetriever;
-  
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever)
+        private AwsToArmGenerator() : base(null) { }
+
+        public AwsToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever) : base(logProvider)
         {
-            _logProvider = logProvider;
             _statusProvider = statusProvider;
             _awsObjectRetriever = awsObjectRetriever;
         }
