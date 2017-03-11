@@ -5,7 +5,6 @@ namespace MigAz.Azure.Generator.ArmToArm
 {
     public class ArmToArmGenerator : TemplateGenerator
     {
-        private IStatusProvider _statusProvider;
         //private ITelemetryProvider _telemetryProvider;
         //private ITokenProvider _tokenProvider;
         //private ISettingsProvider _settingsProvider;
@@ -13,11 +12,10 @@ namespace MigAz.Azure.Generator.ArmToArm
         //private List<CopyBlobDetail> _copyBlobDetails;
         //public Dictionary<string, string> _storageAccountNames;
 
-        private ArmToArmGenerator() : base(null) { }
+        private ArmToArmGenerator() : base(null, null) { }
 
-        public ArmToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider)
+        public ArmToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider, statusProvider)
         {
-            _statusProvider = statusProvider;
             //_telemetryProvider = telemetryProvider;
             //_settingsProvider = settingsProvider;
         }

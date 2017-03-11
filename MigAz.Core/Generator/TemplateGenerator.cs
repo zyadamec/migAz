@@ -14,6 +14,7 @@ namespace MigAz.Core.Generator
         private Dictionary<string, ArmTemplate.Parameter> _Parameters = new Dictionary<string, ArmTemplate.Parameter>();
         private List<String> _Messages = new List<string>();
         private ILogProvider _logProvider;
+        private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
@@ -21,14 +22,20 @@ namespace MigAz.Core.Generator
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider)
         {
             _logProvider = logProvider;
+            _statusProvider = statusProvider;
         }
 
         public ILogProvider LogProvider
         {
             get { return _logProvider; }
+        }
+
+        public IStatusProvider StatusProvider
+        {
+            get { return _statusProvider; }
         }
 
         public Guid ExecutionGuid

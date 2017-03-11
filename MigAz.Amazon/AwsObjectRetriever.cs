@@ -13,6 +13,9 @@ namespace MigAz.AWS
 {
     public class AwsObjectRetriever
     {
+        #region Vartiables
+
+        public string REGION = null;
         ILogProvider _logProvider;
         IStatusProvider _statusProvider;
         static IAmazonEC2 _service;
@@ -21,8 +24,46 @@ namespace MigAz.AWS
         DescribeInstancesResponse _instances;
         DescribeVolumesResponse _volumes;
         DescribeLoadBalancersResponse _Loadbalancers;
+        //public Dictionary<string, XmlDocument> _documentCache = new Dictionary<string, XmlDocument>();
 
-        public string REGION = null;
+        #endregion
+
+        #region Constructors
+
+        private AwsObjectRetriever() { }
+
+        public AwsObjectRetriever(string accessKeyID, string secretKeyID, Amazon.RegionEndpoint region, ILogProvider logProvider, IStatusProvider statusProvider)
+        {
+            _logProvider = logProvider;
+            _statusProvider = statusProvider;
+
+            createEC2Client(accessKeyID, secretKeyID, region);
+            createLBClient(accessKeyID, secretKeyID, region);
+            REGION = region.SystemName;
+
+            _vpcs = GetAllVpcs();
+            _instances = GetAllInstances();
+            // _volumes = GetAllVolumes();
+            // Application.DoEvents();
+            _Loadbalancers = GetAllLBs();
+        }
+
+        AwsObjectRetriever(IAmazonEC2 client)
+        {
+            //_logProvider = logProvider;
+            // _statusProvider = statusProvider;
+            _service = client;
+        }
+
+        AwsObjectRetriever(IAmazonElasticLoadBalancing client)
+        {
+            _LBservice = client;
+        }
+
+        #endregion
+
+        #region Properties
+
         public DescribeVpcsResponse Vpcs
         {
             get
@@ -80,37 +121,7 @@ namespace MigAz.AWS
                 }
             }
         }
-        //public Dictionary<string, XmlDocument> _documentCache = new Dictionary<string, XmlDocument>();
-
-        public AwsObjectRetriever(string accessKeyID, string secretKeyID, Amazon.RegionEndpoint region, ILogProvider logProvider, IStatusProvider statusProvider)
-        {
-            _logProvider = logProvider;
-            _statusProvider = statusProvider;
-
-            createEC2Client(accessKeyID, secretKeyID, region);
-                createLBClient(accessKeyID, secretKeyID, region);
-                REGION = region.SystemName;
-
-                _vpcs = GetAllVpcs();
-                _instances = GetAllInstances();
-                // _volumes = GetAllVolumes();
-                // Application.DoEvents();
-                _Loadbalancers = GetAllLBs();
-        }
-
- 
-
-        AwsObjectRetriever(IAmazonEC2 client)
-        {
-            //_logProvider = logProvider;
-           // _statusProvider = statusProvider;
-            _service = client;
-        }
-
-        AwsObjectRetriever(IAmazonElasticLoadBalancing client)
-        {
-            _LBservice = client;
-        }
+        
 
         public static IAmazonElasticLoadBalancing createLBClient(string accessKeyID, string secretKeyID, Amazon.RegionEndpoint region)
         {
@@ -143,6 +154,10 @@ namespace MigAz.AWS
                 throw ex;
             }
         }
+
+        #endregion
+
+        #region Methods
 
         internal List<Amazon.EC2.Model.Subnet> GetSubnets(string vpcId)
         {
@@ -330,5 +345,8 @@ namespace MigAz.AWS
 
             return _Loadbalancers.LoadBalancerDescriptions;
         }
+
+        #endregion
+
     }
 }

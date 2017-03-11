@@ -11,16 +11,14 @@ namespace MigAz.AWS.Generator
 {
     public class AwsToArmGenerator : TemplateGenerator
     {
-        private IStatusProvider _statusProvider;
         //private Dictionary<string, Parameter> _parameters;
         public Dictionary<string, string> _storageAccountNames;
         private AwsObjectRetriever _awsObjectRetriever;
 
-        private AwsToArmGenerator() : base(null) { }
+        private AwsToArmGenerator() : base(null, null) { }
 
-        public AwsToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever) : base(logProvider)
+        public AwsToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever) : base(logProvider, statusProvider)
         {
-            _statusProvider = statusProvider;
             _awsObjectRetriever = awsObjectRetriever;
         }
         public void GenerateTemplate(AWSArtefacts artefacts, AwsObjectRetriever _awsObjectRetriever, StreamWriter templateWriter, Hashtable teleinfo)

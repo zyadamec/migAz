@@ -17,7 +17,6 @@ namespace MigAz.Azure.Generator.AsmToArm
 {
     public class AsmToArmGenerator : TemplateGenerator
     {
-        private IStatusProvider _statusProvider;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
         private AsmArtifacts _ASMArtifacts;
@@ -28,7 +27,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private List<CopyBlobDetail> CopyBlobDetails { get { return _CopyBlobDetails; } }
 
-        private AsmToArmGenerator() : base(null) { }
+        private AsmToArmGenerator() : base(null, null) { }
 
         public AsmToArmGenerator(
             ISubscription sourceSubscription, 
@@ -37,12 +36,11 @@ namespace MigAz.Azure.Generator.AsmToArm
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
-            ISettingsProvider settingsProvider) : base(logProvider)
+            ISettingsProvider settingsProvider) : base(logProvider, statusProvider)
         {
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
             _TargetResourceGroup = targetResourceGroup;
-            _statusProvider = statusProvider;
             _telemetryProvider = telemetryProvider;
             _settingsProvider = settingsProvider;
         }
@@ -104,7 +102,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process selected virtual networks
             foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
                 await BuildNetworkSecurityGroup(asmNetworkSecurityGroup);
             }
             LogProvider.WriteLog("GenerateTemplate", "End processing selected Network Security Groups");
@@ -113,7 +111,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process selected virtual networks
             foreach (Asm.VirtualNetwork asmVirtualNetwork in artifacts.VirtualNetworks)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
                 await BuildVirtualNetworkObject(asmVirtualNetwork);
             }
             LogProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
@@ -123,7 +121,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process selected storage accounts
             foreach (Asm.StorageAccount asmStorageAccount in artifacts.StorageAccounts)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
+                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(asmStorageAccount);
             }
             LogProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
@@ -133,7 +131,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process selected cloud services and virtual machines
             foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
-                _statusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
+                StatusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
 
                 BuildPublicIPAddressObject(asmVirtualMachine);
                 BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, artifacts);
@@ -159,13 +157,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             byte[] a = asciiEncoding.GetBytes(templateString);
             MemoryStream templateStream = new MemoryStream();
             templateStream.Write(a, 0, a.Length);
-            TemplateStreams.Add("a", templateStream);
+            TemplateStreams.Add("export.json", templateStream);
 
             string jsontext = JsonConvert.SerializeObject(this.CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             byte[] b = asciiEncoding.GetBytes(jsontext);
             MemoryStream copyBlobDetailStream = new MemoryStream();
             copyBlobDetailStream.Write(b, 0, b.Length);
-            TemplateStreams.Add("b", copyBlobDetailStream);
+            TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
@@ -193,18 +191,18 @@ namespace MigAz.Azure.Generator.AsmToArm
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
             instructionStream.Write(c, 0, c.Length);
-            TemplateStreams.Add("c", instructionStream);
+            TemplateStreams.Add("DeployInstructions.html", instructionStream);
 
             OnTemplateChanged();
 
             // post Telemetry Record to ASMtoARMToolAPI
             if (_settingsProvider.AllowTelemetry)
             {
-                _statusProvider.UpdateStatus("BUSY: saving telemetry information");
+                StatusProvider.UpdateStatus("BUSY: saving telemetry information");
                 //_telemetryProvider.PostTelemetryRecord(templateResult);// TODO
             }
 
-            _statusProvider.UpdateStatus("Ready");
+            StatusProvider.UpdateStatus("Ready");
 
             LogProvider.WriteLog("GenerateTemplate", "End - Execution " + this.ExecutionGuid.ToString());
 
@@ -1295,10 +1293,10 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         public JObject GetTemplate()
         {
-            if (!TemplateStreams.ContainsKey("a"))
+            if (!TemplateStreams.ContainsKey("export.json"))
                 return null;
 
-            MemoryStream templateStream = TemplateStreams["a"];
+            MemoryStream templateStream = TemplateStreams["export.json"];
             templateStream.Position = 0;
             StreamReader sr = new StreamReader(templateStream);
             String myStr = sr.ReadToEnd();
