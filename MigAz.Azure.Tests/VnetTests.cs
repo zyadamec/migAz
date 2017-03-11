@@ -22,16 +22,16 @@ namespace MigAz.Tests
         public async Task ValidateComplexSingleVnet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET1"));
+            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("10.2.0.0"));
 
-            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            JObject templateJson = templateResult.GenerateTemplate();
+            JObject templateJson = templateGenerator.GetTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(
@@ -66,17 +66,17 @@ namespace MigAz.Tests
         public async Task ValidateSingleVnetWithNsgAndRT()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET2"));
+            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmtest"));
             artifacts.NetworkSecurityGroups.Add(await azureContextUSCommercialRetriever.GetAzureAsmNetworkSecurityGroup("asmnsg"));
 
-            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            JObject templateJson = templateResult.GenerateTemplate();
+            JObject templateJson = templateGenerator.GetTemplate();
 
             // Validate NSG
             var nsgs = templateJson["resources"].Children().Where(
@@ -119,16 +119,16 @@ namespace MigAz.Tests
         public async Task ValidateSingleVnetWithExpressRouteGateway()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET3"));
+            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("vnet3"));
 
-            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            JObject templateJson = templateResult.GenerateTemplate();
+            JObject templateJson = templateGenerator.GetTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(
@@ -161,24 +161,24 @@ namespace MigAz.Tests
             Assert.IsNotNull(conn.First()["properties"]["peer"]["id"].Value<string>());
 
             // Validate message
-            Assert.AreEqual(1, templateResult.Messages.Count);
-            StringAssert.Contains(templateResult.Messages[0], "ExpressRoute");
+            Assert.AreEqual(1, templateGenerator.Messages.Count);
+            StringAssert.Contains(templateGenerator.Messages[0], "ExpressRoute");
         }
 
         [TestMethod]
         public async Task ValidateSingleVnetWithNoSubnetsGetsNewDefaultSubet()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET4"));
+            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new AsmArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmnet"));
 
-            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            JObject templateJson = templateResult.GenerateTemplate();
+            JObject templateJson = templateGenerator.GetTemplate();
 
             // Validate VNETs
             var vnets = templateJson["resources"].Children().Where(

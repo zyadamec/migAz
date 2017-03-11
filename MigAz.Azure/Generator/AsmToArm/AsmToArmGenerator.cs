@@ -26,7 +26,6 @@ namespace MigAz.Azure.Generator.AsmToArm
         private ISubscription _TargetSubscription;
         private Arm.ArmResourceGroup _TargetResourceGroup;
 
-
         private List<CopyBlobDetail> CopyBlobDetails { get { return _CopyBlobDetails; } }
 
         public AsmToArmGenerator(
@@ -50,16 +49,16 @@ namespace MigAz.Azure.Generator.AsmToArm
         public Arm.ArmResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
-        public async Task GenerateTemplate(ISubscription sourceASMSubscription, ISubscription targetARMSubscription, AsmArtifacts artifacts, Arm.ArmResourceGroup targetResourceGroup, string outputPath)
+        public async void UpdateArtifacts(AsmArtifacts artifacts)
         {
             _ASMArtifacts = artifacts;
 
-            if (targetResourceGroup == null)
+            if (_TargetResourceGroup == null)
             {
                 throw new ArgumentException("Target Resource Group must be provided for template generation.");
             }
 
-            if (targetResourceGroup.Location == null)
+            if (_TargetResourceGroup.Location == null)
             {
                 throw new ArgumentException("Target Resource Group Location must be provided for template generation.");
             }
@@ -148,7 +147,50 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
             LogProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
 
-            LogProvider.WriteLog("GenerateTemplate", "Writing Template Output Files");
+            LogProvider.WriteLog("GenerateTemplate", "Updating Template Streams");
+
+            TemplateStreams.Clear();
+
+            String templateString = GetTemplateString();
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+            byte[] a = asciiEncoding.GetBytes(templateString);
+            MemoryStream templateStream = new MemoryStream();
+            templateStream.Write(a, 0, a.Length);
+            TemplateStreams.Add("a", templateStream);
+
+            string jsontext = JsonConvert.SerializeObject(this.CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+            byte[] b = asciiEncoding.GetBytes(jsontext);
+            MemoryStream copyBlobDetailStream = new MemoryStream();
+            copyBlobDetailStream.Write(b, 0, b.Length);
+            TemplateStreams.Add("b", copyBlobDetailStream);
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
+            string instructionContent;
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                instructionContent = reader.ReadToEnd();
+            }
+
+            instructionContent = instructionContent.Replace("{subscriptionId}", _TargetSubscription.SubscriptionId.ToString());
+            instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
+            instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
+            instructionContent = instructionContent.Replace("{resourceGroupName}", _TargetResourceGroup.GetFinalTargetName());
+            instructionContent = instructionContent.Replace("{location}", _TargetResourceGroup.Location.Name);
+            instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
+            instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
+
+            if (_TargetSubscription.AzureEnvironment == AzureEnvironment.AzureCloud)
+                instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", String.Empty); // Default Azure Environment in Powershell, no AzureEnvironment switch needed
+            else
+                instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"");
+
+            byte[] c = asciiEncoding.GetBytes(instructionContent);
+            MemoryStream instructionStream = new MemoryStream();
+            instructionStream.Write(c, 0, c.Length);
+            TemplateStreams.Add("c", instructionStream);
 
             // post Telemetry Record to ASMtoARMToolAPI
             if (_settingsProvider.AllowTelemetry)
@@ -1240,54 +1282,17 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
         }
 
-        public void UpdateStreams()
+        public JObject GetTemplate()
         {
-            try
-            {
-                UnicodeEncoding uniEncoding = new UnicodeEncoding();
-                byte[] a = uniEncoding.GetBytes(GetTemplateString());
-                MemoryStream templateStream = new MemoryStream();
-                templateStream.Write(a, 0, a.Length);
+            if (!TemplateStreams.ContainsKey("a"))
+                return null;
 
-                string jsontext = JsonConvert.SerializeObject(this.CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
-                byte[] b = uniEncoding.GetBytes(jsontext);
-                MemoryStream copyBlobDetailStream = new MemoryStream();
-                copyBlobDetailStream.Write(b, 0, b.Length);
+            MemoryStream templateStream = TemplateStreams["a"];
+            templateStream.Position = 0;
+            StreamReader sr = new StreamReader(templateStream);
+            String myStr = sr.ReadToEnd();
 
-
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
-                string instructionContent;
-
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    instructionContent = reader.ReadToEnd();
-                }
-
-                instructionContent = instructionContent.Replace("{subscriptionId}", _TargetSubscription.SubscriptionId.ToString());
-                instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
-                instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
-                instructionContent = instructionContent.Replace("{resourceGroupName}", _TargetResourceGroup.GetFinalTargetName());
-                instructionContent = instructionContent.Replace("{location}", _TargetResourceGroup.Location.Name);
-                instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
-                instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
-
-                if (_TargetSubscription.AzureEnvironment == AzureEnvironment.AzureCloud)
-                    instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", String.Empty); // Default Azure Environment in Powershell, no AzureEnvironment switch needed
-                else
-                    instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"");
-
-                byte[] c = uniEncoding.GetBytes(instructionContent);
-                MemoryStream instructionStream = new MemoryStream();
-                copyBlobDetailStream.Write(c, 0, c.Length);
-
-            }
-            catch (Exception exc)
-            {
-
-            }
-
+            return JObject.Parse(myStr);
         }
 
         public void Write()
@@ -1392,7 +1397,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             return sbMigAzMessageResult.ToString();
         }
 
-        public string GetTemplateString()
+        private string GetTemplateString()
         {
             Template template = new Template()
             {
@@ -1405,11 +1410,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             jsontext = jsontext.Replace("schemalink", "$schema");
 
             return jsontext;
-        }
-
-        public JObject GenerateTemplate()
-        {
-            return JObject.Parse(GetTemplateString());
         }
 
         public static string GetCopyBlobDetailPath(string outputPath)

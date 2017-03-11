@@ -21,16 +21,15 @@ namespace MigAz.Tests
         public async Task ValidateSingleStorageAccount()
         {
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
-            AsmToArmGenerator templateGenerator = TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\Storage1"));
-            
+            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+
             var artifacts = new AsmArtifacts();
             artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
+            templateGenerator.UpdateArtifacts(artifacts);
 
-            AsmToArmGenerator templateResult = await templateGenerator.GenerateTemplate(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), artifacts, await TestHelper.GetTargetResourceGroup(azureContextUSCommercial), AppDomain.CurrentDomain.BaseDirectory);
-
-            JObject templateJson = templateResult.GenerateTemplate();
+            JObject templateJson = templateGenerator.GetTemplate();
             Assert.AreEqual(1, templateJson["resources"].Children().Count());
             var resource = templateJson["resources"].Single();
             Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());

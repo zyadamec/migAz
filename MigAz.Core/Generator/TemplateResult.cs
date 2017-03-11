@@ -14,7 +14,7 @@ namespace MigAz.Core.Generator
         private Dictionary<string, ArmTemplate.Parameter> _Parameters = new Dictionary<string, ArmTemplate.Parameter>();
         private List<String> _Messages = new List<string>();
         private ILogProvider _logProvider;
-        private Dictionary<string, MemoryStream> _TemplateStreams;
+        private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
 
         private TemplateResult() { }
 
@@ -22,7 +22,6 @@ namespace MigAz.Core.Generator
         {
             _OutputPath = outputPath;
             _logProvider = logProvider;
-            _TemplateStreams = new Dictionary<string, MemoryStream>();
         }
 
         public ILogProvider LogProvider
