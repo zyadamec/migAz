@@ -36,6 +36,11 @@ namespace MigAz.Azure.Arm
             get { return (string)_StorageAccount["id"]; }
         }
 
+        public string AccountType // todo is this needed
+        {
+            get { return ""; } //  resource.properties.accountType.Value;
+        }
+
         public string Location
         {
             get { return (string)_StorageAccount["location"]; }

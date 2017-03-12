@@ -76,15 +76,15 @@ namespace MigAz.UserControls.Migrators
                     }
                 }
 
-                //foreach (AsmStorageAccount asmStorageAccount in await _AzureContextARM.AzureRetriever.GetAzureAsmStorageAccounts())
-                //{
-                //    TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
-                //    TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
-                //    tnStorageAccount.Name = tnStorageAccount.Text;
-                //    tnStorageAccount.Tag = asmStorageAccount;
-                //    parentNode.Nodes.Add(tnStorageAccount);
-                //    parentNode.Expand();
-                //}
+                foreach (StorageAccount armStorageAccount in await _AzureContextARM.AzureRetriever.GetAzureARMStorageAccounts())
+                {
+                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armStorageAccount.PrimaryLocation, "Storage Accounts");
+                    TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
+                    tnStorageAccount.Name = tnStorageAccount.Text;
+                    tnStorageAccount.Tag = armStorageAccount;
+                    parentNode.Nodes.Add(tnStorageAccount);
+                    parentNode.Expand();
+                }
 
                 //List<AsmCloudService> asmCloudServices = await _AzureContextARM.AzureRetriever.GetAzureAsmCloudServices();
                 //foreach (AsmCloudService asmCloudService in asmCloudServices)
