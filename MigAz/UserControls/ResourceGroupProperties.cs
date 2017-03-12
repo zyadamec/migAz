@@ -31,14 +31,14 @@ namespace MigAz.UserControls
             _ParentForm = parentForm;
             _ResourceGroupNode = resourceGroupNode;
 
-            ArmResourceGroup armResourceGroup = (ArmResourceGroup) _ResourceGroupNode.Tag;
+            ResourceGroup armResourceGroup = (ResourceGroup) _ResourceGroupNode.Tag;
 
             txtName.Text = armResourceGroup.Name;
 
             try
             {
                 cboTargetLocation.Items.Clear();
-                foreach (ArmLocation armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
+                foreach (Azure.Arm.Location armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
                 {
                     cboTargetLocation.Items.Add(armLocation);
                 }
@@ -50,7 +50,7 @@ namespace MigAz.UserControls
                 // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
 
                 cboTargetLocation.Items.Clear();
-                foreach (Location asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
+                foreach (Azure.Asm.Location asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
                 {
                     cboTargetLocation.Items.Add(asmLocation);
                 }
@@ -58,7 +58,7 @@ namespace MigAz.UserControls
 
             if (armResourceGroup.Location != null)
             {
-                foreach (ArmLocation armLocation in cboTargetLocation.Items)
+                foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
                 {
                     if (armLocation.Name == armResourceGroup.Location.Name)
                         cboTargetLocation.SelectedItem = armLocation;
@@ -70,7 +70,7 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            ArmResourceGroup armResourceGroup = (ArmResourceGroup)_ResourceGroupNode.Tag;
+            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
 
             armResourceGroup.Name = txtSender.Text;
             _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
@@ -81,7 +81,7 @@ namespace MigAz.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            ArmResourceGroup armResourceGroup = (ArmResourceGroup)_ResourceGroupNode.Tag;
+            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
             armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
         }
     }

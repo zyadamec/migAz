@@ -17,22 +17,20 @@ namespace MigAz.Azure.Generator.AsmToArm
 {
     public class AsmToArmGenerator : TemplateGenerator
     {
+        private ISubscription _SourceSubscription;
+        private ISubscription _TargetSubscription;
+        private Arm.ResourceGroup _TargetResourceGroup;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
         private ExportArtifacts _ASMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
-        private ISubscription _SourceSubscription;
-        private ISubscription _TargetSubscription;
-        private Arm.ArmResourceGroup _TargetResourceGroup;
-
-        private List<CopyBlobDetail> CopyBlobDetails { get { return _CopyBlobDetails; } }
 
         private AsmToArmGenerator() : base(null, null) { }
 
         public AsmToArmGenerator(
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
-            Arm.ArmResourceGroup targetResourceGroup,
+            Arm.ResourceGroup targetResourceGroup,
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
@@ -46,13 +44,17 @@ namespace MigAz.Azure.Generator.AsmToArm
         }
 
         public ISubscription SourceSubscription { get { return _SourceSubscription; } }
-        public Arm.ArmResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
+        public Arm.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
         public override async void UpdateArtifacts(IExportArtifacts artifacts)
         {
+            LogProvider.WriteLog("GenerateTemplate", "Start - Execution " + this.ExecutionGuid.ToString());
+
             Messages.Clear();
             TemplateStreams.Clear();
+            Resources.Clear();
+            _CopyBlobDetails.Clear();
 
             _ASMArtifacts = (ExportArtifacts)artifacts;
 
@@ -99,8 +101,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
                 }
             }
-
-            LogProvider.WriteLog("GenerateTemplate", "Start - Execution " + this.ExecutionGuid.ToString());
 
             LogProvider.WriteLog("GenerateTemplate", "Start processing selected Network Security Groups");
             // process selected virtual networks
@@ -163,7 +163,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             templateStream.Write(a, 0, a.Length);
             TemplateStreams.Add("export.json", templateStream);
 
-            string jsontext = JsonConvert.SerializeObject(this.CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+            string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             byte[] b = asciiEncoding.GetBytes(jsontext);
             MemoryStream copyBlobDetailStream = new MemoryStream();
             copyBlobDetailStream.Write(b, 0, b.Length);
@@ -1021,9 +1021,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                 osDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
             }
-            else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.ArmStorageAccount))
+            else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
             {
-                Arm.ArmStorageAccount armStorageAccount = (Arm.ArmStorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                 osDiskTargetStorageAccountName = armStorageAccount.Name;
             }
 
@@ -1109,7 +1109,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 copyblobdetail.DestinationSA = osDiskTargetStorageAccountName;
                 copyblobdetail.DestinationContainer = asmVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
                 copyblobdetail.DestinationBlob = asmVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-                this.CopyBlobDetails.Add(copyblobdetail);
+                this._CopyBlobDetails.Add(copyblobdetail);
                 // end of block of code to help copying the blobs to the new storage accounts
             }
 
@@ -1123,9 +1123,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                     Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
                     dataDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
                 }
-                else if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.ArmStorageAccount))
+                else if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
                 {
-                    Arm.ArmStorageAccount armStorageAccount = (Arm.ArmStorageAccount)dataDisk.TargetStorageAccount;
+                    Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorageAccount;
                     dataDiskTargetStorageAccountName = armStorageAccount.Name;
                 }
 
@@ -1157,7 +1157,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
                     copyblobdetail.DestinationContainer = dataDisk.StorageAccountContainer;
                     copyblobdetail.DestinationBlob = dataDisk.StorageAccountBlob;
-                    this.CopyBlobDetails.Add(copyblobdetail);
+                    this._CopyBlobDetails.Add(copyblobdetail);
                     // end of block of code to help copying the blobs to the new storage accounts
                 }
 

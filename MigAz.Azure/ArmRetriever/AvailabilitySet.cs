@@ -2,14 +2,14 @@
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmAvailabilitySet : Core.ArmTemplate.AvailabilitySet
+    public class AvailabilitySet : Core.ArmTemplate.AvailabilitySet
     {
         private String _TargetName = String.Empty;
         private AzureContext _AzureContext;
 
-        private ArmAvailabilitySet() : base(Guid.Empty) { }
+        private AvailabilitySet() : base(Guid.Empty) { }
 
-        public ArmAvailabilitySet(AzureContext azureContext, Asm.VirtualMachine asmVirtualMachine) : base(Guid.Empty)
+        public AvailabilitySet(AzureContext azureContext, Asm.VirtualMachine asmVirtualMachine) : base(Guid.Empty)
         {
             _AzureContext = azureContext;
             if (asmVirtualMachine.AvailabilitySetName != String.Empty)

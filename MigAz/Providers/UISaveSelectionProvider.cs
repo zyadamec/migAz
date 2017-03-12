@@ -204,7 +204,7 @@ namespace MigAz.Providers
             }
         }
 
-        private IVirtualNetwork SeekVirtualNetwork(string id, List<Azure.Asm.VirtualNetwork> asmVirtualNetworks, List<ArmVirtualNetwork> armVirtualNetworks)
+        private IVirtualNetwork SeekVirtualNetwork(string id, List<Azure.Asm.VirtualNetwork> asmVirtualNetworks, List<Azure.Arm.VirtualNetwork> armVirtualNetworks)
         {
             if (asmVirtualNetworks != null)
             {
@@ -217,7 +217,7 @@ namespace MigAz.Providers
 
             if (armVirtualNetworks != null)
             {
-                foreach (ArmVirtualNetwork armVirtualNetwork in armVirtualNetworks)
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
                 {
                     if (armVirtualNetwork.Id == id)
                         return armVirtualNetwork;
@@ -241,7 +241,7 @@ namespace MigAz.Providers
             return null;
         }
 
-        private IStorageAccount SeekStorageAccount(string id, List<Azure.Asm.StorageAccount> asmStorageAccounts, List<ArmStorageAccount> armStorageAccounts)
+        private IStorageAccount SeekStorageAccount(string id, List<Azure.Asm.StorageAccount> asmStorageAccounts, List<Azure.Arm.StorageAccount> armStorageAccounts)
         {
             if (asmStorageAccounts != null)
             {
@@ -254,7 +254,7 @@ namespace MigAz.Providers
 
             if (armStorageAccounts != null)
             {
-                foreach (ArmStorageAccount armStorageAccount in armStorageAccounts)
+                foreach (Azure.Arm.StorageAccount armStorageAccount in armStorageAccounts)
                 {
                     if (armStorageAccount.Id == id)
                         return armStorageAccount;

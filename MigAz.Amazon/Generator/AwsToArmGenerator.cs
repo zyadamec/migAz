@@ -30,6 +30,10 @@ namespace MigAz.AWS.Generator
         {
             LogProvider.WriteLog("GenerateTemplate", "Start");
 
+            Messages.Clear();
+            TemplateStreams.Clear();
+            Resources.Clear();
+
             _AWSExportArtifacts = (AWSExportArtifacts)artifacts;
 
             //_storageAccountNames = new Dictionary<string, string>();

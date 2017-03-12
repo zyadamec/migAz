@@ -55,15 +55,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArmRetriever\ArmAvailabilitySet.cs" />
-    <Compile Include="ArmRetriever\ArmLocation.cs" />
-    <Compile Include="ArmRetriever\ArmNetworkSecurityGroup.cs" />
-    <Compile Include="ArmRetriever\ArmResourceGroup.cs" />
-    <Compile Include="ArmRetriever\ArmStorageAccount.cs" />
-    <Compile Include="ArmRetriever\ArmStorageAccountKey.cs" />
-    <Compile Include="ArmRetriever\ArmSubnet.cs" />
-    <Compile Include="ArmRetriever\ArmVirtualMachine.cs" />
-    <Compile Include="ArmRetriever\ArmVirtualNetwork.cs" />
+    <Compile Include="ArmRetriever\AvailabilitySet.cs" />
+    <Compile Include="ArmRetriever\Location.cs" />
+    <Compile Include="ArmRetriever\NetworkSecurityGroup.cs" />
+    <Compile Include="ArmRetriever\ResourceGroup.cs" />
+    <Compile Include="ArmRetriever\StorageAccount.cs" />
+    <Compile Include="ArmRetriever\StorageAccountKey.cs" />
+    <Compile Include="ArmRetriever\Subnet.cs" />
+    <Compile Include="ArmRetriever\VirtualMachine.cs" />
+    <Compile Include="ArmRetriever\VirtualNetwork.cs" />
     <Compile Include="Forms\AzureLoginContextDialog2.cs">
       <SubType>Form</SubType>
     </Compile>

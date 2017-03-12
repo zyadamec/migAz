@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmVirtualNetwork : Core.ArmTemplate.VirtualNetwork, IVirtualNetwork
+    public class VirtualNetwork : Core.ArmTemplate.VirtualNetwork, IVirtualNetwork
     {
         private JToken _VirtualNetwork;
         private List<ISubnet> _Subnets = new List<ISubnet>();
 
-        private ArmVirtualNetwork() : base(Guid.Empty) { }
+        private VirtualNetwork() : base(Guid.Empty) { }
 
-        public ArmVirtualNetwork(JToken virtualNetwork) : base(Guid.Empty)
+        public VirtualNetwork(JToken virtualNetwork) : base(Guid.Empty)
         {
             _VirtualNetwork = virtualNetwork;
 
@@ -22,7 +22,7 @@ namespace MigAz.Azure.Arm
 
             foreach (var subnet in subnets)
             {
-                ArmSubnet armSubnet = new ArmSubnet(this, subnet);
+                Subnet armSubnet = new Subnet(this, subnet);
                 _Subnets.Add(armSubnet);
             }
         }

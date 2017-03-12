@@ -3,16 +3,16 @@ using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmLocation : ILocation
+    public class Location : ILocation
     {
         private AzureContext _AzureContext;
         private JToken _LocationToken;
 
         #region Constructors
 
-        private ArmLocation() { }
+        private Location() { }
 
-        public ArmLocation(AzureContext _AzureContext, JToken locationToken)
+        public Location(AzureContext _AzureContext, JToken locationToken)
         {
             this._AzureContext = _AzureContext;
             this._LocationToken = locationToken;

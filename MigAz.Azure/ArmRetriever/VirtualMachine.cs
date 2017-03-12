@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmNetworkSecurityGroup
+    public class VirtualMachine
     {
+
+        public string Name
+        {
+            get { return "TODO"; }
+        }
     }
 }

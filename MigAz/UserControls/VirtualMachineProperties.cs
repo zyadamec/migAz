@@ -42,7 +42,7 @@ namespace MigAz.UserControls
 
             try
             {
-                List<ArmVirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
+                List<Azure.Arm.VirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
                 rbExistingARMVNet.Enabled = a.Count() > 0;
             }
             catch (Exception exc)
@@ -91,9 +91,9 @@ namespace MigAz.UserControls
             }
             else
             {
-                ArmVirtualNetwork selectedArmVirtualNetwork = (ArmVirtualNetwork) cmbExistingArmVNets.SelectedItem;
+                Azure.Arm.VirtualNetwork selectedArmVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
 
-                foreach (ArmSubnet armSubnet in selectedArmVirtualNetwork.Subnets)
+                foreach (Azure.Arm.Subnet armSubnet in selectedArmVirtualNetwork.Subnets)
                 {
                     if (armSubnet.Name != ArmConst.GatewaySubnetName)
                         cmbExistingArmSubnet.Items.Add(armSubnet);
@@ -101,7 +101,7 @@ namespace MigAz.UserControls
 
                 if (asmVirtualMachine.TargetSubnet != null)
                 {
-                    foreach (ArmSubnet listSubnet in cmbExistingArmSubnet.Items)
+                    foreach (Azure.Arm.Subnet listSubnet in cmbExistingArmSubnet.Items)
                     {
                         if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
@@ -191,7 +191,7 @@ namespace MigAz.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (ArmVirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);
@@ -200,7 +200,7 @@ namespace MigAz.UserControls
                 if (asmVirtualMachine.TargetVirtualNetwork != null)
                 {
                     // Attempt to match target to list items
-                    foreach (ArmVirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                    foreach (Azure.Arm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                     {
                         if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
@@ -231,9 +231,9 @@ namespace MigAz.UserControls
                     asmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
                     asmVirtualMachine.TargetSubnet = asmSubnet;
                 }
-                else if (cmbSender.SelectedItem.GetType() == typeof(ArmSubnet))
+                else if (cmbSender.SelectedItem.GetType() == typeof(Azure.Arm.Subnet))
                 {
-                    ArmSubnet armSubnet = (ArmSubnet)cmbSender.SelectedItem;
+                    Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)cmbSender.SelectedItem;
                     asmVirtualMachine.TargetVirtualNetwork = armSubnet.Parent;
                     asmVirtualMachine.TargetSubnet = armSubnet;
                 }

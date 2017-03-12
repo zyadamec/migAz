@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmStorageAccountKey
+    public class StorageAccountKey
     {
         private JToken _Key;
-        private List<ArmSubnet> _Subnets = new List<ArmSubnet>();
+        private List<Subnet> _Subnets = new List<Subnet>();
 
-        private ArmStorageAccountKey() { }
+        private StorageAccountKey() { }
 
-        public ArmStorageAccountKey(JToken key)
+        public StorageAccountKey(JToken key)
         {
             _Key = key;
         }

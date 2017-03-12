@@ -25,7 +25,7 @@ namespace MigAz.Azure.Asm
         private Subnet _SourceSubnet;
         private IVirtualNetwork _TargetVirtualNetwork;
         private ISubnet _TargetSubnet;
-        private ArmAvailabilitySet _TargetAvailabilitySet = null;
+        private AvailabilitySet _TargetAvailabilitySet = null;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
         private NetworkInterface _PrimaryNetworkInterface = null;
         private string _TargetName = String.Empty;
@@ -153,7 +153,7 @@ namespace MigAz.Azure.Asm
             get { return _AsmNetworkSecurityGroup; }
         }
 
-        public ArmAvailabilitySet TargetAvailabilitySet
+        public AvailabilitySet TargetAvailabilitySet
         {
             get { return _TargetAvailabilitySet; }
             set { _TargetAvailabilitySet = value; }

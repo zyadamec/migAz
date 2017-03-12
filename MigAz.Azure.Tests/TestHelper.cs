@@ -48,7 +48,7 @@ namespace MigAz.Tests
             string x = "{\r\n  \"name\": \"DummyVNet\",\r\n  \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/virtualNetworks/DummyVNet\",\r\n  \"etag\": \"W/\\\"1fa3c5bd-1cf4-4bb9-9839-96ece3b3776d\\\"\",\r\n  \"type\": \"Microsoft.Network/virtualNetworks\",\r\n  \"location\": \"westus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"resourceGuid\": \"b8b6b69d-2480-436a-886b-ac3ef4061253\",\r\n    \"addressSpace\": {\r\n      \"addressPrefixes\": [\r\n        \"10.0.0.0/16\"\r\n      ]\r\n    },\r\n    \"subnets\": [\r\n      {\r\n        \"name\": \"subnet01\",\r\n        \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/virtualNetworks/DummyVNet/subnets/subnet01\",\r\n        \"etag\": \"W/\\\"1f53c5be-1cf4-4bb9-9839-96ece3b3776d\\\"\",\r\n        \"properties\": {\r\n          \"provisioningState\": \"Succeeded\",\r\n          \"addressPrefix\": \"10.0.0.0/24\",\r\n\"applicationGatewayIPConfigurations\": [\r\n            {\r\n              \"id\": \"/subscriptions/" + SubscriptionId + "/resourceGroups/dummygroup-rg/providers/Microsoft.Network/applicationGateways/appgwtest/gatewayIPConfigurations/gatewayIP01\"\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}";
             JObject webRequestResultJson = JObject.Parse(x);
 
-            ArmVirtualNetwork armVirtualNetwork = new ArmVirtualNetwork(webRequestResultJson);
+            Azure.Arm.VirtualNetwork armVirtualNetwork = new Azure.Arm.VirtualNetwork(webRequestResultJson);
 
             foreach (Azure.Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
             {
@@ -74,10 +74,10 @@ namespace MigAz.Tests
             return JObject.Parse(templateText);
         }
 
-        internal static async Task<ArmResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
+        internal static async Task<ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
-            List<Location> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
-            ArmResourceGroup targetResourceGroup = new ArmResourceGroup(azureContext, "Target Resource Group");
+            List<Azure.Asm.Location> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
+            ResourceGroup targetResourceGroup = new ResourceGroup(azureContext, "Target Resource Group");
             targetResourceGroup.Location = azureLocations[0];
             return targetResourceGroup;
         }

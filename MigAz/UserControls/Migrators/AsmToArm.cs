@@ -26,7 +26,7 @@ namespace MigAz.UserControls.Migrators
         private AppSettingsProvider _appSettingsProvider;
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
-        private ArmResourceGroup _TargetResourceGroup;
+        private ResourceGroup _TargetResourceGroup;
         private AsmToArmGenerator _TemplateGenerator;
 
         #endregion
@@ -58,7 +58,7 @@ namespace MigAz.UserControls.Migrators
             _AzureContextTargetARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
             azureLoginContextViewer2.Bind(_AzureContextTargetARM);
 
-            _TargetResourceGroup = new ArmResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
+            _TargetResourceGroup = new ResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
 
             _TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, _logProvider, _statusProvider, _telemetryProvider, _appSettingsProvider);
             _TemplateGenerator.AfterTemplateChanged += _TemplateGenerator_AfterTemplateChanged;
@@ -217,7 +217,7 @@ namespace MigAz.UserControls.Migrators
 
         #region Properties
 
-        public ArmResourceGroup TargetResourceGroup
+        public ResourceGroup TargetResourceGroup
         {
             get { return _TargetResourceGroup; }
         }
@@ -534,7 +534,7 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(this, e.Node);
                     panel1.Controls.Add(properties);
                 }
-                else if (e.Node.Tag.GetType() == typeof(ArmAvailabilitySet))
+                else if (e.Node.Tag.GetType() == typeof(AvailabilitySet))
                 {
                     pictureBox1.Image = imageList1.Images["AvailabilitySet"];
 
@@ -542,7 +542,7 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(e.Node);
                     panel1.Controls.Add(properties);
                 }
-                else if (e.Node.Tag.GetType() == typeof(ArmResourceGroup))
+                else if (e.Node.Tag.GetType() == typeof(ResourceGroup))
                 {
                     pictureBox1.Image = imageList1.Images["ResourceGroup"];
 
@@ -715,9 +715,9 @@ namespace MigAz.UserControls.Migrators
         {
             if (treeNode.Tag != null)
             {
-                if (treeNode.Tag.GetType() == typeof(ArmResourceGroup))
+                if (treeNode.Tag.GetType() == typeof(ResourceGroup))
                 {
-                    ArmResourceGroup armResourceGroup = (ArmResourceGroup)treeNode.Tag;
+                    ResourceGroup armResourceGroup = (ResourceGroup)treeNode.Tag;
 
                     if (armResourceGroup.Location == null)
                     {
@@ -842,9 +842,9 @@ namespace MigAz.UserControls.Migrators
                         return false;
                     }
                 }
-                else if (treeNode.Tag.GetType() == typeof(ArmAvailabilitySet))
+                else if (treeNode.Tag.GetType() == typeof(AvailabilitySet))
                 {
-                    ArmAvailabilitySet armAvailabilitySet = (ArmAvailabilitySet)treeNode.Tag;
+                    AvailabilitySet armAvailabilitySet = (AvailabilitySet)treeNode.Tag;
                     if (armAvailabilitySet.TargetName == string.Empty)
                     {
                         treeARM.SelectedNode = treeNode;

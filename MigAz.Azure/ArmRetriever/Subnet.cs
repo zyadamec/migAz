@@ -3,14 +3,14 @@ using Newtonsoft.Json.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmSubnet : ISubnet
+    public class Subnet : ISubnet
     {
         private JToken _Subnet;
-        private ArmVirtualNetwork _Parent;
+        private VirtualNetwork _Parent;
 
-        private ArmSubnet() { }
+        private Subnet() { }
 
-        public ArmSubnet(ArmVirtualNetwork parent, JToken subnet)
+        public Subnet(VirtualNetwork parent, JToken subnet)
         {
             _Parent = parent;
             _Subnet = subnet;
@@ -36,12 +36,12 @@ namespace MigAz.Azure.Arm
             get { return (string)_Subnet["properties"]["addressPrefix"]; }
         }
 
-        public ArmVirtualNetwork Parent
+        public VirtualNetwork Parent
         {
             get { return _Parent; }
         }
 
-        public ArmNetworkSecurityGroup NetworkSecurityGroup
+        public NetworkSecurityGroup NetworkSecurityGroup
         {
             get
             {

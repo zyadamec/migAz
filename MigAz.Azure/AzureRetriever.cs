@@ -28,13 +28,13 @@ namespace MigAz.Azure
         private List<ReservedIP> _AsmReservedIPs;
 
         // ARM Object Cache (Subscription Context Specific)
-        private List<ArmLocation> _ArmLocations;
+        private List<Arm.Location> _ArmLocations;
         private List<AzureTenant> _ArmTenants;
         private List<AzureSubscription> _ArmSubscriptions;
-        private List<ArmResourceGroup> _ArmResourceGroups;
-        private List<ArmVirtualNetwork> _ArmVirtualNetworks;
-        private List<ArmStorageAccount> _ArmStorageAccounts;
-        private List<ArmAvailabilitySet> _ArmAvailabilitySets;
+        private List<ResourceGroup> _ArmResourceGroups;
+        private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
+        private List<Arm.StorageAccount> _ArmStorageAccounts;
+        private List<AvailabilitySet> _ArmAvailabilitySets;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache;
         private Dictionary<string, JObject> _armJsonDocumentCache;
@@ -94,18 +94,18 @@ namespace MigAz.Azure
             }
         }
 
-        internal ArmAvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
+        internal AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
         {
             if (_ArmAvailabilitySets == null)
-                _ArmAvailabilitySets = new List<ArmAvailabilitySet>();
+                _ArmAvailabilitySets = new List<AvailabilitySet>();
 
-            foreach (ArmAvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
+            foreach (AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
             {
                 if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
                     return armAvailabilitySet;
             }
 
-            ArmAvailabilitySet newArmAvailabilitySet = new ArmAvailabilitySet(this._AzureContext, asmVirtualMachine);
+            AvailabilitySet newArmAvailabilitySet = new AvailabilitySet(this._AzureContext, asmVirtualMachine);
             _ArmAvailabilitySets.Add(newArmAvailabilitySet);
 
             return newArmAvailabilitySet;
@@ -326,13 +326,13 @@ namespace MigAz.Azure
             }
         }
 
-        public async virtual Task<List<Location>> GetAzureASMLocations()
+        public async virtual Task<List<Asm.Location>> GetAzureASMLocations()
         {
             XmlNode locationsXml = await this.GetAzureAsmResources("Locations", null);
-            List<Location> azureLocations = new List<Location>();
+            List<Asm.Location> azureLocations = new List<Asm.Location>();
             foreach (XmlNode locationXml in locationsXml.SelectNodes("/Locations/Location"))
             {
-                azureLocations.Add(new Location(_AzureContext, locationXml));
+                azureLocations.Add(new Asm.Location(_AzureContext, locationXml));
             }
 
             return azureLocations;
@@ -818,7 +818,7 @@ namespace MigAz.Azure
             return tenantSubscriptions;
         }
 
-        public async Task<List<ArmResourceGroup>> GetAzureARMResourceGroups()
+        public async Task<List<ResourceGroup>> GetAzureARMResourceGroups()
         {
             if (_ArmResourceGroups != null)
                 return _ArmResourceGroups;
@@ -828,20 +828,20 @@ namespace MigAz.Azure
             var resourceGroups = from resourceGroup in resourceGroupsJson["value"]
                                 select resourceGroup;
 
-            _ArmResourceGroups = new List<ArmResourceGroup>();
+            _ArmResourceGroups = new List<ResourceGroup>();
 
             foreach (JObject resourceGroupJson in resourceGroups)
             {
-                ArmResourceGroup azureSubscription = new ArmResourceGroup(resourceGroupJson, _AzureContext.AzureEnvironment);
+                ResourceGroup azureSubscription = new ResourceGroup(resourceGroupJson, _AzureContext.AzureEnvironment);
                 _ArmResourceGroups.Add(azureSubscription);
             }
 
             return _ArmResourceGroups;
         }
 
-        public async virtual Task<ArmVirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
+        public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
         {
-            foreach (ArmVirtualNetwork armVirtualNetwork in await GetAzureARMVirtualNetworks())
+            foreach (Arm.VirtualNetwork armVirtualNetwork in await GetAzureARMVirtualNetworks())
             {
                 if (armVirtualNetwork.Name == virtualNetworkName)
                     return armVirtualNetwork;
@@ -850,7 +850,7 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async virtual Task<List<ArmVirtualNetwork>> GetAzureARMVirtualNetworks()
+        public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
         {
             if (_ArmVirtualNetworks != null)
                 return _ArmVirtualNetworks;
@@ -860,18 +860,18 @@ namespace MigAz.Azure
             var virtualNetworks = from vnet in virtualNetworksJson["value"]
                                   select vnet;
 
-            _ArmVirtualNetworks = new List<ArmVirtualNetwork>();
+            _ArmVirtualNetworks = new List<Arm.VirtualNetwork>();
 
             foreach (var virtualNetwork in virtualNetworks)
             {
-                ArmVirtualNetwork armVirtualNetwork = new ArmVirtualNetwork(virtualNetwork);
+                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
                 _ArmVirtualNetworks.Add(armVirtualNetwork);
             }
 
             return _ArmVirtualNetworks;
         }
 
-        public async virtual Task<List<ArmStorageAccount>> GetAzureARMStorageAccounts()
+        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
         {
             if (_ArmStorageAccounts != null)
                 return _ArmStorageAccounts;
@@ -881,11 +881,11 @@ namespace MigAz.Azure
             var storageAccounts = from storage in storageAccountsJson["value"]
                                   select storage;
 
-            _ArmStorageAccounts = new List<ArmStorageAccount>();
+            _ArmStorageAccounts = new List<Arm.StorageAccount>();
 
             foreach (var storageAccount in storageAccounts)
             {
-                ArmStorageAccount armStorageAccount = new ArmStorageAccount(_AzureContext, storageAccount);
+                Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(_AzureContext, storageAccount);
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
                 _ArmStorageAccounts.Add(armStorageAccount);
@@ -895,7 +895,7 @@ namespace MigAz.Azure
         }
 
 
-        public async virtual Task<List<ArmLocation>> GetAzureARMLocations()
+        public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
         {
             if (_ArmLocations != null)
                 return _ArmLocations;
@@ -905,11 +905,11 @@ namespace MigAz.Azure
             var locations = from location in locationsJson["value"]
                                   select location;
 
-            _ArmLocations = new List<ArmLocation>();
+            _ArmLocations = new List<Arm.Location>();
 
             foreach (var location in locations)
             {
-                ArmLocation armLocation = new ArmLocation(_AzureContext, location);
+                Arm.Location armLocation = new Arm.Location(_AzureContext, location);
                 _ArmLocations.Add(armLocation);
             }
 
@@ -918,7 +918,7 @@ namespace MigAz.Azure
             return _ArmLocations;
         }
 
-        internal async Task GetAzureARMStorageAccountKeys(ArmStorageAccount armStorageAccount)
+        internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
         {
             Hashtable storageAccountKeyInfo = new Hashtable();
             storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup);
@@ -932,7 +932,7 @@ namespace MigAz.Azure
             armStorageAccount.Keys.Clear();
             foreach (var storageAccountKey in storageAccountKeys)
             {
-                ArmStorageAccountKey armStorageAccountKey = new ArmStorageAccountKey(storageAccountKey);
+                StorageAccountKey armStorageAccountKey = new StorageAccountKey(storageAccountKey);
                 armStorageAccount.Keys.Add(armStorageAccountKey);
             }
 

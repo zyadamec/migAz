@@ -75,7 +75,7 @@ namespace MigAz.UserControls
                     }
                 }
 
-                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(ArmStorageAccount)))
+                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount)))
                 {
                     foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
                     {
@@ -118,7 +118,7 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 _AsmDataDisk.TargetStorageAccount = null;
 
-                foreach (ArmStorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
+                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
@@ -130,7 +130,7 @@ namespace MigAz.UserControls
                 }
                 else
                 {
-                    foreach (ArmStorageAccount armStorageAccount in cmbTargetStorage.Items)
+                    foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
                     {
                         if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
                             cmbTargetStorage.SelectedItem = armStorageAccount;
@@ -154,9 +154,9 @@ namespace MigAz.UserControls
                     Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)cmbSender.SelectedItem;
                     _AsmDataDisk.TargetStorageAccount = asmStorageAccount;
                 }
-                else if (cmbSender.SelectedItem.GetType() == typeof(ArmStorageAccount))
+                else if (cmbSender.SelectedItem.GetType() == typeof(Azure.Arm.StorageAccount))
                 {
-                    ArmStorageAccount armStorageAccount = (ArmStorageAccount)cmbSender.SelectedItem;
+                    Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)cmbSender.SelectedItem;
                     _AsmDataDisk.TargetStorageAccount = armStorageAccount;
                 }
                 else

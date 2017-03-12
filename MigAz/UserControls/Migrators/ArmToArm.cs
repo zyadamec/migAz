@@ -62,8 +62,8 @@ namespace MigAz.UserControls.Migrators
                 treeSource.Nodes.Add(subscriptionNode);
                 subscriptionNode.Expand();
 
-                List<ArmVirtualNetwork> armVirtualNetworks = await _AzureContextARM.AzureRetriever.GetAzureARMVirtualNetworks();
-                foreach (ArmVirtualNetwork armVirtualNetwork in armVirtualNetworks)
+                List<VirtualNetwork> armVirtualNetworks = await _AzureContextARM.AzureRetriever.GetAzureARMVirtualNetworks();
+                foreach (VirtualNetwork armVirtualNetwork in armVirtualNetworks)
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                     {

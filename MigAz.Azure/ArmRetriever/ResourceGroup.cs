@@ -5,7 +5,7 @@ using System;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmResourceGroup
+    public class ResourceGroup
     {
         private String _Name = String.Empty;
         private ILocation _Location;
@@ -14,15 +14,15 @@ namespace MigAz.Azure.Arm
         private JObject _ResourceGroupJson;
         private AzureEnvironment _AzureEnvironment;
 
-        internal ArmResourceGroup(JObject resourceGroupJson, AzureEnvironment azureEnvironment)
+        internal ResourceGroup(JObject resourceGroupJson, AzureEnvironment azureEnvironment)
         {
             _ResourceGroupJson = resourceGroupJson;
             _AzureEnvironment = azureEnvironment;
         }
 
-        private ArmResourceGroup() { }
+        private ResourceGroup() { }
 
-        public ArmResourceGroup(AzureContext azureContext, String resourceGroupName)
+        public ResourceGroup(AzureContext azureContext, String resourceGroupName)
         {
             this._AzureContext = azureContext;
             this.Name = resourceGroupName;

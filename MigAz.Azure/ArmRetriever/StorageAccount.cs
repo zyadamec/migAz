@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace MigAz.Azure.Arm
 {
-    public class ArmStorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount
+    public class StorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount
     {
         private AzureContext _AzureContext;
         private JToken _StorageAccount;
-        private List<ArmStorageAccountKey> _StorageAccountKeys = new List<ArmStorageAccountKey>();
+        private List<StorageAccountKey> _StorageAccountKeys = new List<StorageAccountKey>();
 
-        private ArmStorageAccount() : base(Guid.Empty) { }
+        private StorageAccount() : base(Guid.Empty) { }
 
-        public ArmStorageAccount(
+        public StorageAccount(
             AzureContext azureContext,
             JToken storageAccount) : base(Guid.Empty)
         {
@@ -21,7 +21,7 @@ namespace MigAz.Azure.Arm
             _StorageAccount = storageAccount;
         }
 
-        public List<ArmStorageAccountKey> Keys
+        public List<StorageAccountKey> Keys
         {
             get { return _StorageAccountKeys; }
         }
