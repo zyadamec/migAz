@@ -125,7 +125,6 @@
     <Compile Include="Generator\ArmToArm\ArmToArmGenerator.cs" />
     <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
-    <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />

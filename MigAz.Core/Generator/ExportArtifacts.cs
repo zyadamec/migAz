@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MigAz.Core.Generator
 {
-    public class ExportArtifacts
+    public class ExportArtifacts : IExportArtifacts
     {
         public ExportArtifacts()
         {

@@ -73,6 +73,12 @@ namespace MigAz.Core.Generator
 
         }
 
+        public bool ResourceExists(Type type, string objectName)
+        {
+            object resource = GetResource(type, objectName);
+            return resource != null;
+        }
+
         public object GetResource(Type type, string objectName)
         {
             foreach (ArmResource armResource in this.Resources)
@@ -84,7 +90,7 @@ namespace MigAz.Core.Generator
             return null;
         }
 
-        public abstract void UpdateArtifacts(ExportArtifacts artifacts);
+        public abstract void UpdateArtifacts(IExportArtifacts artifacts);
 
         //The event-invoking method that derived classes can override.
         protected virtual void OnTemplateChanged()

@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AWSArtefacts.cs" />
+    <Compile Include="AWSExportArtifacts.cs" />
     <Compile Include="AwsObjectRetriever.cs" />
     <Compile Include="AwsRetriever.cs" />
     <Compile Include="Class1.cs" />

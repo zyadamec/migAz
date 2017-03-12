@@ -67,7 +67,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.azureLoginContextViewer1);
             this.Name = "ArmToArm";
-            this.Size = new System.Drawing.Size(1719, 1012);
+            this.Size = new System.Drawing.Size(905, 727);
             this.Load += new System.EventHandler(this.ArmToArm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

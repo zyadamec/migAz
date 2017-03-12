@@ -936,9 +936,8 @@ namespace MigAz.UserControls.Migrators
         {
             treeASM.Height = this.Height - 195;
             treeARM.Height = treeASM.Height;
-            groupBox1.Height = treeARM.Height - btnExport.Height - btnOptions.Height - 10;
+            groupBox1.Height = treeARM.Height - btnExport.Height - 10;
             btnExport.Top = groupBox1.Top + groupBox1.Height + 10;
-            btnOptions.Top = btnExport.Top + btnExport.Height + 10;
         }
 
         #endregion

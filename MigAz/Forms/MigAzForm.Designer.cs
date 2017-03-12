@@ -39,6 +39,10 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
+            this.btnChoosePath = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,10 +51,6 @@
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnChoosePath = new System.Windows.Forms.Button();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -175,6 +175,48 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(15, 827);
+            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(676, 44);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Options";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnExport
+            // 
+            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnExport.Location = new System.Drawing.Point(15, 771);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(676, 44);
+            this.btnExport.TabIndex = 5;
+            this.btnExport.Text = "&Export 0 objects";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // txtDestinationFolder
+            // 
+            this.txtDestinationFolder.Location = new System.Drawing.Point(15, 722);
+            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtDestinationFolder.Name = "txtDestinationFolder";
+            this.txtDestinationFolder.Size = new System.Drawing.Size(597, 31);
+            this.txtDestinationFolder.TabIndex = 3;
+            // 
+            // btnChoosePath
+            // 
+            this.btnChoosePath.Location = new System.Drawing.Point(632, 715);
+            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnChoosePath.Name = "btnChoosePath";
+            this.btnChoosePath.Size = new System.Drawing.Size(59, 44);
+            this.btnChoosePath.TabIndex = 4;
+            this.btnChoosePath.Text = "...";
+            this.btnChoosePath.UseVisualStyleBackColor = true;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
@@ -238,47 +280,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // btnChoosePath
-            // 
-            this.btnChoosePath.Location = new System.Drawing.Point(632, 715);
-            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnChoosePath.Name = "btnChoosePath";
-            this.btnChoosePath.Size = new System.Drawing.Size(59, 44);
-            this.btnChoosePath.TabIndex = 4;
-            this.btnChoosePath.Text = "...";
-            this.btnChoosePath.UseVisualStyleBackColor = true;
-            // 
-            // btnExport
-            // 
-            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnExport.Location = new System.Drawing.Point(15, 771);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(676, 44);
-            this.btnExport.TabIndex = 5;
-            this.btnExport.Text = "&Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
-            // txtDestinationFolder
-            // 
-            this.txtDestinationFolder.Location = new System.Drawing.Point(15, 722);
-            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtDestinationFolder.Name = "txtDestinationFolder";
-            this.txtDestinationFolder.Size = new System.Drawing.Size(597, 31);
-            this.txtDestinationFolder.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(15, 827);
-            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(676, 44);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Options";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // MigAzForm
             // 

@@ -1,4 +1,4 @@
-﻿using MigAz.Azure.Interface;
+﻿using MigAz.Core.Interface;
 using System;
 using System.Xml;
 

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using MigAz.Core.Interface;
+using System.Collections.Generic;
 
 namespace MigAz.AWS
 {
-    public class AWSArtefacts
+    public class AWSExportArtifacts : IExportArtifacts
     {
-        public AWSArtefacts()
+        public AWSExportArtifacts()
         {
             StorageAccounts = new List<EbsVolume>();
             VirtualNetworks = new List<VPC>();

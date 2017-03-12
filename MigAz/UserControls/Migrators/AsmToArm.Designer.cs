@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AsmToArm));
-            this.btnOptions = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -46,16 +45,6 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // btnOptions
-            // 
-            this.btnOptions.Location = new System.Drawing.Point(1203, 746);
-            this.btnOptions.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(723, 44);
-            this.btnOptions.TabIndex = 60;
-            this.btnOptions.Text = "Options...";
-            this.btnOptions.UseVisualStyleBackColor = true;
             // 
             // imageList1
             // 
@@ -185,7 +174,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.azureLoginContextViewer2);
             this.Controls.Add(this.label6);
@@ -195,7 +183,7 @@
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.azureLoginContextViewer21);
             this.Name = "AsmToArm";
-            this.Size = new System.Drawing.Size(1947, 915);
+            this.Size = new System.Drawing.Size(1947, 803);
             this.Load += new System.EventHandler(this.AsmToArmForm_Load);
             this.Resize += new System.EventHandler(this.AsmToArmForm_Resize);
             this.groupBox1.ResumeLayout(false);
@@ -207,8 +195,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Panel panel1;

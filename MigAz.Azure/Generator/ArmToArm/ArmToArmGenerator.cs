@@ -31,7 +31,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             _settingsProvider = settingsProvider;
         }
 
-        public override void UpdateArtifacts(ExportArtifacts artifacts)
+        public override void UpdateArtifacts(IExportArtifacts artifacts)
         {
             //            TemplateResult templateResult = new TemplateResult(sourceASMSubscription, targetARMSubscription, targetResourceGroup, _logProvider, outputPath);
 
@@ -160,6 +160,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             //            template.parameters = _parameters;
 
             //            // save JSON template
+            OnTemplateChanged();
 
             //            // post Telemetry Record to ASMtoARMToolAPI
             //            if (_settingsProvider.AllowTelemetry)

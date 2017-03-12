@@ -49,12 +49,12 @@ namespace MigAz.Azure.Generator.AsmToArm
         public Arm.ArmResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
-        public override async void UpdateArtifacts(ExportArtifacts artifacts)
+        public override async void UpdateArtifacts(IExportArtifacts artifacts)
         {
             Messages.Clear();
             TemplateStreams.Clear();
 
-            _ASMArtifacts = artifacts;
+            _ASMArtifacts = (ExportArtifacts)artifacts;
 
             if (_TargetResourceGroup == null)
             {
@@ -66,7 +66,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 Messages.Add("Target Resource Group Location must be provided for template generation.");
             }
 
-            foreach (INetworkSecurityGroup iNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            foreach (INetworkSecurityGroup iNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
             {
                 Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)iNetworkSecurityGroup;
 
@@ -74,7 +74,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     Messages.Add("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
             }
 
-            foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
             {
                 if (asmVirtualMachine.TargetName == string.Empty)
                     Messages.Add("Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
@@ -104,7 +104,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             LogProvider.WriteLog("GenerateTemplate", "Start processing selected Network Security Groups");
             // process selected virtual networks
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
                 await BuildNetworkSecurityGroup(asmNetworkSecurityGroup);
@@ -113,7 +113,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             LogProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
             // process selected virtual networks
-            foreach (Asm.VirtualNetwork asmVirtualNetwork in artifacts.VirtualNetworks)
+            foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
                 await BuildVirtualNetworkObject(asmVirtualNetwork);
@@ -123,7 +123,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
 
             // process selected storage accounts
-            foreach (Asm.StorageAccount asmStorageAccount in artifacts.StorageAccounts)
+            foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(asmStorageAccount);
@@ -133,12 +133,12 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
 
             // process selected cloud services and virtual machines
-            foreach (Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
 
                 BuildPublicIPAddressObject(asmVirtualMachine);
-                BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, artifacts);
+                BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ASMArtifacts);
 
                 // process availability set
                 BuildAvailabilitySetObject(asmVirtualMachine);
@@ -1002,7 +1002,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 networkinterfaces.Add(networkinterface_ref);
 
-                this.Resources.Add(additionalNetworkInterface);
+                this.AddResource(additionalNetworkInterface);
             }
 
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "End");

@@ -167,7 +167,7 @@ namespace MigAz.UserControls.Migrators
             teleinfo.Add("Region", cmbRegion.Text);
             teleinfo.Add("AccessKey", accessKeyID);
 
-            var artefacts = new AWSArtefacts();
+            var artefacts = new AWSExportArtifacts();
 
             foreach (var selectedItem in lvwVirtualNetworks.CheckedItems)
             {

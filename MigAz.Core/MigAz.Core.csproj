@@ -46,8 +46,10 @@
     <Compile Include="ArmTemplate\ArmConst.cs" />
     <Compile Include="Generator\ExportArtifacts.cs" />
     <Compile Include="Generator\TemplateGenerator.cs" />
+    <Compile Include="Interface\IExportArtifacts.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
     <Compile Include="Interface\INetworkSecurityGroup.cs" />
+    <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />
     <Compile Include="Interface\IStorageAccount.cs" />
     <Compile Include="Interface\ISubnet.cs" />
