@@ -262,8 +262,6 @@ namespace MigAz.UserControls.Migrators
                 Application.DoEvents();
             }
 
-            btnExport.Enabled = false;
-
             var artefacts = new AsmArtefacts();
             //foreach (var selectedItem in lvwStorageAccounts.CheckedItems)
             //{
@@ -311,7 +309,6 @@ namespace MigAz.UserControls.Migrators
             //}
 
             _statusProvider.UpdateStatus("Done");
-            btnExport.Enabled = true;
         }
 
 
@@ -325,14 +322,6 @@ namespace MigAz.UserControls.Migrators
             //    }
             //}
         }
-
-
-        private void btnOptions_Click(object sender, EventArgs e)
-        {
-            Forms.formOptions formoptions = new Forms.formOptions();
-            formoptions.ShowDialog(this);
-        }
-
 
         private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)
         {

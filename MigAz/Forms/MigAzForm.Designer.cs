@@ -1,4 +1,4 @@
-﻿namespace MigAz
+﻿namespace MigAz.Forms
 {
     partial class MigAzForm
     {
@@ -47,9 +47,14 @@
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnChoosePath = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -79,22 +84,22 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 930);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 931);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1993, 38);
+            this.statusStrip1.Size = new System.Drawing.Size(1993, 37);
             this.statusStrip1.TabIndex = 56;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(79, 33);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(79, 32);
             this.toolStripStatusLabel1.Text = "Ready";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(1837, 33);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(1899, 32);
             this.toolStripStatusLabel2.Spring = true;
             this.toolStripStatusLabel2.Text = "http://aka.ms/MigAz";
             this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
@@ -109,7 +114,14 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 890);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.button1);
+            this.splitContainer1.Panel2.Controls.Add(this.btnExport);
+            this.splitContainer1.Panel2.Controls.Add(this.txtDestinationFolder);
+            this.splitContainer1.Panel2.Controls.Add(this.btnChoosePath);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -129,7 +141,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 890);
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
             this.splitContainer2.SplitterDistance = 601;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -227,6 +239,47 @@
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // btnChoosePath
+            // 
+            this.btnChoosePath.Location = new System.Drawing.Point(632, 715);
+            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnChoosePath.Name = "btnChoosePath";
+            this.btnChoosePath.Size = new System.Drawing.Size(59, 44);
+            this.btnChoosePath.TabIndex = 4;
+            this.btnChoosePath.Text = "...";
+            this.btnChoosePath.UseVisualStyleBackColor = true;
+            // 
+            // btnExport
+            // 
+            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnExport.Location = new System.Drawing.Point(15, 771);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(676, 44);
+            this.btnExport.TabIndex = 5;
+            this.btnExport.Text = "&Export 0 objects";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // txtDestinationFolder
+            // 
+            this.txtDestinationFolder.Location = new System.Drawing.Point(15, 722);
+            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtDestinationFolder.Name = "txtDestinationFolder";
+            this.txtDestinationFolder.Size = new System.Drawing.Size(597, 31);
+            this.txtDestinationFolder.TabIndex = 3;
+            // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(15, 827);
+            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(676, 44);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Options";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // MigAzForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -249,6 +302,8 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -280,6 +335,10 @@
         private System.Windows.Forms.ToolStripMenuItem aWSToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.TextBox txtDestinationFolder;
+        private System.Windows.Forms.Button btnChoosePath;
     }
 }
 

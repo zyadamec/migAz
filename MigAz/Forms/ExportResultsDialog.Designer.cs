@@ -1,4 +1,4 @@
-﻿namespace MigAz.Forms.ASM
+﻿namespace MigAz.Forms
 {
     partial class ExportResultsDialog
     {

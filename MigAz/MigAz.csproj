@@ -88,17 +88,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
-    <Compile Include="MigAzForm.cs">
+    <Compile Include="Forms\MigAzForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MigAzForm.Designer.cs">
+    <Compile Include="Forms\MigAzForm.Designer.cs">
       <DependentUpon>MigAzForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ARM\ExportResultsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ARM\ExportResultsDialog.Designer.cs">
-      <DependentUpon>ExportResultsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ARM\Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Forms\ARM\Interface\ITelemetryProvider.cs" />
@@ -107,50 +101,26 @@
     <Compile Include="Forms\ARM\Models\CopyBlobDetail.cs" />
     <Compile Include="Forms\ARM\Models\SaveSelection.cs" />
     <Compile Include="Forms\ARM\Models\TelemetryRecord.cs" />
-    <Compile Include="Forms\ARM\Options.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ARM\Options.Designer.cs">
-      <DependentUpon>Options.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ARM\PreExportDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ARM\PreExportDialog.Designer.cs">
-      <DependentUpon>PreExportDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ARM\Providers\AppSettingsProvider.cs" />
     <Compile Include="Forms\ARM\Providers\CloudTelemetryProvider.cs" />
     <Compile Include="Forms\ARM\Providers\UISaveSelectionProvider.cs" />
     <Compile Include="Forms\AWS\CloudTelemetryProvider.cs" />
     <Compile Include="Forms\AWS\ISaveSelectionProvider.cs" />
     <Compile Include="Forms\AWS\ITelemetryProvider.cs" />
-    <Compile Include="Forms\AWS\Options.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AWS\Options.Designer.cs">
-      <DependentUpon>Options.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\AWS\SaveSelection.cs" />
     <Compile Include="Forms\AWS\TelemetryRecord.cs" />
     <Compile Include="Forms\AWS\UISaveSelectionProvider.cs" />
-    <Compile Include="Forms\ASM\ExportResultsDialog.cs">
+    <Compile Include="Forms\ExportResultsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ASM\ExportResultsDialog.Designer.cs">
+    <Compile Include="Forms\ExportResultsDialog.Designer.cs">
       <DependentUpon>ExportResultsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ASM\OptionsDialog.cs">
+    <Compile Include="Forms\OptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ASM\OptionsDialog.Designer.cs">
+    <Compile Include="Forms\OptionsDialog.Designer.cs">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ASM\PreExportDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ASM\PreExportDialog.Designer.cs">
-      <DependentUpon>PreExportDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\CloudTelemetryProvider.cs" />
@@ -226,29 +196,14 @@
     <Compile Include="UserControls\VirtualNetworkProperties.Designer.cs">
       <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="MigAzForm.resx">
+    <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ARM\ExportResultsDialog.resx">
+    <EmbeddedResource Include="Forms\ExportResultsDialog.resx">
       <DependentUpon>ExportResultsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ARM\Options.resx">
-      <DependentUpon>Options.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ARM\PreExportDialog.resx">
-      <DependentUpon>PreExportDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AWS\Options.resx">
-      <DependentUpon>Options.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ASM\ExportResultsDialog.resx">
-      <DependentUpon>ExportResultsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ASM\OptionsDialog.resx">
+    <EmbeddedResource Include="Forms\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ASM\PreExportDialog.resx">
-      <DependentUpon>PreExportDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

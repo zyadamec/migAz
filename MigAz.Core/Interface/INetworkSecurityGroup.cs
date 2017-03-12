@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Azure.Interface
+namespace MigAz.Core.Interface
 {
-    public interface ISubnet
+    public interface INetworkSecurityGroup
     {
-        string Id { get; }
         string Name { get; }
-        string TargetId { get; }
     }
 }

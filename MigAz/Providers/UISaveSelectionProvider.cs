@@ -6,11 +6,10 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using MigAz.Azure.Asm;
-using MigAz.Azure.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
 using MigAz.Interface;
-using MigAz.Azure;
+using MigAz.Core.Interface;
 
 namespace MigAz.Providers
 {

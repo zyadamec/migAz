@@ -8,9 +8,8 @@ using MigAz.Azure;
 using MigAz.Azure.Arm;
 using MigAz.Core.Interface;
 using MigAz.Azure.Asm;
-using MigAz.Forms.ASM;
 using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Azure.Models;
+using MigAz.Core.Generator;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -431,27 +430,27 @@ namespace MigAz.UserControls.Migrators
             await UpdateARMTree(e.Node);
         }
 
-        private AsmArtifacts GetAsmArtifacts()
+        private ExportArtifacts GetAsmArtifacts()
         {
-            AsmArtifacts artifacts = new AsmArtifacts();
+            ExportArtifacts artifacts = new ExportArtifacts();
             foreach (TreeNode selectedNode in _SelectedNodes)
             {
                 Type tagType = selectedNode.Tag.GetType();
                 if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
                 {
-                    artifacts.NetworkSecurityGroups.Add((Azure.Asm.NetworkSecurityGroup)selectedNode.Tag);
+                    artifacts.NetworkSecurityGroups.Add((INetworkSecurityGroup)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.Asm.VirtualNetwork))
                 {
-                    artifacts.VirtualNetworks.Add((Azure.Asm.VirtualNetwork)selectedNode.Tag);
+                    artifacts.VirtualNetworks.Add((IVirtualNetwork)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.Asm.StorageAccount))
                 {
-                    artifacts.StorageAccounts.Add((Azure.Asm.StorageAccount)selectedNode.Tag);
+                    artifacts.StorageAccounts.Add((IStorageAccount)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.Asm.VirtualMachine))
                 {
-                    artifacts.VirtualMachines.Add((Azure.Asm.VirtualMachine)selectedNode.Tag);
+                    artifacts.VirtualMachines.Add((IVirtualMachine)selectedNode.Tag);
                 }
             }
 
@@ -710,16 +709,6 @@ namespace MigAz.UserControls.Migrators
 
         #region Form Controls
 
-        #region Options Button
-
-        private void btnOptions_Click(object sender, EventArgs e)
-        {
-            Forms.formOptions formoptions = new Forms.formOptions();
-            formoptions.ShowDialog(this);
-        }
-
-        #endregion
-
         #region Export Button
 
         private bool RecursiveHealthCheckNode(TreeNode treeNode)
@@ -913,8 +902,7 @@ namespace MigAz.UserControls.Migrators
 
             await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
 
-            PreExportDialog preExportDialog = new PreExportDialog(this.LogProvider, this.StatusProvider, this.TelemetryProvider, this.AppSettingsProviders, this.AzureContextSourceASM.AzureSubscription, this.AzureContextSourceASM.AzureSubscription, this.TargetResourceGroup, this.SelectedNodes);
-            preExportDialog.ShowDialog(this);
+            _TemplateGenerator.Write();
 
             btnExport.Enabled = true;
         }

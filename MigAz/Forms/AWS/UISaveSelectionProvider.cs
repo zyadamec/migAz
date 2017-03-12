@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Windows.Forms;
-using MigAzAWS.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using MigAzAWS.Interface;
 
-namespace MigAz.Forms.AWS.Provider
+namespace MigAz.Forms.AWS
 {
     class UISaveSelectionProvider : ISaveSelectionProvider
     {
@@ -53,7 +51,6 @@ namespace MigAz.Forms.AWS.Provider
             {
                 saveSelection.VirtualNetworks.Add(virtualNetwork.Text);
             }
-
 
             saveSelection.VirtualMachines = new List<SaveSelectioVirtualMachine>();
             foreach (ListViewItem virtualMachine in lvwVirtualMachines.CheckedItems)

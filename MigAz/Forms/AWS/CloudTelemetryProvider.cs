@@ -1,18 +1,13 @@
-﻿using MigAz.Forms.AWS.Interface;
-using MigAzAWS.Interface;
-using MigAzAWS.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Forms.AWS.Provider
+namespace MigAz.Forms.AWS
 {
     public class CloudTelemetryProvider : ITelemetryProvider
     {

@@ -1,9 +1,8 @@
 ﻿using MigAz.Azure.Arm;
-using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 

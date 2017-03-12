@@ -126,13 +126,9 @@
     <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
-    <Compile Include="Interface\IStorageAccount.cs" />
-    <Compile Include="Interface\ISubnet.cs" />
     <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
-    <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="Models\AsmArtifacts.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
     <Compile Include="Models\CopyBlobDetail.cs" />
     <Compile Include="Models\SaveSelection.cs" />

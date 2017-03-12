@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Azure.Interface
+namespace MigAz.Core.Interface
 {
-    public interface IVirtualNetwork
+    public interface IStorageAccount
     {
         string Id { get; }
-        List<ISubnet> Subnets { get; }
-        string TargetId { get; }
+        string Name { get; }
+        string BlobStorageNamespace { get; }
     }
 }

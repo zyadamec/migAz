@@ -21,7 +21,8 @@ namespace MigAz.AWS.Generator
         {
             _awsObjectRetriever = awsObjectRetriever;
         }
-        public void GenerateTemplate(AWSArtefacts artefacts, AwsObjectRetriever _awsObjectRetriever, StreamWriter templateWriter, Hashtable teleinfo)
+
+        public override void UpdateArtifacts(ExportArtifacts artifacts)
         {
             //_logProvider.WriteLog("GenerateTemplate", "Start");
 

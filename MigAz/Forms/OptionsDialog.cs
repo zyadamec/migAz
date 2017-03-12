@@ -1,12 +1,11 @@
-﻿using MigAz;
-using System;
+﻿using System;
 using System.Windows.Forms;
 
-namespace MigAz.Forms.ASM
+namespace MigAz.Forms
 {
-    public partial class formOptions : Form
+    public partial class OptionsDialog : Form
     {
-        public formOptions()
+        public OptionsDialog()
         {
             InitializeComponent();
         }

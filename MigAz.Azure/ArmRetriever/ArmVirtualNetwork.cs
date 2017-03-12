@@ -1,4 +1,4 @@
-﻿using MigAz.Azure.Interface;
+﻿using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -27,26 +27,10 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public string Name
-        {
-            get { return (string) _VirtualNetwork["name"]; }
-        }
-
-        public string Id
-        {
-            get { return (string)_VirtualNetwork["id"]; }
-        }
-
-        public string Location
-        {
-            get { return "TODO"; }
-        }
-
-        public string TargetId
-        {
-            get { return this.Id; }
-        }
-        
+        public string Name => (string)_VirtualNetwork["name"];
+        public string Id => (string)_VirtualNetwork["id"];
+        public string Location => (string)_VirtualNetwork["location"];
+        public string TargetId => this.Id;
         public override string ToString()
         {
             return this.Name;

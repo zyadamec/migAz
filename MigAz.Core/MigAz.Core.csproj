@@ -44,9 +44,15 @@
   <ItemGroup>
     <Compile Include="ArmTemplate\ARM.cs" />
     <Compile Include="ArmTemplate\ArmConst.cs" />
+    <Compile Include="Generator\ExportArtifacts.cs" />
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Interface\INetworkSecurityGroup.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />
+    <Compile Include="Interface\IStorageAccount.cs" />
+    <Compile Include="Interface\ISubnet.cs" />
+    <Compile Include="Interface\IVirtualMachine.cs" />
+    <Compile Include="Interface\IVirtualNetwork.cs" />
     <Compile Include="TreeView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionCheck.cs" />

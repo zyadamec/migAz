@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             this.treeSource = new System.Windows.Forms.TreeView();
-            this.btnOptions = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnExport = new System.Windows.Forms.Button();
             this.azureLoginContextViewer1 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
             // 
@@ -42,16 +40,6 @@
             this.treeSource.Size = new System.Drawing.Size(700, 455);
             this.treeSource.TabIndex = 48;
             // 
-            // btnOptions
-            // 
-            this.btnOptions.Location = new System.Drawing.Point(741, 305);
-            this.btnOptions.Margin = new System.Windows.Forms.Padding(6);
-            this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(258, 44);
-            this.btnOptions.TabIndex = 46;
-            this.btnOptions.Text = "Options...";
-            this.btnOptions.UseVisualStyleBackColor = true;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -61,17 +49,6 @@
             this.label1.Size = new System.Drawing.Size(168, 25);
             this.label1.TabIndex = 47;
             this.label1.Text = "ARM Resources";
-            // 
-            // btnExport
-            // 
-            this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(729, 249);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(656, 44);
-            this.btnExport.TabIndex = 45;
-            this.btnExport.Text = "Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
             // 
             // azureLoginContextViewer1
             // 
@@ -87,9 +64,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeSource);
-            this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnExport);
             this.Controls.Add(this.azureLoginContextViewer1);
             this.Name = "ArmToArm";
             this.Size = new System.Drawing.Size(1719, 1012);
@@ -102,9 +77,7 @@
         #endregion
 
         private System.Windows.Forms.TreeView treeSource;
-        private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnExport;
         private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer1;
     }
 }

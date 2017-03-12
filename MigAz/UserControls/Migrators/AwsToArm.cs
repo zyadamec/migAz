@@ -27,7 +27,7 @@ namespace MigAz.UserControls.Migrators
         //private Dictionary<string, string> subscriptionsAndTenants;
         private AwsRetriever _awsRetriever;
         private AWS.Generator.AwsToArmGenerator _TemplateGenerator;
-        private MigAzAWS.Interface.ISaveSelectionProvider _saveSelectionProvider;
+        private MigAz.Forms.AWS.ISaveSelectionProvider _saveSelectionProvider;
         private IStatusProvider _statusProvider;
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
@@ -221,12 +221,6 @@ namespace MigAz.UserControls.Migrators
             //{
             //    DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             //}
-        }
-
-        private void btnOptions_Click(object sender, EventArgs e)
-        {
-            Forms.AWS.formOptions formoptions = new Forms.AWS.formOptions();
-            formoptions.ShowDialog(this);
         }
 
         private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)

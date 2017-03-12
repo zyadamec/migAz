@@ -84,6 +84,8 @@ namespace MigAz.Core.Generator
             return null;
         }
 
+        public abstract void UpdateArtifacts(ExportArtifacts artifacts);
+
         //The event-invoking method that derived classes can override.
         protected virtual void OnTemplateChanged()
         {

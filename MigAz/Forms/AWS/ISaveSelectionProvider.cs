@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace MigAzAWS.Interface
+namespace MigAz.Forms.AWS
 {
     public interface ISaveSelectionProvider
     {

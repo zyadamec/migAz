@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MigAz.Azure;
 using MigAz.Azure.Generator;
+using MigAz.Core.Generator;
 
 namespace MigAz.Tests
 {
@@ -25,7 +26,7 @@ namespace MigAz.Tests
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\Storage1"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
+            var artifacts = new ExportArtifacts();
             artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
             templateGenerator.UpdateArtifacts(artifacts);
 

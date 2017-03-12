@@ -1,181 +1,192 @@
-﻿using MigAz.Core.Generator;
+﻿using System;
+using MigAz.Azure.Interface;
+using MigAz.Core.Generator;
 using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Generator.ArmToArm
 {
     public class ArmToArmGenerator : TemplateGenerator
     {
-        //private ITelemetryProvider _telemetryProvider;
-        //private ITokenProvider _tokenProvider;
-        //private ISettingsProvider _settingsProvider;
-        //private Dictionary<string, Parameter> _parameters;
-        //private List<CopyBlobDetail> _copyBlobDetails;
-        //public Dictionary<string, string> _storageAccountNames;
+        private ISubscription _SourceSubscription;
+        private ISubscription _TargetSubscription;
+        private Arm.ArmResourceGroup _TargetResourceGroup;
+        private ITelemetryProvider _telemetryProvider;
+        private ISettingsProvider _settingsProvider;
 
         private ArmToArmGenerator() : base(null, null) { }
 
-        public ArmToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider, statusProvider)
+        public ArmToArmGenerator(
+            ISubscription sourceSubscription,
+            ISubscription targetSubscription,
+            Arm.ArmResourceGroup targetResourceGroup,
+            ILogProvider logProvider,
+            IStatusProvider statusProvider,
+            ITelemetryProvider telemetryProvider,
+            ISettingsProvider settingsProvider) : base(logProvider, statusProvider)
         {
-            //_telemetryProvider = telemetryProvider;
-            //_settingsProvider = settingsProvider;
+            _SourceSubscription = sourceSubscription;
+            _TargetSubscription = targetSubscription;
+            _TargetResourceGroup = targetResourceGroup;
+            _telemetryProvider = telemetryProvider;
+            _settingsProvider = settingsProvider;
         }
 
-        //        public async Task<TemplateResult> GenerateTemplate(AzureTenant azureTenant, AzureSubscription azureSubscription, AsmArtefacts artefacts, string outputPath)
-        //        {
-        //            TemplateResult templateResult = new TemplateResult(sourceASMSubscription, targetARMSubscription, targetResourceGroup, _logProvider, outputPath);
+        public override void UpdateArtifacts(ExportArtifacts artifacts)
+        {
+            //            TemplateResult templateResult = new TemplateResult(sourceASMSubscription, targetARMSubscription, targetResourceGroup, _logProvider, outputPath);
 
-        //            _logProvider.WriteLog("GenerateTemplate", "Start");
+            //            _logProvider.WriteLog("GenerateTemplate", "Start");
 
-        //            _parameters = new Dictionary<string, Parameter>();
-        //            _copyBlobDetails = new List<CopyBlobDetail>();
-        //            _storageAccountNames = new Dictionary<string, string>();
+            //            _parameters = new Dictionary<string, Parameter>();
+            //            _copyBlobDetails = new List<CopyBlobDetail>();
+            //            _storageAccountNames = new Dictionary<string, string>();
 
-        //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
-        //            // process selected virtual networks
-        //            foreach (ArmVirtualNetwork armVirtualNetwork in artefacts.VirtualNetworks)
-        //            {
-        //                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + armVirtualNetwork.Name);
-        //                BuildARMVirtualNetworkObject(templateResult, armVirtualNetwork);
-        //            }
-        //            _logProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
+            //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
+            //            // process selected virtual networks
+            //            foreach (ArmVirtualNetwork armVirtualNetwork in artefacts.VirtualNetworks)
+            //            {
+            //                _statusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + armVirtualNetwork.Name);
+            //                BuildARMVirtualNetworkObject(templateResult, armVirtualNetwork);
+            //            }
+            //            _logProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
 
-        //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
+            //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
 
-        //            // process selected storage accounts
-        //            foreach (ArmStorageAccount armStorageAccount in artefacts.StorageAccounts)
-        //            {
-        //                _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + armStorageAccount.Name);
-        //                BuildARMStorageAccountObject(templateResult, armStorageAccount);
-        //            }
-        //            _logProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
+            //            // process selected storage accounts
+            //            foreach (ArmStorageAccount armStorageAccount in artefacts.StorageAccounts)
+            //            {
+            //                _statusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + armStorageAccount.Name);
+            //                BuildARMStorageAccountObject(templateResult, armStorageAccount);
+            //            }
+            //            _logProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
 
-        //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
+            //            _logProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
 
-        //            // process selected cloud services and virtual machines
-        //            foreach (var VMv2 in artefacts.VirtualMachines)
-        //            {
-        //                // string deploymentName;
-        //                string virtualNetworkName;
-        //                //                string loadBalancerName;
+            //            // process selected cloud services and virtual machines
+            //            foreach (var VMv2 in artefacts.VirtualMachines)
+            //            {
+            //                // string deploymentName;
+            //                string virtualNetworkName;
+            //                //                string loadBalancerName;
 
-        //                _asmRetriever.GetARMVMDetails(subscriptionId, VMv2.RGName, VMv2.VirtualMachine,  out virtualNetworkName);
+            //                _asmRetriever.GetARMVMDetails(subscriptionId, VMv2.RGName, VMv2.VirtualMachine,  out virtualNetworkName);
 
-        //                Hashtable VMInfo = new Hashtable();
-        //                VMInfo.Add("virtualmachineName", VMv2.VirtualMachine);
-
-
-        //                //Listing Virtual Network
-        //                var VMDetails = _asmRetriever.GetAzureARMResources("VirtualMachine", subscriptionId, VMInfo,  VMv2.RGName);
-        //                var VMResults = JsonConvert.DeserializeObject<dynamic>(VMDetails);
-
-        //                string location = VMResults.location;
+            //                Hashtable VMInfo = new Hashtable();
+            //                VMInfo.Add("virtualmachineName", VMv2.VirtualMachine);
 
 
-        //                _statusProvider.UpdateStatus("BUSY: Exporting VM Config : " + VMv2.VirtualMachine);
+            //                //Listing Virtual Network
+            //                var VMDetails = _asmRetriever.GetAzureARMResources("VirtualMachine", subscriptionId, VMInfo,  VMv2.RGName);
+            //                var VMResults = JsonConvert.DeserializeObject<dynamic>(VMDetails);
 
-        //                //LoadBalancer Processing
-        //                foreach (var nicint in VMResults.properties.networkProfile.networkInterfaces)
-        //                {
-
-        //                    string nicId = nicint.id;
-        //                    nicId = nicId.Replace("/subscriptions", "subscriptions");
-
-        //                    Hashtable NWInfo = new Hashtable();
-        //                    NWInfo.Add("networkinterfaceId", nicId);
-
-        //                    //Get NW Interface details to check Loadbalancer Config
-        //                    var NicDetails = _asmRetriever.GetAzureARMResources("NetworkInterface", subscriptionId, NWInfo,  null);
-        //                    var NicResults = JsonConvert.DeserializeObject<dynamic>(NicDetails);
-
-        //                    if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
-        //                    {
-
-        //                        string[] stringSeparators = new string[] { "/backendAddressPools/" };
-
-        //                        string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
-        //                        string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
-        //                        NWInfo.Add("LBId", Loadbalancerid);
-
-        //                        //Get LBDetails
-        //                        var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", subscriptionId, NWInfo,  null);
-        //                        var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
-
-        //                        string PubIPName = null;
-
-        //                        //Process the Public IP for the Loadbalancer
-        //                        if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
-        //                        {
-        //                            //Get PublicIP details
-        //                            string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
-        //                            PubId = PubId.Replace("/subscriptions", "subscriptions");
-
-        //                            NWInfo.Add("publicipId", PubId);
-        //                            var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", subscriptionId, NWInfo,  null);
-        //                            var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
-
-        //                            PubIPName = LBPubIpResults.name;
-
-        //                            //Build the Public IP for the Loadbalancer
-        //                            BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
-
-        //                        }
-
-        //                        //Build the Loadbalancer
-        //                        BuildARMLoadBalancerObject(templateResult, LBResults, artefacts,  PubIPName);
-        //                    }
-        //                }
-
-        //                Hashtable virtualmachineinfo = new Hashtable();
-        //                virtualmachineinfo.Add("ResourceGroup", VMv2.RGName);
-        //                virtualmachineinfo.Add("virtualmachinename", VMv2.VirtualMachine);
-        //                virtualmachineinfo.Add("virtualnetworkname", virtualNetworkName);
-        //                virtualmachineinfo.Add("location", location);
+            //                string location = VMResults.location;
 
 
-        //                // process availability set
-        //                BuildARMAvailabilitySetObject(templateResult, VMResults, virtualmachineinfo);
+            //                _statusProvider.UpdateStatus("BUSY: Exporting VM Config : " + VMv2.VirtualMachine);
 
-        //                // process network interface
-        //                List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
-        //                BuildARMNetworkInterfaceObject(templateResult, VMResults, virtualmachineinfo, ref networkinterfaces);
+            //                //LoadBalancer Processing
+            //                foreach (var nicint in VMResults.properties.networkProfile.networkInterfaces)
+            //                {
 
-        //                // process virtual machine
-        //                BuildARMVirtualMachineObject(templateResult, VMResults, virtualmachineinfo, networkinterfaces, artefacts);
-        //            }
-        //            _logProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
+            //                    string nicId = nicint.id;
+            //                    nicId = nicId.Replace("/subscriptions", "subscriptions");
 
-        //            Template template = new Template();
-        //            template.resources = _resources;
-        //            template.parameters = _parameters;
+            //                    Hashtable NWInfo = new Hashtable();
+            //                    NWInfo.Add("networkinterfaceId", nicId);
 
-        //            // save JSON template
+            //                    //Get NW Interface details to check Loadbalancer Config
+            //                    var NicDetails = _asmRetriever.GetAzureARMResources("NetworkInterface", subscriptionId, NWInfo,  null);
+            //                    var NicResults = JsonConvert.DeserializeObject<dynamic>(NicDetails);
 
-        //            // post Telemetry Record to ASMtoARMToolAPI
-        //            if (_settingsProvider.AllowTelemetry)
-        //            {
-        //                var subscriptionsdet = _asmRetriever.GetAzureARMResources("Subscriptions", subscriptionId, null,  null);
-        //                var subscriptions = JsonConvert.DeserializeObject<dynamic>(subscriptionsdet);
-        //                string offercategories = "";
+            //                    if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
+            //                    {
 
-        //                foreach (var subscription in subscriptions.value)
-        //                {
-        //                    if (subscription.subscriptionId == subscriptionId)
-        //                    {
-        //                        //OfferCat is set to TestARM for testing purpose
-        //                        offercategories = "TestARM";
-        //                    }
-        //                }
+            //                        string[] stringSeparators = new string[] { "/backendAddressPools/" };
 
-        //                _statusProvider.UpdateStatus("BUSY: saving telemetry information");
-        //                _telemetryProvider.PostTelemetryRecord(tenantId, subscriptionId, _processedItems, offercategories);
-        //            }
+            //                        string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
+            //                        string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
+            //                        NWInfo.Add("LBId", Loadbalancerid);
 
-        //            _statusProvider.UpdateStatus("Ready");
+            //                        //Get LBDetails
+            //                        var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", subscriptionId, NWInfo,  null);
+            //                        var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
 
-        //            _logProvider.WriteLog("GenerateTemplate", "End");
+            //                        string PubIPName = null;
 
-        //            return templateResult;
-        //        }
+            //                        //Process the Public IP for the Loadbalancer
+            //                        if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
+            //                        {
+            //                            //Get PublicIP details
+            //                            string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
+            //                            PubId = PubId.Replace("/subscriptions", "subscriptions");
+
+            //                            NWInfo.Add("publicipId", PubId);
+            //                            var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", subscriptionId, NWInfo,  null);
+            //                            var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
+
+            //                            PubIPName = LBPubIpResults.name;
+
+            //                            //Build the Public IP for the Loadbalancer
+            //                            BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
+
+            //                        }
+
+            //                        //Build the Loadbalancer
+            //                        BuildARMLoadBalancerObject(templateResult, LBResults, artefacts,  PubIPName);
+            //                    }
+            //                }
+
+            //                Hashtable virtualmachineinfo = new Hashtable();
+            //                virtualmachineinfo.Add("ResourceGroup", VMv2.RGName);
+            //                virtualmachineinfo.Add("virtualmachinename", VMv2.VirtualMachine);
+            //                virtualmachineinfo.Add("virtualnetworkname", virtualNetworkName);
+            //                virtualmachineinfo.Add("location", location);
+
+
+            //                // process availability set
+            //                BuildARMAvailabilitySetObject(templateResult, VMResults, virtualmachineinfo);
+
+            //                // process network interface
+            //                List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
+            //                BuildARMNetworkInterfaceObject(templateResult, VMResults, virtualmachineinfo, ref networkinterfaces);
+
+            //                // process virtual machine
+            //                BuildARMVirtualMachineObject(templateResult, VMResults, virtualmachineinfo, networkinterfaces, artefacts);
+            //            }
+            //            _logProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
+
+            //            Template template = new Template();
+            //            template.resources = _resources;
+            //            template.parameters = _parameters;
+
+            //            // save JSON template
+
+            //            // post Telemetry Record to ASMtoARMToolAPI
+            //            if (_settingsProvider.AllowTelemetry)
+            //            {
+            //                var subscriptionsdet = _asmRetriever.GetAzureARMResources("Subscriptions", subscriptionId, null,  null);
+            //                var subscriptions = JsonConvert.DeserializeObject<dynamic>(subscriptionsdet);
+            //                string offercategories = "";
+
+            //                foreach (var subscription in subscriptions.value)
+            //                {
+            //                    if (subscription.subscriptionId == subscriptionId)
+            //                    {
+            //                        //OfferCat is set to TestARM for testing purpose
+            //                        offercategories = "TestARM";
+            //                    }
+            //                }
+
+            //                _statusProvider.UpdateStatus("BUSY: saving telemetry information");
+            //                _telemetryProvider.PostTelemetryRecord(tenantId, subscriptionId, _processedItems, offercategories);
+            //            }
+
+            //            _statusProvider.UpdateStatus("Ready");
+
+            //            _logProvider.WriteLog("GenerateTemplate", "End");
+
+            //            return templateResult;
+        }
 
 
         //        private void BuildARMPublicIPAddressObject(TemplateResult templateResult, ref NetworkInterface networkinterface, dynamic publicip)

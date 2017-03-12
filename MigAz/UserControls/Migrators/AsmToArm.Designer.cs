@@ -56,7 +56,6 @@
             this.btnOptions.TabIndex = 60;
             this.btnOptions.Text = "Options...";
             this.btnOptions.UseVisualStyleBackColor = true;
-            this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
             // imageList1
             // 

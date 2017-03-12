@@ -10,6 +10,7 @@ using MigAz.Azure.Models;
 using MigAz.Azure.Generator;
 using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Core.Generator;
 
 namespace MigAz.Tests
 {
@@ -25,7 +26,7 @@ namespace MigAz.Tests
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM1"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
+            var artifacts = new ExportArtifacts();
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
@@ -69,7 +70,7 @@ namespace MigAz.Tests
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM2"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
+            var artifacts = new ExportArtifacts();
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
@@ -101,7 +102,7 @@ namespace MigAz.Tests
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM3"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
+            var artifacts = new ExportArtifacts();
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
 
             templateGenerator.UpdateArtifacts(artifacts);
@@ -118,7 +119,7 @@ namespace MigAz.Tests
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VM3"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
+            var artifacts = new ExportArtifacts();
             artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
@@ -151,13 +152,15 @@ namespace MigAz.Tests
             azureContextUSGovernmentRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\i"));
             AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new AsmArtifacts();
-            artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
+            var artifacts = new ExportArtifacts();
+            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)(await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0];
 
-            artifacts.VirtualMachines[0].OSVirtualHardDisk.TargetStorageAccount = await azureContextUSGovernmentRetriever.GetAzureAsmStorageAccount("targetstorage");
+            asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await azureContextUSGovernmentRetriever.GetAzureAsmStorageAccount("targetstorage");
 
-            Assert.AreEqual(artifacts.VirtualMachines[0].OSVirtualHardDisk.MediaLink, "https://mystorage.blob.core.windows.net/vhds/mydisk.vhd");
-            Assert.AreEqual(artifacts.VirtualMachines[0].OSVirtualHardDisk.TargetMediaLink, "https://targetstoragev2.blob.core.usgovcloudapi.net/vhds/mydisk.vhd");
+            artifacts.VirtualMachines.Add(asmVirtualMachine);
+
+            Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.MediaLink, "https://mystorage.blob.core.windows.net/vhds/mydisk.vhd");
+            Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink, "https://targetstoragev2.blob.core.usgovcloudapi.net/vhds/mydisk.vhd");
         }
     }
 }

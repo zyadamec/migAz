@@ -19,7 +19,7 @@ namespace MigAz.Azure.Generator.AsmToArm
     {
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
-        private AsmArtifacts _ASMArtifacts;
+        private ExportArtifacts _ASMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
@@ -49,10 +49,12 @@ namespace MigAz.Azure.Generator.AsmToArm
         public Arm.ArmResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
-        public async void UpdateArtifacts(AsmArtifacts artifacts)
+        public override async void UpdateArtifacts(ExportArtifacts artifacts)
         {
-            _ASMArtifacts = artifacts;
             Messages.Clear();
+            TemplateStreams.Clear();
+
+            _ASMArtifacts = artifacts;
 
             if (_TargetResourceGroup == null)
             {
@@ -64,8 +66,10 @@ namespace MigAz.Azure.Generator.AsmToArm
                 Messages.Add("Target Resource Group Location must be provided for template generation.");
             }
 
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
+            foreach (INetworkSecurityGroup iNetworkSecurityGroup in artifacts.NetworkSecurityGroups)
             {
+                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)iNetworkSecurityGroup;
+
                 if (asmNetworkSecurityGroup.TargetName == string.Empty)
                     Messages.Add("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
             }
@@ -279,7 +283,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildAvailabilitySetObject", "End");
         }
 
-        private void BuildLoadBalancerObject(Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, AsmArtifacts artifacts)
+        private void BuildLoadBalancerObject(Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, ExportArtifacts artifacts)
         {
             LogProvider.WriteLog("BuildLoadBalancerObject", "Start");
 
@@ -480,7 +484,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (asmSubnet.NetworkSecurityGroup != null)
                     {
-                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
+                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup) _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
 
                         if (asmNetworkSecurityGroup == null)
                         {
@@ -914,7 +918,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (asmVirtualMachine.NetworkSecurityGroup != null)
             {
-                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = _ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
+                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
 
                 if (asmNetworkSecurityGroup == null)
                 {

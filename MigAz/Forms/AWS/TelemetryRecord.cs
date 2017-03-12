@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MigAzAWS.Models
+namespace MigAz.Forms.AWS
 {
     public class TelemetryRecord
     {

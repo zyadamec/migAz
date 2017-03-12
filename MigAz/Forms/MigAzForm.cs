@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using MigAz.Providers;
-using System.Threading.Tasks;
-using System.Linq;
-using MigAz.UserControls;
-using MigAz.Azure.Asm;
-using MigAz.Azure.Arm;
-using MigAz.Azure;
-using MigAz.Interface;
 using MigAz.Core.Interface;
 using System.Reflection;
 using MigAz.UserControls.Migrators;
 
-namespace MigAz
+namespace MigAz.Forms
 {
     public partial class MigAzForm : Form
     {
@@ -108,6 +100,14 @@ namespace MigAz
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            // Todo
+            //_T = new AsmToArmGenerator(_AsmSourceSubscription, _ArmTargetSubscription, _ArmResourceGroup, _LogProvider, _StatusProvider, _TelemetryProvider, _AppSettingProvider);
+            //var exportResults = new ExportResultsDialog(templateGenerator);
+            //exportResults.ShowDialog(this);
         }
     }
 }
