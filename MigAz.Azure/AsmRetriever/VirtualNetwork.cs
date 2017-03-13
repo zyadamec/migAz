@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Arm;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;

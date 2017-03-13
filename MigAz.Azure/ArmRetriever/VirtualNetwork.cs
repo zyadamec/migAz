@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core.ArmTemplate;
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

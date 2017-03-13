@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Azure
 {
@@ -34,7 +35,7 @@ namespace MigAz.Azure
         private List<ResourceGroup> _ArmResourceGroups;
         private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
         private List<Arm.StorageAccount> _ArmStorageAccounts;
-        private List<AvailabilitySet> _ArmAvailabilitySets;
+        private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache;
         private Dictionary<string, JObject> _armJsonDocumentCache;
@@ -94,18 +95,18 @@ namespace MigAz.Azure
             }
         }
 
-        internal AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
+        internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
         {
             if (_ArmAvailabilitySets == null)
-                _ArmAvailabilitySets = new List<AvailabilitySet>();
+                _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
 
-            foreach (AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
+            foreach (Arm.AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
             {
                 if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
                     return armAvailabilitySet;
             }
 
-            AvailabilitySet newArmAvailabilitySet = new AvailabilitySet(this._AzureContext, asmVirtualMachine);
+            Arm.AvailabilitySet newArmAvailabilitySet = new Arm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
             _ArmAvailabilitySets.Add(newArmAvailabilitySet);
 
             return newArmAvailabilitySet;
@@ -652,7 +653,8 @@ namespace MigAz.Azure
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
                     break;
                 case "ResourceGroups":
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourcegroups?api-version=2015-01-01";
+                    // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups#ResourceGroups_List
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourcegroups?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Resource Groups...");
                     break;
                 case "Locations":
@@ -677,6 +679,7 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + info["ResourceGroupName"] + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
+
             }
 
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "GET " + url);

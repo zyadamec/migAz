@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.UserControls.Migrators;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.UserControls
 {

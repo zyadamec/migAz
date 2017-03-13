@@ -13,13 +13,11 @@ using MigAz.Core.Generator;
 
 namespace MigAz.UserControls.Migrators
 {
-    public partial class AsmToArm : UserControl
+    public partial class AsmToArm : IMigratorUserControl
     {
         #region Variables
 
         private UISaveSelectionProvider _saveSelectionProvider;
-        private ILogProvider _logProvider;
-        private IStatusProvider _statusProvider;
         private TreeNode _sourceCascadeNode;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private CloudTelemetryProvider _telemetryProvider;
@@ -27,27 +25,23 @@ namespace MigAz.UserControls.Migrators
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
         private ResourceGroup _TargetResourceGroup;
-        private AsmToArmGenerator _TemplateGenerator;
 
         #endregion
 
         #region Constructors
 
-        public AsmToArm()
+        private AsmToArm() : base(null, null) { }
+
+        public AsmToArm(IStatusProvider statusProvider, ILogProvider logProvider) 
+            : base (statusProvider, logProvider)
         {
             InitializeComponent();
-        }
 
-        public void Bind(IStatusProvider statusProvider, ILogProvider logProvider)
-        {
-            _statusProvider = statusProvider;
-            _logProvider = logProvider;
             _saveSelectionProvider = new UISaveSelectionProvider();
             _telemetryProvider = new CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
 
-            _AzureContextSourceASM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
-            azureLoginContextViewer21.Bind(_AzureContextSourceASM);
+            _AzureContextSourceASM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextSourceASM.AzureEnvironmentChanged += _AzureContextSourceASM_AzureEnvironmentChanged;
             _AzureContextSourceASM.UserAuthenticated += _AzureContextSourceASM_UserAuthenticated;
             _AzureContextSourceASM.BeforeAzureSubscriptionChange += _AzureContextSourceASM_BeforeAzureSubscriptionChange;
@@ -55,13 +49,15 @@ namespace MigAz.UserControls.Migrators
             _AzureContextSourceASM.BeforeUserSignOut += _AzureContextSourceASM_BeforeUserSignOut;
             _AzureContextSourceASM.AfterUserSignOut += _AzureContextSourceASM_AfterUserSignOut;
 
-            _AzureContextTargetARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
-            azureLoginContextViewer2.Bind(_AzureContextTargetARM);
+            _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
 
             _TargetResourceGroup = new ResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
 
-            _TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, _logProvider, _statusProvider, _telemetryProvider, _appSettingsProvider);
-            _TemplateGenerator.AfterTemplateChanged += _TemplateGenerator_AfterTemplateChanged;
+            azureLoginContextViewer21.Bind(_AzureContextSourceASM);
+            azureLoginContextViewer2.Bind(_AzureContextTargetARM);
+
+            this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
+            this.TemplateGenerator.AfterTemplateChanged += _TemplateGenerator_AfterTemplateChanged;
         }
 
         private void _TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
@@ -201,7 +197,7 @@ namespace MigAz.UserControls.Migrators
                 treeASM.Enabled = true;
             }
 
-            _statusProvider.UpdateStatus("Ready");
+            StatusProvider.UpdateStatus("Ready");
         }
 
         private void ResetForm()
@@ -230,16 +226,6 @@ namespace MigAz.UserControls.Migrators
         public AzureContext AzureContextTargetARM
         {
             get { return _AzureContextTargetARM; }
-        }
-
-        public ILogProvider LogProvider
-        {
-            get { return _logProvider; }
-        }
-
-        public IStatusProvider StatusProvider
-        {
-            get { return _statusProvider; }
         }
 
         public Azure.Interface.ITelemetryProvider TelemetryProvider
@@ -366,7 +352,7 @@ namespace MigAz.UserControls.Migrators
                     }
                 }
 
-                _statusProvider.UpdateStatus("Ready");
+                StatusProvider.UpdateStatus("Ready");
             }
         }
 
@@ -424,7 +410,7 @@ namespace MigAz.UserControls.Migrators
 
                 _SelectedNodes = this.UpdateSelectedNodes();
                 UpdateExportItemsCount();
-                _TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+                this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
             }
 
             await UpdateARMTree(e.Node);
@@ -552,7 +538,7 @@ namespace MigAz.UserControls.Migrators
                 }
             }
 
-            _statusProvider.UpdateStatus("Ready");
+            StatusProvider.UpdateStatus("Ready");
         }
 
         private async Task UpdateARMTree(TreeNode asmTreeNode)
@@ -902,7 +888,7 @@ namespace MigAz.UserControls.Migrators
 
             await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
 
-            _TemplateGenerator.Write();
+            this.TemplateGenerator.Write();
 
             btnExport.Enabled = true;
         }
@@ -915,7 +901,7 @@ namespace MigAz.UserControls.Migrators
 
         private async void AsmToArmForm_Load(object sender, EventArgs e)
         {
-            _logProvider.WriteLog("AsmToArmForm_Load", "Program start");
+            LogProvider.WriteLog("AsmToArmForm_Load", "Program start");
 
             AsmToArmForm_Resize(null, null);
             ResetForm();
@@ -958,7 +944,7 @@ namespace MigAz.UserControls.Migrators
             // If save selection option is enabled
             if (app.Default.SaveSelection)
             {
-                _statusProvider.UpdateStatus("BUSY: Reading saved selection");
+                StatusProvider.UpdateStatus("BUSY: Reading saved selection");
                 await _saveSelectionProvider.Read(azureSubscription.SubscriptionId, _AzureContextSourceASM.AzureRetriever, AzureContextTargetARM.AzureRetriever, treeASM);
                 UpdateExportItemsCount();
             }

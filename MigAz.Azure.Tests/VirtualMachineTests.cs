@@ -11,6 +11,7 @@ using MigAz.Azure.Generator;
 using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core.Generator;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Tests
 {

@@ -263,6 +263,8 @@ namespace MigAz.Core.ArmTemplate
     {
         public long frontendPort;
         public long backendPort;
+        public bool enableFloatingIP;
+        public long idleTimeoutInMinutes;
         public string protocol;
         public Reference frontendIPConfiguration;
     }
@@ -369,8 +371,14 @@ namespace MigAz.Core.ArmTemplate
         public AvailabilitySet(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/availabilitySets";
-            apiVersion = "2015-06-15";
+            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
         }
+    }
+
+    public class AvailabilitySet_Properties
+    {
+        public long platformUpdateDomainCount;
+        public long platformFaultDomainCount;
     }
 
     public class VirtualMachine : ArmResource
@@ -379,7 +387,7 @@ namespace MigAz.Core.ArmTemplate
         public VirtualMachine(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/virtualMachines";
-            apiVersion = "2015-06-15";
+            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
         }
     }
 
@@ -425,6 +433,7 @@ namespace MigAz.Core.ArmTemplate
         public string name;
         public string osType;
         public Vhd vhd;
+        public ManagedDisk managedDisk;
         public string caching;
         public string createOption;
     }
@@ -433,15 +442,55 @@ namespace MigAz.Core.ArmTemplate
     {
         public string name;
         public Vhd vhd;
+        public ManagedDisk managedDisk;
         public string caching;
         public string createOption;
-        public long diskSizeGB;
+        public long diskSizeGB; // TOOD, Paulo has this changing to a string
         public long lun;
     }
 
     public class Vhd
     {
         public string uri;
+    }
+
+    public class ManagedDisk
+    {
+        public string storageAccountType;
+        public string id;
+    }
+
+    public class Snapshot : Disk
+    {
+        public Snapshot(Guid executionGuid) : base(executionGuid)
+        {
+            type = "Microsoft.Compute/snapshots";
+            apiVersion = "2016-04-30-preview";
+        }
+    }
+
+    public class Disk : ArmResource
+    {
+        public Disk(Guid executionGuid) : base(executionGuid)
+        {
+            type = "Microsoft.Compute/disks";
+            apiVersion = "2016-04-30-preview";
+        }
+    }
+
+    public class Disk_Properties
+    {
+        public Disk_CreationData creationData;
+        public string accountType;
+        public string diskSizeGB;
+        public string osType;
+    }
+
+    public class Disk_CreationData
+    {
+        public string createOption; // Copy (from Snapshot), Empty, Import (from blob)
+        public string sourceUri;
+        public string sourceResourceId;
     }
 
     public class NetworkProfile
@@ -484,13 +533,14 @@ namespace MigAz.Core.ArmTemplate
         public string location = "[resourceGroup().location]";
         public Dictionary<string, string> tags;
         public List<string> dependsOn;
+        public Dictionary<string, string> sku = null;
         public object properties;
 
         private ArmResource() { }
 
         public ArmResource(Guid executionGuid)
         {
-            //if (app.Default.AllowTag)
+            //if (app.Default.AllowTag) // TODO
             //{
                 tags = new Dictionary<string, string>();
                 tags.Add("migAz", executionGuid.ToString());

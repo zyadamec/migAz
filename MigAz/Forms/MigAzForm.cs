@@ -73,17 +73,22 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            AsmToArm asmToArm = new AsmToArm();
-            asmToArm.Bind(this.StatusProvider, this.LogProvider);
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider);
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             parent.Controls.Add(asmToArm);
+        }
+
+        private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show("TODO -- but we have the event back!!");
         }
 
         private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            ArmToArm armToArm = new ArmToArm();
-            armToArm.Bind(this.StatusProvider, this.LogProvider);
+            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider);
+            armToArm.Bind();
             parent.Controls.Add(armToArm);
         }
 
@@ -91,8 +96,8 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            AwsToArm awsToArm = new AwsToArm();
-            awsToArm.Bind(this.StatusProvider, this.LogProvider);
+            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider);
+            awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
         }

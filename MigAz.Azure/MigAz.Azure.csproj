@@ -104,7 +104,6 @@
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="AsmRetriever\AffinityGroup.cs" />
-    <Compile Include="ArmRetriever\ArmConst.cs" />
     <Compile Include="AsmRetriever\ClientRootCertificate.cs" />
     <Compile Include="AsmRetriever\CloudService.cs" />
     <Compile Include="AsmRetriever\Disk.cs" />

@@ -48,6 +48,9 @@
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IExportArtifacts.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Interface\IMigratorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Interface\INetworkSecurityGroup.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />

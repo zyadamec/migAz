@@ -9,10 +9,9 @@ using MigAz.Azure;
 
 namespace MigAz.UserControls.Migrators
 {
-    public partial class AwsToArm : UserControl
+    public partial class AwsToArm : IMigratorUserControl
     {
         private AzureContext _AzureContextARM;
-        private ILogProvider _logProvider;
         //private EC2Operation ec2 = null;
         // TODO WHERE?? static IAmazonEC2 service;
         // TODO DescribeInstancesResponse instResponse;
@@ -28,22 +27,21 @@ namespace MigAz.UserControls.Migrators
         private AwsRetriever _awsRetriever;
         private AWS.Generator.AwsToArmGenerator _TemplateGenerator;
         private MigAz.Forms.AWS.ISaveSelectionProvider _saveSelectionProvider;
-        private IStatusProvider _statusProvider;
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
         private Forms.AWS.Providers.AppSettingsProvider _appSettingsProvider;
 
-        public AwsToArm()
+        private AwsToArm() : base(null,null) { }
+
+        public AwsToArm(IStatusProvider statusProvider, ILogProvider logProvider)
+            : base(statusProvider, logProvider)
         {
             InitializeComponent();
         }
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider)
+        public async Task Bind()
         {
-            _statusProvider = statusProvider;
-            _logProvider = logProvider;
-
-            _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             await azureLoginContextViewer21.Bind(_AzureContextARM);
 
             //telemetryProvider = new Forms.AWS.Provider.CloudTelemetryProvider();
@@ -64,8 +62,8 @@ namespace MigAz.UserControls.Migrators
 
         private void AwsToArm_Load(object sender, EventArgs e)
         {
-            if (_logProvider != null)
-                _logProvider.WriteLog("Window_Load", "Program start");
+            if (LogProvider != null)
+                LogProvider.WriteLog("Window_Load", "Program start");
             // TODO instResponse = new DescribeInstancesResponse();
            // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
@@ -85,7 +83,7 @@ namespace MigAz.UserControls.Migrators
 
         private void btnGetToken_Click(object sender, EventArgs e)
         {
-            _logProvider.WriteLog("GetToken_Click", "Start");
+            LogProvider.WriteLog("GetToken_Click", "Start");
 
             try
             {
@@ -193,7 +191,7 @@ namespace MigAz.UserControls.Migrators
             //    // If save selection option is enabled
             //    if (app.Default.SaveSelection)
             //    {
-            //        _statusProvider.UpdateStatus("BUSY: Reading saved selection");
+            //        StatusProvider.UpdateStatus("BUSY: Reading saved selection");
             //        _saveSelectionProvider.Save(cmbRegion.Text, lvwVirtualNetworks, lvwVirtualMachines);
             //    }
 
@@ -260,7 +258,7 @@ namespace MigAz.UserControls.Migrators
             // If save selection option is enabled
             if (app.Default.SaveSelection)
             {
-                _statusProvider.UpdateStatus("BUSY: Reading saved selection");
+                StatusProvider.UpdateStatus("BUSY: Reading saved selection");
                 _saveSelectionProvider.Read(cmbRegion.Text, ref lvwVirtualNetworks, ref lvwVirtualMachines);
             }
 

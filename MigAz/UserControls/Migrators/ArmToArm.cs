@@ -10,34 +10,32 @@ using MigAz.Azure.Arm;
 
 namespace MigAz.UserControls.Migrators
 {
-    public partial class ArmToArm : UserControl
+    public partial class ArmToArm : IMigratorUserControl
     {
         private AzureRetriever _AzureRetriever;
         private AsmArtefacts _asmArtefacts;
         private AppSettingsProvider _appSettingsProvider;
         private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
-        private ILogProvider _logProvider;
-        private IStatusProvider _statusProvider;
         private MigAz.Forms.ARM.Interface.ITelemetryProvider _telemetryProvider;
         private AzureContext _AzureContextARM;
 
-        public ArmToArm()
+        private ArmToArm() : base(null, null) { }
+
+        public ArmToArm(IStatusProvider statusProvider, ILogProvider logProvider)
+            : base(statusProvider, logProvider)
         {
             InitializeComponent();
         }
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider)
+        public async Task Bind()
         {
-            _statusProvider = statusProvider;
-            _logProvider = logProvider;
-
-            _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             await azureLoginContextViewer1.Bind(_AzureContextARM);
         }
 
         private async void ArmToArm_Load(object sender, EventArgs e)
         {
-            _logProvider.WriteLog("ArmToArm_Load", "Program start");
+            LogProvider.WriteLog("ArmToArm_Load", "Program start");
 
             NewVersionAvailable(); // check if there a new version of the app
 
@@ -45,7 +43,7 @@ namespace MigAz.UserControls.Migrators
             _telemetryProvider = new MigAz.Forms.ARM.Providers.CloudTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
 
-            _AzureContextARM = new AzureContext(_logProvider, _statusProvider, _appSettingsProvider);
+            _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextARM.AfterAzureSubscriptionChange += _AzureContextARM_AfterAzureSubscriptionChange;
             await this.azureLoginContextViewer1.Bind(_AzureContextARM);
         }
@@ -132,7 +130,7 @@ namespace MigAz.UserControls.Migrators
                 treeSource.Enabled = true;
             }
 
-            _statusProvider.UpdateStatus("Ready");
+            StatusProvider.UpdateStatus("Ready");
         }
 
         private void ResetForm()
@@ -256,7 +254,7 @@ namespace MigAz.UserControls.Migrators
             // If save selection option is enabled
             if (app.Default.SaveSelection)
             {
-                _statusProvider.UpdateStatus("BUSY: Reading saved selection");
+                StatusProvider.UpdateStatus("BUSY: Reading saved selection");
 
                 // TODO _saveSelectionProvider.Save(Guid.Parse(subscriptionid), lvwVirtualNetworks, lvwStorageAccounts, lvwVirtualMachines);
                 Application.DoEvents();
@@ -308,7 +306,7 @@ namespace MigAz.UserControls.Migrators
             //        });
             //}
 
-            _statusProvider.UpdateStatus("Done");
+            StatusProvider.UpdateStatus("Done");
         }
 
 
@@ -402,7 +400,7 @@ namespace MigAz.UserControls.Migrators
             //}
 
 
-            _statusProvider.UpdateStatus("Ready");
+            StatusProvider.UpdateStatus("Ready");
         }
 
         private async void cmbTenants_SelectedIndexChanged(object sender, EventArgs e)
@@ -425,16 +423,6 @@ namespace MigAz.UserControls.Migrators
         private void lvwVirtualMachines_SelectedIndexChanged_1(object sender, EventArgs e)
         {
 
-        }
-
-        public ILogProvider LogProvider
-        {
-            get { return _logProvider; }
-        }
-
-        public IStatusProvider StatusProvider
-        {
-            get { return _statusProvider; }
         }
 
         public Forms.ARM.Interface.ITelemetryProvider TelemetryProvider
