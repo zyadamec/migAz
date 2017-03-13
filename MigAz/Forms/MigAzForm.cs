@@ -4,6 +4,8 @@ using MigAz.Providers;
 using MigAz.Core.Interface;
 using System.Reflection;
 using MigAz.UserControls.Migrators;
+using MigAz.Core.Generator;
+using System.Linq;
 
 namespace MigAz.Forms
 {
@@ -24,7 +26,8 @@ namespace MigAz.Forms
             _logProvider = new FileLogProvider();
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
-            //awsToArm1.Bind(_statusProvider, _logProvider);
+
+            txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
         }
 
         #endregion
@@ -80,7 +83,8 @@ namespace MigAz.Forms
 
         private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("TODO -- but we have the event back!!");
+            TemplateGenerator a = (TemplateGenerator)sender;
+            dataGridView1.DataSource = a.Messages.Select(x => new { Message = x }).ToList();
         }
 
         private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)

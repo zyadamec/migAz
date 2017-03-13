@@ -179,18 +179,35 @@ namespace MigAz.Azure.Generator.AsmToArm
                 instructionContent = reader.ReadToEnd();
             }
 
-            instructionContent = instructionContent.Replace("{subscriptionId}", _TargetSubscription.SubscriptionId.ToString());
+
+            Guid targetSubscriptionGuid = Guid.Empty;
+            string targetResourceGroupName = String.Empty;
+            string resourceGroupLocation = String.Empty;
+            string azureEnvironmentSwitch = String.Empty;
+            if (_TargetResourceGroup != null)
+            {
+                targetResourceGroupName = _TargetResourceGroup.GetFinalTargetName();
+
+                if (_TargetResourceGroup.Location != null)
+                    resourceGroupLocation = _TargetResourceGroup.Location.Name;
+            }
+
+            if (_TargetSubscription != null)
+            {
+                targetSubscriptionGuid = _TargetSubscription.SubscriptionId;
+
+                if (_TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
+                    azureEnvironmentSwitch = " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"";
+            }
+
+            instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
-            instructionContent = instructionContent.Replace("{resourceGroupName}", _TargetResourceGroup.GetFinalTargetName());
-            instructionContent = instructionContent.Replace("{location}", _TargetResourceGroup.Location.Name);
+            instructionContent = instructionContent.Replace("{resourceGroupName}", targetResourceGroupName);
+            instructionContent = instructionContent.Replace("{location}", resourceGroupLocation);
             instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
-
-            if (_TargetSubscription.AzureEnvironment == AzureEnvironment.AzureCloud)
-                instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", String.Empty); // Default Azure Environment in Powershell, no AzureEnvironment switch needed
-            else
-                instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"");
+            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
 
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
@@ -1261,7 +1278,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
             storageaccount.name = asmStorageAccount.GetFinalTargetName();
-            storageaccount.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                storageaccount.location = this.TargetResourceGroup.Location.Name;   
             storageaccount.properties = storageaccount_properties;
 
             this.AddResource(storageaccount);

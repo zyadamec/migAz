@@ -57,15 +57,7 @@ namespace MigAz.UserControls.Migrators
             azureLoginContextViewer2.Bind(_AzureContextTargetARM);
 
             this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
-            this.TemplateGenerator.AfterTemplateChanged += _TemplateGenerator_AfterTemplateChanged;
         }
-
-        private void _TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-
 
         #endregion
 
