@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class NetworkSecurityGroup
+    public class Route
     {
-        private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
         public string Name => "TODO";
-
-        public List<NetworkSecurityGroupRule> Rules => _Rules;
+        public string AddressPrefix => "TODO";
+        public string NextHopType => "TODO";
+        public string NextHopIpAddress => "TODO";
     }
 }

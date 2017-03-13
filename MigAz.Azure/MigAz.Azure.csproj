@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
       <Private>True</Private>
@@ -44,7 +47,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -57,8 +62,12 @@
   <ItemGroup>
     <Compile Include="ArmRetriever\AvailabilitySet.cs" />
     <Compile Include="ArmRetriever\Location.cs" />
+    <Compile Include="ArmRetriever\NetworkInterfaceCard.cs" />
     <Compile Include="ArmRetriever\NetworkSecurityGroup.cs" />
+    <Compile Include="ArmRetriever\NetworkSecurityGroupRule.cs" />
     <Compile Include="ArmRetriever\ResourceGroup.cs" />
+    <Compile Include="ArmRetriever\Route.cs" />
+    <Compile Include="ArmRetriever\RouteTable.cs" />
     <Compile Include="ArmRetriever\StorageAccount.cs" />
     <Compile Include="ArmRetriever\StorageAccountKey.cs" />
     <Compile Include="ArmRetriever\Subnet.cs" />
@@ -135,6 +144,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +174,6 @@
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

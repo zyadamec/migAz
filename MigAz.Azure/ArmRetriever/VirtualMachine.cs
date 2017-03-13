@@ -13,5 +13,12 @@ namespace MigAz.Azure.Arm
         {
             get { return "TODO"; }
         }
+
+        public ResourceGroup ResourceGroup
+        {
+            get { return null; } // TODO
+        }
+
+        public IEnumerable<NetworkInterfaceCard> NetworkInterfaces { get; internal set; }
     }
 }

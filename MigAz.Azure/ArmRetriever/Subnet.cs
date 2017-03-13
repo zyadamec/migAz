@@ -36,6 +36,11 @@ namespace MigAz.Azure.Arm
             get { return (string)_Subnet["properties"]["addressPrefix"]; }
         }
 
+        public RouteTable RouteTable
+        {
+            get { return null; } // todo
+        }
+
         public VirtualNetwork Parent
         {
             get { return _Parent; }
