@@ -39,7 +39,6 @@
             this.lvwVirtualNetworks = new System.Windows.Forms.ListView();
             this.colVpcId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colVpcName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btnOptions = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnChoosePath = new System.Windows.Forms.Button();
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
@@ -55,7 +54,7 @@
             this.cmbRegion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbRegion.FormattingEnabled = true;
             this.cmbRegion.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cmbRegion.Location = new System.Drawing.Point(957, 258);
+            this.cmbRegion.Location = new System.Drawing.Point(76, 233);
             this.cmbRegion.Margin = new System.Windows.Forms.Padding(6);
             this.cmbRegion.MaxDropDownItems = 15;
             this.cmbRegion.Name = "cmbRegion";
@@ -65,7 +64,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(854, 264);
+            this.label4.Location = new System.Drawing.Point(80, 202);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 25);
@@ -75,7 +74,7 @@
             // lblSignInText
             // 
             this.lblSignInText.AutoSize = true;
-            this.lblSignInText.Location = new System.Drawing.Point(663, 202);
+            this.lblSignInText.Location = new System.Drawing.Point(80, 153);
             this.lblSignInText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSignInText.Name = "lblSignInText";
             this.lblSignInText.Size = new System.Drawing.Size(141, 25);
@@ -151,16 +150,6 @@
             this.colVpcName.Text = "Vpc Name";
             this.colVpcName.Width = 146;
             // 
-            // btnOptions
-            // 
-            this.btnOptions.Location = new System.Drawing.Point(1286, 202);
-            this.btnOptions.Margin = new System.Windows.Forms.Padding(6);
-            this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(258, 44);
-            this.btnOptions.TabIndex = 46;
-            this.btnOptions.Text = "Options...";
-            this.btnOptions.UseVisualStyleBackColor = true;
-            // 
             // btnExport
             // 
             this.btnExport.Enabled = false;
@@ -234,7 +223,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lvwVirtualMachines);
             this.Controls.Add(this.lvwVirtualNetworks);
-            this.Controls.Add(this.btnOptions);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnChoosePath);
             this.Controls.Add(this.txtDestinationFolder);
@@ -260,7 +248,6 @@
         private System.Windows.Forms.ListView lvwVirtualNetworks;
         private System.Windows.Forms.ColumnHeader colVpcId;
         private System.Windows.Forms.ColumnHeader colVpcName;
-        private System.Windows.Forms.Button btnOptions;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnChoosePath;
         private System.Windows.Forms.TextBox txtDestinationFolder;

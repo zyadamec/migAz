@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections;
 using MigAz.Core.Interface;
+using MigAz.Azure;
 using MigAz.AWS;
 using MigAz.AWS.Forms;
-using System.Collections;
-using MigAz.Azure;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -31,7 +31,7 @@ namespace MigAz.UserControls.Migrators
         private dynamic telemetryProvider;
         private Forms.AWS.Providers.AppSettingsProvider _appSettingsProvider;
 
-        private AwsToArm() : base(null,null) { }
+        public AwsToArm() : base(null,null) { }
 
         public AwsToArm(IStatusProvider statusProvider, ILogProvider logProvider)
             : base(statusProvider, logProvider)

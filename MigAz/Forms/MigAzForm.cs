@@ -13,7 +13,7 @@ namespace MigAz.Forms
     {
         #region Variables
 
-        private ILogProvider _logProvider;
+        private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private AppSettingsProvider _appSettingsProvider;
 
@@ -24,10 +24,17 @@ namespace MigAz.Forms
         {
             InitializeComponent();
             _logProvider = new FileLogProvider();
+            _logProvider.OnMessage += _logProvider_OnMessage1;
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
 
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        private void _logProvider_OnMessage1(string message)
+        {
+            txtLog.AppendText(message);
+            txtLog.SelectionStart = txtLog.TextLength;
         }
 
         #endregion
@@ -123,6 +130,16 @@ namespace MigAz.Forms
         {
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
+        }
+
+        private void tabControl1_Resize(object sender, EventArgs e)
+        {
+            dataGridView1.Width = tabControl1.Width - 10;
+            dataGridView1.Height = tabControl1.Height - 30;
+            txtLog.Width = tabControl1.Width - 10;
+            txtLog.Height = tabControl1.Height - 30;
+            txtRestApiResults.Width = tabControl1.Width - 10;
+            txtRestApiResults.Height = tabControl1.Height - 30;
         }
     }
 }

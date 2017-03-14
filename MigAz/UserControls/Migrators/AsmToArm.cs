@@ -30,7 +30,7 @@ namespace MigAz.UserControls.Migrators
 
         #region Constructors
 
-        private AsmToArm() : base(null, null) { }
+        public AsmToArm() : base(null, null) { }
 
         public AsmToArm(IStatusProvider statusProvider, ILogProvider logProvider) 
             : base (statusProvider, logProvider)
@@ -380,6 +380,7 @@ namespace MigAz.UserControls.Migrators
 
         private async void treeASM_AfterCheck(object sender, TreeViewEventArgs e)
         {
+            // Copy Marker Russell
             if (_sourceCascadeNode == null)
             {
                 _sourceCascadeNode = e.Node;
@@ -868,21 +869,16 @@ namespace MigAz.UserControls.Migrators
             return true;
         }
 
-        private async void btnExport_Click(object sender, EventArgs e)
+        public async void Export()
         {
-            btnExport.Enabled = false;
-
             if (!await ExecutePreExportHealthCheck(true))
             {
-                btnExport.Enabled = true;
                 return;
             }
 
             await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
 
             this.TemplateGenerator.Write();
-
-            btnExport.Enabled = true;
         }
 
         #endregion
@@ -914,8 +910,7 @@ namespace MigAz.UserControls.Migrators
         {
             treeASM.Height = this.Height - 195;
             treeARM.Height = treeASM.Height;
-            groupBox1.Height = treeARM.Height - btnExport.Height - 10;
-            btnExport.Top = groupBox1.Top + groupBox1.Height + 10;
+            groupBox1.Height = treeARM.Height - 10;
         }
 
         #endregion
@@ -953,8 +948,8 @@ namespace MigAz.UserControls.Migrators
                 selectedExportCount = _SelectedNodes.Count();
             }
 
-            btnExport.Text = "Export " + selectedExportCount.ToString() + " objects";
-            btnExport.Enabled = _SelectedNodes.Count() > 0;
+            //btnExport.Text = "Export " + selectedExportCount.ToString() + " objects";
+            //btnExport.Enabled = _SelectedNodes.Count() > 0;
         }
 
         private void ClearAzureResourceManagerProperties()

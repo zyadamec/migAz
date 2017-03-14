@@ -93,6 +93,8 @@ namespace MigAz.Azure
                 text = Environment.NewLine;
                 File.AppendAllText(logfilepath, text);
             }
+
+            _AzureContext.LogProvider.WriteLog(url, xml);
         }
 
         internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)

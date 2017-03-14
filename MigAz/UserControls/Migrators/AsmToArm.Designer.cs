@@ -40,7 +40,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.treeARM = new System.Windows.Forms.TreeView();
             this.treeASM = new System.Windows.Forms.TreeView();
-            this.btnExport = new System.Windows.Forms.Button();
             this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -107,7 +106,7 @@
             this.azureLoginContextViewer2.Enabled = false;
             this.azureLoginContextViewer2.Location = new System.Drawing.Point(1032, 3);
             this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
-            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 168);
+            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 204);
             this.azureLoginContextViewer2.TabIndex = 63;
             this.azureLoginContextViewer2.Title = "Azure ARM (Target) Subscription";
             // 
@@ -149,18 +148,6 @@
             this.treeASM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
             this.treeASM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);
             // 
-            // btnExport
-            // 
-            this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(1203, 680);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(723, 44);
-            this.btnExport.TabIndex = 59;
-            this.btnExport.Text = "Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
             // azureLoginContextViewer21
             // 
             this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
@@ -180,7 +167,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.treeARM);
             this.Controls.Add(this.treeASM);
-            this.Controls.Add(this.btnExport);
             this.Controls.Add(this.azureLoginContextViewer21);
             this.Name = "AsmToArm";
             this.Size = new System.Drawing.Size(1947, 803);
@@ -205,7 +191,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TreeView treeARM;
         private System.Windows.Forms.TreeView treeASM;
-        private System.Windows.Forms.Button btnExport;
         private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer21;
     }
 }

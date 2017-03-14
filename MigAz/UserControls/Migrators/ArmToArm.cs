@@ -18,8 +18,9 @@ namespace MigAz.UserControls.Migrators
         private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
         private MigAz.Forms.ARM.Interface.ITelemetryProvider _telemetryProvider;
         private AzureContext _AzureContextARM;
+        private TreeNode _sourceCascadeNode;
 
-        private ArmToArm() : base(null, null) { }
+        public ArmToArm() : base(null, null) { }
 
         public ArmToArm(IStatusProvider statusProvider, ILogProvider logProvider)
             : base(statusProvider, logProvider)
@@ -60,6 +61,11 @@ namespace MigAz.UserControls.Migrators
                 treeSource.Nodes.Add(subscriptionNode);
                 subscriptionNode.Expand();
 
+                foreach (ResourceGroup armResourceGroup in await _AzureContextARM.AzureRetriever.GetAzureARMResourceGroups())
+                {
+
+                }
+
                 List<VirtualNetwork> armVirtualNetworks = await _AzureContextARM.AzureRetriever.GetAzureARMVirtualNetworks();
                 foreach (VirtualNetwork armVirtualNetwork in armVirtualNetworks)
                 {
@@ -83,6 +89,16 @@ namespace MigAz.UserControls.Migrators
                     parentNode.Nodes.Add(tnStorageAccount);
                     parentNode.Expand();
                 }
+
+                //foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
+                //{
+                //    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.PrimaryLocation, "Virtual Machines");
+                //    TreeNode tnStorageAccount = new TreeNode(armVirtualMachine.Name);
+                //    tnStorageAccount.Name = tnStorageAccount.Text;
+                //    tnStorageAccount.Tag = armVirtualMachine;
+                //    parentNode.Nodes.Add(tnStorageAccount);
+                //    parentNode.Expand();
+                //}
 
                 //List<AsmCloudService> asmCloudServices = await _AzureContextARM.AzureRetriever.GetAzureAsmCloudServices();
                 //foreach (AsmCloudService asmCloudService in asmCloudServices)
@@ -216,17 +232,6 @@ namespace MigAz.UserControls.Migrators
 
             //    writeLog("Subscriptions_SelectionChanged", "End");
             //}
-        }
-
-
-        private void lvwVirtualNetworks_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            UpdateExportItemsCount();
-        }
-
-        private void lvwStorageAccounts_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            UpdateExportItemsCount();
         }
 
         private void lvwVirtualMachines_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -420,11 +425,6 @@ namespace MigAz.UserControls.Migrators
             //cmbSubscriptions.Enabled = true;
         }
 
-        private void lvwVirtualMachines_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
         public Forms.ARM.Interface.ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
@@ -437,6 +437,35 @@ namespace MigAz.UserControls.Migrators
 
         private void treeSource_AfterSelect(object sender, TreeViewEventArgs e)
         {
+
+        }
+
+        private async void treeSource_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (_sourceCascadeNode == null)
+            {
+                _sourceCascadeNode = e.Node;
+
+                if (e.Node.Checked)
+                {
+                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    MigAz.Core.TreeView.FillUpIfFullDown(e.Node);
+                    treeSource.SelectedNode = e.Node;
+
+                    // todo await AutoSelectDependencies(e.Node);
+                }
+                else
+                {
+                    await MigAz.Core.TreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                }
+
+                _sourceCascadeNode = null;
+
+                // todo _SelectedNodes = this.UpdateSelectedNodes();
+                // todo                 UpdateExportItemsCount();
+                // todo this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+            }
 
         }
     }

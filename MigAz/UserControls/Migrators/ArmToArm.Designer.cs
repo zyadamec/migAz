@@ -35,10 +35,12 @@
             // 
             // treeSource
             // 
+            this.treeSource.CheckBoxes = true;
             this.treeSource.Location = new System.Drawing.Point(3, 249);
             this.treeSource.Name = "treeSource";
             this.treeSource.Size = new System.Drawing.Size(700, 455);
             this.treeSource.TabIndex = 48;
+            this.treeSource.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeSource_AfterCheck);
             // 
             // label1
             // 

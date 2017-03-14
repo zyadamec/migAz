@@ -14,6 +14,7 @@ namespace MigAz.Core.Interface
         private IStatusProvider _statusProvider;
         private TemplateGenerator _TemplateGenerator;
 
+        public IMigratorUserControl() { }
 
         public IMigratorUserControl(IStatusProvider statusProvider, ILogProvider logProvider)
         {
