@@ -60,6 +60,14 @@ namespace MigAz.Core
 
                 return tnCloudServicesNode;
             }
+            else if (containerName == "Virtual Machines")
+            {
+                TreeNode tnVirtualMachinesNode = new TreeNode("Virtual Machines");
+                dataCenterNode.Nodes.Add(tnVirtualMachinesNode);
+                tnVirtualMachinesNode.Expand();
+
+                return tnVirtualMachinesNode;
+            }
             else if (containerName == "Network Security Groups")
             {
                 TreeNode tnNetworkSecurityGroupsNode = new TreeNode("Network Security Groups");
@@ -67,6 +75,10 @@ namespace MigAz.Core
                 tnNetworkSecurityGroupsNode.Expand();
 
                 return tnNetworkSecurityGroupsNode;
+            }
+            else
+            {
+                throw new ArgumentException("Unknown Tree Node Container Name: " + containerName);
             }
 
             return null;

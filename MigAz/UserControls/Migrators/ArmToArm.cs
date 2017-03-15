@@ -90,15 +90,18 @@ namespace MigAz.UserControls.Migrators
                     parentNode.Expand();
                 }
 
-                //foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
-                //{
-                //    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.PrimaryLocation, "Virtual Machines");
-                //    TreeNode tnStorageAccount = new TreeNode(armVirtualMachine.Name);
-                //    tnStorageAccount.Name = tnStorageAccount.Text;
-                //    tnStorageAccount.Tag = armVirtualMachine;
-                //    parentNode.Nodes.Add(tnStorageAccount);
-                //    parentNode.Expand();
-                //}
+                foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
+                {
+                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, "armVirtualMachine.PrimaryLocation", "Virtual Machines");
+                    TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
+                    tnVirtualMachine.Name = tnVirtualMachine.Text;
+                    tnVirtualMachine.Tag = armVirtualMachine;
+                    parentNode.Nodes.Add(tnVirtualMachine);
+                    parentNode.Expand();
+                }
+
+
+
 
                 //List<AsmCloudService> asmCloudServices = await _AzureContextARM.AzureRetriever.GetAzureAsmCloudServices();
                 //foreach (AsmCloudService asmCloudService in asmCloudServices)

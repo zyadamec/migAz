@@ -29,6 +29,8 @@ namespace MigAz.Forms
             _appSettingsProvider = new AppSettingsProvider();
 
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
+
+            splitContainer2.SplitterDistance = this.Height / 2;
         }
 
         private void _logProvider_OnMessage1(string message)
@@ -78,40 +80,13 @@ namespace MigAz.Forms
             this.tabControl1.Width = splitContainer2.Panel2.Width - 5;
             this.tabControl1.Height = splitContainer2.Panel2.Height - 5;
         }
-
-        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider);
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-        }
-
         private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
             dataGridView1.DataSource = a.Messages.Select(x => new { Message = x }).ToList();
         }
 
-        private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider);
-            armToArm.Bind();
-            parent.Controls.Add(armToArm);
-        }
-
-        private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider);
-            awsToArm.Bind();
-            parent.Controls.Add(awsToArm);
-
-        }
+     
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -138,8 +113,62 @@ namespace MigAz.Forms
             dataGridView1.Height = tabControl1.Height - 30;
             txtLog.Width = tabControl1.Width - 10;
             txtLog.Height = tabControl1.Height - 30;
-            txtRestApiResults.Width = tabControl1.Width - 10;
-            txtRestApiResults.Height = tabControl1.Height - 30;
         }
+
+        #region Menu Items
+
+        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider);
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false;
+            closeMigrationToolStripMenuItem.Enabled = true;
+        }
+
+
+        private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider);
+            armToArm.Bind();
+            parent.Controls.Add(armToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false;
+            closeMigrationToolStripMenuItem.Enabled = true;
+        }
+
+        private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider);
+            awsToArm.Bind();
+            parent.Controls.Add(awsToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false ;
+            closeMigrationToolStripMenuItem.Enabled = true;
+        }
+
+        private void closeMigrationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (splitContainer2.Panel1.Controls.Count > 0)
+            {
+                foreach (Control control in splitContainer2.Panel1.Controls)
+                {
+                    control.Dispose();
+                }
+            }
+
+            newMigrationToolStripMenuItem.Enabled = true;
+            closeMigrationToolStripMenuItem.Enabled = false;
+        }
+
+        #endregion
+
     }
 }

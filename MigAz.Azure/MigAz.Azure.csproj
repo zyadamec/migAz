@@ -60,19 +60,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArmRetriever\AvailabilitySet.cs" />
-    <Compile Include="ArmRetriever\Location.cs" />
-    <Compile Include="ArmRetriever\NetworkInterfaceCard.cs" />
-    <Compile Include="ArmRetriever\NetworkSecurityGroup.cs" />
-    <Compile Include="ArmRetriever\NetworkSecurityGroupRule.cs" />
-    <Compile Include="ArmRetriever\ResourceGroup.cs" />
-    <Compile Include="ArmRetriever\Route.cs" />
-    <Compile Include="ArmRetriever\RouteTable.cs" />
-    <Compile Include="ArmRetriever\StorageAccount.cs" />
-    <Compile Include="ArmRetriever\StorageAccountKey.cs" />
-    <Compile Include="ArmRetriever\Subnet.cs" />
-    <Compile Include="ArmRetriever\VirtualMachine.cs" />
-    <Compile Include="ArmRetriever\VirtualNetwork.cs" />
+    <Compile Include="Arm\AvailabilitySet.cs" />
+    <Compile Include="Arm\Location.cs" />
+    <Compile Include="Arm\NetworkInterfaceCard.cs" />
+    <Compile Include="Arm\NetworkSecurityGroup.cs" />
+    <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
+    <Compile Include="Arm\ResourceGroup.cs" />
+    <Compile Include="Arm\Route.cs" />
+    <Compile Include="Arm\RouteTable.cs" />
+    <Compile Include="Arm\StorageAccount.cs" />
+    <Compile Include="Arm\StorageAccountKey.cs" />
+    <Compile Include="Arm\Subnet.cs" />
+    <Compile Include="Arm\VirtualMachine.cs" />
+    <Compile Include="Arm\VirtualNetwork.cs" />
     <Compile Include="Forms\AzureLoginContextDialog2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,26 +103,26 @@
     <Compile Include="UserControls\AzureLoginContextViewer.Designer.cs">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="AsmRetriever\AffinityGroup.cs" />
-    <Compile Include="AsmRetriever\ClientRootCertificate.cs" />
-    <Compile Include="AsmRetriever\CloudService.cs" />
-    <Compile Include="AsmRetriever\Disk.cs" />
-    <Compile Include="AsmRetriever\LoadBalancer.cs" />
-    <Compile Include="AsmRetriever\LoadBalancerRule.cs" />
-    <Compile Include="AsmRetriever\LocalNetworkSite.cs" />
-    <Compile Include="AsmRetriever\Location.cs" />
-    <Compile Include="AsmRetriever\NetworkInterface.cs" />
-    <Compile Include="AsmRetriever\NetworkSecurityGroup.cs" />
-    <Compile Include="AsmRetriever\NetworkSecurityGroupRule.cs" />
-    <Compile Include="AsmRetriever\ReservedIP.cs" />
-    <Compile Include="AsmRetriever\Route.cs" />
-    <Compile Include="AsmRetriever\RouteTable.cs" />
-    <Compile Include="AsmRetriever\StorageAccount.cs" />
-    <Compile Include="AsmRetriever\StorageAccountKeys.cs" />
-    <Compile Include="AsmRetriever\Subnet.cs" />
-    <Compile Include="AsmRetriever\VirtualMachine.cs" />
-    <Compile Include="AsmRetriever\VirtualNetwork.cs" />
-    <Compile Include="AsmRetriever\VirtualNetworkGateway.cs" />
+    <Compile Include="Asm\AffinityGroup.cs" />
+    <Compile Include="Asm\ClientRootCertificate.cs" />
+    <Compile Include="Asm\CloudService.cs" />
+    <Compile Include="Asm\Disk.cs" />
+    <Compile Include="Asm\LoadBalancer.cs" />
+    <Compile Include="Asm\LoadBalancerRule.cs" />
+    <Compile Include="Asm\LocalNetworkSite.cs" />
+    <Compile Include="Asm\Location.cs" />
+    <Compile Include="Asm\NetworkInterface.cs" />
+    <Compile Include="Asm\NetworkSecurityGroup.cs" />
+    <Compile Include="Asm\NetworkSecurityGroupRule.cs" />
+    <Compile Include="Asm\ReservedIP.cs" />
+    <Compile Include="Asm\Route.cs" />
+    <Compile Include="Asm\RouteTable.cs" />
+    <Compile Include="Asm\StorageAccount.cs" />
+    <Compile Include="Asm\StorageAccountKeys.cs" />
+    <Compile Include="Asm\Subnet.cs" />
+    <Compile Include="Asm\VirtualMachine.cs" />
+    <Compile Include="Asm\VirtualNetwork.cs" />
+    <Compile Include="Asm\VirtualNetworkGateway.cs" />
     <Compile Include="AzureContext.cs" />
     <Compile Include="AzureDomain.cs" />
     <Compile Include="AzureRetriever.cs" />

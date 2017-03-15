@@ -36,6 +36,7 @@ namespace MigAz.Azure
         private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
         private List<Arm.StorageAccount> _ArmStorageAccounts;
         private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
+        private List<Arm.VirtualMachine> _ArmVirtualMachines;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache;
         private Dictionary<string, JObject> _armJsonDocumentCache;
@@ -672,7 +673,7 @@ namespace MigAz.Azure
                     break;
                 case "StorageAccounts":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_List
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2015-05-01-preview";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 case "StorageAccountKeys":
@@ -681,7 +682,11 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + info["ResourceGroupName"] + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
-
+                case "VirtualMachines":
+                    // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-subscription
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
             }
 
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "GET " + url);
@@ -923,6 +928,27 @@ namespace MigAz.Azure
             return _ArmLocations;
         }
 
+        public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines()
+        {
+            if (_ArmVirtualMachines != null)
+                return _ArmVirtualMachines;
+
+            JObject virtualMachineJson = await this.GetAzureARMResources("VirtualMachines", null);
+
+            var virtualMachines = from virtualMachine in virtualMachineJson["value"]
+                            select virtualMachine;
+
+            _ArmVirtualMachines = new List<Arm.VirtualMachine>();
+
+            foreach (var virtualMachine in virtualMachines)
+            {
+                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                _ArmVirtualMachines.Add(armVirtualMachine);
+            }
+
+            return _ArmVirtualMachines;
+        }
+
         internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
         {
             Hashtable storageAccountKeyInfo = new Hashtable();
@@ -943,6 +969,8 @@ namespace MigAz.Azure
 
             return;
         }
+
+
 
         #endregion
 
