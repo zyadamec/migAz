@@ -82,20 +82,18 @@ namespace MigAz.Azure
             return xmlDocument;
         }
 
-        private void writeRetreiverResultToLog(string url, string xml)
+        private void writeRetreiverResultToLog(Guid requestGuid, string url, string xml)
         {
             lock (_lockObject)
             {
                 string logfilepath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz\\MigAz-XML-" + string.Format("{0:yyyyMMdd}", DateTime.Now) + ".log";
-                string text = DateTime.Now.ToString() + "   " + url + Environment.NewLine;
+                string text = DateTime.Now.ToString() + "  " + requestGuid.ToString() + "  " + url + Environment.NewLine;
                 File.AppendAllText(logfilepath, text);
-                text = xml + Environment.NewLine;
-                File.AppendAllText(logfilepath, text);
-                text = Environment.NewLine;
-                File.AppendAllText(logfilepath, text);
+                File.AppendAllText(logfilepath, xml + Environment.NewLine);
+                File.AppendAllText(logfilepath, Environment.NewLine);
             }
 
-            _AzureContext.LogProvider.WriteLog(url, xml);
+            _AzureContext.LogProvider.WriteLog(url, "Received REST Response " + requestGuid.ToString());
         }
 
         internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
@@ -196,7 +194,8 @@ namespace MigAz.Azure
 
         private async Task<XmlDocument> GetAzureAsmResources(string resourceType, Hashtable info)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "Start");
+            Guid requestGuid = Guid.NewGuid();
+            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "Start REST Request " + requestGuid.ToString());
 
             string url = null;
             switch (resourceType)
@@ -288,7 +287,7 @@ namespace MigAz.Azure
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "FROM XML CACHE");
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "End");
-                writeRetreiverResultToLog(url, "Cached");
+                writeRetreiverResultToLog(requestGuid, url, "Cached");
                 return _asmXmlDocumentCache[url];
             }
 
@@ -297,12 +296,25 @@ namespace MigAz.Azure
             request.Headers.Add("x-ms-version", "2015-04-01");
             request.Method = "GET";
 
-            string xml = String.Empty;
+            XmlDocument xmlDocument = null;
+            string httpWebResponseValue = String.Empty;
             try
             {
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                xml = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "RESPONSE " + response.StatusCode);
+
+                httpWebResponseValue = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                writeRetreiverResultToLog(requestGuid, url, httpWebResponseValue);
+
+                if (httpWebResponseValue != String.Empty)
+                {
+                    xmlDocument = RemoveXmlns(httpWebResponseValue);
+
+                    if (!_asmXmlDocumentCache.ContainsKey(url))
+                        _asmXmlDocumentCache.Add(url, xmlDocument);
+                }
             }
             catch (Exception exception)
             {
@@ -310,24 +322,9 @@ namespace MigAz.Azure
                 throw exception;
             }
 
-            if (xml != String.Empty)
-            {
-                XmlDocument xmlDoc = RemoveXmlns(xml);
+            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "End REST Request " + requestGuid.ToString());
 
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "End");
-                writeRetreiverResultToLog(url, xml);
-
-                if (!_asmXmlDocumentCache.ContainsKey(url))
-                    _asmXmlDocumentCache.Add(url, xmlDoc);
-
-                return xmlDoc;
-            }
-            else
-            {
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", "End");
-                writeRetreiverResultToLog(url, String.Empty);
-                return null;
-            }
+            return xmlDocument;
         }
 
         public async virtual Task<List<Asm.Location>> GetAzureASMLocations()
@@ -625,8 +622,10 @@ namespace MigAz.Azure
 
         private async Task<JObject> GetAzureARMResources(string resourceType, Hashtable info)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start");
             string methodType = "GET";
+            Guid requestGuid = Guid.NewGuid();
+
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start REST Request " + requestGuid.ToString());
 
             string url = null;
             AuthenticationResult authenticationResult = _AzureContext.TokenProvider.AuthenticationResult;
@@ -698,7 +697,7 @@ namespace MigAz.Azure
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "FROM JSON CACHE");
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End");
-                writeRetreiverResultToLog(url, "Cached");
+                writeRetreiverResultToLog(requestGuid, url, "Cached");
                 return _armJsonDocumentCache[url];
             }
 
@@ -710,12 +709,22 @@ namespace MigAz.Azure
             if (request.Method == "POST")
                 request.ContentLength = 0;
 
-            string webRequesetResult = String.Empty;
+            JObject webRequestResultJson = null;
             try
             {
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                string webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                writeRetreiverResultToLog(requestGuid, url, webRequesetResult);
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "RESPONSE " + response.StatusCode);
+
+                if (webRequesetResult != String.Empty)
+                {
+                    webRequestResultJson = JObject.Parse(webRequesetResult);
+
+                    if (useCached && !_armJsonDocumentCache.ContainsKey(url))
+                        _armJsonDocumentCache.Add(url, webRequestResultJson);
+                }
             }
             catch (Exception exception)
             {
@@ -723,24 +732,9 @@ namespace MigAz.Azure
                 throw exception;
             }
 
-            if (webRequesetResult != String.Empty)
-            {
-                JObject webRequestResultJson = JObject.Parse(webRequesetResult);
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End REST Request " + requestGuid.ToString());
 
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End");
-                writeRetreiverResultToLog(url, webRequesetResult);
-
-                if (useCached && !_armJsonDocumentCache.ContainsKey(url))
-                    _armJsonDocumentCache.Add(url, webRequestResultJson);
-
-                return webRequestResultJson;
-            }
-            else
-            {
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "End");
-                writeRetreiverResultToLog(url, String.Empty);
-                return null;
-            }
+            return webRequestResultJson;
         }
 
         public async Task<List<AzureTenant>> GetAzureARMTenants()

@@ -59,9 +59,10 @@ namespace MigAz.Forms
             app.Default.AvailabilitySetSuffix = txtAvailabilitySetSuffix.Text.Trim();
             app.Default.VirtualMachineSuffix = txtVirtualMachineSuffix.Text.Trim();
             app.Default.NetworkInterfaceCardSuffix = txtNetworkInterfaceCardSuffix.Text.Trim();
-            app.Default.BuildEmpty = chkBuildEmpty.Checked;
+            app.Default.UseManagedDisks = chkManagedDisk.Checked;
             app.Default.AutoSelectDependencies = chkAutoSelectDependencies.Checked;
             app.Default.SaveSelection = chkSaveSelection.Checked;
+            app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
             app.Default.Save();
         }
@@ -78,9 +79,10 @@ namespace MigAz.Forms
             txtAvailabilitySetSuffix.Text = app.Default.AvailabilitySetSuffix;
             txtVirtualMachineSuffix.Text = app.Default.VirtualMachineSuffix;
             txtNetworkInterfaceCardSuffix.Text = app.Default.NetworkInterfaceCardSuffix;
-            chkBuildEmpty.Checked = app.Default.BuildEmpty;
+            chkManagedDisk.Checked = app.Default.UseManagedDisks;
             chkAutoSelectDependencies.Checked = app.Default.AutoSelectDependencies;
             chkSaveSelection.Checked = app.Default.SaveSelection;
+            chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
         }
 
