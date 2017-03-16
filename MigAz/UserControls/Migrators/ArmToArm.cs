@@ -92,7 +92,7 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
                 {
-                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, "armVirtualMachine.PrimaryLocation", "Virtual Machines");
+                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.Location, "Virtual Machines");
                     TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
                     tnVirtualMachine.Name = tnVirtualMachine.Text;
                     tnVirtualMachine.Tag = armVirtualMachine;

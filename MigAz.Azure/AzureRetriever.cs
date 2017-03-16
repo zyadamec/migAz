@@ -673,7 +673,7 @@ namespace MigAz.Azure
                     break;
                 case "StorageAccounts":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_List
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2015-05-01-preview";
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 case "StorageAccountKeys":

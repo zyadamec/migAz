@@ -19,6 +19,7 @@ namespace MigAz.Azure.Arm
         }
 
         public string Name => (string)_VirtualMachine["name"];
+        public string Location => (string)_VirtualMachine["location"];
 
         public ResourceGroup ResourceGroup
         {

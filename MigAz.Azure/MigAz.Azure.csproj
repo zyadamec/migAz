@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Arm\AvailabilitySet.cs" />
     <Compile Include="Arm\Location.cs" />
+    <Compile Include="Arm\ManagedDisk.cs" />
     <Compile Include="Arm\NetworkInterfaceCard.cs" />
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
