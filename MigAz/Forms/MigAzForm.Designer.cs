@@ -37,10 +37,10 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabLog = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.tabMessages = new System.Windows.Forms.TabPage();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button1 = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
@@ -51,9 +51,11 @@
             this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aRMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabRest = new System.Windows.Forms.TabPage();
+            this.txtRest = new System.Windows.Forms.TextBox();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -63,10 +65,11 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabLog.SuspendLayout();
+            this.tabMessages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.tabPage2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tabRest.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -142,6 +145,7 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.AutoScroll = true;
+            this.splitContainer2.Panel1.Resize += new System.EventHandler(this.splitContainer2_Panel1_Resize);
             // 
             // splitContainer2.Panel2
             // 
@@ -153,8 +157,9 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabMessages);
+            this.tabControl1.Controls.Add(this.tabLog);
+            this.tabControl1.Controls.Add(this.tabRest);
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -162,35 +167,15 @@
             this.tabControl1.TabIndex = 0;
             this.tabControl1.Resize += new System.EventHandler(this.tabControl1_Resize);
             // 
-            // tabPage1
+            // tabLog
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
-            this.tabPage1.Location = new System.Drawing.Point(8, 39);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(906, 242);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Messages";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(890, 236);
-            this.dataGridView1.TabIndex = 0;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.txtLog);
-            this.tabPage2.Location = new System.Drawing.Point(8, 39);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(906, 242);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Log";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabLog.Controls.Add(this.txtLog);
+            this.tabLog.Location = new System.Drawing.Point(8, 39);
+            this.tabLog.Name = "tabLog";
+            this.tabLog.Size = new System.Drawing.Size(906, 242);
+            this.tabLog.TabIndex = 1;
+            this.tabLog.Text = "Log";
+            this.tabLog.UseVisualStyleBackColor = true;
             // 
             // txtLog
             // 
@@ -201,6 +186,26 @@
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(903, 239);
             this.txtLog.TabIndex = 0;
+            // 
+            // tabMessages
+            // 
+            this.tabMessages.Controls.Add(this.dataGridView1);
+            this.tabMessages.Location = new System.Drawing.Point(8, 39);
+            this.tabMessages.Name = "tabMessages";
+            this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
+            this.tabMessages.Size = new System.Drawing.Size(906, 242);
+            this.tabMessages.TabIndex = 0;
+            this.tabMessages.Text = "Messages";
+            this.tabMessages.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 33;
+            this.dataGridView1.Size = new System.Drawing.Size(890, 236);
+            this.dataGridView1.TabIndex = 0;
             // 
             // button1
             // 
@@ -263,7 +268,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -273,7 +278,7 @@
             this.aRMToARMToolStripMenuItem,
             this.aWSToARMToolStripMenuItem});
             this.newMigrationToolStripMenuItem.Name = "newMigrationToolStripMenuItem";
-            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
+            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
             this.newMigrationToolStripMenuItem.Text = "&New Migration";
             // 
             // aSMToARMToolStripMenuItem
@@ -297,18 +302,6 @@
             this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(271, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(274, 38);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
             // closeMigrationToolStripMenuItem
             // 
             this.closeMigrationToolStripMenuItem.Enabled = false;
@@ -316,6 +309,38 @@
             this.closeMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
             this.closeMigrationToolStripMenuItem.Text = "&Close Migration";
             this.closeMigrationToolStripMenuItem.Click += new System.EventHandler(this.closeMigrationToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(281, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // tabRest
+            // 
+            this.tabRest.Controls.Add(this.txtRest);
+            this.tabRest.Location = new System.Drawing.Point(8, 39);
+            this.tabRest.Name = "tabRest";
+            this.tabRest.Size = new System.Drawing.Size(906, 242);
+            this.tabRest.TabIndex = 2;
+            this.tabRest.Text = "REST";
+            this.tabRest.UseVisualStyleBackColor = true;
+            // 
+            // txtRest
+            // 
+            this.txtRest.Location = new System.Drawing.Point(2, 2);
+            this.txtRest.Margin = new System.Windows.Forms.Padding(0);
+            this.txtRest.Multiline = true;
+            this.txtRest.Name = "txtRest";
+            this.txtRest.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtRest.Size = new System.Drawing.Size(903, 239);
+            this.txtRest.TabIndex = 1;
             // 
             // MigAzForm
             // 
@@ -347,12 +372,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.tabLog.ResumeLayout(false);
+            this.tabLog.PerformLayout();
+            this.tabMessages.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabRest.ResumeLayout(false);
+            this.tabRest.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -366,7 +393,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabMessages;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newMigrationToolStripMenuItem;
@@ -380,9 +407,11 @@
         private System.Windows.Forms.TextBox txtDestinationFolder;
         private System.Windows.Forms.Button btnChoosePath;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabLog;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.ToolStripMenuItem closeMigrationToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabRest;
+        private System.Windows.Forms.TextBox txtRest;
     }
 }
 

@@ -51,11 +51,16 @@ namespace MigAz.Azure
 
         #region Constructors
 
+        private AzureContext() { }
+
         public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, ISettingsProvider settingsProvider)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
             _SettingsProvider = settingsProvider;
+
+            _AzureRetriever = new AzureRetriever(this);
+
         }
 
         #endregion
@@ -90,7 +95,7 @@ namespace MigAz.Azure
         public AzureRetriever AzureRetriever
         {
             get { return _AzureRetriever; }
-            set { _AzureRetriever = value; }
+            set { _AzureRetriever = value; } // This is only allowed because of FakeRetreiver in Unit Tests.  Future Todo, decomission
         }
 
         public AzureTokenProvider TokenProvider
@@ -126,7 +131,6 @@ namespace MigAz.Azure
         public async Task Login()
         {
             this.TokenProvider = await AzureTokenProvider.LoginAzureProvider(this.AzureEnvironment);
-            this._AzureRetriever = new AzureRetriever(this);
         }
 
         public async Task SetTenantContext(AzureTenant azureTenant)
@@ -154,9 +158,6 @@ namespace MigAz.Azure
             {
                 if (_TokenProvider != null)
                     await _TokenProvider.GetToken(_AzureSubscription);
-
-                if (_AzureRetriever == null)
-                    _AzureRetriever = new AzureRetriever(this);
 
                 await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
             }

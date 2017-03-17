@@ -26,19 +26,6 @@ namespace MigAz.UserControls.Migrators
             : base(statusProvider, logProvider)
         {
             InitializeComponent();
-        }
-
-        public async Task Bind()
-        {
-            _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
-            await azureLoginContextViewer1.Bind(_AzureContextARM);
-        }
-
-        private async void ArmToArm_Load(object sender, EventArgs e)
-        {
-            LogProvider.WriteLog("ArmToArm_Load", "Program start");
-
-            NewVersionAvailable(); // check if there a new version of the app
 
             _saveSelectionProvider = new MigAz.Forms.ARM.Providers.UISaveSelectionProvider();
             _telemetryProvider = new MigAz.Forms.ARM.Providers.CloudTelemetryProvider();
@@ -46,7 +33,19 @@ namespace MigAz.UserControls.Migrators
 
             _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextARM.AfterAzureSubscriptionChange += _AzureContextARM_AfterAzureSubscriptionChange;
+        }
+
+        private async void ArmToArm_Load(object sender, EventArgs e)
+        {
+            LogProvider.WriteLog("ArmToArm_Load", "Program start");
+
+            NewVersionAvailable(); // check if there a new version of the app
             await this.azureLoginContextViewer1.Bind(_AzureContextARM);
+        }
+
+        public AzureContext AzureContextARM
+        {
+            get { return _AzureContextARM; }
         }
 
         private async Task _AzureContextARM_AfterAzureSubscriptionChange(AzureContext sender)

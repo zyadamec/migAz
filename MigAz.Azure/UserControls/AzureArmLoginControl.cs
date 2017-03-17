@@ -42,7 +42,7 @@ namespace MigAz.Azure.UserControls
             }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
                 {
@@ -50,35 +50,35 @@ namespace MigAz.Azure.UserControls
                         cboTenant.Items.Add(azureTenant);
                 }
                 cboTenant.Enabled = true;
-            }
 
-            if (_AzureContext.AzureTenant != null)
-            {
-                foreach (AzureTenant azureTenant in cboTenant.Items)
+                if (_AzureContext.AzureTenant != null)
                 {
-                    if (_AzureContext.AzureTenant == azureTenant)
-                        cboTenant.SelectedItem = azureTenant;
-                }
-            }
-
-            if (cboTenant.SelectedItem != null)
-            {
-                cmbSubscriptions.Items.Clear();
-                if (_AzureContext.AzureRetriever != null)
-                {
-                    foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureContext.AzureTenant))
+                    foreach (AzureTenant azureTenant in cboTenant.Items)
                     {
-                        cmbSubscriptions.Items.Add(azureSubscription);
+                        if (_AzureContext.AzureTenant == azureTenant)
+                            cboTenant.SelectedItem = azureTenant;
                     }
-                    cmbSubscriptions.Enabled = true;
                 }
 
-                if (_AzureContext.AzureSubscription != null)
+                if (cboTenant.SelectedItem != null)
                 {
-                    foreach (AzureSubscription azureSubscription in cmbSubscriptions.Items)
+                    cmbSubscriptions.Items.Clear();
+                    if (_AzureContext.AzureRetriever != null)
                     {
-                        if (_AzureContext.AzureSubscription == azureSubscription)
-                            cmbSubscriptions.SelectedItem = azureSubscription;
+                        foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureContext.AzureTenant))
+                        {
+                            cmbSubscriptions.Items.Add(azureSubscription);
+                        }
+                        cmbSubscriptions.Enabled = true;
+                    }
+
+                    if (_AzureContext.AzureSubscription != null)
+                    {
+                        foreach (AzureSubscription azureSubscription in cmbSubscriptions.Items)
+                        {
+                            if (_AzureContext.AzureSubscription == azureSubscription)
+                                cmbSubscriptions.SelectedItem = azureSubscription;
+                        }
                     }
                 }
             }
