@@ -122,6 +122,12 @@
     <Compile Include="Forms\OptionsDialog.Designer.cs">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.Designer.cs">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\CloudTelemetryProvider.cs" />
     <Compile Include="Providers\UISaveSelectionProvider.cs" />
@@ -204,6 +210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UnhandledExceptionDialog.resx">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
