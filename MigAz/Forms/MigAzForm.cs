@@ -192,5 +192,15 @@ namespace MigAz.Forms
             btnChoosePath.Left = panel1.Width - btnChoosePath.Width - 10;
             txtDestinationFolder.Width = panel1.Width - btnChoosePath.Width - 30;
         }
+
+        private void reportAnIssueOnGithubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Azure/migAz/issues/new");
+        }
+
+        private void visitMigAzOnGithubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://aka.ms/migaz");
+        }
     }
 }
