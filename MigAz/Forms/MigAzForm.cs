@@ -179,13 +179,18 @@ namespace MigAz.Forms
 
         #endregion
 
-        private void splitContainer2_Panel1_Resize(object sender, EventArgs e)
+        private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
         {
-            foreach (Control control in this.Controls)
-            {
-                control.Width = splitContainer2.Panel1.Width;
-                control.Height = splitContainer2.Panel1.Height;
-            }
+            panel1.Top = splitContainer1.Panel2.Height - panel1.Height - 15;
+            panel1.Width = splitContainer1.Panel2.Width;
+        }
+
+        private void panel1_Resize(object sender, EventArgs e)
+        {
+            btnExport.Width = panel1.Width - 15;
+            button1.Width = panel1.Width - 15;
+            btnChoosePath.Left = panel1.Width - btnChoosePath.Width - 10;
+            txtDestinationFolder.Width = panel1.Width - btnChoosePath.Width - 30;
         }
     }
 }

@@ -37,14 +37,12 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabLog = new System.Windows.Forms.TabPage();
-            this.txtLog = new System.Windows.Forms.TextBox();
             this.tabMessages = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
-            this.btnChoosePath = new System.Windows.Forms.Button();
+            this.tabLog = new System.Windows.Forms.TabPage();
+            this.txtLog = new System.Windows.Forms.TextBox();
+            this.tabRest = new System.Windows.Forms.TabPage();
+            this.txtRest = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,8 +52,11 @@
             this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabRest = new System.Windows.Forms.TabPage();
-            this.txtRest = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
+            this.btnChoosePath = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -65,11 +66,12 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabLog.SuspendLayout();
             this.tabMessages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.menuStrip1.SuspendLayout();
+            this.tabLog.SuspendLayout();
             this.tabRest.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -126,10 +128,8 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.button1);
-            this.splitContainer1.Panel2.Controls.Add(this.btnExport);
-            this.splitContainer1.Panel2.Controls.Add(this.txtDestinationFolder);
-            this.splitContainer1.Panel2.Controls.Add(this.btnChoosePath);
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
+            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
@@ -145,7 +145,6 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.AutoScroll = true;
-            this.splitContainer2.Panel1.Resize += new System.EventHandler(this.splitContainer2_Panel1_Resize);
             // 
             // splitContainer2.Panel2
             // 
@@ -167,26 +166,6 @@
             this.tabControl1.TabIndex = 0;
             this.tabControl1.Resize += new System.EventHandler(this.tabControl1_Resize);
             // 
-            // tabLog
-            // 
-            this.tabLog.Controls.Add(this.txtLog);
-            this.tabLog.Location = new System.Drawing.Point(8, 39);
-            this.tabLog.Name = "tabLog";
-            this.tabLog.Size = new System.Drawing.Size(906, 242);
-            this.tabLog.TabIndex = 1;
-            this.tabLog.Text = "Log";
-            this.tabLog.UseVisualStyleBackColor = true;
-            // 
-            // txtLog
-            // 
-            this.txtLog.Location = new System.Drawing.Point(0, 0);
-            this.txtLog.Margin = new System.Windows.Forms.Padding(0);
-            this.txtLog.Multiline = true;
-            this.txtLog.Name = "txtLog";
-            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(903, 239);
-            this.txtLog.TabIndex = 0;
-            // 
             // tabMessages
             // 
             this.tabMessages.Controls.Add(this.dataGridView1);
@@ -207,47 +186,45 @@
             this.dataGridView1.Size = new System.Drawing.Size(890, 236);
             this.dataGridView1.TabIndex = 0;
             // 
-            // button1
+            // tabLog
             // 
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(15, 827);
-            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(676, 44);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Options";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.tabLog.Controls.Add(this.txtLog);
+            this.tabLog.Location = new System.Drawing.Point(8, 39);
+            this.tabLog.Name = "tabLog";
+            this.tabLog.Size = new System.Drawing.Size(906, 242);
+            this.tabLog.TabIndex = 1;
+            this.tabLog.Text = "Log";
+            this.tabLog.UseVisualStyleBackColor = true;
             // 
-            // btnExport
+            // txtLog
             // 
-            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnExport.Location = new System.Drawing.Point(15, 771);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(676, 44);
-            this.btnExport.TabIndex = 5;
-            this.btnExport.Text = "&Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            this.txtLog.Location = new System.Drawing.Point(0, 0);
+            this.txtLog.Margin = new System.Windows.Forms.Padding(0);
+            this.txtLog.Multiline = true;
+            this.txtLog.Name = "txtLog";
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtLog.Size = new System.Drawing.Size(903, 239);
+            this.txtLog.TabIndex = 0;
             // 
-            // txtDestinationFolder
+            // tabRest
             // 
-            this.txtDestinationFolder.Location = new System.Drawing.Point(15, 722);
-            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtDestinationFolder.Name = "txtDestinationFolder";
-            this.txtDestinationFolder.Size = new System.Drawing.Size(597, 31);
-            this.txtDestinationFolder.TabIndex = 3;
+            this.tabRest.Controls.Add(this.txtRest);
+            this.tabRest.Location = new System.Drawing.Point(8, 39);
+            this.tabRest.Name = "tabRest";
+            this.tabRest.Size = new System.Drawing.Size(906, 242);
+            this.tabRest.TabIndex = 2;
+            this.tabRest.Text = "REST";
+            this.tabRest.UseVisualStyleBackColor = true;
             // 
-            // btnChoosePath
+            // txtRest
             // 
-            this.btnChoosePath.Location = new System.Drawing.Point(632, 715);
-            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.btnChoosePath.Name = "btnChoosePath";
-            this.btnChoosePath.Size = new System.Drawing.Size(59, 44);
-            this.btnChoosePath.TabIndex = 4;
-            this.btnChoosePath.Text = "...";
-            this.btnChoosePath.UseVisualStyleBackColor = true;
+            this.txtRest.Location = new System.Drawing.Point(2, 2);
+            this.txtRest.Margin = new System.Windows.Forms.Padding(0);
+            this.txtRest.Multiline = true;
+            this.txtRest.Name = "txtRest";
+            this.txtRest.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtRest.Size = new System.Drawing.Size(903, 239);
+            this.txtRest.TabIndex = 1;
             // 
             // menuStrip1
             // 
@@ -322,25 +299,57 @@
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // tabRest
+            // panel1
             // 
-            this.tabRest.Controls.Add(this.txtRest);
-            this.tabRest.Location = new System.Drawing.Point(8, 39);
-            this.tabRest.Name = "tabRest";
-            this.tabRest.Size = new System.Drawing.Size(906, 242);
-            this.tabRest.TabIndex = 2;
-            this.tabRest.Text = "REST";
-            this.tabRest.UseVisualStyleBackColor = true;
+            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.btnExport);
+            this.panel1.Controls.Add(this.txtDestinationFolder);
+            this.panel1.Controls.Add(this.btnChoosePath);
+            this.panel1.Location = new System.Drawing.Point(1, 734);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(711, 156);
+            this.panel1.TabIndex = 7;
+            this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
             // 
-            // txtRest
+            // button1
             // 
-            this.txtRest.Location = new System.Drawing.Point(2, 2);
-            this.txtRest.Margin = new System.Windows.Forms.Padding(0);
-            this.txtRest.Multiline = true;
-            this.txtRest.Name = "txtRest";
-            this.txtRest.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtRest.Size = new System.Drawing.Size(903, 239);
-            this.txtRest.TabIndex = 1;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(17, 112);
+            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(676, 44);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "Options";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // btnExport
+            // 
+            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnExport.Location = new System.Drawing.Point(17, 56);
+            this.btnExport.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(676, 44);
+            this.btnExport.TabIndex = 9;
+            this.btnExport.Text = "&Export 0 objects";
+            this.btnExport.UseVisualStyleBackColor = true;
+            // 
+            // txtDestinationFolder
+            // 
+            this.txtDestinationFolder.Location = new System.Drawing.Point(17, 7);
+            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtDestinationFolder.Name = "txtDestinationFolder";
+            this.txtDestinationFolder.Size = new System.Drawing.Size(597, 31);
+            this.txtDestinationFolder.TabIndex = 7;
+            // 
+            // btnChoosePath
+            // 
+            this.btnChoosePath.Location = new System.Drawing.Point(634, 0);
+            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnChoosePath.Name = "btnChoosePath";
+            this.btnChoosePath.Size = new System.Drawing.Size(59, 44);
+            this.btnChoosePath.TabIndex = 8;
+            this.btnChoosePath.Text = "...";
+            this.btnChoosePath.UseVisualStyleBackColor = true;
             // 
             // MigAzForm
             // 
@@ -365,21 +374,22 @@
             this.statusStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
-            this.tabLog.ResumeLayout(false);
-            this.tabLog.PerformLayout();
             this.tabMessages.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.tabLog.ResumeLayout(false);
+            this.tabLog.PerformLayout();
             this.tabRest.ResumeLayout(false);
             this.tabRest.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -402,16 +412,17 @@
         private System.Windows.Forms.ToolStripMenuItem aWSToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.TextBox txtDestinationFolder;
-        private System.Windows.Forms.Button btnChoosePath;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.TabPage tabLog;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.ToolStripMenuItem closeMigrationToolStripMenuItem;
         private System.Windows.Forms.TabPage tabRest;
         private System.Windows.Forms.TextBox txtRest;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.TextBox txtDestinationFolder;
+        private System.Windows.Forms.Button btnChoosePath;
     }
 }
 
