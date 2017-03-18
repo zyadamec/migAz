@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MigAz.Forms.AWS
+namespace MigAz.AWS.Models
 {
     public class AwsToArmTelemetryRecord
     {

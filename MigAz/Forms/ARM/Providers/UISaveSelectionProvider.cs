@@ -4,7 +4,7 @@ using MigAz.Models;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using MigAz.Forms.ARM.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAz.Forms.ARM.Providers
 {

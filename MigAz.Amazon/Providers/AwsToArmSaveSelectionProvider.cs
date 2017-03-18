@@ -3,15 +3,17 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using MigAz.Core.Interface;
+using MigAz.AWS.Models;
 
-namespace MigAz.Forms.AWS
+namespace MigAz.AWS.Providers
 {
-    class UISaveSelectionProvider : ISaveSelectionProvider
+    public class AwsToArmSaveSelectionProvider : ISaveSelectionProvider
     {
         string filePath;
         List<SaveSelection> saveSelections;
 
-        public UISaveSelectionProvider()
+        public AwsToArmSaveSelectionProvider()
         {
             string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MIGAZ";
             if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }

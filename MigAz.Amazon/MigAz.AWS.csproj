@@ -35,6 +35,9 @@
       <HintPath>..\packages\AWSSDK.2.3.55.2\lib\net45\AWSSDK.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -61,11 +64,16 @@
       <DependentUpon>AuthenticationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Generator\AwsToArmGenerator.cs" />
+    <Compile Include="Models\AwsToArmTelemetryRecord.cs" />
+    <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="ParamComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\AwsToArmSaveSelectionProvider.cs" />
+    <Compile Include="Providers\AwsToArmTelemetryProvider.cs" />
     <Compile Include="VPC.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Generator\Prepare.ps1" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

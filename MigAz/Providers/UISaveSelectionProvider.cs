@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
-using MigAz.Interface;
 using MigAz.Core.Interface;
 
 namespace MigAz.Providers

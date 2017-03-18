@@ -52,6 +52,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interface\INetworkSecurityGroup.cs" />
+    <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />
     <Compile Include="Interface\IStorageAccount.cs" />

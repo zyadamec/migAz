@@ -6,6 +6,7 @@ using MigAz.Core.Interface;
 using MigAz.Azure;
 using MigAz.AWS;
 using MigAz.AWS.Forms;
+using MigAz.AWS.Providers;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -26,7 +27,7 @@ namespace MigAz.UserControls.Migrators
         //private Dictionary<string, string> subscriptionsAndTenants;
         private AwsRetriever _awsRetriever;
         private AWS.Generator.AwsToArmGenerator _TemplateGenerator;
-        private MigAz.Forms.AWS.ISaveSelectionProvider _saveSelectionProvider;
+        private AwsToArmSaveSelectionProvider _saveSelectionProvider;
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
         private Forms.AWS.Providers.AppSettingsProvider _appSettingsProvider;

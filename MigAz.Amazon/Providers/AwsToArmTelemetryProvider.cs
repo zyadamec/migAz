@@ -1,5 +1,5 @@
-﻿using MigAz.Core.Interface;
-using MigAz.Forms.AWS;
+﻿using MigAz.AWS.Models;
+using MigAz.Core.Interface;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-namespace MigAz.Providers
+namespace MigAz.AWS.Providers
 {
     public class AwsToArmTelemetryProvider : ITelemetryProvider
     {

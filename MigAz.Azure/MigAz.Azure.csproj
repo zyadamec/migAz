@@ -92,6 +92,7 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\ArmToArmTelemetryRecord.cs" />
     <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

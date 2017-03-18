@@ -1,6 +1,5 @@
-﻿using MigAz.Core.Interface;
-using MigAz.Interface;
-using MigAz.Models;
+﻿using MigAz.Azure.Models;
+using MigAz.Core.Interface;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ namespace MigAz.Providers
     {
         public void PostTelemetryRecord(string tenantId, string subscriptionId, Dictionary<string, string> processedItems, string offercategories)
         {
-            TelemetryRecord telemetryrecord = new TelemetryRecord();
+            ArmToArmTelemetryRecord telemetryrecord = new ArmToArmTelemetryRecord();
             telemetryrecord.ExecutionId = Guid.Empty; // TODO, move as part of TempalteResult
             telemetryrecord.SubscriptionId = new Guid(subscriptionId);
             telemetryrecord.TenantId = tenantId;

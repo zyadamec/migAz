@@ -14,7 +14,7 @@ namespace MigAz.UserControls.Migrators
     public partial class ArmToArm : IMigratorUserControl
     {
         private AzureRetriever _AzureRetriever;
-        private AsmArtefacts _asmArtefacts;
+        private IExportArtifacts _ExportArtifacts;
         private AppSettingsProvider _appSettingsProvider;
         private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
         private ArmToArmTelemetryProvider _telemetryProvider;
