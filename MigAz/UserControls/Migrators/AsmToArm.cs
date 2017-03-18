@@ -20,7 +20,7 @@ namespace MigAz.UserControls.Migrators
         private UISaveSelectionProvider _saveSelectionProvider;
         private TreeNode _sourceCascadeNode;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
-        private CloudTelemetryProvider _telemetryProvider;
+        private AsmToArmTelemetryProvider _telemetryProvider;
         private AppSettingsProvider _appSettingsProvider;
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
@@ -38,7 +38,7 @@ namespace MigAz.UserControls.Migrators
             InitializeComponent();
 
             _saveSelectionProvider = new UISaveSelectionProvider();
-            _telemetryProvider = new CloudTelemetryProvider();
+            _telemetryProvider = new AsmToArmTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
 
             _AzureContextSourceASM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
@@ -64,8 +64,6 @@ namespace MigAz.UserControls.Migrators
         private async Task _AzureContextSourceASM_BeforeAzureSubscriptionChange(AzureContext sender)
         {
             await SaveSubscriptionSettings(sender.AzureSubscription);
-            // todo if (ASMTokenProvider ==  ARMTokenProvider)
-
             await _AzureContextTargetARM.SetSubscriptionContext(null);
         }
 
@@ -220,7 +218,7 @@ namespace MigAz.UserControls.Migrators
             get { return _AzureContextTargetARM; }
         }
 
-        public Azure.Interface.ITelemetryProvider TelemetryProvider
+        public MigAz.Core.Interface.ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
         }
@@ -690,195 +688,9 @@ namespace MigAz.UserControls.Migrators
 
         #region Export Button
 
-        private bool RecursiveHealthCheckNode(TreeNode treeNode)
-        {
-            if (treeNode.Tag != null)
-            {
-                if (treeNode.Tag.GetType() == typeof(ResourceGroup))
-                {
-                    ResourceGroup armResourceGroup = (ResourceGroup)treeNode.Tag;
-
-                    if (armResourceGroup.Location == null)
-                    {
-                        treeARM.SelectedNode = treeNode;
-                        this.Refresh();
-                        MessageBox.Show("Target Location must be selected before exporting.");
-                        return false;
-                    }
-                }
-                else if (treeNode.Tag.GetType() == typeof(TreeNode)) // Tag is the sourced ASM TreeNode
-                {
-                    TreeNode asmTreeNode = (TreeNode)treeNode.Tag;
-
-                    if (asmTreeNode.Tag != null)
-                    {
-                        if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
-                        {
-                            Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)asmTreeNode.Tag;
-
-                            // Validate the Target Name is not blank
-                            if (asmNetworkSecurityGroup.TargetName == string.Empty)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Name must be selected before exporting.");
-                                return false;
-                            }
-                        }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                        {
-                            Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)asmTreeNode.Tag;
-
-                            // Validate the Target Name is not blank
-                            if (asmVirtualNetwork.TargetName == string.Empty)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Name must be selected before exporting.");
-                                return false;
-                            }
-
-                            foreach (TreeNode virtualNetworkNode in treeNode.Parent.Nodes)
-                            {
-                                TreeNode asmVirtualNetworkNode = (TreeNode)virtualNetworkNode.Tag;
-                                Azure.Asm.VirtualNetwork asmVirtualNetworkCompare = (Azure.Asm.VirtualNetwork)asmVirtualNetworkNode.Tag;
-
-                                if (asmVirtualNetworkCompare.Name != asmVirtualNetwork.Name && asmVirtualNetworkCompare.TargetName == asmVirtualNetwork.TargetName)
-                                {
-                                    treeARM.SelectedNode = treeNode;
-                                    this.Refresh();
-                                    MessageBox.Show("Target Names must be unique to migrate Virtual Networks.");
-                                    return false;
-                                }
-
-                            }
-                        }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
-                        {
-                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
-
-                            if (asmVirtualMachine.TargetName == string.Empty)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Name for Virtual Machine must be specified.");
-                                return false;
-                            }
-
-                            if (asmVirtualMachine.TargetAvailabilitySet == null)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Availability Set for Virtual Machine must be specified.");
-                                return false;
-                            }
-
-                            if (asmVirtualMachine.TargetVirtualNetwork == null)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Virtual Network for Virtual Machine must be specified.");
-                                return false;
-                            }
-
-                            if (asmVirtualMachine.TargetSubnet == null)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Subnet for Virtual Machine must be specified.");
-                                return false;
-                            }
-
-                            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target VM OS Disk Storage Account must be specified.");
-                                return false;
-                            }
-                        }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
-                        {
-                            Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)asmTreeNode.Tag;
-                            if (asmStorageAccount.TargetName == string.Empty)
-                            {
-                                treeARM.SelectedNode = treeNode;
-                                this.Refresh();
-                                MessageBox.Show("Target Storage Account Name must be specified.");
-                                return false;
-                            }
-                        }
-                    }
-                }
-                else if (treeNode.Tag.GetType() == typeof(Azure.Asm.Subnet))
-                {
-                    Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)treeNode.Tag;
-                    if (asmSubnet.TargetName == string.Empty)
-                    {
-                        treeARM.SelectedNode = treeNode;
-                        this.Refresh();
-                        MessageBox.Show("Target Subnet Name must be specified.");
-                        return false;
-                    }
-                }
-                else if (treeNode.Tag.GetType() == typeof(AvailabilitySet))
-                {
-                    AvailabilitySet armAvailabilitySet = (AvailabilitySet)treeNode.Tag;
-                    if (armAvailabilitySet.TargetName == string.Empty)
-                    {
-                        treeARM.SelectedNode = treeNode;
-                        this.Refresh();
-                        MessageBox.Show("Target Availability Set Name must be specified.");
-                        return false;
-                    }
-                }
-                else if (treeNode.Tag.GetType() == typeof(Disk))
-                {
-                    Disk asmDisk = (Disk)treeNode.Tag;
-
-                    if (asmDisk.TargetStorageAccount == null)
-                    {
-                        treeARM.SelectedNode = treeNode;
-                        this.Refresh();
-                        MessageBox.Show("Target VM Data Disk Storage Account must be specified.");
-                        return false;
-                    }
-                }
-            }
-
-            foreach (TreeNode childNode in treeNode.Nodes)
-            {
-                bool nodeResult = RecursiveHealthCheckNode(childNode);
-                if (nodeResult == false)
-                    return false;
-            }
-
-            return true;
-        }
-
-
-        private async Task<bool> ExecutePreExportHealthCheck(bool focusFirstError)
-        {
-            foreach (TreeNode treeNode in treeARM.Nodes)
-            {
-                bool nodeResult = RecursiveHealthCheckNode(treeNode);
-                if (nodeResult == false)
-                    return false;
-            }
-
-            return true;
-        }
-
         public async void Export()
         {
-            if (!await ExecutePreExportHealthCheck(true))
-            {
-                return;
-            }
-
             await SaveSubscriptionSettings(_AzureContextSourceASM.AzureSubscription);
-
-            this.TemplateGenerator.Write();
         }
 
         #endregion

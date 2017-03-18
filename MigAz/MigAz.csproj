@@ -95,20 +95,18 @@
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ARM\Interface\ISaveSelectionProvider.cs" />
-    <Compile Include="Forms\ARM\Interface\ITelemetryProvider.cs" />
     <Compile Include="Forms\ARM\Models\AsmArtefacts.cs" />
     <Compile Include="Forms\ARM\Models\CloudServiceVM.cs" />
     <Compile Include="Forms\ARM\Models\CopyBlobDetail.cs" />
     <Compile Include="Forms\ARM\Models\SaveSelection.cs" />
     <Compile Include="Forms\ARM\Models\TelemetryRecord.cs" />
     <Compile Include="Forms\ARM\Providers\AppSettingsProvider.cs" />
-    <Compile Include="Forms\ARM\Providers\CloudTelemetryProvider.cs" />
+    <Compile Include="Providers\ArmToArmTelemetryProvider.cs" />
     <Compile Include="Forms\ARM\Providers\UISaveSelectionProvider.cs" />
-    <Compile Include="Forms\AWS\CloudTelemetryProvider.cs" />
+    <Compile Include="Providers\AwsToArmTelemetryProvider.cs" />
     <Compile Include="Forms\AWS\ISaveSelectionProvider.cs" />
-    <Compile Include="Forms\AWS\ITelemetryProvider.cs" />
     <Compile Include="Forms\AWS\SaveSelection.cs" />
-    <Compile Include="Forms\AWS\TelemetryRecord.cs" />
+    <Compile Include="Forms\AWS\AwsToArmTelemetryRecord.cs" />
     <Compile Include="Forms\AWS\UISaveSelectionProvider.cs" />
     <Compile Include="Forms\ExportResultsDialog.cs">
       <SubType>Form</SubType>
@@ -129,7 +127,7 @@
       <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
-    <Compile Include="Providers\CloudTelemetryProvider.cs" />
+    <Compile Include="Providers\AsmToArmTelemetryProvider.cs" />
     <Compile Include="Providers\UISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Providers\FileLogProvider.cs" />

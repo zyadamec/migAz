@@ -1,6 +1,5 @@
-﻿using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Azure.Models;
-using MigAz.Core.ArmTemplate;
+﻿using MigAz.Core.Interface;
+using MigAz.Forms.AWS;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,30 +11,16 @@ using System.Windows.Forms;
 
 namespace MigAz.Providers
 {
-    public class CloudTelemetryProvider : Azure.Interface.ITelemetryProvider
+    public class AwsToArmTelemetryProvider : ITelemetryProvider
     {
-        private Dictionary<string,string> GetProcessedItems(AsmToArmGenerator templateResult)
+        public void PostTelemetryRecord(string AccessKey,Dictionary<string, string> processedItems, string AWSRegion)
         {
-            Dictionary<string, string> processedItems = new Dictionary<string, string>();
-
-            foreach (ArmResource resource in templateResult.Resources)
-            {
-                if (!processedItems.ContainsKey(resource.type + resource.name))
-                    processedItems.Add(resource.type + resource.name, resource.location);
-            }
-
-            return processedItems;
-        }
-
-        public void PostTelemetryRecord(AsmToArmGenerator templateResult)
-        {
-            TelemetryRecord telemetryrecord = new TelemetryRecord();
-            telemetryrecord.ExecutionId = templateResult.ExecutionGuid;
-            telemetryrecord.SubscriptionId = templateResult.SourceSubscription.SubscriptionId;
-            telemetryrecord.TenantId = templateResult.SourceSubscription.AzureAdTenantId;
-            telemetryrecord.OfferCategories = templateResult.SourceSubscription.offercategories;
+            AwsToArmTelemetryRecord telemetryrecord = new AwsToArmTelemetryRecord();
+            telemetryrecord.ExecutionId = Guid.Empty; // TODO, move to TemplateResult ID
+            telemetryrecord.AccessKeyId = AccessKey;
+            telemetryrecord.AWSRegion = AWSRegion;
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            telemetryrecord.ProcessedResources = this.GetProcessedItems(templateResult);
+            telemetryrecord.ProcessedResources = processedItems;
 
             string jsontext = JsonConvert.SerializeObject(telemetryrecord, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             ASCIIEncoding encoding = new ASCIIEncoding();
@@ -43,7 +28,7 @@ namespace MigAz.Providers
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/telemetry");
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/telemetry/AWStoARM");
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.ContentLength = data.Length;

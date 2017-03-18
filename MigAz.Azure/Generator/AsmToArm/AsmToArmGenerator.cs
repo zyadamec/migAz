@@ -275,7 +275,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
             publicipaddress.name = publicipaddress_name + _settingsProvider.PublicIPSuffix;
-            publicipaddress.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                publicipaddress.location = this.TargetResourceGroup.Location.Name;
             publicipaddress.properties = publicipaddress_properties;
 
             this.AddResource(publicipaddress);
@@ -293,7 +294,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
 
             availabilityset.name = asmVirtualMachine.TargetAvailabilitySet.GetFinalTargetName();
-            availabilityset.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                availabilityset.location = this.TargetResourceGroup.Location.Name;
 
             this.AddResource(availabilityset);
 
@@ -310,7 +312,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 loadbalancer = new LoadBalancer(this.ExecutionGuid);
                 loadbalancer.name = asmVirtualMachine.LoadBalancerName;
-                loadbalancer.location = this.TargetResourceGroup.Location.Name;
+                if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                    loadbalancer.location = this.TargetResourceGroup.Location.Name;
 
                 FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
 
@@ -469,7 +472,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = asmVirtualNetwork.GetFinalTargetName();
-            virtualnetwork.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                virtualnetwork.location = this.TargetResourceGroup.Location.Name;
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -922,7 +926,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             NetworkInterface primaryNetworkInterface = new NetworkInterface(this.ExecutionGuid);
             primaryNetworkInterface.name = asmVirtualMachine.PrimaryNetworkInterface.GetFinalTargetName();
-            primaryNetworkInterface.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                primaryNetworkInterface.location = this.TargetResourceGroup.Location.Name;
             primaryNetworkInterface.properties = networkinterface_properties;
             primaryNetworkInterface.dependsOn = dependson;
 
@@ -1029,25 +1034,28 @@ namespace MigAz.Azure.Generator.AsmToArm
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
 
+            List<IStorageAccount> storageaccountdependencies = new List<IStorageAccount>();
             string virtualmachinename = asmVirtualMachine.GetFinalTargetName();
             string ostype = asmVirtualMachine.OSVirtualHardDiskOS;
-
+            string newdiskurl = String.Empty;
             string osDiskTargetStorageAccountName = String.Empty;
-            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
             {
-                Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                osDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
-            }
-            else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
-            {
-                Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                osDiskTargetStorageAccountName = armStorageAccount.Name;
+                if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                {
+                    Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    osDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
+                }
+                else if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                {
+                    Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    osDiskTargetStorageAccountName = armStorageAccount.Name;
+                }
+
+                newdiskurl = asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
+                storageaccountdependencies.Add(asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
             }
 
-            string newdiskurl = asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
-
-            List<IStorageAccount> storageaccountdependencies = new List<IStorageAccount>();
-            storageaccountdependencies.Add(asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
 
             HardwareProfile hardwareprofile = new HardwareProfile();
             hardwareprofile.vmSize = GetVMSize(asmVirtualMachine.RoleSize);
@@ -1258,7 +1266,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualMachine virtualmachine = new VirtualMachine(this.ExecutionGuid);
             virtualmachine.name = virtualmachinename;
-            virtualmachine.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                virtualmachine.location = this.TargetResourceGroup.Location.Name;
             virtualmachine.properties = virtualmachine_properties;
             virtualmachine.dependsOn = dependson;
             virtualmachine.resources = new List<ArmResource>();

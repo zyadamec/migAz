@@ -1,22 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using MigAz.Core.Interface;
+using MigAz.Interface;
+using MigAz.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Forms.AWS
+namespace MigAz.Providers
 {
-    public class CloudTelemetryProvider : ITelemetryProvider
+    public class ArmToArmTelemetryProvider : ITelemetryProvider
     {
-        public void PostTelemetryRecord(string AccessKey,Dictionary<string, string> processedItems, string AWSRegion)
+        public void PostTelemetryRecord(string tenantId, string subscriptionId, Dictionary<string, string> processedItems, string offercategories)
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
-            telemetryrecord.ExecutionId = Guid.Empty; // TODO, move to TemplateResult ID
-            telemetryrecord.AccessKeyId = AccessKey;
-            telemetryrecord.AWSRegion = AWSRegion;
+            telemetryrecord.ExecutionId = Guid.Empty; // TODO, move as part of TempalteResult
+            telemetryrecord.SubscriptionId = new Guid(subscriptionId);
+            telemetryrecord.TenantId = tenantId;
+            telemetryrecord.OfferCategories = offercategories;
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
             telemetryrecord.ProcessedResources = processedItems;
 
@@ -26,7 +32,7 @@ namespace MigAz.Forms.AWS
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/telemetry/AWStoARM");
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/telemetry/ARMtoARM");
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.ContentLength = data.Length;

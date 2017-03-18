@@ -1,11 +1,5 @@
-﻿using MigAz.Azure.Generator;
-using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Azure.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Core.Interface;
 
 namespace MigAz.Tests.Fakes
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MigAz.Forms.AWS
 {
-    public class TelemetryRecord
+    public class AwsToArmTelemetryRecord
     {
         public Guid ExecutionId;
         public string AccessKeyId;

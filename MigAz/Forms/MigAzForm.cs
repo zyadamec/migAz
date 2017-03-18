@@ -100,20 +100,6 @@ namespace MigAz.Forms
             this.Close();
         }
 
-        private void btnExport_Click(object sender, EventArgs e)
-        {
-            // Todo
-            //_T = new AsmToArmGenerator(_AsmSourceSubscription, _ArmTargetSubscription, _ArmResourceGroup, _LogProvider, _StatusProvider, _TelemetryProvider, _AppSettingProvider);
-            //var exportResults = new ExportResultsDialog(templateGenerator);
-            //exportResults.ShowDialog(this);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            OptionsDialog optionsDialog = new OptionsDialog();
-            optionsDialog.ShowDialog();
-        }
-
         private void tabControl1_Resize(object sender, EventArgs e)
         {
             dataGridView1.Width = tabControl1.Width - 10;
@@ -173,6 +159,7 @@ namespace MigAz.Forms
                 }
             }
 
+            dataGridView1.DataSource = null;
             newMigrationToolStripMenuItem.Enabled = true;
             closeMigrationToolStripMenuItem.Enabled = false;
         }
@@ -201,6 +188,25 @@ namespace MigAz.Forms
         private void visitMigAzOnGithubToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://aka.ms/migaz");
+        }
+
+        private void btnExport_Click_1(object sender, EventArgs e)
+        {
+            if (splitContainer2.Panel1.Controls.Count == 1)
+            {
+                IMigratorUserControl migrator = (IMigratorUserControl)splitContainer2.Panel1.Controls[0];
+                migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                migrator.TemplateGenerator.Write();
+
+                var exportResults = new ExportResultsDialog(migrator.TemplateGenerator);
+                exportResults.ShowDialog(this);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OptionsDialog optionsDialog = new OptionsDialog();
+            optionsDialog.ShowDialog();
         }
     }
 }

@@ -2,19 +2,20 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Core.Generator;
 
 namespace MigAz.Forms
 {
     public partial class ExportResultsDialog : Form
     {
-        private AsmToArmGenerator _TemplateResult;
+        private TemplateGenerator _TemplateGenerator;
 
         private ExportResultsDialog() { }
 
-        public ExportResultsDialog(AsmToArmGenerator templateResult)
+        public ExportResultsDialog(TemplateGenerator templateGenerator)
         {
             InitializeComponent();
-            _TemplateResult = templateResult;
+            _TemplateGenerator = templateGenerator;
         }
         
         private void btnOK_Click(object sender, EventArgs e)
@@ -25,7 +26,7 @@ namespace MigAz.Forms
         private void btnViewTemplate_Click(object sender, EventArgs e)
         {
             ProcessStartInfo pInfo = new ProcessStartInfo();
-            pInfo.FileName = _TemplateResult.GetTemplatePath();
+            pInfo.FileName = _TemplateGenerator.OutputDirectory + "export.json";
             pInfo.UseShellExecute = true;
             Process p = Process.Start(pInfo);
         }
@@ -33,7 +34,7 @@ namespace MigAz.Forms
         private void btnGenerateInstructions_Click(object sender, EventArgs e)
         {
             ProcessStartInfo pInfo = new ProcessStartInfo();
-            pInfo.FileName = _TemplateResult.GetInstructionPath();
+           pInfo.FileName = _TemplateGenerator.OutputDirectory + "DeployInstructions.html";
             pInfo.UseShellExecute = true;
             Process p = Process.Start(pInfo);
         }

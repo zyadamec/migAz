@@ -7,6 +7,7 @@ using MigAz.Models;
 using MigAz.Providers;
 using MigAz.Core.Interface;
 using MigAz.Azure.Arm;
+using MigAz.Azure.Generator.ArmToArm;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -16,9 +17,10 @@ namespace MigAz.UserControls.Migrators
         private AsmArtefacts _asmArtefacts;
         private AppSettingsProvider _appSettingsProvider;
         private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
-        private MigAz.Forms.ARM.Interface.ITelemetryProvider _telemetryProvider;
+        private ArmToArmTelemetryProvider _telemetryProvider;
         private AzureContext _AzureContextARM;
         private TreeNode _sourceCascadeNode;
+        private ResourceGroup _TargetResourceGroup;
 
         public ArmToArm() : base(null, null) { }
 
@@ -28,19 +30,32 @@ namespace MigAz.UserControls.Migrators
             InitializeComponent();
 
             _saveSelectionProvider = new MigAz.Forms.ARM.Providers.UISaveSelectionProvider();
-            _telemetryProvider = new MigAz.Forms.ARM.Providers.CloudTelemetryProvider();
+            _telemetryProvider = new ArmToArmTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
 
             _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextARM.AfterAzureSubscriptionChange += _AzureContextARM_AfterAzureSubscriptionChange;
+            azureLoginContextViewer1.Bind(_AzureContextARM);
+
+            _TargetResourceGroup = new ResourceGroup(this._AzureContextARM, "Target Resource Group");
+
+            this.TemplateGenerator = new ArmToArmGenerator(_AzureContextARM.AzureSubscription, _AzureContextARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
         }
 
         private async void ArmToArm_Load(object sender, EventArgs e)
         {
             LogProvider.WriteLog("ArmToArm_Load", "Program start");
 
+            try
+            {
+                _AzureContextARM.AzureEnvironment = (AzureEnvironment)Enum.Parse(typeof(AzureEnvironment), app.Default.AzureEnvironment);
+            }
+            catch
+            {
+                _AzureContextARM.AzureEnvironment = AzureEnvironment.AzureCloud;
+            }
+
             NewVersionAvailable(); // check if there a new version of the app
-            await this.azureLoginContextViewer1.Bind(_AzureContextARM);
         }
 
         public AzureContext AzureContextARM
@@ -99,51 +114,14 @@ namespace MigAz.UserControls.Migrators
                     parentNode.Expand();
                 }
 
+                subscriptionNode.ExpandAll();
 
-
-
-                //List<AsmCloudService> asmCloudServices = await _AzureContextARM.AzureRetriever.GetAzureAsmCloudServices();
-                //foreach (AsmCloudService asmCloudService in asmCloudServices)
-                //{
-                //    foreach (AsmVirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
+                //    if (app.Default.SaveSelection)
                 //    {
-                //        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
-                //        TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
-                //        TreeNode cloudServiceNode = null;
-                //        if (cloudServiceNodeSearch.Count() == 1)
-                //        {
-                //            cloudServiceNode = cloudServiceNodeSearch[0];
-                //        }
-
-                //        if (cloudServiceNode == null)
-                //        {
-                //            cloudServiceNode = new TreeNode(asmCloudService.ServiceName);
-                //            cloudServiceNode.Name = asmCloudService.ServiceName;
-                //            cloudServiceNode.Tag = asmCloudService;
-                //            parentNode.Nodes.Add(cloudServiceNode);
-                //            parentNode.Expand();
-                //        }
-
-                //        TreeNode virtualMachineNode = new TreeNode(asmVirtualMachine.RoleName);
-                //        virtualMachineNode.Name = asmVirtualMachine.RoleName;
-                //        virtualMachineNode.Tag = asmVirtualMachine;
-                //        cloudServiceNode.Nodes.Add(virtualMachineNode);
-                //        cloudServiceNode.Expand();
+                //        lblStatus.Text = "BUSY: Reading saved selection";
+                //        Application.DoEvents();
+                //        _saveSelectionProvider.Read(Guid.Parse(subscriptionid),ref lvwVirtualNetworks, ref lvwStorageAccounts, ref lvwVirtualMachines);
                 //    }
-                //}
-
-                //foreach (AsmNetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
-                //{
-                //    TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
-                //    TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
-                //    tnStorageAccount.Name = tnStorageAccount.Text;
-                //    tnStorageAccount.Tag = asmNetworkSecurityGroup;
-                //    parentNode.Nodes.Add(tnStorageAccount);
-                //    parentNode.Expand();
-                //}
-
-                //subscriptionNode.ExpandAll();
-                //await ReadSubscriptionSettings(sender.AzureSubscription);
 
                 treeSource.Enabled = true;
             }
@@ -160,162 +138,11 @@ namespace MigAz.UserControls.Migrators
             treeSource.Enabled = false;
         }
 
-        private void Window_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // If save selection option is enabled
-            if (app.Default.SaveSelection)
-            {
-                try
-                {
-                    // TODO
-                    //_saveSelectionProvider.Save(Guid.Parse(subscriptionid), lvwVirtualNetworks, lvwStorageAccounts, lvwVirtualMachines);
-                }
-                catch
-                { //Ignore save selection if no objects are selected
-                }
-            }
-        }
-
-        private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // TODO, move to User Controls
-
-            //if (cmbSubscriptions.Enabled == true)
-            //{
-
-            //    lvwVirtualNetworks.Items.Clear();
-            //    lvwStorageAccounts.Items.Clear();
-            //    lvwVirtualMachines.Items.Clear();
-
-            //    AzureSubscription selectedAzureSubscription = (AzureSubscription)cmbSubscriptions.SelectedItem;
-            //    var token = GetToken(subscriptionsAndTenants[subscriptionid], PromptBehavior.Auto);
-
-
-            //    //Resource Group listing
-            //    foreach (ArmResourceGroup resourceGroup in await _AzureRetriever.GetAzureARMResourceGroups())
-            //    {
-            //        //Listing Virtual Network from each RG
-            //        foreach (ArmVirtualNetwork armVirtualNetwork in await _AzureRetriever.GetAzureARMVirtualNetworks()) // todo, by resource group
-            //        {
-            //            var listItem = new ListViewItem(resourceGroup.Name);
-            //            listItem.SubItems.AddRange(new[] { armVirtualNetwork.Name });
-            //            lvwVirtualNetworks.Items.Add(listItem);
-            //            Application.DoEvents();
-            //        }
-
-            //        //Listing Storage Account from each RG
-            //        foreach (ArmStorageAccount armStorageAccount in await _AzureRetriever.GetAzureARMStorageAccounts()) // todo, by resource group
-            //        {
-            //            var listItem = new ListViewItem(resourceGroup.Name);
-            //            listItem.SubItems.AddRange(new[] { armStorageAccount.Name });
-            //            lvwStorageAccounts.Items.Add(listItem);
-            //            Application.DoEvents();
-            //        }
-
-            //        //Listing Virtual Machines from each RG
-            //        foreach (ArmVirtualMachine armVirtualMachine in await _AzureRetriever.GetAzureARMVirtualMachines()) // todo, by resource group
-            //        {
-            //            var listItem = new ListViewItem(resourceGroup.Name);
-            //            listItem.SubItems.AddRange(new[] { armVirtualMachine.Name });
-            //            lvwVirtualMachines.Items.Add(listItem);
-            //            Application.DoEvents();
-            //        }
-            //    }
-
-            //    if (app.Default.SaveSelection)
-            //    {
-            //        lblStatus.Text = "BUSY: Reading saved selection";
-            //        Application.DoEvents();
-            //        _saveSelectionProvider.Read(Guid.Parse(subscriptionid),ref lvwVirtualNetworks, ref lvwStorageAccounts, ref lvwVirtualMachines);
-            //    }
-
-            //    lblStatus.Text = "Ready";
-
-
-            //    writeLog("Subscriptions_SelectionChanged", "End");
-            //}
-        }
-
-        private void lvwVirtualMachines_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            UpdateExportItemsCount();
-
-            if (app.Default.AutoSelectDependencies)
-            {
-                if (e.Item.Checked)
-                {
-                    AutoSelectDependencies(e);
-                }
-            }
-
-        }
-
         private void UpdateExportItemsCount()
         {
             //int numofobjects = lvwVirtualNetworks.CheckedItems.Count + lvwStorageAccounts.CheckedItems.Count + lvwVirtualMachines.CheckedItems.Count;
             //btnExport.Text = "Export " + numofobjects.ToString() + " objects";
         }
-
-        private void btnExport_Click(object sender, EventArgs e)
-        {
-            // If save selection option is enabled
-            if (app.Default.SaveSelection)
-            {
-                StatusProvider.UpdateStatus("BUSY: Reading saved selection");
-
-                // TODO _saveSelectionProvider.Save(Guid.Parse(subscriptionid), lvwVirtualNetworks, lvwStorageAccounts, lvwVirtualMachines);
-                Application.DoEvents();
-            }
-
-            var artefacts = new AsmArtefacts();
-            //foreach (var selectedItem in lvwStorageAccounts.CheckedItems)
-            //{
-            //    var listItem = (ListViewItem)selectedItem;
-            //    artefacts.StorageAccounts.Add(
-            //   new Storage
-            //    {
-            //        RGName = listItem.Text,
-            //        StorageName = listItem.SubItems[1].Text,
-            //    });
-            //}
-
-            //foreach (var selectedItem in lvwStorageAccounts.Items)
-            //{
-            //    var listItem = (ListViewItem)selectedItem;
-            //    artefacts.AllStorageAccounts.Add(
-            //   new Storage
-            //   {
-            //       RGName = listItem.Text,
-            //       StorageName = listItem.SubItems[1].Text,
-            //   });
-            //}
-
-
-            //foreach (var selectedItem in lvwVirtualNetworks.CheckedItems)
-            //{
-            //    var listItem = (ListViewItem)selectedItem;
-            //    artefacts.VirtualNetworks.Add(
-            //        new VirtualNW
-            //        {
-            //            RGName = listItem.Text,
-            //            VirtualNWName = listItem.SubItems[1].Text,
-            //        });
-            //}
-
-            //foreach (var selectedItem in lvwVirtualMachines.CheckedItems)
-            //{
-            //    var listItem = (ListViewItem)selectedItem;
-            //    artefacts.VirtualMachines.Add(
-            //        new VirtualMC
-            //        {
-            //            RGName = listItem.Text,
-            //            VirtualMachine = listItem.SubItems[1].Text,
-            //        });
-            //}
-
-            StatusProvider.UpdateStatus("Done");
-        }
-
 
         private void NewVersionAvailable()
         {
@@ -328,7 +155,7 @@ namespace MigAz.UserControls.Migrators
             //}
         }
 
-        private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)
+        private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
             // TODO
 
@@ -406,28 +233,10 @@ namespace MigAz.UserControls.Migrators
             //    }
             //}
 
-
             StatusProvider.UpdateStatus("Ready");
         }
 
-        private async void cmbTenants_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-
-            // TODO, remove, does context already have proper token?
-            //var token = GetToken(Tenid, PromptBehavior.Auto);
-
-            // TODO, should this be subscription in the tenant only?
-            //Listing Subscriptions
-            foreach (AzureSubscription azureSubscription in await _AzureRetriever.GetAzureARMSubscriptions())
-            {
-                //cmbSubscriptions.Items.Add(azureSubscription);
-            }
-
-            //cmbSubscriptions.Enabled = true;
-        }
-
-        public Forms.ARM.Interface.ITelemetryProvider TelemetryProvider
+        public ITelemetryProvider TelemetryProvider
         {
             get { return _telemetryProvider; }
         }
@@ -437,12 +246,7 @@ namespace MigAz.UserControls.Migrators
             get { return _appSettingsProvider; }
         }
 
-        private void treeSource_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
-
-        private async void treeSource_AfterCheck(object sender, TreeViewEventArgs e)
+         private async void treeSource_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (_sourceCascadeNode == null)
             {
@@ -454,7 +258,7 @@ namespace MigAz.UserControls.Migrators
                     MigAz.Core.TreeView.FillUpIfFullDown(e.Node);
                     treeSource.SelectedNode = e.Node;
 
-                    // todo await AutoSelectDependencies(e.Node);
+                    await AutoSelectDependencies(e.Node);
                 }
                 else
                 {
