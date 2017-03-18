@@ -42,7 +42,8 @@ namespace MigAz.Azure.Generator.ArmToArm
 
         public override void UpdateArtifacts(IExportArtifacts artifacts)
         {
-            LogProvider.WriteLog("GenerateTemplate", "Start");
+            LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
+
 
             Messages.Clear();
             TemplateStreams.Clear();
@@ -54,16 +55,16 @@ namespace MigAz.Azure.Generator.ArmToArm
             //            _copyBlobDetails = new List<CopyBlobDetail>();
             //            _storageAccountNames = new Dictionary<string, string>();
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected virtual networks");
             // process selected virtual networks
             foreach (Arm.VirtualNetwork armVirtualNetwork in _ARMArtifacts.VirtualNetworks)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + armVirtualNetwork.Name);
                 BuildARMVirtualNetworkObject(armVirtualNetwork);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected virtual networks");
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected storage accounts");
 
             // process selected storage accounts
             foreach (Arm.StorageAccount armStorageAccount in _ARMArtifacts.StorageAccounts)
@@ -71,9 +72,9 @@ namespace MigAz.Azure.Generator.ArmToArm
                 StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + armStorageAccount.Name);
                 BuildARMStorageAccountObject(armStorageAccount);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected storage accounts");
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected cloud services and virtual machines");
 
             // process selected cloud services and virtual machines
             foreach (Arm.VirtualMachine armVirtualMachine in _ARMArtifacts.VirtualMachines)
@@ -129,7 +130,7 @@ namespace MigAz.Azure.Generator.ArmToArm
                 // process virtual machine
                 // todo BuildARMVirtualMachineObject(armVirtualMachine);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
 
             Template template = new Template();
             template.resources = this.Resources;
@@ -147,7 +148,7 @@ namespace MigAz.Azure.Generator.ArmToArm
 
             StatusProvider.UpdateStatus("Ready");
 
-            LogProvider.WriteLog("GenerateTemplate", "End");
+            LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
 

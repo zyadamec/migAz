@@ -28,7 +28,7 @@ namespace MigAz.AWS.Generator
 
         public override void UpdateArtifacts(IExportArtifacts artifacts)
         {
-            LogProvider.WriteLog("GenerateTemplate", "Start");
+            LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
             Messages.Clear();
             TemplateStreams.Clear();
@@ -39,7 +39,7 @@ namespace MigAz.AWS.Generator
             //_storageAccountNames = new Dictionary<string, string>();
             //var token = _tokenProvider.GetToken(tenantId);
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected virtual networks");
 
             // process selected virtual networks
             foreach (var virtualnetworkname in _AWSExportArtifacts.VirtualNetworks)
@@ -60,20 +60,20 @@ namespace MigAz.AWS.Generator
                 }
                 Application.DoEvents();
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected Vpcs");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Vpcs");
 
             String storageAccountName = RandomString(22);
 
             if (_AWSExportArtifacts.Instances.Count > 0)
             {
-                LogProvider.WriteLog("GenerateTemplate", "Start processing storage accounts");
+                LogProvider.WriteLog("UpdateArtifacts", "Start processing storage accounts");
 
                 BuildStorageAccountObject(storageAccountName);
 
-                LogProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
+                LogProvider.WriteLog("UpdateArtifacts", "End processing selected storage accounts");
             }
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected Instances");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Instances");
 
             // process selected instances
             foreach (var instance in _AWSExportArtifacts.Instances)
@@ -122,7 +122,7 @@ namespace MigAz.AWS.Generator
 
             }
 
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
 
             //Template template = new Template();
             //template.resources = _resources;
@@ -147,7 +147,8 @@ namespace MigAz.AWS.Generator
             //}
 
             StatusProvider.UpdateStatus("Ready");
-            LogProvider.WriteLog("GenerateTemplate", "End");
+
+            LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
         private void BuildPublicIPAddressObject(ref NetworkInterface networkinterface)
@@ -408,7 +409,6 @@ namespace MigAz.AWS.Generator
 
             LogProvider.WriteLog("BuildLoadBalancerRules", "End");
         }
-
 
         private void BuildVirtualNetworkObject(Amazon.EC2.Model.Vpc vpc, List<Amazon.EC2.Model.Subnet> subnetNode, List<Amazon.EC2.Model.DhcpOptions> dhcpNode)
         {
@@ -897,9 +897,6 @@ namespace MigAz.AWS.Generator
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "End");
         }
 
-
-
-
         private void BuildVirtualMachineObject(Amazon.EC2.Model.Instance selectedInstance, List<NetworkProfile_NetworkInterface> networkinterfaces, String newstorageaccountname, string instanceLBName)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
@@ -1102,12 +1099,6 @@ namespace MigAz.AWS.Generator
             LogProvider.WriteLog("BuildStorageAccountObject", "End");
         }
 
-        private void WriteStream(StreamWriter writer, string text)
-        {
-            writer.Write(text);
-            writer.Close();
-        }
-
         // convert an hex string into byte array
         public static byte[] StrToByteArray(string str)
         {
@@ -1165,7 +1156,6 @@ namespace MigAz.AWS.Generator
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-
 
         private string GetSubnetName(dynamic Subnet)
         {

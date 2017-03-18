@@ -49,7 +49,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         public override async void UpdateArtifacts(IExportArtifacts artifacts)
         {
-            LogProvider.WriteLog("GenerateTemplate", "Start - Execution " + this.ExecutionGuid.ToString());
+            LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
             Messages.Clear();
             TemplateStreams.Clear();
@@ -102,25 +102,25 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
             }
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected Network Security Groups");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
             // process selected virtual networks
             foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
                 await BuildNetworkSecurityGroup(asmNetworkSecurityGroup);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected Network Security Groups");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Network Security Groups");
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected virtual networks");
             // process selected virtual networks
             foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
                 await BuildVirtualNetworkObject(asmVirtualNetwork);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected virtual networks");
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected storage accounts");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected storage accounts");
 
             // process selected storage accounts
             foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
@@ -128,9 +128,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(asmStorageAccount);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected storage accounts");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected storage accounts");
 
-            LogProvider.WriteLog("GenerateTemplate", "Start processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected cloud services and virtual machines");
 
             // process selected cloud services and virtual machines
             foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
@@ -150,9 +150,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 // process virtual machine
                 await BuildVirtualMachineObject(asmVirtualMachine, networkinterfaces);
             }
-            LogProvider.WriteLog("GenerateTemplate", "End processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
 
-            LogProvider.WriteLog("GenerateTemplate", "Updating Template Streams");
+            LogProvider.WriteLog("UpdateArtifacts", "Updating Template Streams");
 
             TemplateStreams.Clear();
 
@@ -225,9 +225,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             StatusProvider.UpdateStatus("Ready");
 
-            LogProvider.WriteLog("GenerateTemplate", "End - Execution " + this.ExecutionGuid.ToString());
-
-            _ASMArtifacts = null;
+            LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
         protected override void OnTemplateChanged()
