@@ -519,13 +519,8 @@ namespace MigAz.Azure.Generator.ArmToArm
                 datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
                 datadisk.lun = sourceDataDisk.Lun;
 
-                string olddiskurl = sourceDataDisk.VhdUri;
-                string[] splitarray = olddiskurl.Split(new char[] { '/' });
-                string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-                string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
-                string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
-
                 // if the tool is configured to create new VMs with empty data disks
+                vhd = new Vhd();
                 if (_settingsProvider.BuildEmpty)
                 {
                     datadisk.createOption = "Empty";
@@ -535,24 +530,32 @@ namespace MigAz.Azure.Generator.ArmToArm
                 {
                     datadisk.createOption = "Attach";
 
-                    CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                    copyblobdetail.SourceSA = oldstorageaccountname;
-                    copyblobdetail.SourceContainer = splitarray[3];
-                    copyblobdetail.SourceBlob = splitarray[4];
-                    copyblobdetail.SourceKey = "TODO";
-                    copyblobdetail.DestinationSA = newstorageaccountname;
-                    copyblobdetail.DestinationContainer = splitarray[3];
-                    copyblobdetail.DestinationBlob = splitarray[4];
-                    _CopyBlobDetails.Add(copyblobdetail);
-                    // end of block of code to help copying the blobs to the new storage accounts
+                    if (sourceDataDisk.VhdUri != String.Empty)
+                    {
+                        string olddiskurl = sourceDataDisk.VhdUri;
+                        string[] splitarray = olddiskurl.Split(new char[] { '/' });
+                        string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
+                        string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
+                        string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
+                        vhd.uri = newdiskurl;
+
+                        try { storageaccountdependencies.Add(newstorageaccountname, ""); }
+                        catch { }
+
+                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                        copyblobdetail.SourceSA = oldstorageaccountname;
+                        copyblobdetail.SourceContainer = splitarray[3];
+                        copyblobdetail.SourceBlob = splitarray[4];
+                        copyblobdetail.SourceKey = "TODO";
+                        copyblobdetail.DestinationSA = newstorageaccountname;
+                        copyblobdetail.DestinationContainer = splitarray[3];
+                        copyblobdetail.DestinationBlob = splitarray[4];
+                        _CopyBlobDetails.Add(copyblobdetail);
+                        // end of block of code to help copying the blobs to the new storage accounts
+                    }
                 }
 
-                vhd = new Vhd();
-                vhd.uri = newdiskurl;
                 datadisk.vhd = vhd;
-
-                try { storageaccountdependencies.Add(newstorageaccountname, ""); }
-                catch { }
 
                 datadisks.Add(datadisk);
             }
