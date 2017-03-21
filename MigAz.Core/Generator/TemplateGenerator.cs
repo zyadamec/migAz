@@ -4,6 +4,7 @@ using System.IO;
 using MigAz.Core.Interface;
 using MigAz.Core.ArmTemplate;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace MigAz.Core.Generator
 {
@@ -16,7 +17,7 @@ namespace MigAz.Core.Generator
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
-        private string _OutputDirectory;
+        private string _OutputDirectory = String.Empty;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -54,6 +55,9 @@ namespace MigAz.Core.Generator
             get { return _OutputDirectory; }
             set
             {
+                if (value == null)
+                    throw new ArgumentException("OutputDirectory cannot be null.");
+
                 if (value.EndsWith(@"\"))
                     _OutputDirectory = value;
                 else
@@ -114,10 +118,34 @@ namespace MigAz.Core.Generator
                 using (FileStream file = new FileStream(_OutputDirectory + key, FileMode.Create, System.IO.FileAccess.Write))
                 {
                     byte[] bytes = new byte[ms.Length];
+                    ms.Position = 0;
                     ms.Read(bytes, 0, (int)ms.Length);
                     file.Write(bytes, 0, bytes.Length);
                 }
             }
+        }
+
+        public string BuildMigAzMessages()
+        {
+            if (this.Messages.Count == 0)
+                return String.Empty;
+
+            StringBuilder sbMigAzMessageResult = new StringBuilder();
+
+            sbMigAzMessageResult.Append("<p>MigAz has identified the following advisements during template generation for review:</p>");
+
+            sbMigAzMessageResult.Append("<p>");
+            sbMigAzMessageResult.Append("<ul>");
+            foreach (string migAzMessage in this.Messages)
+            {
+                sbMigAzMessageResult.Append("<li>");
+                sbMigAzMessageResult.Append(migAzMessage);
+                sbMigAzMessageResult.Append("</li>");
+            }
+            sbMigAzMessageResult.Append("</ul>");
+            sbMigAzMessageResult.Append("</p>");
+
+            return sbMigAzMessageResult.ToString();
         }
 
         //The event-invoking method that derived classes can override.

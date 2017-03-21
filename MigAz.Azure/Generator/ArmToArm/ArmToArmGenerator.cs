@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Xml;
 using MigAz.Azure.Models;
+using System.Text;
+using System.IO;
+using System.Reflection;
 
 namespace MigAz.Azure.Generator.ArmToArm
 {
@@ -127,22 +130,75 @@ namespace MigAz.Azure.Generator.ArmToArm
                 //todo BuildARMNetworkInterfaceObject(ref networkinterfaces);
 
                 // process virtual machine
-                // todo BuildARMVirtualMachineObject(armVirtualMachine);
+                BuildARMVirtualMachineObject(armVirtualMachine);
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
 
-            Template template = new Template();
-            template.resources = this.Resources;
-            template.parameters = this.Parameters;
+            String templateString = GetTemplateString();
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+            byte[] a = asciiEncoding.GetBytes(templateString);
+            MemoryStream templateStream = new MemoryStream();
+            templateStream.Write(a, 0, a.Length);
+            TemplateStreams.Add("export.json", templateStream);
 
-            // save JSON template
+           string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+            byte[] b = asciiEncoding.GetBytes(jsontext);
+            MemoryStream copyBlobDetailStream = new MemoryStream();
+            copyBlobDetailStream.Write(b, 0, b.Length);
+            TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "MigAz.Azure.Generator.ArmToArm.DeployDocTemplate.html";
+            string instructionContent;
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                instructionContent = reader.ReadToEnd();
+            }
+
+
+            Guid targetSubscriptionGuid = Guid.Empty;
+            string targetResourceGroupName = String.Empty;
+            string resourceGroupLocation = String.Empty;
+            string azureEnvironmentSwitch = String.Empty;
+            if (_TargetResourceGroup != null)
+            {
+                targetResourceGroupName = _TargetResourceGroup.GetFinalTargetName();
+
+                if (_TargetResourceGroup.Location != null)
+                    resourceGroupLocation = _TargetResourceGroup.Location.Name;
+            }
+
+            if (_TargetSubscription != null)
+            {
+                targetSubscriptionGuid = _TargetSubscription.SubscriptionId;
+
+                if (_TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
+                    azureEnvironmentSwitch = " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"";
+            }
+
+            instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
+            instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
+            instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
+            instructionContent = instructionContent.Replace("{resourceGroupName}", targetResourceGroupName);
+            instructionContent = instructionContent.Replace("{location}", resourceGroupLocation);
+            instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
+            instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
+            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
+
+            byte[] c = asciiEncoding.GetBytes(instructionContent);
+            MemoryStream instructionStream = new MemoryStream();
+            instructionStream.Write(c, 0, c.Length);
+            TemplateStreams.Add("DeployInstructions.html", instructionStream);
+
             OnTemplateChanged();
 
             // post Telemetry Record to ASMtoARMToolAPI
             if (_settingsProvider.AllowTelemetry)
             {
                 StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                // todo _telemetryProvider.PostTelemetryRecord(_TargetSubscription.AzureAdTenantId, this.Resources, _TargetSubscription.offercategories); 
+                //_telemetryProvider.PostTelemetryRecord(templateResult);// TODO
             }
 
             StatusProvider.UpdateStatus("Ready");
@@ -150,6 +206,36 @@ namespace MigAz.Azure.Generator.ArmToArm
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
+        private string GetTemplateString()
+        {
+            Template template = new Template()
+            {
+                resources = this.Resources,
+                parameters = this.Parameters
+            };
+
+            // save JSON template
+            string jsontext = JsonConvert.SerializeObject(template, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+            jsontext = jsontext.Replace("schemalink", "$schema");
+
+            return jsontext;
+        }
+
+        public string GetCopyBlobDetailPath()
+        {
+            return Path.Combine(this.OutputDirectory, "copyblobdetails.json");
+        }
+
+
+        public string GetTemplatePath()
+        {
+            return Path.Combine(this.OutputDirectory, "export.json");
+        }
+
+        public string GetInstructionPath()
+        {
+            return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
+        }
 
         private void BuildARMVirtualNetworkObject(Arm.VirtualNetwork armVirtualNetwork)
         {
@@ -170,7 +256,8 @@ namespace MigAz.Azure.Generator.ArmToArm
             Core.ArmTemplate.VirtualNetwork virtualnetwork = new Core.ArmTemplate.VirtualNetwork(this.ExecutionGuid);
 
             virtualnetwork.name = armVirtualNetwork.Name;
-            virtualnetwork.location = _TargetResourceGroup.Location.Name;
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                virtualnetwork.location = _TargetResourceGroup.Location.Name;
 
             virtualnetwork.dependsOn = dependson;
             List<Core.ArmTemplate.Subnet> subnets = new List<Core.ArmTemplate.Subnet>();
@@ -339,38 +426,40 @@ namespace MigAz.Azure.Generator.ArmToArm
             return networksecuritygroup;
         }
 
-        private void BuildARMVirtualMachineObject(dynamic resource, Hashtable virtualmachineinfo, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private void BuildARMVirtualMachineObject(Arm.VirtualMachine armVirtualMachine)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
             //AsmArtefacts artefacts;
 
-            string virtualmachinename = resource.name;
+            string virtualmachinename = armVirtualMachine.name;
             string networkinterfacename = virtualmachinename;
-            string ostype = resource.properties.storageProfile.osDisk.osType;
+            // todo string ostype = armVirtualMachine.properties.storageProfile.osDisk.osType;
 
-            // XmlNode osvirtualharddisk = resource.SelectSingleNode("//OSVirtualHardDisk");
-            string olddiskurl = resource.properties.storageProfile.osDisk.vhd.uri;
-            string[] splitarray = olddiskurl.Split(new char[] { '/' });
-            string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-            string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
-            string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
+            if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
+            {
+                string olddiskurl = armVirtualMachine.OSVirtualHardDisk.VhdUri;
+                string[] splitarray = olddiskurl.Split(new char[] { '/' });
+                string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
+                string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
+                string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
 
-            Hashtable storageaccountdependencies = new Hashtable();
-            storageaccountdependencies.Add(newstorageaccountname, "");
+                Hashtable storageaccountdependencies = new Hashtable();
+                storageaccountdependencies.Add(newstorageaccountname, "");
+            }
 
             HardwareProfile hardwareprofile = new HardwareProfile();
-            hardwareprofile.vmSize = resource.properties.hardwareProfile.vmSize;
+            hardwareprofile.vmSize = armVirtualMachine.VmSize;
 
             NetworkProfile networkprofile = new NetworkProfile();
-            networkprofile.networkInterfaces = networkinterfaces;
+            // todo networkprofile.networkInterfaces = networkinterfaces;
 
             Vhd vhd = new Vhd();
             vhd.uri = newdiskurl;
 
             OsDisk osdisk = new OsDisk();
-            osdisk.name = resource.properties.storageProfile.osDisk.name;
+            osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
             osdisk.vhd = vhd;
-            osdisk.caching = resource.properties.storageProfile.osDisk.caching;
+            osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
 
             ImageReference imagereference = new ImageReference();
             OsProfile osprofile = new OsProfile();
@@ -398,16 +487,17 @@ namespace MigAz.Azure.Generator.ArmToArm
                     Parameters.Add("adminPassword", parameter);
                 }
 
-                imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
-                imagereference.offer = resource.properties.storageProfile.imageReference.offer;
-                imagereference.sku = resource.properties.storageProfile.imageReference.sku;
-                imagereference.version = resource.properties.storageProfile.imageReference.version;
+                //todo
+                //imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
+                //imagereference.offer = resource.properties.storageProfile.imageReference.offer;
+                //imagereference.sku = resource.properties.storageProfile.imageReference.sku;
+                //imagereference.version = resource.properties.storageProfile.imageReference.version;
             }
             // if the tool is configured to attach copied disks
             else
             {
                 osdisk.createOption = "Attach";
-                osdisk.osType = ostype;
+                // todoosdisk.osType = ostype;
 
                 CopyBlobDetail copyblobdetail = new CopyBlobDetail();
                 copyblobdetail.SourceSA = oldstorageaccountname;
@@ -423,24 +513,15 @@ namespace MigAz.Azure.Generator.ArmToArm
 
             // process data disks
             List<DataDisk> datadisks = new List<DataDisk>();
-            var datadisknodes = resource.properties.storageProfile.dataDisks;
-            foreach (var datadisknode in datadisknodes)
+            foreach (Arm.DataDisk sourceDataDisk in armVirtualMachine.DataDisks)
             {
                 DataDisk datadisk = new DataDisk();
-                datadisk.name = datadisknode.name;
-                datadisk.caching = datadisknode.caching;
-                if (datadisknode.diskSizeGB != null)
-                {
-                    datadisk.diskSizeGB = datadisknode.diskSizeGB;
-                }
-                else
-                {
-                    datadisk.diskSizeGB = -1; // todo, what should this be?
-                }
+                datadisk.name = sourceDataDisk.Name;
+                datadisk.caching = sourceDataDisk.Caching;
+                datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
+                datadisk.lun = sourceDataDisk.Lun;
 
-                datadisk.lun = datadisknode.lun;
-
-                olddiskurl = datadisknode.vhd.uri;
+                olddiskurl = sourceDataDisk.VhdUri;
                 splitarray = olddiskurl.Split(new char[] { '/' });
                 oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
                 newstorageaccountname = // todo GetNewStorageAccountName(oldstorageaccountname);
@@ -491,10 +572,10 @@ namespace MigAz.Azure.Generator.ArmToArm
 
             List<string> dependson = new List<string>();
 
-            foreach (var nic in networkinterfaces)
-            {
-                dependson.Add(nic.id.ToString());
-            }
+            //foreach (var nic in networkinterfaces)
+            //{
+            //    dependson.Add(nic.id.ToString());
+            //}
 
             // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
 
@@ -545,29 +626,29 @@ namespace MigAz.Azure.Generator.ArmToArm
             // Availability Set
             // string availabilitysetname = virtualmachineinfo["cloudservicename"] + "-defaultAS";
             string availabilitysetname = null;
-            if (resource.properties.availabilitySet != null)
-            {
-                Hashtable availabilitySetinfo = new Hashtable();
-                string AVId = resource.properties.availabilitySet.id;
-                AVId = AVId.Replace("/subscriptions", "subscriptions");
-                availabilitySetinfo.Add("AvailId", AVId);
+            //if (resource.properties.availabilitySet != null)
+            //{
+            //    Hashtable availabilitySetinfo = new Hashtable();
+            //    string AVId = resource.properties.availabilitySet.id;
+            //    AVId = AVId.Replace("/subscriptions", "subscriptions");
+            //    availabilitySetinfo.Add("AvailId", AVId);
 
-                //var AvailList = null; // todo _asmRetriever.GetAzureARMResources("AvailabilitySet", availabilitySetinfo, null);
-                //var Availresults = JsonConvert.DeserializeObject<dynamic>(AvailList);
+            //    //var AvailList = null; // todo _asmRetriever.GetAzureARMResources("AvailabilitySet", availabilitySetinfo, null);
+            //    //var Availresults = JsonConvert.DeserializeObject<dynamic>(AvailList);
 
-                availabilitysetname = "TODO"; // Availresults.name;
+            //    availabilitysetname = "TODO"; // Availresults.name;
 
-                Reference availabilityset = new Reference();
-                availabilityset.id = "[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]";
-                virtualmachine_properties.availabilitySet = availabilityset;
+            //    Reference availabilityset = new Reference();
+            //    availabilityset.id = "[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]";
+            //    virtualmachine_properties.availabilitySet = availabilityset;
 
-                dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]");
+            //    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]");
 
-            }
-            else
-            {
-                // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
-            }
+            //}
+            //else
+            //{
+            //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
+            //}
 
             foreach (DictionaryEntry storageaccountdependency in storageaccountdependencies)
             {
@@ -578,8 +659,9 @@ namespace MigAz.Azure.Generator.ArmToArm
             }
 
             Core.ArmTemplate.VirtualMachine virtualmachine = new Core.ArmTemplate.VirtualMachine(this.ExecutionGuid);
-            virtualmachine.name = resource.name;
-            virtualmachine.location = resource.location;
+            virtualmachine.name = armVirtualMachine.Name;
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                virtualmachine.location = _TargetResourceGroup.Location.Name;
             virtualmachine.properties = virtualmachine_properties;
             virtualmachine.dependsOn = dependson;
             virtualmachine.resources = new List<ArmResource>();
@@ -587,7 +669,6 @@ namespace MigAz.Azure.Generator.ArmToArm
 
             this.AddResource(virtualmachine);
             LogProvider.WriteLog("BuildVirtualMachineObject", "Microsoft.Compute/virtualMachines/" + virtualmachine.name);
-
             LogProvider.WriteLog("BuildVirtualMachineObject", "End");
         }
 
@@ -599,8 +680,9 @@ namespace MigAz.Azure.Generator.ArmToArm
             storageaccount_properties.accountType = armStorageAccount.SkuName;
 
             Core.ArmTemplate.StorageAccount storageaccount = new Core.ArmTemplate.StorageAccount(this.ExecutionGuid);
-            storageaccount.name = ""; // todo  GetNewStorageAccountName(resource.name.Value);
-            storageaccount.location = _TargetResourceGroup.Location.Name;
+            storageaccount.name = "TODO"; // todo  GetNewStorageAccountName(resource.name.Value);
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                storageaccount.location = _TargetResourceGroup.Location.Name;
             storageaccount.properties = storageaccount_properties;
 
             this.AddResource(storageaccount);

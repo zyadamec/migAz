@@ -9,13 +9,14 @@ using MigAz.Core.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Generator.ArmToArm;
 using MigAz.Core;
+using MigAz.Core.Generator;
 
 namespace MigAz.UserControls.Migrators
 {
     public partial class ArmToArm : IMigratorUserControl
     {
         private AzureRetriever _AzureRetriever;
-        private IExportArtifacts _ExportArtifacts;
+        private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private AppSettingsProvider _appSettingsProvider;
         private MigAz.Forms.ARM.Providers.UISaveSelectionProvider _saveSelectionProvider;
         private ArmToArmTelemetryProvider _telemetryProvider;
@@ -168,7 +169,12 @@ namespace MigAz.UserControls.Migrators
 
         private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
         {
-            if (parentNode.Checked && parentNode.Tag != null && (parentNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup) || parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork) || parentNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount) || parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine)))
+            if (parentNode.Checked && parentNode.Tag != null && 
+                (parentNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup) || 
+                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork) || 
+                parentNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount) || 
+                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                )
                 selectedNodes.Add(parentNode);
 
             foreach (TreeNode childNode in parentNode.Nodes)
@@ -281,7 +287,7 @@ namespace MigAz.UserControls.Migrators
             get { return _appSettingsProvider; }
         }
 
-         private async void treeSource_AfterCheck(object sender, TreeViewEventArgs e)
+        private async void treeSource_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (_sourceCascadeNode == null)
             {
@@ -303,11 +309,37 @@ namespace MigAz.UserControls.Migrators
 
                 _sourceCascadeNode = null;
 
-                // todo _SelectedNodes = this.UpdateSelectedNodes();
+                _SelectedNodes = this.GetSelectedNodes(treeSource);
                 // todo                 UpdateExportItemsCount();
-                // todo this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+                this.TemplateGenerator.UpdateArtifacts(GetArmArtifacts());
             }
 
+        }
+        private ExportArtifacts GetArmArtifacts()
+        {
+            ExportArtifacts artifacts = new ExportArtifacts();
+            foreach (TreeNode selectedNode in _SelectedNodes)
+            {
+                Type tagType = selectedNode.Tag.GetType();
+                if (tagType == typeof(Azure.Arm.NetworkSecurityGroup))
+                {
+                    artifacts.NetworkSecurityGroups.Add((INetworkSecurityGroup)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Arm.VirtualNetwork))
+                {
+                    artifacts.VirtualNetworks.Add((IVirtualNetwork)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Arm.StorageAccount))
+                {
+                    artifacts.StorageAccounts.Add((IStorageAccount)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.Arm.VirtualMachine))
+                {
+                    artifacts.VirtualMachines.Add((IVirtualMachine)selectedNode.Tag);
+                }
+            }
+
+            return artifacts;
         }
     }
 }

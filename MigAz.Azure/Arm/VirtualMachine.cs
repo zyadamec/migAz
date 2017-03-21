@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualMachine : Core.ArmTemplate.VirtualMachine // ,  TODO IVirtualMachine
+    public class VirtualMachine : Core.ArmTemplate.VirtualMachine, IVirtualMachine
     {
         private JToken _VirtualMachine;
         private List<Disk> _DataDisks = new List<Disk>();
@@ -15,6 +16,7 @@ namespace MigAz.Azure.Arm
         private NetworkSecurityGroup _NetworkSecurityGroup;
         private Disk _OSVirtualHardDisk;
         private VirtualNetwork _VirtualNetwork;
+        private List<NetworkInterfaceCard> _NetworkInterfaceCards = new List<NetworkInterfaceCard>();
 
         private VirtualMachine() : base(Guid.Empty) { }
 
@@ -41,6 +43,6 @@ namespace MigAz.Azure.Arm
         public ResourceGroup ResourceGroup => _ResourceGroup;
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
         public VirtualNetwork VirtualNetwork => _VirtualNetwork;
-        public IEnumerable<NetworkInterfaceCard> NetworkInterfaces { get; internal set; }
+        public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
     }
 }

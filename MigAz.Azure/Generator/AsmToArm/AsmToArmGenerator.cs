@@ -1333,29 +1333,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             return JObject.Parse(myStr);
         }
 
-        private string BuildMigAzMessages()
-        {
-            if (this.Messages.Count == 0)
-                return String.Empty;
-
-            StringBuilder sbMigAzMessageResult = new StringBuilder();
-
-            sbMigAzMessageResult.Append("<p>MigAz has identified the following advisements during template generation for review:</p>");
-
-            sbMigAzMessageResult.Append("<p>");
-            sbMigAzMessageResult.Append("<ul>");
-            foreach (string migAzMessage in this.Messages)
-            {
-                sbMigAzMessageResult.Append("<li>");
-                sbMigAzMessageResult.Append(migAzMessage);
-                sbMigAzMessageResult.Append("</li>");
-            }
-            sbMigAzMessageResult.Append("</ul>");
-            sbMigAzMessageResult.Append("</p>");
-
-            return sbMigAzMessageResult.ToString();
-        }
-
         private string GetTemplateString()
         {
             Template template = new Template()
@@ -1371,39 +1348,25 @@ namespace MigAz.Azure.Generator.AsmToArm
             return jsontext;
         }
 
-        public static string GetCopyBlobDetailPath(string outputPath)
-        {
-            return Path.Combine(outputPath, "copyblobdetails.json");
-        }
-
         public string GetCopyBlobDetailPath()
         {
-            return GetCopyBlobDetailPath("TODO");
+            return Path.Combine(this.OutputDirectory, "copyblobdetails.json");
         }
 
-        public static string GetTemplatePath(string outputPath)
-        {
-            return Path.Combine(outputPath, "export.json");
-        }
 
         public string GetTemplatePath()
         {
-            return GetTemplatePath("TODO");
-        }
-
-        public static string GetInstructionPath(string outputPath)
-        {
-            return Path.Combine(outputPath, "DeployInstructions.html");
+            return Path.Combine(this.OutputDirectory, "export.json");
         }
 
         public string GetInstructionPath()
         {
-            return GetInstructionPath("TODO");
+            return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
         }
 
-        public static bool OutputFilesExist(string outputPath)
+        public bool OutputFilesExist()
         {
-            return File.Exists(GetInstructionPath(outputPath)) || File.Exists(GetTemplatePath(outputPath)) || File.Exists(GetInstructionPath(outputPath));
+            return File.Exists(GetInstructionPath()) || File.Exists(GetTemplatePath()) || File.Exists(GetInstructionPath());
         }
     }
 }

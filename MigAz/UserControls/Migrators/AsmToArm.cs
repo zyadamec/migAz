@@ -187,7 +187,7 @@ namespace MigAz.UserControls.Migrators
                 treeARM.Enabled = true;
                 treeASM.Enabled = true;
             }
-
+            
             StatusProvider.UpdateStatus("Ready");
         }
 
