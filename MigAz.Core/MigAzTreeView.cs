@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace MigAz.Core
 {
-    public class TreeView
+    public class MigAzTreeView
     {
 
         public static TreeNode GetDataCenterTreeViewNode(TreeNode subscriptionNode, string dataCenter, string containerName)
@@ -148,5 +148,6 @@ namespace MigAz.Core
             if (node.Parent != null)
                 await RecursiveCheckToggleUp(node.Parent, isChecked);
         }
+
     }
 }

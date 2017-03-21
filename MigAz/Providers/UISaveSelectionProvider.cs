@@ -101,7 +101,7 @@ namespace MigAz.Providers
                                 saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.Id);
 
                             // Add OS Disk Target Storage Account
-                            foreach (Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                            foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
                             {
                                 if (asmDataDisk.TargetStorageAccount != null)
                                     saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.Id);
@@ -188,7 +188,7 @@ namespace MigAz.Providers
                                     if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmVirtualMachine.OSVirtualHardDisk.DiskName))
                                         asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmVirtualMachine.OSVirtualHardDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
 
-                                    foreach (Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                                    foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
                                     {
                                         if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmDataDisk.DiskName))
                                             asmDataDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmDataDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());

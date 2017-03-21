@@ -8,6 +8,7 @@ using MigAz.Providers;
 using MigAz.Core.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Generator.ArmToArm;
+using MigAz.Core;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -85,7 +86,7 @@ namespace MigAz.UserControls.Migrators
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                     {
-                        TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualNetwork.Location, "Virtual Networks");
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualNetwork.Location, "Virtual Networks");
                         TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
                         tnVirtualNetwork.Name = armVirtualNetwork.Name;
                         tnVirtualNetwork.Tag = armVirtualNetwork;
@@ -96,7 +97,7 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (StorageAccount armStorageAccount in await _AzureContextARM.AzureRetriever.GetAzureARMStorageAccounts())
                 {
-                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armStorageAccount.PrimaryLocation, "Storage Accounts");
+                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armStorageAccount.PrimaryLocation, "Storage Accounts");
                     TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
                     tnStorageAccount.Name = tnStorageAccount.Text;
                     tnStorageAccount.Tag = armStorageAccount;
@@ -106,7 +107,7 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
                 {
-                    TreeNode parentNode = MigAz.Core.TreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.Location, "Virtual Machines");
+                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.Location, "Virtual Machines");
                     TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
                     tnVirtualMachine.Name = tnVirtualMachine.Text;
                     tnVirtualMachine.Tag = armVirtualMachine;
@@ -155,83 +156,117 @@ namespace MigAz.UserControls.Migrators
             //}
         }
 
+        private List<TreeNode> GetSelectedNodes(TreeView treeView)
+        {
+            List<TreeNode> selectedNodes = new List<TreeNode>();
+            foreach (TreeNode treeNode in treeView.Nodes)
+            {
+                RecursiveNodeSelectedAdd(ref selectedNodes, treeNode);
+            }
+            return selectedNodes;
+        }
+
+        private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
+        {
+            if (parentNode.Checked && parentNode.Tag != null && (parentNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup) || parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork) || parentNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount) || parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine)))
+                selectedNodes.Add(parentNode);
+
+            foreach (TreeNode childNode in parentNode.Nodes)
+            {
+                RecursiveNodeSelectedAdd(ref selectedNodes, childNode);
+            }
+        }
+
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
-            // TODO
+            if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
+            {
+                if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)selectedNode.Tag;
 
-            //string RGName = listViewRow.Item.ListView.Items[listViewRow.Item.Index].SubItems[0].Text;
-            //string virtualMachineName = listViewRow.Item.ListView.Items[listViewRow.Item.Index].SubItems[1].Text;
+                    #region process virtual network
+                    if (armVirtualMachine.VirtualNetwork != null)
+                    {
+                        foreach (TreeNode treeNode in treeSource.Nodes.Find(armVirtualMachine.VirtualNetwork.Name, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
 
-            //string virtualNetworkName = "";
+                    #endregion
 
+                    #region OS Disk Storage Account
 
-            //// Get Subscription from ComboBox
-            //var token = GetToken(subscriptionsAndTenants[subscriptionid], PromptBehavior.Auto);
+                    foreach (TreeNode treeNode in treeSource.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                    {
+                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                        {
+                            if (!treeNode.Checked)
+                                treeNode.Checked = true;
+                        }
+                    }
 
-            //// Get VM details
-            //_AzureRetriever.GetARMVMDetails(subscriptionid, RGName, virtualMachineName, token, out virtualNetworkName);
+                    #endregion
 
-            //Hashtable virtualmachineinfo = new Hashtable();
-            //virtualmachineinfo.Add("resourcegroup", RGName);
-            //virtualmachineinfo.Add("virtualmachineName", virtualMachineName);
-            //virtualmachineinfo.Add("virtualnetworkname", virtualNetworkName);
+                    #region Data Disk(s) Storage Account(s)
 
+                    foreach (Disk dataDisk in armVirtualMachine.DataDisks)
+                    {
+                        foreach (TreeNode treeNode in treeSource.Nodes.Find(dataDisk.StorageAccountName, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
 
-            ////Listing VMDetails
-            //var VMDetails = _AzureRetriever.GetAzureARMResources("VirtualMachine", subscriptionid, virtualmachineinfo, token, RGName);
-            //var virtualmachine = JsonConvert.DeserializeObject<dynamic>(VMDetails);
+                    #endregion
 
-            //// process virtual network
-            //foreach (ListViewItem virtualNetwork in lvwVirtualNetworks.Items)
-            //{
-            //    string VNSubstring = "/resourceGroups/" + virtualNetwork.SubItems[0].Text + "/providers/Microsoft.Network/virtualNetworks/" + virtualNetwork.SubItems[1].Text + "/";
+                    #region Network Security Group
 
-            //    bool VNSw = virtualNetworkName.Contains(VNSubstring);
+                    if (armVirtualMachine.NetworkSecurityGroup != null)
+                    {
+                        foreach (TreeNode treeNode in treeSource.Nodes.Find(armVirtualMachine.NetworkSecurityGroup.Name, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
 
-            //    if (VNSw == true)
-            //    {
-            //        virtualNetwork.Checked = true;
-            //        virtualNetwork.Selected = true;
-            //    }
-            //}
+                    #endregion
 
+                }
 
-            ////Process OS Disk
+                else if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                {
+                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)selectedNode.Tag;
 
-            //string OSDiskuri = virtualmachine.properties.storageProfile.osDisk.vhd.uri;
-
-            //string[] splitarray = OSDiskuri.Split(new char[] { '/' });
-            //string storageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-
-            //foreach (ListViewItem storageAccount in lvwStorageAccounts.Items)
-            //{
-            //    if (storageAccount.SubItems[1].Text == storageaccountname)
-            //     {
-            //        lvwStorageAccounts.Items[storageAccount.Index].Checked = true;
-            //        lvwStorageAccounts.Items[storageAccount.Index].Selected = true;
-            //      }
-            //}
-
-
-
-            ////Process Data Disks
-
-            //foreach (var DataDisk in virtualmachine.properties.storageProfile.dataDisks)
-            //{
-            //    string DataDiskuri = DataDisk.vhd.uri;
-
-            //    splitarray = DataDiskuri.Split(new char[] { '/' });
-            //    storageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-
-            //    foreach (ListViewItem storageAccount in lvwStorageAccounts.Items)
-            //    {
-            //        if (storageAccount.SubItems[1].Text == storageaccountname)
-            //        {
-            //            lvwStorageAccounts.Items[storageAccount.Index].Checked = true;
-            //            lvwStorageAccounts.Items[storageAccount.Index].Selected = true;
-            //        }
-            //    }
-            //}
+                    foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+                    {
+                        if (armSubnet.NetworkSecurityGroup != null)
+                        {
+                            foreach (TreeNode treeNode in treeSource.Nodes.Find(armSubnet.NetworkSecurityGroup.Name, true))
+                            {
+                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup)))
+                                {
+                                    if (!treeNode.Checked)
+                                        treeNode.Checked = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             StatusProvider.UpdateStatus("Ready");
         }
@@ -254,16 +289,16 @@ namespace MigAz.UserControls.Migrators
 
                 if (e.Node.Checked)
                 {
-                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
-                    MigAz.Core.TreeView.FillUpIfFullDown(e.Node);
+                    await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    MigAzTreeView.FillUpIfFullDown(e.Node);
                     treeSource.SelectedNode = e.Node;
 
                     await AutoSelectDependencies(e.Node);
                 }
                 else
                 {
-                    await MigAz.Core.TreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
-                    await MigAz.Core.TreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    await MigAzTreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
                 _sourceCascadeNode = null;

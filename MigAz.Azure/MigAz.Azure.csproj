@@ -61,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arm\AvailabilitySet.cs" />
+    <Compile Include="Arm\DataDisk.cs" />
+    <Compile Include="Arm\Disk.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
     <Compile Include="Arm\NetworkInterfaceCard.cs" />

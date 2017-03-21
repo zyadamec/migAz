@@ -34,6 +34,7 @@ namespace MigAz.Azure.Arm
         public string Id => (string)_VirtualNetwork["id"];
         public string Location => (string)_VirtualNetwork["location"];
         public string TargetId => this.Id;
+        public string Type => (string)_VirtualNetwork["type"];
         public List<ISubnet> Subnets => _Subnets;
         public List<string> DnsServers => _DnsServers;
         public List<string> AddressPrefixes => _AddressPrefixes;

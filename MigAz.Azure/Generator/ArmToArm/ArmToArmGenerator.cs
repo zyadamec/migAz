@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Xml;
 using MigAz.Azure.Models;
-using MigAz.Azure.Arm;
 
 namespace MigAz.Azure.Generator.ArmToArm
 {
@@ -80,7 +79,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             foreach (Arm.VirtualMachine armVirtualMachine in _ARMArtifacts.VirtualMachines)
             {
                 //LoadBalancer Processing
-                foreach (NetworkInterfaceCard nicint in armVirtualMachine.NetworkInterfaces)
+                foreach (Arm.NetworkInterfaceCard nicint in armVirtualMachine.NetworkInterfaces)
                 {
                     // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
                     //{
@@ -308,7 +307,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             //foreach rule without System Rule
-            foreach (NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
+            foreach (Arm.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
             {
                 SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
                 securityrule_properties.description = rule.Name;

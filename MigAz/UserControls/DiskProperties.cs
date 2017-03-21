@@ -17,14 +17,14 @@ namespace MigAz.UserControls
     {
         private AsmToArm _AsmToArmForm;
         private TreeNode _ARMDataDiskNode;
-        private Disk _AsmDataDisk;
+        private Azure.Asm.Disk _AsmDataDisk;
 
         public DiskProperties()
         {
             InitializeComponent();
         }
 
-        internal void Bind(AsmToArm asmToArmForm, Disk asmDisk)
+        internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)
         {
             _AsmToArmForm = asmToArmForm;
             _AsmDataDisk = asmDisk;
@@ -36,7 +36,7 @@ namespace MigAz.UserControls
         {
             _AsmToArmForm = asmToArmForm;
             _ARMDataDiskNode = armDataDiskNode;
-            _AsmDataDisk = (Disk)_ARMDataDiskNode.Tag;
+            _AsmDataDisk = (Azure.Asm.Disk)_ARMDataDiskNode.Tag;
 
             BindCommon();
         }
@@ -172,7 +172,7 @@ namespace MigAz.UserControls
             {
                 TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
                 Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
-                foreach (Disk parentDisk in parentVirtualMachine.DataDisks)
+                foreach (Azure.Asm.Disk parentDisk in parentVirtualMachine.DataDisks)
                 {
                     if (parentDisk.DiskName == _AsmDataDisk.DiskName)
                     {

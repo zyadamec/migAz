@@ -60,7 +60,7 @@
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\IVirtualMachine.cs" />
     <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="TreeView.cs" />
+    <Compile Include="MigAzTreeView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionCheck.cs" />
   </ItemGroup>
