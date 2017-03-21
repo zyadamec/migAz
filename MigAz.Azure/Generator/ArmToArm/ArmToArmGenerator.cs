@@ -429,37 +429,22 @@ namespace MigAz.Azure.Generator.ArmToArm
         private void BuildARMVirtualMachineObject(Arm.VirtualMachine armVirtualMachine)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
-            //AsmArtefacts artefacts;
 
-            string virtualmachinename = armVirtualMachine.name;
-            string networkinterfacename = virtualmachinename;
+            Hashtable storageaccountdependencies = new Hashtable();
             // todo string ostype = armVirtualMachine.properties.storageProfile.osDisk.osType;
 
-            if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
-            {
-                string olddiskurl = armVirtualMachine.OSVirtualHardDisk.VhdUri;
-                string[] splitarray = olddiskurl.Split(new char[] { '/' });
-                string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-                string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
-                string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
+            Vhd vhd = new Vhd();
 
-                Hashtable storageaccountdependencies = new Hashtable();
-                storageaccountdependencies.Add(newstorageaccountname, "");
-            }
+            OsDisk osdisk = new OsDisk();
+            osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
+            osdisk.vhd = vhd;
+            osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
 
             HardwareProfile hardwareprofile = new HardwareProfile();
             hardwareprofile.vmSize = armVirtualMachine.VmSize;
 
             NetworkProfile networkprofile = new NetworkProfile();
             // todo networkprofile.networkInterfaces = networkinterfaces;
-
-            Vhd vhd = new Vhd();
-            vhd.uri = newdiskurl;
-
-            OsDisk osdisk = new OsDisk();
-            osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
-            osdisk.vhd = vhd;
-            osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
 
             ImageReference imagereference = new ImageReference();
             OsProfile osprofile = new OsProfile();
@@ -469,7 +454,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             {
                 osdisk.createOption = "FromImage";
 
-                osprofile.computerName = virtualmachinename;
+                osprofile.computerName = armVirtualMachine.Name;
                 osprofile.adminUsername = "[parameters('adminUsername')]";
                 osprofile.adminPassword = "[parameters('adminPassword')]";
 
@@ -499,15 +484,28 @@ namespace MigAz.Azure.Generator.ArmToArm
                 osdisk.createOption = "Attach";
                 // todoosdisk.osType = ostype;
 
-                CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                copyblobdetail.SourceSA = oldstorageaccountname;
-                copyblobdetail.SourceContainer = splitarray[3];
-                copyblobdetail.SourceBlob = splitarray[4];
-                copyblobdetail.SourceKey = "TODO";
-                copyblobdetail.DestinationSA = newstorageaccountname;
-                copyblobdetail.DestinationContainer = splitarray[3];
-                copyblobdetail.DestinationBlob = splitarray[4];
-                _CopyBlobDetails.Add(copyblobdetail);
+                if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
+                {
+                    string olddiskurl = armVirtualMachine.OSVirtualHardDisk.VhdUri;
+                    string[] splitarray = olddiskurl.Split(new char[] { '/' });
+                    string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
+                    string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
+
+                    vhd.uri = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
+
+                    storageaccountdependencies.Add(newstorageaccountname, "");
+
+                    CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                    copyblobdetail.SourceSA = oldstorageaccountname;
+                    copyblobdetail.SourceContainer = splitarray[3];
+                    copyblobdetail.SourceBlob = splitarray[4];
+                    copyblobdetail.SourceKey = "TODO";
+                    copyblobdetail.DestinationSA = newstorageaccountname;
+                    copyblobdetail.DestinationContainer = splitarray[3];
+                    copyblobdetail.DestinationBlob = splitarray[4];
+                    _CopyBlobDetails.Add(copyblobdetail);
+                }
+
                 // end of block of code to help copying the blobs to the new storage accounts
             }
 
@@ -521,11 +519,11 @@ namespace MigAz.Azure.Generator.ArmToArm
                 datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
                 datadisk.lun = sourceDataDisk.Lun;
 
-                olddiskurl = sourceDataDisk.VhdUri;
-                splitarray = olddiskurl.Split(new char[] { '/' });
-                oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
-                newstorageaccountname = // todo GetNewStorageAccountName(oldstorageaccountname);
-                newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
+                string olddiskurl = sourceDataDisk.VhdUri;
+                string[] splitarray = olddiskurl.Split(new char[] { '/' });
+                string oldstorageaccountname = splitarray[2].Split(new char[] { '.' })[0];
+                string newstorageaccountname = ""; // todo GetNewStorageAccountName(oldstorageaccountname);
+                string newdiskurl = olddiskurl.Replace(oldstorageaccountname + ".", newstorageaccountname + ".");
 
                 // if the tool is configured to create new VMs with empty data disks
                 if (_settingsProvider.BuildEmpty)
