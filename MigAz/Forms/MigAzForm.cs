@@ -29,7 +29,7 @@ namespace MigAz.Forms
             _appSettingsProvider = new AppSettingsProvider();
 
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
-
+            propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
         }
 
@@ -116,7 +116,7 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider);
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             parent.Controls.Add(asmToArm);
@@ -129,7 +129,7 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider);
+            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider, propertyPanel1);
             armToArm.AzureContextARM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             parent.Controls.Add(armToArm);
 
@@ -141,7 +141,7 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider);
+            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
             awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
@@ -159,6 +159,7 @@ namespace MigAz.Forms
                 }
             }
 
+            propertyPanel1.Clear();
             dataGridView1.DataSource = null;
             newMigrationToolStripMenuItem.Enabled = true;
             closeMigrationToolStripMenuItem.Enabled = false;
@@ -168,6 +169,8 @@ namespace MigAz.Forms
 
         private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
         {
+            propertyPanel1.Width = splitContainer1.Panel2.Width - 10;
+            propertyPanel1.Height = splitContainer1.Panel2.Height - 100;
             panel1.Top = splitContainer1.Panel2.Height - panel1.Height - 15;
             panel1.Width = splitContainer1.Panel2.Width;
         }

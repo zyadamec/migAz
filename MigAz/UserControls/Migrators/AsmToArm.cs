@@ -26,6 +26,7 @@ namespace MigAz.UserControls.Migrators
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
         private ResourceGroup _TargetResourceGroup;
+        private PropertyPanel _PropertyPanel;
 
         #endregion
 
@@ -33,7 +34,7 @@ namespace MigAz.UserControls.Migrators
 
         public AsmToArm() : base(null, null) { }
 
-        public AsmToArm(IStatusProvider statusProvider, ILogProvider logProvider) 
+        public AsmToArm(IStatusProvider statusProvider, ILogProvider logProvider, PropertyPanel propertyPanel) 
             : base (statusProvider, logProvider)
         {
             InitializeComponent();
@@ -41,6 +42,7 @@ namespace MigAz.UserControls.Migrators
             _saveSelectionProvider = new UISaveSelectionProvider();
             _telemetryProvider = new AsmToArmTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
+            _PropertyPanel = propertyPanel;
 
             _AzureContextSourceASM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextSourceASM.AzureEnvironmentChanged += _AzureContextSourceASM_AzureEnvironmentChanged;
@@ -197,7 +199,7 @@ namespace MigAz.UserControls.Migrators
             treeARM.Nodes.Clear();
             _SelectedNodes.Clear();
             UpdateExportItemsCount();
-            ClearAzureResourceManagerProperties();
+            _PropertyPanel.Clear();
             treeARM.Enabled = false;
             treeASM.Enabled = false;
         }
@@ -373,7 +375,7 @@ namespace MigAz.UserControls.Migrators
 
         private void treeASM_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            ClearAzureResourceManagerProperties();
+            _PropertyPanel.Clear();
         }
 
         private async void treeASM_AfterCheck(object sender, TreeViewEventArgs e)
@@ -440,9 +442,9 @@ namespace MigAz.UserControls.Migrators
 
         private async void treeARM_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            ClearAzureResourceManagerProperties();
+            _PropertyPanel.Clear();
 
-            lblAzureObjectName.Text = String.Empty;
+            _PropertyPanel.ResourceText = String.Empty;
 
             if (e.Node.Tag != null)
             {
@@ -452,80 +454,80 @@ namespace MigAz.UserControls.Migrators
 
                     if (asmTreeNode.Tag != null)
                     {
-                        lblAzureObjectName.Text = e.Node.Text;
+                        _PropertyPanel.ResourceText = e.Node.Text;
 
                         if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
                         {
-                            pictureBox1.Image = imageList1.Images["VirtualNetwork"];
+                            this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
                             VirtualNetworkProperties properties = new VirtualNetworkProperties();
                             properties.Bind(e.Node);
-                            panel1.Controls.Add(properties);
+                            _PropertyPanel.PropertyDetailControl = properties;
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
                         {
-                            pictureBox1.Image = imageList1.Images["StorageAccount"];
+                            this._PropertyPanel.ResourceImage = imageList1.Images["StorageAccount"];
 
                             Azure.Asm.StorageAccount storageAccount = (Azure.Asm.StorageAccount)asmTreeNode.Tag;
-                            lblAzureObjectName.Text = storageAccount.Name;
+                            _PropertyPanel.ResourceText = storageAccount.Name;
 
                             StorageAccountProperties properties = new StorageAccountProperties();
                             properties.Bind(this._AzureContextTargetARM, e.Node);
-                            panel1.Controls.Add(properties);
+                            _PropertyPanel.PropertyDetailControl = properties;
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
                         {
-                            pictureBox1.Image = imageList1.Images["VirtualMachine"];
+                            this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
                             VirtualMachineProperties properties = new VirtualMachineProperties();
                             await properties.Bind(e.Node, this);
-                            panel1.Controls.Add(properties);
+                            _PropertyPanel.PropertyDetailControl = properties;
                         }
                         else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
                         {
-                            pictureBox1.Image = imageList1.Images["NetworkSecurityGroup"];
+                            this._PropertyPanel.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
 
                             NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
                             properties.Bind(e.Node, this);
-                            panel1.Controls.Add(properties);
+                            _PropertyPanel.PropertyDetailControl = properties;
                         }
                     }
                 }
                 if (e.Node.Tag.GetType() == typeof(Azure.Asm.Subnet))
                 {
-                    pictureBox1.Image = imageList1.Images["VirtualNetwork"];
+                    this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
                     Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)e.Node.Tag;
 
                     SubnetProperties properties = new SubnetProperties();
                     properties.Bind(e.Node);
-                    panel1.Controls.Add(properties);
+                    _PropertyPanel.PropertyDetailControl = properties;
                 }
                 else if (e.Node.Tag.GetType() == typeof(Azure.Asm.Disk))
                 {
                     Azure.Asm.Disk asmDisk = (Azure.Asm.Disk)e.Node.Tag;
 
-                    pictureBox1.Image = imageList1.Images["Disk"];
+                    this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
                     DiskProperties properties = new DiskProperties();
                     properties.Bind(this, e.Node);
-                    panel1.Controls.Add(properties);
+                    _PropertyPanel.PropertyDetailControl = properties;
                 }
                 else if (e.Node.Tag.GetType() == typeof(AvailabilitySet))
                 {
-                    pictureBox1.Image = imageList1.Images["AvailabilitySet"];
+                    this._PropertyPanel.ResourceImage = imageList1.Images["AvailabilitySet"];
 
                     AvailabilitySetProperties properties = new AvailabilitySetProperties();
                     properties.Bind(e.Node);
-                    panel1.Controls.Add(properties);
+                    _PropertyPanel.PropertyDetailControl = properties;
                 }
                 else if (e.Node.Tag.GetType() == typeof(ResourceGroup))
                 {
-                    pictureBox1.Image = imageList1.Images["ResourceGroup"];
+                    this._PropertyPanel.ResourceImage = imageList1.Images["ResourceGroup"];
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     await properties.Bind(this, e.Node);
-                    panel1.Controls.Add(properties);
+                    _PropertyPanel.PropertyDetailControl = properties;
                 }
             }
 
@@ -722,7 +724,6 @@ namespace MigAz.UserControls.Migrators
         {
             treeASM.Height = this.Height - 195;
             treeARM.Height = treeASM.Height;
-            groupBox1.Height = treeARM.Height - 10;
         }
 
         #endregion
@@ -762,18 +763,6 @@ namespace MigAz.UserControls.Migrators
 
             //btnExport.Text = "Export " + selectedExportCount.ToString() + " objects";
             //btnExport.Enabled = _SelectedNodes.Count() > 0;
-        }
-
-        private void ClearAzureResourceManagerProperties()
-        {
-            panel1.Controls.Clear();
-            pictureBox1.Image = null;
-            lblAzureObjectName.Text = String.Empty;
-        }
-
-        private void groupBox1_Resize(object sender, EventArgs e)
-        {
-            panel1.Height = groupBox1.Height - 95;
         }
     }
 }

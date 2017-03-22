@@ -23,10 +23,11 @@ namespace MigAz.UserControls.Migrators
         private AzureContext _AzureContextARM;
         private TreeNode _sourceCascadeNode;
         private ResourceGroup _TargetResourceGroup;
+        private PropertyPanel _PropertyPanel;
 
         public ArmToArm() : base(null, null) { }
 
-        public ArmToArm(IStatusProvider statusProvider, ILogProvider logProvider)
+        public ArmToArm(IStatusProvider statusProvider, ILogProvider logProvider, PropertyPanel propertyPanel)
             : base(statusProvider, logProvider)
         {
             InitializeComponent();
@@ -34,6 +35,7 @@ namespace MigAz.UserControls.Migrators
             _saveSelectionProvider = new MigAz.Forms.ARM.Providers.UISaveSelectionProvider();
             _telemetryProvider = new ArmToArmTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
+            _PropertyPanel = propertyPanel;
 
             _AzureContextARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
             _AzureContextARM.AfterAzureSubscriptionChange += _AzureContextARM_AfterAzureSubscriptionChange;

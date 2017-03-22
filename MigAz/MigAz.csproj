@@ -160,6 +160,12 @@
     <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\PropertyPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PropertyPanel.Designer.cs">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ResourceGroupProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -229,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\PropertyPanel.resx">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>

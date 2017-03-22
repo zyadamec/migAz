@@ -43,6 +43,7 @@
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabRest = new System.Windows.Forms.TabPage();
             this.txtRest = new System.Windows.Forms.TextBox();
+            this.propertyPanel1 = new MigAz.UserControls.PropertyPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
@@ -122,7 +123,7 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 40);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -131,9 +132,10 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.propertyPanel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 889);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -153,8 +155,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
-            this.splitContainer2.SplitterDistance = 601;
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 889);
+            this.splitContainer2.SplitterDistance = 599;
             this.splitContainer2.TabIndex = 0;
             // 
             // tabControl1
@@ -229,6 +231,16 @@
             this.txtRest.Size = new System.Drawing.Size(903, 239);
             this.txtRest.TabIndex = 1;
             // 
+            // propertyPanel1
+            // 
+            this.propertyPanel1.Location = new System.Drawing.Point(3, 3);
+            this.propertyPanel1.Name = "propertyPanel1";
+            this.propertyPanel1.PropertyDetailControl = null;
+            this.propertyPanel1.ResourceImage = null;
+            this.propertyPanel1.ResourceText = "lblAzureObjectName";
+            this.propertyPanel1.Size = new System.Drawing.Size(594, 410);
+            this.propertyPanel1.TabIndex = 8;
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.button1);
@@ -291,7 +303,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1993, 40);
+            this.menuStrip1.Size = new System.Drawing.Size(1993, 42);
             this.menuStrip1.TabIndex = 58;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -303,7 +315,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -363,7 +375,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem
@@ -455,6 +467,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportAnIssueOnGithubToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visitMigAzOnGithubToolStripMenuItem;
+        private UserControls.PropertyPanel propertyPanel1;
     }
 }
 

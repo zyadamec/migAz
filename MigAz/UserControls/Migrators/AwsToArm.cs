@@ -31,13 +31,16 @@ namespace MigAz.UserControls.Migrators
         private AwsObjectRetriever _awsObjectRetriever;
         private dynamic telemetryProvider;
         private Forms.AWS.Providers.AppSettingsProvider _appSettingsProvider;
+        private PropertyPanel _PropertyPanel;
 
         public AwsToArm() : base(null,null) { }
 
-        public AwsToArm(IStatusProvider statusProvider, ILogProvider logProvider)
+        public AwsToArm(IStatusProvider statusProvider, ILogProvider logProvider, PropertyPanel propertyPanel)
             : base(statusProvider, logProvider)
         {
             InitializeComponent();
+
+            _PropertyPanel = propertyPanel;
         }
 
         public async Task Bind()
