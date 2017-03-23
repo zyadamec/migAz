@@ -108,7 +108,16 @@ namespace MigAz.Tests
 
             templateGenerator.UpdateArtifacts(artifacts);
 
-            bool messageExists = templateGenerator.Messages.Contains("Target Virtual Network for ASM Virtual Machine 'VM3' must be specified.");
+            bool messageExists = false;
+            foreach (MigAzGeneratorAlert alert in templateGenerator.Alerts)
+            {
+                if (alert.Message.Contains("Target Virtual Network for ASM Virtual Machine 'VM3' must be specified."))
+                {
+                    messageExists = true;
+                    break;
+                }
+            }
+
             Assert.IsFalse(!messageExists, "Did not receive Null Target Virtual Network Argument Exception");
         }
 

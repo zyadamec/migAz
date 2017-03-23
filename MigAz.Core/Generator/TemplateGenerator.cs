@@ -5,6 +5,7 @@ using MigAz.Core.Interface;
 using MigAz.Core.ArmTemplate;
 using System.Threading.Tasks;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MigAz.Core.Generator
 {
@@ -13,7 +14,7 @@ namespace MigAz.Core.Generator
         private Guid _ExecutionGuid = Guid.NewGuid();
         private List<ArmResource> _Resources = new List<ArmResource>();
         private Dictionary<string, ArmTemplate.Parameter> _Parameters = new Dictionary<string, ArmTemplate.Parameter>();
-        private List<String> _Messages = new List<string>();
+        private List<MigAzGeneratorAlert> _Alerts = new List<MigAzGeneratorAlert>();
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
@@ -45,10 +46,10 @@ namespace MigAz.Core.Generator
             get { return _ExecutionGuid; }
         }
 
-        public List<String> Messages
+        public List<MigAzGeneratorAlert> Alerts
         {
-            get { return _Messages; }
-            set { _Messages = value; }
+            get { return _Alerts; }
+            set { _Alerts = value; }
         }
         public String OutputDirectory
         {
@@ -84,6 +85,11 @@ namespace MigAz.Core.Generator
             else
                 _logProvider.WriteLog("TemplateResult.AddResource", resource.type + resource.name + " already exists.");
 
+        }
+
+        public void AddAlert(AlertType alertType, string message, object sourceObject)
+        {
+            this.Alerts.Add(new MigAzGeneratorAlert(alertType, message, sourceObject));
         }
 
         public bool ResourceExists(Type type, string objectName)
@@ -127,7 +133,7 @@ namespace MigAz.Core.Generator
 
         public string BuildMigAzMessages()
         {
-            if (this.Messages.Count == 0)
+            if (this.Alerts.Count == 0)
                 return String.Empty;
 
             StringBuilder sbMigAzMessageResult = new StringBuilder();
@@ -136,7 +142,7 @@ namespace MigAz.Core.Generator
 
             sbMigAzMessageResult.Append("<p>");
             sbMigAzMessageResult.Append("<ul>");
-            foreach (string migAzMessage in this.Messages)
+            foreach (MigAzGeneratorAlert migAzMessage in this.Alerts)
             {
                 sbMigAzMessageResult.Append("<li>");
                 sbMigAzMessageResult.Append(migAzMessage);

@@ -343,5 +343,21 @@ namespace MigAz.UserControls.Migrators
 
             return artifacts;
         }
+
+        private void treeSource_BeforeCheck(object sender, TreeViewCancelEventArgs e)
+        {
+            if (e.Node.Tag != null)
+            {
+                if (e.Node.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)e.Node.Tag;
+                    if (armVirtualMachine.OSVirtualHardDisk.VhdUri == String.Empty)
+                    {
+                        LogProvider.WriteLog("treeSource_BeforeCheck", "VM '" + armVirtualMachine.Name + "' contains one or more mananged disks which is not yet supported.");
+                        e.Cancel = true;
+                    }
+                }
+            }
+        }
     }
 }

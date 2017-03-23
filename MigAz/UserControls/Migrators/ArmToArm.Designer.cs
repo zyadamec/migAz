@@ -40,6 +40,7 @@
             this.treeSource.Name = "treeSource";
             this.treeSource.Size = new System.Drawing.Size(700, 455);
             this.treeSource.TabIndex = 48;
+            this.treeSource.BeforeCheck += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeSource_BeforeCheck);
             this.treeSource.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeSource_AfterCheck);
             // 
             // label1

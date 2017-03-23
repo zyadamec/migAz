@@ -47,7 +47,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
 
-            Messages.Clear();
+            Alerts.Clear();
             TemplateStreams.Clear();
             Resources.Clear();
             _CopyBlobDetails.Clear();
@@ -272,7 +272,7 @@ namespace MigAz.Azure.Generator.ArmToArm
                 subnet.properties = properties;
 
                 subnets.Add(subnet);
-                this.Messages.Add($"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.");
+                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", armVirtualNetwork);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using MigAz.Core.Interface;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace MigAz.Core.Generator
 {
@@ -13,10 +14,10 @@ namespace MigAz.Core.Generator
             VirtualMachines = new List<IVirtualMachine>();
         }
 
-        public List<INetworkSecurityGroup> NetworkSecurityGroups { get; private set; }
-        public List<IStorageAccount> StorageAccounts { get; private set; }
-        public List<IVirtualNetwork> VirtualNetworks { get; private set; }
-        public List<IVirtualMachine> VirtualMachines { get; private set; }
+        public List<INetworkSecurityGroup> NetworkSecurityGroups { get; }
+        public List<IStorageAccount> StorageAccounts { get; }
+        public List<IVirtualNetwork> VirtualNetworks { get; }
+        public List<IVirtualMachine> VirtualMachines { get; }
 
         public INetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {

@@ -123,7 +123,7 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 40);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -135,7 +135,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.propertyPanel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 889);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -155,8 +155,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 889);
-            this.splitContainer2.SplitterDistance = 599;
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
+            this.splitContainer2.SplitterDistance = 600;
             this.splitContainer2.TabIndex = 0;
             // 
             // tabControl1
@@ -190,6 +190,7 @@
             this.dataGridView1.RowTemplate.Height = 33;
             this.dataGridView1.Size = new System.Drawing.Size(890, 236);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
             // 
             // tabLog
             // 
@@ -303,7 +304,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1993, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(1993, 40);
             this.menuStrip1.TabIndex = 58;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -315,7 +316,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -344,9 +345,11 @@
             // 
             // aWSToARMToolStripMenuItem
             // 
+            this.aWSToARMToolStripMenuItem.Enabled = false;
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
             this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
             this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
+            this.aWSToARMToolStripMenuItem.Visible = false;
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
             // 
             // closeMigrationToolStripMenuItem
@@ -375,7 +378,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem

@@ -12,6 +12,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 
 namespace MigAz.Azure.Generator.AsmToArm
 {
@@ -25,7 +26,7 @@ namespace MigAz.Azure.Generator.AsmToArm
         private ExportArtifacts _ASMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
 
-        private AsmToArmGenerator() : base(null, null) { }
+        private AsmToArmGenerator() : base(null, null) { } 
 
         public AsmToArmGenerator(
             ISubscription sourceSubscription, 
@@ -47,11 +48,13 @@ namespace MigAz.Azure.Generator.AsmToArm
         public Arm.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
+        // Use of Treeview has been added here with aspect of transitioning full output towards this as authoritative source
+        // Thought is that ExportArtifacts phases out, as it is providing limited context availability.
         public override async void UpdateArtifacts(IExportArtifacts artifacts)
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
-            Messages.Clear();
+            Alerts.Clear();
             TemplateStreams.Clear();
             Resources.Clear();
             _CopyBlobDetails.Clear();
@@ -60,44 +63,42 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (_TargetResourceGroup == null)
             {
-                Messages.Add("Target Resource Group must be provided for template generation.");
+                this.AddAlert(AlertType.Error, "Target Resource Group must be provided for template generation.", _TargetResourceGroup);
             }
 
             if (_TargetResourceGroup.Location == null)
             {
-                Messages.Add("Target Resource Group Location must be provided for template generation.");
+                this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _TargetResourceGroup);
             }
 
-            foreach (INetworkSecurityGroup iNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
             {
-                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)iNetworkSecurityGroup;
-
                 if (asmNetworkSecurityGroup.TargetName == string.Empty)
-                    Messages.Add("Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.", asmNetworkSecurityGroup);
             }
 
             foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
             {
                 if (asmVirtualMachine.TargetName == string.Empty)
-                    Messages.Add("Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
                 if (asmVirtualMachine.TargetAvailabilitySet == null)
-                    Messages.Add("Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
                 if (asmVirtualMachine.TargetVirtualNetwork == null)
-                    Messages.Add("Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
                 if (asmVirtualMachine.TargetSubnet == null)
-                    Messages.Add("Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
                 if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    Messages.Add("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.");
+                    this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
 
                 foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                 {
                     if (dataDisk.TargetStorageAccount == null)
                     {
-                        Messages.Add("Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.");
+                        this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
                     }
                 }
             }
@@ -485,7 +486,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 subnet.properties = properties;
 
                 subnets.Add(subnet);
-                this.Messages.Add($"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.");
+                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", asmVirtualNetwork);
             }
             else
             {
@@ -507,7 +508,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                         if (asmNetworkSecurityGroup == null)
                         {
-                            this.Messages.Add("Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + asmSubnet.NetworkSecurityGroup.Name + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).");
+                            this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + asmSubnet.NetworkSecurityGroup.Name + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
                         }
                         else
                         {
@@ -665,7 +666,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 this.AddResource(virtualnetworkgateway);
 
                 if (!asmVirtualNetwork.HasGatewaySubnet)
-                    this.Messages.Add("The Virtual Network '" + asmVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.");
+                    this.AddAlert(AlertType.Error, "The Virtual Network '" + asmVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
 
                 await AddLocalSiteToGateway(asmVirtualNetwork, virtualnetwork, virtualnetworkgateway);
             }
@@ -711,7 +712,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     if (connectionShareKey == String.Empty)
                     {
                         gatewayconnection_properties.sharedKey = "***SHARED KEY GOES HERE***";
-                        this.Messages.Add($"Unable to retrieve shared key for VPN connection '{virtualnetworkgateway.name}'. Please edit the template to provide this value.");
+                        this.AddAlert(AlertType.Error, $"Unable to retrieve shared key for VPN connection '{virtualnetworkgateway.name}'. Please edit the template to provide this value.", asmVirtualNetwork);
                     }
                     else
                     {
@@ -722,7 +723,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     gatewayconnection_properties.connectionType = "ExpressRoute";
                     gatewayconnection_properties.peer = new Reference() { id = "/subscriptions/***/resourceGroups/***" + ArmConst.ProviderExpressRouteCircuits + "***" }; // todo, this is incomplete
-                    this.Messages.Add($"Gateway '{virtualnetworkgateway.name}' connects to ExpressRoute. MigAz is unable to migrate ExpressRoute circuits. Please create or convert the circuit yourself and update the circuit resource ID in the generated template.");
+                    this.AddAlert(AlertType.Error, $"Gateway '{virtualnetworkgateway.name}' connects to ExpressRoute. MigAz is unable to migrate ExpressRoute circuits. Please create or convert the circuit yourself and update the circuit resource ID in the generated template.", asmVirtualNetwork);
                 }
 
                 // Connections
@@ -942,7 +943,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 if (asmNetworkSecurityGroup == null)
                 {
-                    this.Messages.Add("Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + asmVirtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).");
+                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + asmVirtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
                 }
                 else
                 {

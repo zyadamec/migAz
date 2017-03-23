@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pnlProperties = new System.Windows.Forms.Panel();
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pnlProperties = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -46,8 +46,16 @@
             this.groupBox1.Size = new System.Drawing.Size(723, 473);
             this.groupBox1.TabIndex = 59;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Azure Resource Manager Properties";
+            this.groupBox1.Text = "Target ARM Properties";
             this.groupBox1.Resize += new System.EventHandler(this.groupBox1_Resize);
+            // 
+            // pnlProperties
+            // 
+            this.pnlProperties.AutoScroll = true;
+            this.pnlProperties.Location = new System.Drawing.Point(24, 162);
+            this.pnlProperties.Name = "pnlProperties";
+            this.pnlProperties.Size = new System.Drawing.Size(664, 284);
+            this.pnlProperties.TabIndex = 63;
             // 
             // lblAzureObjectName
             // 
@@ -67,14 +75,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            // 
-            // pnlProperties
-            // 
-            this.pnlProperties.AutoScroll = true;
-            this.pnlProperties.Location = new System.Drawing.Point(24, 162);
-            this.pnlProperties.Name = "pnlProperties";
-            this.pnlProperties.Size = new System.Drawing.Size(664, 284);
-            this.pnlProperties.TabIndex = 63;
             // 
             // PropertyPanel
             // 

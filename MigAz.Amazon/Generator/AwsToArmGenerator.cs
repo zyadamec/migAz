@@ -30,7 +30,7 @@ namespace MigAz.AWS.Generator
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
-            Messages.Clear();
+            Alerts.Clear();
             TemplateStreams.Clear();
             Resources.Clear();
 

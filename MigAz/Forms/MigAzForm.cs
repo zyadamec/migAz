@@ -72,7 +72,7 @@ namespace MigAz.Forms
         private void MigAzForm_Load(object sender, EventArgs e)
         {
             _logProvider.WriteLog("MigAzForm_Load", "Program start");
-            this.Text = "MigAz (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
+            this.Text = "MigAz";
         }
 
         #endregion
@@ -90,10 +90,8 @@ namespace MigAz.Forms
         private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
-            dataGridView1.DataSource = a.Messages.Select(x => new { Message = x }).ToList();
+            dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
         }
-
-     
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -139,6 +137,9 @@ namespace MigAz.Forms
 
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("AWS To ARM has not been finalized in this newer MigAz tool.  Continue to use the stand alone AWS To ARM MigAz tool for AWS.");
+            return;
+
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
@@ -151,6 +152,8 @@ namespace MigAz.Forms
 
         private void closeMigrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "Start close current migration session control");
+
             if (splitContainer2.Panel1.Controls.Count > 0)
             {
                 foreach (Control control in splitContainer2.Panel1.Controls)
@@ -163,6 +166,9 @@ namespace MigAz.Forms
             dataGridView1.DataSource = null;
             newMigrationToolStripMenuItem.Enabled = true;
             closeMigrationToolStripMenuItem.Enabled = false;
+            this.Text = "MigAz";
+
+            LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "End close current migration session control");
         }
 
         #endregion
@@ -210,6 +216,11 @@ namespace MigAz.Forms
         {
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            MessageBox.Show("Future, double click selected Target TreeNode (thereby showing properties of alerted object).");
         }
     }
 }

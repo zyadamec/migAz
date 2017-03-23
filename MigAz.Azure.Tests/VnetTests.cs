@@ -162,8 +162,8 @@ namespace MigAz.Tests
             Assert.IsNotNull(conn.First()["properties"]["peer"]["id"].Value<string>());
 
             // Validate message
-            Assert.AreEqual(1, templateGenerator.Messages.Count);
-            StringAssert.Contains(templateGenerator.Messages[0], "ExpressRoute");
+            Assert.AreEqual(1, templateGenerator.Alerts.Count);
+            StringAssert.Contains(templateGenerator.Alerts[0].Message, "ExpressRoute");
         }
 
         [TestMethod]
