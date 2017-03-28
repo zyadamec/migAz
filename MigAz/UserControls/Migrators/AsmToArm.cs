@@ -11,6 +11,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core.Generator;
 using MigAz.Core;
+using MigAz.Forms;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -106,88 +107,97 @@ namespace MigAz.UserControls.Migrators
         {
             ResetForm();
 
-            if (sender.AzureSubscription != null)
+            try
             {
-                if (_AzureContextTargetARM.AzureSubscription == null)
+
+                if (sender.AzureSubscription != null)
                 {
-                    await _AzureContextTargetARM.SetSubscriptionContext(_AzureContextSourceASM.AzureSubscription);
-                }
-
-                azureLoginContextViewer2.Enabled = true;
-
-                TreeNode subscriptionNode = new TreeNode(sender.AzureSubscription.Name);
-                treeASM.Nodes.Add(subscriptionNode);
-                subscriptionNode.Expand();
-
-                List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
-                foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
-                {
-                    if (asmVirtualNetwork.HasNonGatewaySubnet)
+                    if (_AzureContextTargetARM.AzureSubscription == null)
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmVirtualNetwork.Location, "Virtual Networks");
-                        TreeNode tnVirtualNetwork = new TreeNode(asmVirtualNetwork.Name);
-                        tnVirtualNetwork.Name = asmVirtualNetwork.Name;
-                        tnVirtualNetwork.Tag = asmVirtualNetwork;
-                        parentNode.Nodes.Add(tnVirtualNetwork);
-                        parentNode.Expand();
+                        await _AzureContextTargetARM.SetSubscriptionContext(_AzureContextSourceASM.AzureSubscription);
                     }
-                }
 
-                foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
-                {
-                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
-                    TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
-                    tnStorageAccount.Name = tnStorageAccount.Text;
-                    tnStorageAccount.Tag = asmStorageAccount;
-                    parentNode.Nodes.Add(tnStorageAccount);
-                    parentNode.Expand();
-                }
+                    azureLoginContextViewer2.Enabled = true;
 
-                List<CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
-                foreach (CloudService asmCloudService in asmCloudServices)
-                {
-                    foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
+                    TreeNode subscriptionNode = new TreeNode(sender.AzureSubscription.Name);
+                    treeASM.Nodes.Add(subscriptionNode);
+                    subscriptionNode.Expand();
+
+                    List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
+                    foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
-                        TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
-                        TreeNode cloudServiceNode = null;
-                        if (cloudServiceNodeSearch.Count() == 1)
+                        if (asmVirtualNetwork.HasNonGatewaySubnet)
                         {
-                            cloudServiceNode = cloudServiceNodeSearch[0];
-                        }
-
-                        if (cloudServiceNode == null)
-                        {
-                            cloudServiceNode = new TreeNode(asmCloudService.ServiceName);
-                            cloudServiceNode.Name = asmCloudService.ServiceName;
-                            cloudServiceNode.Tag = asmCloudService;
-                            parentNode.Nodes.Add(cloudServiceNode);
+                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmVirtualNetwork.Location, "Virtual Networks");
+                            TreeNode tnVirtualNetwork = new TreeNode(asmVirtualNetwork.Name);
+                            tnVirtualNetwork.Name = asmVirtualNetwork.Name;
+                            tnVirtualNetwork.Tag = asmVirtualNetwork;
+                            parentNode.Nodes.Add(tnVirtualNetwork);
                             parentNode.Expand();
                         }
-
-                        TreeNode virtualMachineNode = new TreeNode(asmVirtualMachine.RoleName);
-                        virtualMachineNode.Name = asmVirtualMachine.RoleName;
-                        virtualMachineNode.Tag = asmVirtualMachine;
-                        cloudServiceNode.Nodes.Add(virtualMachineNode);
-                        cloudServiceNode.Expand();
                     }
+
+                    foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
+                    {
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
+                        TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
+                        tnStorageAccount.Name = tnStorageAccount.Text;
+                        tnStorageAccount.Tag = asmStorageAccount;
+                        parentNode.Nodes.Add(tnStorageAccount);
+                        parentNode.Expand();
+                    }
+
+                    List<CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
+                    foreach (CloudService asmCloudService in asmCloudServices)
+                    {
+                        foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
+                        {
+                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
+                            TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
+                            TreeNode cloudServiceNode = null;
+                            if (cloudServiceNodeSearch.Count() == 1)
+                            {
+                                cloudServiceNode = cloudServiceNodeSearch[0];
+                            }
+
+                            if (cloudServiceNode == null)
+                            {
+                                cloudServiceNode = new TreeNode(asmCloudService.ServiceName);
+                                cloudServiceNode.Name = asmCloudService.ServiceName;
+                                cloudServiceNode.Tag = asmCloudService;
+                                parentNode.Nodes.Add(cloudServiceNode);
+                                parentNode.Expand();
+                            }
+
+                            TreeNode virtualMachineNode = new TreeNode(asmVirtualMachine.RoleName);
+                            virtualMachineNode.Name = asmVirtualMachine.RoleName;
+                            virtualMachineNode.Tag = asmVirtualMachine;
+                            cloudServiceNode.Nodes.Add(virtualMachineNode);
+                            cloudServiceNode.Expand();
+                        }
+                    }
+
+                    foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
+                    {
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                        TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
+                        tnStorageAccount.Name = tnStorageAccount.Text;
+                        tnStorageAccount.Tag = asmNetworkSecurityGroup;
+                        parentNode.Nodes.Add(tnStorageAccount);
+                        parentNode.Expand();
+                    }
+
+                    subscriptionNode.ExpandAll();
+                    await ReadSubscriptionSettings(sender.AzureSubscription);
+
+                    treeARM.Enabled = true;
+                    treeASM.Enabled = true;
                 }
-
-                foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
-                {
-                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
-                    TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
-                    tnStorageAccount.Name = tnStorageAccount.Text;
-                    tnStorageAccount.Tag = asmNetworkSecurityGroup;
-                    parentNode.Nodes.Add(tnStorageAccount);
-                    parentNode.Expand();
-                }
-
-                subscriptionNode.ExpandAll();
-                await ReadSubscriptionSettings(sender.AzureSubscription);
-
-                treeARM.Enabled = true;
-                treeASM.Enabled = true;
+            }
+            catch (Exception exc)
+            {
+                UnhandledExceptionDialog unhandledException = new UnhandledExceptionDialog(LogProvider, exc);
+                unhandledException.ShowDialog();
             }
             
             StatusProvider.UpdateStatus("Ready");
