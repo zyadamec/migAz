@@ -39,7 +39,7 @@ If ($StartType -eq "StartBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey
+        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
     
         # Create destination storage account context
         $copyblobdetail.DestinationKey = (Get-AzureRmStorageAccount -ResourceGroupName $resourcegroupname -Name $copyblobdetail.DestinationSA | Get-AzureRmStorageAccountKey).Value[0]
@@ -113,7 +113,7 @@ If ($StartType -eq "MonitorBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey
+        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
         $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
         $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
@@ -145,7 +145,7 @@ If ($StartType -eq "CancelBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey
+        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
         $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
         $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }

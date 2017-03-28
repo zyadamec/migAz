@@ -496,6 +496,7 @@ namespace MigAz.Azure.Generator.ArmToArm
                     storageaccountdependencies.Add(newstorageaccountname, "");
 
                     CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                    copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                     copyblobdetail.SourceSA = oldstorageaccountname;
                     copyblobdetail.SourceContainer = splitarray[3];
                     copyblobdetail.SourceBlob = splitarray[4];
@@ -543,6 +544,7 @@ namespace MigAz.Azure.Generator.ArmToArm
                         catch { }
 
                         CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                        copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                         copyblobdetail.SourceSA = oldstorageaccountname;
                         copyblobdetail.SourceContainer = splitarray[3];
                         copyblobdetail.SourceBlob = splitarray[4];
@@ -2126,6 +2128,7 @@ namespace MigAz.Azure.Generator.ArmToArm
 //        string key = storageaccountkeys.SelectSingleNode("//StorageServiceKeys/Primary").InnerText;
 
 //        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+//                     copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
 //        copyblobdetail.SourceSA = oldstorageaccountname;
 //        copyblobdetail.SourceContainer = splitarray[3];
 //        copyblobdetail.SourceBlob = splitarray[4];
@@ -2177,7 +2180,8 @@ namespace MigAz.Azure.Generator.ArmToArm
 //            string key = storageaccountkeys.SelectSingleNode("//StorageServiceKeys/Primary").InnerText;
 
 //            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-//            copyblobdetail.SourceSA = oldstorageaccountname;
+//                                copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
+//copyblobdetail.SourceSA = oldstorageaccountname;
 //            copyblobdetail.SourceContainer = splitarray[3];
 //            copyblobdetail.SourceBlob = splitarray[4];
 //            copyblobdetail.SourceKey = key;

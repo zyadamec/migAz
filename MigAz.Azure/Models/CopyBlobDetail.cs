@@ -8,6 +8,7 @@ namespace MigAz.Azure.Models
 {
     public class CopyBlobDetail
     {
+        public string SourceEnvironment;
         public string SourceSA;
         public string SourceContainer;
         public string SourceBlob;

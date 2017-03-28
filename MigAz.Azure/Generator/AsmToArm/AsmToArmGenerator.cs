@@ -1129,6 +1129,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 // Block of code to help copying the blobs to the new storage accounts
                 CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                 copyblobdetail.SourceSA = asmVirtualMachine.OSVirtualHardDisk.StorageAccountName;
                 copyblobdetail.SourceContainer = asmVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
                 copyblobdetail.SourceBlob = asmVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
@@ -1177,6 +1178,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     // Block of code to help copying the blobs to the new storage accounts
                     CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                    copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                     copyblobdetail.SourceSA = dataDisk.StorageAccountName;
                     copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
                     copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;
