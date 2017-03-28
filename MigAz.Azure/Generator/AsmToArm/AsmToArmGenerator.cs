@@ -241,7 +241,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
             publicipaddress.name = networkinterface.name;
-            publicipaddress.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                publicipaddress.location = this.TargetResourceGroup.Location.Name;
             publicipaddress.properties = new PublicIPAddress_Properties();
 
             this.AddResource(publicipaddress);
@@ -796,7 +797,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
             routetable.name = asmRouteTable.Name;
-            routetable.location = this.TargetResourceGroup.Location.Name;
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                routetable.location = this.TargetResourceGroup.Location.Name;
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Route>();
@@ -1010,7 +1012,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
                 additionalNetworkInterface.name = asmNetworkInterface.GetFinalTargetName();
-                additionalNetworkInterface.location = this.TargetResourceGroup.Location.Name;
+                if (this.TargetResourceGroup != null && this.TargetResourceGroup.Location != null)
+                    additionalNetworkInterface.location = this.TargetResourceGroup.Location.Name;
                 additionalNetworkInterface.properties = networkinterface_properties;
                 additionalNetworkInterface.dependsOn = dependson;
 
