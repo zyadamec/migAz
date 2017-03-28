@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Xml;

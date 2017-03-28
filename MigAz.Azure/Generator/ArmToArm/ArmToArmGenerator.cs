@@ -24,7 +24,7 @@ namespace MigAz.Azure.Generator.ArmToArm
         private ExportArtifacts _ARMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
 
-        private ArmToArmGenerator() : base(null, null) { }
+        private ArmToArmGenerator() : base(null, null, null, null) { }
 
         public ArmToArmGenerator(
             ISubscription sourceSubscription,
@@ -33,7 +33,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             ILogProvider logProvider,
             IStatusProvider statusProvider,
             ITelemetryProvider telemetryProvider,
-            ISettingsProvider settingsProvider) : base(logProvider, statusProvider)
+            ISettingsProvider settingsProvider) : base(logProvider, statusProvider, null, null)
         {
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
@@ -496,7 +496,8 @@ namespace MigAz.Azure.Generator.ArmToArm
                     storageaccountdependencies.Add(newstorageaccountname, "");
 
                     CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                    copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
+                    if (_SourceSubscription != null)
+                        copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                     copyblobdetail.SourceSA = oldstorageaccountname;
                     copyblobdetail.SourceContainer = splitarray[3];
                     copyblobdetail.SourceBlob = splitarray[4];
@@ -544,7 +545,8 @@ namespace MigAz.Azure.Generator.ArmToArm
                         catch { }
 
                         CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                        copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
+                        if (_SourceSubscription != null)
+                            copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
                         copyblobdetail.SourceSA = oldstorageaccountname;
                         copyblobdetail.SourceContainer = splitarray[3];
                         copyblobdetail.SourceBlob = splitarray[4];
@@ -2128,6 +2130,7 @@ namespace MigAz.Azure.Generator.ArmToArm
 //        string key = storageaccountkeys.SelectSingleNode("//StorageServiceKeys/Primary").InnerText;
 
 //        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+//                if (_SourceSubscription != null)
 //                     copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
 //        copyblobdetail.SourceSA = oldstorageaccountname;
 //        copyblobdetail.SourceContainer = splitarray[3];
@@ -2180,6 +2183,7 @@ namespace MigAz.Azure.Generator.ArmToArm
 //            string key = storageaccountkeys.SelectSingleNode("//StorageServiceKeys/Primary").InnerText;
 
 //            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+//                if (_SourceSubscription != null)
 //                                copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
 //copyblobdetail.SourceSA = oldstorageaccountname;
 //            copyblobdetail.SourceContainer = splitarray[3];

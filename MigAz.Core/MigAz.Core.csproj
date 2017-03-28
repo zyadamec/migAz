@@ -58,6 +58,7 @@
     <Compile Include="Interface\IStatusProvider.cs" />
     <Compile Include="Interface\IStorageAccount.cs" />
     <Compile Include="Interface\ISubnet.cs" />
+    <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\IVirtualMachine.cs" />
     <Compile Include="Interface\IVirtualNetwork.cs" />

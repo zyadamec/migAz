@@ -19,9 +19,9 @@ namespace MigAz.AWS.Generator
         private AwsObjectRetriever _awsObjectRetriever;
         private AWSExportArtifacts _AWSExportArtifacts;
 
-        private AwsToArmGenerator() : base(null, null) { }
+        private AwsToArmGenerator() : base(null, null, null, null) { }
 
-        public AwsToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever) : base(logProvider, statusProvider)
+        public AwsToArmGenerator(ILogProvider logProvider, IStatusProvider statusProvider, AwsObjectRetriever awsObjectRetriever) : base(logProvider, statusProvider, null, null)
         {
             _awsObjectRetriever = awsObjectRetriever;
         }

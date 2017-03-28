@@ -20,7 +20,6 @@ namespace MigAz.Core.Interface
         {
             _statusProvider = statusProvider;
             _logProvider = logProvider;
-
         }
 
         public ILogProvider LogProvider

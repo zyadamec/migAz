@@ -6,17 +6,9 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure
 {
-    public enum AzureEnvironment
-    {
-        AzureCloud,
-        AzureChinaCloud,
-        AzureGermanCloud,
-        AzureUSGovernment
-    }
-
     public class AzureContext
     {
-        private AzureEnvironment _AzureEnvironment = Azure.AzureEnvironment.AzureCloud;
+        private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
@@ -67,7 +59,7 @@ namespace MigAz.Azure
 
         #region Properties
 
-        public Azure.AzureEnvironment AzureEnvironment
+        public AzureEnvironment AzureEnvironment
         {
             get { return _AzureEnvironment; }
             set

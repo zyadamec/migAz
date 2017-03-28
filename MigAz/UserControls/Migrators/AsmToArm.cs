@@ -109,7 +109,6 @@ namespace MigAz.UserControls.Migrators
 
             try
             {
-
                 if (sender.AzureSubscription != null)
                 {
                     if (_AzureContextTargetARM.AzureSubscription == null)
@@ -118,6 +117,9 @@ namespace MigAz.UserControls.Migrators
                     }
 
                     azureLoginContextViewer2.Enabled = true;
+
+                    this.TemplateGenerator.SourceSubscription = _AzureContextSourceASM.AzureSubscription;
+                    this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
 
                     TreeNode subscriptionNode = new TreeNode(sender.AzureSubscription.Name);
                     treeASM.Nodes.Add(subscriptionNode);

@@ -18,15 +18,13 @@ namespace MigAz.Azure.Generator.AsmToArm
 {
     public class AsmToArmGenerator : TemplateGenerator
     {
-        private ISubscription _SourceSubscription;
-        private ISubscription _TargetSubscription;
         private Arm.ResourceGroup _TargetResourceGroup;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
         private ExportArtifacts _ASMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
 
-        private AsmToArmGenerator() : base(null, null) { } 
+        private AsmToArmGenerator() : base(null, null, null, null) { } 
 
         public AsmToArmGenerator(
             ISubscription sourceSubscription, 
@@ -35,16 +33,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
-            ISettingsProvider settingsProvider) : base(logProvider, statusProvider)
+            ISettingsProvider settingsProvider) : base(logProvider, statusProvider, sourceSubscription, targetSubscription)
         {
-            _SourceSubscription = sourceSubscription;
-            _TargetSubscription = targetSubscription;
             _TargetResourceGroup = targetResourceGroup;
             _telemetryProvider = telemetryProvider;
             _settingsProvider = settingsProvider;
         }
 
-        public ISubscription SourceSubscription { get { return _SourceSubscription; } }
         public Arm.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
@@ -193,12 +188,12 @@ namespace MigAz.Azure.Generator.AsmToArm
                     resourceGroupLocation = _TargetResourceGroup.Location.Name;
             }
 
-            if (_TargetSubscription != null)
+            if (this.TargetSubscription != null)
             {
-                targetSubscriptionGuid = _TargetSubscription.SubscriptionId;
+                targetSubscriptionGuid = this.TargetSubscription.SubscriptionId;
 
-                if (_TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
-                    azureEnvironmentSwitch = " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"";
+                if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
+                    azureEnvironmentSwitch = " -Environment \"" + this.TargetSubscription.AzureEnvironment.ToString() + "\"";
             }
 
             instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
@@ -1129,7 +1124,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 // Block of code to help copying the blobs to the new storage accounts
                 CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
+                if (this.SourceSubscription != null)
+                    copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
                 copyblobdetail.SourceSA = asmVirtualMachine.OSVirtualHardDisk.StorageAccountName;
                 copyblobdetail.SourceContainer = asmVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
                 copyblobdetail.SourceBlob = asmVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
@@ -1178,7 +1174,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     // Block of code to help copying the blobs to the new storage accounts
                     CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                    copyblobdetail.SourceEnvironment = _SourceSubscription.AzureEnvironment.ToString();
+                    if (this.SourceSubscription != null)
+                        copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
                     copyblobdetail.SourceSA = dataDisk.StorageAccountName;
                     copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
                     copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;

@@ -91,6 +91,7 @@ namespace MigAz.Forms
         {
             TemplateGenerator a = (TemplateGenerator)sender;
             dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
+            dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1,5 +1,6 @@
 ﻿using MigAz.Azure;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using System;
 
 namespace MigAz.Tests.Fakes
