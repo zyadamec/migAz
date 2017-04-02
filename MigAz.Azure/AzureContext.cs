@@ -50,9 +50,8 @@ namespace MigAz.Azure
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
             _SettingsProvider = settingsProvider;
-
+            _TokenProvider = new AzureTokenProvider(_LogProvider);
             _AzureRetriever = new AzureRetriever(this);
-
         }
 
         #endregion
@@ -93,12 +92,6 @@ namespace MigAz.Azure
         public AzureTokenProvider TokenProvider
         {
             get { return _TokenProvider; }
-            set
-            {
-                _TokenProvider = value;
-                if (_TokenProvider != null)
-                    UserAuthenticated?.Invoke(this);
-            }
         }
 
         public ILogProvider LogProvider
@@ -122,7 +115,8 @@ namespace MigAz.Azure
 
         public async Task Login()
         {
-            this.TokenProvider = await AzureTokenProvider.LoginAzureProvider(this.AzureEnvironment);
+            await this.TokenProvider.LoginAzureProvider(this.AzureEnvironment);
+            UserAuthenticated?.Invoke(this);
         }
 
         public async Task SetTenantContext(AzureTenant azureTenant)

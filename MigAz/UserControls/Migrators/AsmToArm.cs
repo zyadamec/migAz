@@ -83,10 +83,11 @@ namespace MigAz.UserControls.Migrators
 
         private async Task _AzureContextSourceASM_UserAuthenticated(AzureContext sender)
         {
-            if (_AzureContextTargetARM.TokenProvider == null)
-            {
-                _AzureContextTargetARM.TokenProvider = _AzureContextSourceASM.TokenProvider;
-            }
+            // TODO NOW RUSSELL
+            //if (_AzureContextTargetARM.TokenProvider == null)
+            //{
+            //    _AzureContextTargetARM.TokenProvider = _AzureContextSourceASM.TokenProvider;
+            //}
         }
 
         private async Task _AzureContextSourceASM_BeforeUserSignOut()

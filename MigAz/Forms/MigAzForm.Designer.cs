@@ -208,9 +208,11 @@
             this.txtLog.Margin = new System.Windows.Forms.Padding(0);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
+            this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(903, 239);
             this.txtLog.TabIndex = 0;
+            this.txtLog.WordWrap = false;
             // 
             // tabRest
             // 
@@ -228,6 +230,7 @@
             this.txtRest.Margin = new System.Windows.Forms.Padding(0);
             this.txtRest.Multiline = true;
             this.txtRest.Name = "txtRest";
+            this.txtRest.ReadOnly = true;
             this.txtRest.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtRest.Size = new System.Drawing.Size(903, 239);
             this.txtRest.TabIndex = 1;

@@ -281,15 +281,21 @@ namespace MigAz.Azure
                     break;
             }
 
+            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Url: " + url);
+
             if (_asmXmlDocumentCache.ContainsKey(url))
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + "  Cached " + url);
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + "  End REST Request");
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Using Cached Response");
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " End REST Request");
                 return _asmXmlDocumentCache[url];
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-            request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + _AzureContext.TokenProvider.AuthenticationResult.AccessToken);
+
+            string authorizationHeader = "Bearer " + _AzureContext.TokenProvider.AuthenticationResult.AccessToken;
+            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + "Adding authorization header: " + authorizationHeader);
+            request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
+
             request.Headers.Add("x-ms-version", "2015-04-01");
             request.Method = "GET";
 
@@ -297,10 +303,10 @@ namespace MigAz.Azure
             string httpWebResponseValue = String.Empty;
             try
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + "  " + request.Method + " " + url);
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + request.Method + " " + url);
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
 
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + "  Status Code " + response.StatusCode);
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Status Code " + response.StatusCode);
 
                 httpWebResponseValue = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 writeRetreiverResultToLog(requestGuid, "GetAzureAsmResources", url, httpWebResponseValue);
@@ -314,7 +320,7 @@ namespace MigAz.Azure
             }
             catch (Exception exception)
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + "  EXCEPTION " + exception.Message);
+                _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " EXCEPTION " + exception.Message);
                 throw exception;
             }
 
@@ -621,13 +627,16 @@ namespace MigAz.Azure
         private async Task<JObject> GetAzureARMResources(string resourceType, Hashtable info)
         {
             string methodType = "GET";
+            string url = null;
+            bool useCached = true;
             Guid requestGuid = Guid.NewGuid();
 
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Start REST Request");
 
-            string url = null;
+            if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.AuthenticationResult == null)
+                throw new ArgumentNullException("TokenProvider Context or AuthenticationResult Context is null.  Unable to call Azure API without AuthenticationResult.");
+
             AuthenticationResult authenticationResult = _AzureContext.TokenProvider.AuthenticationResult;
-            bool useCached = true;
 
             switch (resourceType)
             {
@@ -686,15 +695,20 @@ namespace MigAz.Azure
                     break;
             }
 
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Url: " + url);
+
             if (useCached && _armJsonDocumentCache.ContainsKey(url))
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + "  Cached " + url);
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + "  End REST Request");
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Using Cached Response");
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " End REST Request");
                 return _armJsonDocumentCache[url];
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-            request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + authenticationResult.AccessToken);
+            string authorizationHeader = "Bearer " + authenticationResult.AccessToken;
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Adding authorization header - " + authorizationHeader);
+            request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
+
             request.ContentType = "application/json";
             request.Method = methodType;
 

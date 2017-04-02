@@ -29,7 +29,7 @@ namespace MigAz.Azure.UserControls
             else
                 cboAzureEnvironment.SelectedIndex = 0;
 
-            if (_AzureContext.TokenProvider == null)
+            if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.AuthenticationResult == null)
             {
                 lblAuthenticatedUser.Text = "-";
                 cboAzureEnvironment.Enabled = true;
@@ -43,7 +43,7 @@ namespace MigAz.Azure.UserControls
             }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.AuthenticationResult != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
                 {

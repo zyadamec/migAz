@@ -14,12 +14,13 @@ namespace MigAz.Azure
         private const string strReturnUrl = "urn:ietf:wg:oauth:2.0:oob";
         private const string strClientId = "1950a258-227b-4e31-a9cf-717495945fc2";
         private AuthenticationResult _AuthenticationResult = null;
+        private ILogProvider _LogProvider;
 
         private AzureTokenProvider() { }
 
-        internal AzureTokenProvider(AuthenticationResult commonAuthenticationResult)
+        internal AzureTokenProvider(ILogProvider logProvider)
         {
-            _AuthenticationResult = commonAuthenticationResult;
+            _LogProvider = logProvider;
         }
 
         public AuthenticationResult AuthenticationResult
@@ -29,17 +30,96 @@ namespace MigAz.Azure
 
         public async Task GetToken(AzureSubscription azureSubscription)
         {
-            _AuthenticationResult = null;
+            _LogProvider.WriteLog("GetToken", "Start token request");
 
             if (azureSubscription == null)
             {
-                return;
+                _LogProvider.WriteLog("GetToken", "Azure Subscription cannot be null.");
+                throw new ArgumentNullException("Azure Subscription cannot be null.");
             }
 
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureSubscription.AzureEnvironment) + azureSubscription.AzureAdTenantId.ToString());
+            _LogProvider.WriteLog("GetToken", "Azure Subscription: " + azureSubscription.ToString());
+
+            string authenticationUrl = AzureServiceUrls.GetAzureLoginUrl(azureSubscription.AzureEnvironment) + azureSubscription.AzureAdTenantId.ToString();
+            _LogProvider.WriteLog("GetToken", "Authentication Url: " + authenticationUrl);
+
+            _AuthenticationResult = null;
+            AuthenticationContext context = new AuthenticationContext(authenticationUrl);
 
             PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
             _AuthenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureSubscription.AzureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+
+            _LogProvider.WriteLog("GetToken", "End token request");
+        }
+
+        internal async Task<AuthenticationResult> LoginAzureProvider(AzureEnvironment azureEnvironment)
+        {
+            _LogProvider.WriteLog("LoginAzureProvider", "Start token request");
+            _LogProvider.WriteLog("LoginAzureProvider", "Azure Environment: " + azureEnvironment.ToString());
+
+            string authenticationUrl = AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + "common";
+            _LogProvider.WriteLog("LoginAzureProvider", "Authentication Url: " + authenticationUrl);
+
+            AuthenticationContext context = new AuthenticationContext(authenticationUrl);
+
+            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+            if (authenticationResult == null)
+            {
+                _LogProvider.WriteLog("LoginAzureProvider", "Failed to obtain the token (null AuthenticationResult returned).");
+            }
+
+            _AuthenticationResult = authenticationResult;
+
+            _LogProvider.WriteLog("LoginAzureProvider", "End token request for Azure Environment " + azureEnvironment.ToString());
+
+            return _AuthenticationResult;
+        }
+
+        internal async Task<AuthenticationResult> GetGraphToken(AzureEnvironment azureEnvironment, string tenantId)
+        {
+            _LogProvider.WriteLog("GetGraphToken", "Start token request");
+            _LogProvider.WriteLog("GetGraphToken", "Azure Environment: " + azureEnvironment.ToString());
+            _LogProvider.WriteLog("GetGraphToken", "Azure Tenant: " + tenantId);
+
+            string authenticationUrl = AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId;
+            _LogProvider.WriteLog("GetGraphToken", "Authentication Url: " + authenticationUrl);
+
+            AuthenticationContext context = new AuthenticationContext(authenticationUrl);
+
+            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetGraphApiUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+            if (authenticationResult == null)
+            {
+                _LogProvider.WriteLog("GetGraphToken", "Failed to obtain the token (null AuthenticationResult returned).");
+            }
+
+            _LogProvider.WriteLog("GetGraphToken", "End token request");
+
+            return authenticationResult;
+        }
+
+        internal async Task<AuthenticationResult> GetAzureToken(AzureEnvironment azureEnvironment, string tenantId)
+        {
+            _LogProvider.WriteLog("GetAzureToken", "Start token request");
+            _LogProvider.WriteLog("GetAzureToken", "Azure Environment: " + azureEnvironment.ToString());
+            _LogProvider.WriteLog("GetAzureToken", "Azure Tenant: " + tenantId);
+
+            string authenticationUrl = AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId;
+            _LogProvider.WriteLog("GetAzureToken", "Authentication Url: " + authenticationUrl);
+
+            AuthenticationContext context = new AuthenticationContext(authenticationUrl);
+
+            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetARMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
+            if (authenticationResult == null)
+            {
+                _LogProvider.WriteLog("GetAzureToken", "Failed to obtain the token (null AuthenticationResult returned).");
+            }
+
+            _LogProvider.WriteLog("GetAzureToken", "End token request for Azure Environment " + azureEnvironment.ToString() + " Tenant Id " + tenantId);
+
+            return authenticationResult;
         }
 
         public static bool operator ==(AzureTokenProvider lhs, AzureTokenProvider rhs)
@@ -57,47 +137,6 @@ namespace MigAz.Azure
         public static bool operator !=(AzureTokenProvider lhs, AzureTokenProvider rhs)
         {
             return !(lhs == rhs);
-        }
-
-        internal async static Task<AzureTokenProvider> LoginAzureProvider(AzureEnvironment azureEnvironment)
-        {
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + "common");
-
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
-            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetASMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
-            if (authenticationResult == null)
-            {
-                throw new InvalidOperationException("Failed to obtain the token");
-            }
-
-            return new AzureTokenProvider(authenticationResult);
-        }
-
-        internal async Task<AuthenticationResult> GetGraphToken(AzureEnvironment azureEnvironment, string tenantId)
-        {
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId);
-
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
-            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetGraphApiUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
-            if (authenticationResult == null)
-            {
-                throw new InvalidOperationException("Failed to obtain the token");
-            }
-
-            return authenticationResult;
-        }
-        internal async Task<AuthenticationResult> GetAzureToken(AzureEnvironment azureEnvironment, string tenantId)
-        {
-            AuthenticationContext context = new AuthenticationContext(AzureServiceUrls.GetAzureLoginUrl(azureEnvironment) + tenantId);
-
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
-            AuthenticationResult authenticationResult = await context.AcquireTokenAsync(AzureServiceUrls.GetARMServiceManagementUrl(azureEnvironment), strClientId, new Uri(strReturnUrl), platformParams);
-            if (authenticationResult == null)
-            {
-                throw new InvalidOperationException("Failed to obtain the token");
-            }
-
-            return authenticationResult;
         }
     }
 }
