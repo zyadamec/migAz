@@ -1141,60 +1141,67 @@ namespace MigAz.Azure.Generator.AsmToArm
             List<DataDisk> datadisks = new List<DataDisk>();
             foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
             {
-                string dataDiskTargetStorageAccountName = String.Empty;
-                if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                if (dataDisk.TargetStorageAccount == null)
                 {
-                    Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
-                    dataDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
+                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.TargetName + "'.", dataDisk);
                 }
-                else if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
-                {
-                    Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorageAccount;
-                    dataDiskTargetStorageAccountName = armStorageAccount.Name;
-                }
-
-                DataDisk datadisk = new DataDisk();
-                datadisk.name = dataDisk.DiskName;
-                datadisk.caching = dataDisk.HostCaching;
-                datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
-                if (dataDisk.Lun.HasValue)
-                    datadisk.lun = dataDisk.Lun.Value;
-
-                newdiskurl = dataDisk.TargetMediaLink;
-
-                // if the tool is configured to create new VMs with empty data disks
-                if (_settingsProvider.BuildEmpty)
-                {
-                    datadisk.createOption = "Empty";
-                }
-                // if the tool is configured to attach copied disks
                 else
                 {
-                    datadisk.createOption = "Attach";
+                    string dataDiskTargetStorageAccountName = String.Empty;
+                    if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                    {
+                        Asm.StorageAccount asmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
+                        dataDiskTargetStorageAccountName = asmStorageAccount.GetFinalTargetName();
+                    }
+                    else if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                    {
+                        Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorageAccount;
+                        dataDiskTargetStorageAccountName = armStorageAccount.Name;
+                    }
 
-                    // Block of code to help copying the blobs to the new storage accounts
-                    CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                    if (this.SourceSubscription != null)
-                        copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                    copyblobdetail.SourceSA = dataDisk.StorageAccountName;
-                    copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
-                    copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;
-                    copyblobdetail.SourceKey = dataDisk.SourceStorageAccount.Keys.Primary;
-                    copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
-                    copyblobdetail.DestinationContainer = dataDisk.StorageAccountContainer;
-                    copyblobdetail.DestinationBlob = dataDisk.StorageAccountBlob;
-                    this._CopyBlobDetails.Add(copyblobdetail);
-                    // end of block of code to help copying the blobs to the new storage accounts
+                    DataDisk datadisk = new DataDisk();
+                    datadisk.name = dataDisk.DiskName;
+                    datadisk.caching = dataDisk.HostCaching;
+                    datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
+                    if (dataDisk.Lun.HasValue)
+                        datadisk.lun = dataDisk.Lun.Value;
+
+                    newdiskurl = dataDisk.TargetMediaLink;
+
+                    // if the tool is configured to create new VMs with empty data disks
+                    if (_settingsProvider.BuildEmpty)
+                    {
+                        datadisk.createOption = "Empty";
+                    }
+                    // if the tool is configured to attach copied disks
+                    else
+                    {
+                        datadisk.createOption = "Attach";
+
+                        // Block of code to help copying the blobs to the new storage accounts
+                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                        if (this.SourceSubscription != null)
+                            copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+                        copyblobdetail.SourceSA = dataDisk.StorageAccountName;
+                        copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
+                        copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;
+                        copyblobdetail.SourceKey = dataDisk.SourceStorageAccount.Keys.Primary;
+                        copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
+                        copyblobdetail.DestinationContainer = dataDisk.StorageAccountContainer;
+                        copyblobdetail.DestinationBlob = dataDisk.StorageAccountBlob;
+                        this._CopyBlobDetails.Add(copyblobdetail);
+                        // end of block of code to help copying the blobs to the new storage accounts
+                    }
+
+                    vhd = new Vhd();
+                    vhd.uri = newdiskurl;
+                    datadisk.vhd = vhd;
+
+                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
+                        storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
+
+                    datadisks.Add(datadisk);
                 }
-
-                vhd = new Vhd();
-                vhd.uri = newdiskurl;
-                datadisk.vhd = vhd;
-
-                if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
-                    storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
-
-                datadisks.Add(datadisk);
             }
 
             StorageProfile storageprofile = new StorageProfile();
