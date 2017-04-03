@@ -6,6 +6,7 @@ using System.Reflection;
 using MigAz.UserControls.Migrators;
 using MigAz.Core.Generator;
 using System.Linq;
+using System.IO;
 
 namespace MigAz.Forms
 {
@@ -86,12 +87,51 @@ namespace MigAz.Forms
         {
             this.tabControl1.Width = splitContainer2.Panel2.Width - 5;
             this.tabControl1.Height = splitContainer2.Panel2.Height - 5;
+            this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
+            this.tabOutputResults.Height = splitContainer2.Panel2.Height - 5;
         }
         private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
             dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
             dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            foreach (TabPage tabPage in tabOutputResults.TabPages)
+            {
+                if (!a.TemplateStreams.ContainsKey(tabPage.Name))
+                    tabOutputResults.TabPages.Remove(tabPage);
+            }
+
+            foreach (var f in a.TemplateStreams)
+            {
+                TabPage tabPage = null;
+                if (!tabOutputResults.TabPages.ContainsKey(f.Key))
+                {
+                    tabPage = new TabPage(f.Key);
+                    tabPage.Name = f.Key;
+                    tabOutputResults.TabPages.Add(tabPage);
+
+                    TextBox textBox = new TextBox();
+                    textBox.Width = tabPage.Width;
+                    textBox.Height = tabPage.Height;
+                    textBox.ReadOnly = true;
+                    textBox.Multiline = true;
+                    textBox.WordWrap = false;
+                    tabPage.Controls.Add(textBox);
+                }
+                else
+                {
+                    tabPage = tabOutputResults.TabPages[f.Key];
+                }
+
+                if (tabPage.Controls[0].GetType() == typeof(TextBox))
+                {
+                    TextBox textBox = (TextBox)tabPage.Controls[0];
+                    f.Value.Position = 0;
+                    textBox.Text = new StreamReader(f.Value).ReadToEnd();
+                }
+
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

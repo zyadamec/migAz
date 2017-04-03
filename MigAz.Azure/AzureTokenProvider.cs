@@ -26,6 +26,7 @@ namespace MigAz.Azure
         public AuthenticationResult AuthenticationResult
         {
             get { return _AuthenticationResult; }
+            set { _AuthenticationResult = value; }
         }
 
         public async Task GetToken(AzureSubscription azureSubscription)

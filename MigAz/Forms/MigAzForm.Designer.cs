@@ -61,6 +61,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabOutputResults = new System.Windows.Forms.TabControl();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -76,6 +78,7 @@
             this.tabRest.SuspendLayout();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -162,6 +165,7 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabMessages);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabLog);
             this.tabControl1.Controls.Add(this.tabRest);
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
@@ -398,6 +402,24 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tabOutputResults);
+            this.tabPage1.Location = new System.Drawing.Point(8, 39);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(906, 242);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "Output";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabOutputResults
+            // 
+            this.tabOutputResults.Location = new System.Drawing.Point(4, 4);
+            this.tabOutputResults.Name = "tabOutputResults";
+            this.tabOutputResults.SelectedIndex = 0;
+            this.tabOutputResults.Size = new System.Drawing.Size(754, 154);
+            this.tabOutputResults.TabIndex = 0;
+            // 
             // MigAzForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -437,6 +459,7 @@
             this.panel1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -474,6 +497,8 @@
         private System.Windows.Forms.ToolStripMenuItem reportAnIssueOnGithubToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visitMigAzOnGithubToolStripMenuItem;
         private UserControls.PropertyPanel propertyPanel1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabControl tabOutputResults;
     }
 }
 

@@ -109,6 +109,15 @@ namespace MigAz.Azure
             get { return _SettingsProvider; }
         }
 
+        public async Task CopyContext(AzureContext sourceContext)
+        {
+            this.AzureEnvironment = sourceContext.AzureEnvironment;
+            await this.SetTenantContext(sourceContext.AzureTenant);
+            await this.SetSubscriptionContext(sourceContext.AzureSubscription);
+            this.TokenProvider.AuthenticationResult = sourceContext.TokenProvider.AuthenticationResult;
+            await UserAuthenticated?.Invoke(this);
+        }
+
         #endregion
 
         #region Methods
@@ -160,7 +169,7 @@ namespace MigAz.Azure
             await this.SetTenantContext(null);
 
             _AzureRetriever = null;
-            _TokenProvider = null;
+            _TokenProvider.AuthenticationResult = null;
 
             if (AfterUserSignOut != null)
                 await AfterUserSignOut?.Invoke();

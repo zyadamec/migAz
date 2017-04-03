@@ -52,6 +52,7 @@ namespace MigAz.UserControls.Migrators
             _AzureContextSourceASM.AfterAzureSubscriptionChange += _AzureContextSourceASM_AfterAzureSubscriptionChange;
             _AzureContextSourceASM.BeforeUserSignOut += _AzureContextSourceASM_BeforeUserSignOut;
             _AzureContextSourceASM.AfterUserSignOut += _AzureContextSourceASM_AfterUserSignOut;
+            _AzureContextSourceASM.AfterAzureTenantChange += _AzureContextSourceASM_AfterAzureTenantChange;
 
             _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
 
@@ -61,6 +62,11 @@ namespace MigAz.UserControls.Migrators
             azureLoginContextViewer2.Bind(_AzureContextTargetARM);
 
             this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
+        }
+
+        private async Task _AzureContextSourceASM_AfterAzureTenantChange(AzureContext sender)
+        {
+            await _AzureContextTargetARM.CopyContext(_AzureContextSourceASM);
         }
 
         #endregion
@@ -83,11 +89,10 @@ namespace MigAz.UserControls.Migrators
 
         private async Task _AzureContextSourceASM_UserAuthenticated(AzureContext sender)
         {
-            // TODO NOW RUSSELL
-            //if (_AzureContextTargetARM.TokenProvider == null)
-            //{
-            //    _AzureContextTargetARM.TokenProvider = _AzureContextSourceASM.TokenProvider;
-            //}
+            if (_AzureContextTargetARM.TokenProvider.AuthenticationResult == null)
+            {
+                await _AzureContextTargetARM.CopyContext(_AzureContextSourceASM);
+            }
         }
 
         private async Task _AzureContextSourceASM_BeforeUserSignOut()

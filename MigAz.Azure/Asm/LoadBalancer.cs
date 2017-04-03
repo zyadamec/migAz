@@ -19,12 +19,15 @@ namespace MigAz.Azure.Asm
 
             this.TargetName = this.SubnetName;
 
-            foreach (Subnet subnet in _AsmVirtualNetwork.Subnets)
+            if (_AsmVirtualNetwork != null)
             {
-                if (subnet.Name == this.SubnetName)
+                foreach (Subnet subnet in _AsmVirtualNetwork.Subnets)
                 {
-                    _AsmSubnet = subnet;
-                    break;
+                    if (subnet.Name == this.SubnetName)
+                    {
+                        _AsmSubnet = subnet;
+                        break;
+                    }
                 }
             }
         }
