@@ -11,6 +11,7 @@ using MigAz.Azure.Models;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MigAz.Azure.Generator.ArmToArm
 {
@@ -42,7 +43,7 @@ namespace MigAz.Azure.Generator.ArmToArm
             _settingsProvider = settingsProvider;
         }
 
-        public override void UpdateArtifacts(IExportArtifacts artifacts)
+        public async Task UpdateArtifacts(IExportArtifacts artifacts)
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 

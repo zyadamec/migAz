@@ -116,7 +116,10 @@ namespace MigAz.Core.Generator
             return null;
         }
 
-        public abstract void UpdateArtifacts(IExportArtifacts artifacts);
+        public virtual async Task UpdateArtifacts(IExportArtifacts artifacts)
+        {
+            throw new Exception("Must override UpdateArtifacts.");
+        }
 
         public void Write()
         {

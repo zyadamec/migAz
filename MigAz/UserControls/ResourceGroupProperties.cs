@@ -13,6 +13,7 @@ using System.Net;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.UserControls.Migrators;
+using MigAz.Core.Interface;
 
 namespace MigAz.UserControls
 {
@@ -20,6 +21,9 @@ namespace MigAz.UserControls
     {
         private AsmToArm _ParentForm;
         private TreeNode _ResourceGroupNode;
+
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
 
         public ResourceGroupProperties()
         {
@@ -75,6 +79,8 @@ namespace MigAz.UserControls
             armResourceGroup.Name = txtSender.Text;
             _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
             _ResourceGroupNode.Name = armResourceGroup.Name;
+
+            PropertyChanged();
         }
 
         private void cboTargetLocation_SelectedIndexChanged(object sender, EventArgs e)
@@ -83,6 +89,8 @@ namespace MigAz.UserControls
 
             ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
             armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
+
+            PropertyChanged();
         }
     }
 }

@@ -16,6 +16,9 @@ namespace MigAz.UserControls
     {
         private TreeNode _NetworkSecurityGroupNode;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public NetworkSecurityGroupProperties()
         {
             InitializeComponent();
@@ -40,6 +43,8 @@ namespace MigAz.UserControls
 
             asmNetworkSecurityGroup.TargetName = txtSender.Text;
             _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.GetFinalTargetName();
+
+            PropertyChanged();
         }
     }
 }

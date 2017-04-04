@@ -15,6 +15,9 @@ namespace MigAz.UserControls
     {
         TreeNode _ARMVirtualNetowrkNode;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public VirtualNetworkProperties()
         {
             InitializeComponent();
@@ -42,6 +45,8 @@ namespace MigAz.UserControls
 
             asmVirtualNetwork.TargetName = txtSender.Text.Trim();
             _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
+
+            PropertyChanged();
         }
 
         private void txtVirtualNetworkName_KeyPress(object sender, KeyPressEventArgs e)

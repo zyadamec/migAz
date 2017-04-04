@@ -59,7 +59,6 @@
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
-            this.chkManagedDisk = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -341,7 +340,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.chkManagedDisk);
             this.groupBox2.Controls.Add(this.chkSaveSelection);
             this.groupBox2.Controls.Add(this.chkAutoSelectDependencies);
             this.groupBox2.Controls.Add(this.chkBuildEmpty);
@@ -356,7 +354,7 @@
             // chkSaveSelection
             // 
             this.chkSaveSelection.AutoSize = true;
-            this.chkSaveSelection.Location = new System.Drawing.Point(54, 128);
+            this.chkSaveSelection.Location = new System.Drawing.Point(52, 94);
             this.chkSaveSelection.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.chkSaveSelection.Name = "chkSaveSelection";
             this.chkSaveSelection.Size = new System.Drawing.Size(185, 29);
@@ -367,7 +365,7 @@
             // chkAutoSelectDependencies
             // 
             this.chkAutoSelectDependencies.AutoSize = true;
-            this.chkAutoSelectDependencies.Location = new System.Drawing.Point(54, 88);
+            this.chkAutoSelectDependencies.Location = new System.Drawing.Point(52, 54);
             this.chkAutoSelectDependencies.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.chkAutoSelectDependencies.Name = "chkAutoSelectDependencies";
             this.chkAutoSelectDependencies.Size = new System.Drawing.Size(432, 29);
@@ -380,7 +378,7 @@
             this.chkBuildEmpty.AutoSize = true;
             this.chkBuildEmpty.Checked = true;
             this.chkBuildEmpty.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkBuildEmpty.Location = new System.Drawing.Point(54, 168);
+            this.chkBuildEmpty.Location = new System.Drawing.Point(52, 134);
             this.chkBuildEmpty.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.chkBuildEmpty.Name = "chkBuildEmpty";
             this.chkBuildEmpty.Size = new System.Drawing.Size(280, 29);
@@ -393,7 +391,7 @@
             this.chkAllowTelemetry.AutoSize = true;
             this.chkAllowTelemetry.Checked = true;
             this.chkAllowTelemetry.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAllowTelemetry.Location = new System.Drawing.Point(54, 208);
+            this.chkAllowTelemetry.Location = new System.Drawing.Point(52, 174);
             this.chkAllowTelemetry.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.chkAllowTelemetry.Name = "chkAllowTelemetry";
             this.chkAllowTelemetry.Size = new System.Drawing.Size(286, 29);
@@ -401,17 +399,6 @@
             this.chkAllowTelemetry.Text = "Allow telemetry collection";
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
-            // 
-            // chkManagedDisk
-            // 
-            this.chkManagedDisk.AutoSize = true;
-            this.chkManagedDisk.Location = new System.Drawing.Point(54, 48);
-            this.chkManagedDisk.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.chkManagedDisk.Name = "chkManagedDisk";
-            this.chkManagedDisk.Size = new System.Drawing.Size(237, 29);
-            this.chkManagedDisk.TabIndex = 4;
-            this.chkManagedDisk.Text = "Use Managed Disks";
-            this.chkManagedDisk.UseVisualStyleBackColor = true;
             // 
             // OptionsDialog
             // 
@@ -473,6 +460,5 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtResourceGroupSuffix;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox chkManagedDisk;
     }
 }

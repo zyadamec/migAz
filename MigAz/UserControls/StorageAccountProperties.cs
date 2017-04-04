@@ -17,6 +17,9 @@ namespace MigAz.UserControls
         private TreeNode _ArmStorageAccountNode;
         private AzureContext _AzureContext;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public StorageAccountProperties()
         {
             InitializeComponent();
@@ -49,6 +52,8 @@ namespace MigAz.UserControls
 
             asmStorageAccount.TargetName = txtSender.Text;
             _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();
+
+            PropertyChanged();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

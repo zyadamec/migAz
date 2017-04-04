@@ -45,7 +45,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         // Use of Treeview has been added here with aspect of transitioning full output towards this as authoritative source
         // Thought is that ExportArtifacts phases out, as it is providing limited context availability.
-        public override async void UpdateArtifacts(IExportArtifacts artifacts)
+        public override async Task UpdateArtifacts(IExportArtifacts artifacts)
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 

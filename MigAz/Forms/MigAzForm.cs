@@ -7,6 +7,7 @@ using MigAz.UserControls.Migrators;
 using MigAz.Core.Generator;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MigAz.Forms
 {
@@ -90,7 +91,7 @@ namespace MigAz.Forms
             this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
             this.tabOutputResults.Height = splitContainer2.Panel2.Height - 5;
         }
-        private void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
+        private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
             dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
@@ -111,13 +112,23 @@ namespace MigAz.Forms
                     tabPage.Name = f.Key;
                     tabOutputResults.TabPages.Add(tabPage);
 
-                    TextBox textBox = new TextBox();
-                    textBox.Width = tabPage.Width;
-                    textBox.Height = tabPage.Height;
-                    textBox.ReadOnly = true;
-                    textBox.Multiline = true;
-                    textBox.WordWrap = false;
-                    tabPage.Controls.Add(textBox);
+                    if (f.Key.EndsWith(".html"))
+                    {
+                        WebBrowser webBrowser = new WebBrowser();
+                        webBrowser.Width = tabPage.Width;
+                        webBrowser.Height = tabPage.Height;
+                        tabPage.Controls.Add(webBrowser);
+                    }
+                    else if (f.Key.EndsWith(".json"))
+                    {
+                        TextBox textBox = new TextBox();
+                        textBox.Width = tabPage.Width;
+                        textBox.Height = tabPage.Height;
+                        textBox.ReadOnly = true;
+                        textBox.Multiline = true;
+                        textBox.WordWrap = false;
+                        tabPage.Controls.Add(textBox);
+                    }
                 }
                 else
                 {
@@ -129,6 +140,12 @@ namespace MigAz.Forms
                     TextBox textBox = (TextBox)tabPage.Controls[0];
                     f.Value.Position = 0;
                     textBox.Text = new StreamReader(f.Value).ReadToEnd();
+                }
+                else if (tabPage.Controls[0].GetType() == typeof(WebBrowser))
+                {
+                    WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
+                    f.Value.Position = 0;
+                    webBrowser.DocumentText = new StreamReader(f.Value).ReadToEnd();
                 }
 
             }

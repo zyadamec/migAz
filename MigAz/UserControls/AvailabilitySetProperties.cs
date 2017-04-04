@@ -16,6 +16,9 @@ namespace MigAz.UserControls
     {
         TreeNode _armAvailabilitySetNode;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public AvailabilitySetProperties()
         {
             InitializeComponent();
@@ -39,6 +42,8 @@ namespace MigAz.UserControls
 
             armAvailabilitySet.TargetName = txtSender.Text;
             _armAvailabilitySetNode.Text = armAvailabilitySet.GetFinalTargetName();
+
+            PropertyChanged();
         }
     }
 }

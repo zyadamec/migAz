@@ -15,6 +15,9 @@ namespace MigAz.UserControls
     {
         private TreeNode _AsmSubnetNode;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public SubnetProperties()
         {
             InitializeComponent();
@@ -38,6 +41,8 @@ namespace MigAz.UserControls
 
             asmSubnet.TargetName = txtSender.Text;
             _AsmSubnetNode.Text = asmSubnet.TargetName;
+
+            PropertyChanged();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

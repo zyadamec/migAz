@@ -253,17 +253,5 @@ namespace MigAz {
                 this["LoadBalancerSuffix"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseManagedDisks {
-            get {
-                return ((bool)(this["UseManagedDisks"]));
-            }
-            set {
-                this["UseManagedDisks"] = value;
-            }
-        }
     }
 }

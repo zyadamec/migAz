@@ -19,9 +19,30 @@ namespace MigAz.UserControls
         private TreeNode _ARMDataDiskNode;
         private Azure.Asm.Disk _AsmDataDisk;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public DiskProperties()
         {
             InitializeComponent();
+        }
+
+        public bool AllowManangedDisk
+        {
+            get { return rbManagedDIsk.Enabled; }
+            set
+            {
+                if (!value)
+                {
+                    if (rbManagedDIsk.Checked)
+                    {
+                        rbManagedDIsk.Checked = false;
+                    }
+                }
+
+                rbManagedDIsk.Enabled = value;
+                cmbTargetStorage.Enabled = !value;
+            }
         }
 
         internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)
@@ -49,10 +70,22 @@ namespace MigAz.UserControls
             lblLUN.Text = _AsmDataDisk.Lun.ToString();
             txtTargetDiskName.Text = _AsmDataDisk.TargetName;
 
-            if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
-                rbStorageAccountInMigration.Checked = true;
+            if (AllowManangedDisk)
+                rbManagedDIsk.Checked = true;
             else
-                rbExistingARMStorageAccount.Checked = true;
+            {
+                rbManagedDIsk.Enabled = false;
+
+                if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
+                    rbStorageAccountInMigration.Checked = true;
+                else
+                    rbExistingARMStorageAccount.Checked = true;
+            }
+        }
+
+        private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void rbStorageAccountInMigration_CheckedChanged(object sender, EventArgs e)
@@ -107,6 +140,8 @@ namespace MigAz.UserControls
                         MessageBox.Show("Unable to location previously selected ASM Storage Account '" + _AsmDataDisk.TargetStorageAccount.Id + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
                 }
             }
+
+            PropertyChanged();
         }
 
         private async void rbExistingARMStorageAccount_CheckedChanged(object sender, EventArgs e)
@@ -137,6 +172,8 @@ namespace MigAz.UserControls
                     }
                 }
             }
+
+            PropertyChanged();
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)
@@ -164,6 +201,7 @@ namespace MigAz.UserControls
             }
 
             UpdateParentNode();
+            PropertyChanged();
         }
 
         private void UpdateParentNode()
@@ -194,7 +232,10 @@ namespace MigAz.UserControls
                 _ARMDataDiskNode.Text = _AsmDataDisk.TargetName;
                 UpdateParentNode();
             }
+
+            PropertyChanged();
         }
+
 
     }
 }

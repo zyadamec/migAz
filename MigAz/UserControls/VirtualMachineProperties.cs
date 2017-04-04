@@ -19,9 +19,20 @@ namespace MigAz.UserControls
         private AsmToArm _AsmToArmForm;
         private TreeNode _VirtualMachineNode;
 
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
+        public bool AllowManangedDisk
+        {
+            get { return this.diskProperties1.AllowManangedDisk; }
+            set { this.diskProperties1.AllowManangedDisk = value; }
+        }
+
         public VirtualMachineProperties()
         {
             InitializeComponent();
+
+            this.diskProperties1.PropertyChanged += DiskProperties1_PropertyChanged;
         }
 
         public async Task Bind(TreeNode armVirtualMachineNode, AsmToArm asmToArmForm)
@@ -62,6 +73,12 @@ namespace MigAz.UserControls
             {
                 rbExistingARMVNet.Checked = true;
             }
+        }
+
+        private Task DiskProperties1_PropertyChanged()
+        {
+            PropertyChanged();
+            return null;
         }
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
@@ -109,6 +126,8 @@ namespace MigAz.UserControls
                     }
                 }
             }
+
+            PropertyChanged();
         }
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
@@ -179,6 +198,8 @@ namespace MigAz.UserControls
                         cmbExistingArmSubnet.SelectedIndex = 0;
                 }
             }
+
+            PropertyChanged();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
@@ -211,6 +232,8 @@ namespace MigAz.UserControls
                 if ((cmbExistingArmVNets.SelectedItem == null) && (cmbExistingArmVNets.Items.Count > 0))
                     cmbExistingArmVNets.SelectedIndex = 0;
             }
+
+            PropertyChanged();
         }
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
@@ -239,6 +262,8 @@ namespace MigAz.UserControls
                     asmVirtualMachine.TargetSubnet = armSubnet;
                 }
             }
+
+            PropertyChanged();
         }
 
         private void txtARMVMName_TextChanged(object sender, EventArgs e)
@@ -248,6 +273,8 @@ namespace MigAz.UserControls
 
             asmVirtualMachine.TargetName = txtARMVMName.Text;
             _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
+
+            PropertyChanged();
         }
     }
 }

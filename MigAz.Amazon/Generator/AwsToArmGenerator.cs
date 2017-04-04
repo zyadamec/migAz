@@ -8,6 +8,7 @@ using System.Collections;
 using System.Net;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MigAz.AWS.Generator
 {
@@ -26,7 +27,7 @@ namespace MigAz.AWS.Generator
             _awsObjectRetriever = awsObjectRetriever;
         }
 
-        public override void UpdateArtifacts(IExportArtifacts artifacts)
+        public override async Task UpdateArtifacts(IExportArtifacts artifacts)
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 

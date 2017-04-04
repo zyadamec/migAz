@@ -479,6 +479,7 @@ namespace MigAz.UserControls.Migrators
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
                             VirtualNetworkProperties properties = new VirtualNetworkProperties();
+                            properties.PropertyChanged += Properties_PropertyChanged;
                             properties.Bind(e.Node);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
@@ -490,6 +491,7 @@ namespace MigAz.UserControls.Migrators
                             _PropertyPanel.ResourceText = storageAccount.Name;
 
                             StorageAccountProperties properties = new StorageAccountProperties();
+                            properties.PropertyChanged += Properties_PropertyChanged;
                             properties.Bind(this._AzureContextTargetARM, e.Node);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
@@ -498,6 +500,8 @@ namespace MigAz.UserControls.Migrators
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
                             VirtualMachineProperties properties = new VirtualMachineProperties();
+                            properties.AllowManangedDisk = false;
+                            properties.PropertyChanged += Properties_PropertyChanged;
                             await properties.Bind(e.Node, this);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
@@ -506,6 +510,7 @@ namespace MigAz.UserControls.Migrators
                             this._PropertyPanel.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
 
                             NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
+                            properties.PropertyChanged += Properties_PropertyChanged;
                             properties.Bind(e.Node, this);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
@@ -518,6 +523,7 @@ namespace MigAz.UserControls.Migrators
                     Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)e.Node.Tag;
 
                     SubnetProperties properties = new SubnetProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
@@ -528,6 +534,7 @@ namespace MigAz.UserControls.Migrators
                     this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
                     DiskProperties properties = new DiskProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
@@ -536,6 +543,7 @@ namespace MigAz.UserControls.Migrators
                     this._PropertyPanel.ResourceImage = imageList1.Images["AvailabilitySet"];
 
                     AvailabilitySetProperties properties = new AvailabilitySetProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
@@ -544,12 +552,18 @@ namespace MigAz.UserControls.Migrators
                     this._PropertyPanel.ResourceImage = imageList1.Images["ResourceGroup"];
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
                     await properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
             }
 
             StatusProvider.UpdateStatus("Ready");
+        }
+
+        private async Task Properties_PropertyChanged()
+        {
+            this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
         }
 
         private async Task UpdateARMTree(TreeNode asmTreeNode)

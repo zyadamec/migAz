@@ -45,6 +45,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtTargetDiskName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.rbManagedDIsk = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // label1
@@ -122,7 +123,7 @@
             // rbExistingARMStorageAccount
             // 
             this.rbExistingARMStorageAccount.AutoSize = true;
-            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 357);
+            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 395);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
             this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(387, 29);
             this.rbExistingARMStorageAccount.TabIndex = 2;
@@ -133,7 +134,7 @@
             // rbStorageAccountInMigration
             // 
             this.rbStorageAccountInMigration.AutoSize = true;
-            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 313);
+            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 353);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
             this.rbStorageAccountInMigration.Size = new System.Drawing.Size(431, 29);
             this.rbStorageAccountInMigration.TabIndex = 1;
@@ -144,7 +145,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 413);
+            this.label7.Location = new System.Drawing.Point(15, 441);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(161, 25);
             this.label7.TabIndex = 19;
@@ -153,8 +154,9 @@
             // cmbTargetStorage
             // 
             this.cmbTargetStorage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTargetStorage.Enabled = false;
             this.cmbTargetStorage.FormattingEnabled = true;
-            this.cmbTargetStorage.Location = new System.Drawing.Point(200, 410);
+            this.cmbTargetStorage.Location = new System.Drawing.Point(200, 438);
             this.cmbTargetStorage.Name = "cmbTargetStorage";
             this.cmbTargetStorage.Size = new System.Drawing.Size(392, 33);
             this.cmbTargetStorage.TabIndex = 3;
@@ -206,10 +208,22 @@
             this.label9.TabIndex = 24;
             this.label9.Text = "Target Name:";
             // 
+            // rbManagedDIsk
+            // 
+            this.rbManagedDIsk.AutoSize = true;
+            this.rbManagedDIsk.Location = new System.Drawing.Point(200, 311);
+            this.rbManagedDIsk.Name = "rbManagedDIsk";
+            this.rbManagedDIsk.Size = new System.Drawing.Size(234, 29);
+            this.rbManagedDIsk.TabIndex = 25;
+            this.rbManagedDIsk.Text = "ARM Managed Disk";
+            this.rbManagedDIsk.UseVisualStyleBackColor = true;
+            this.rbManagedDIsk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
+            // 
             // DiskProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.rbManagedDIsk);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.txtTargetDiskName);
             this.Controls.Add(this.label8);
@@ -228,7 +242,7 @@
             this.Controls.Add(this.lblDiskName);
             this.Controls.Add(this.label1);
             this.Name = "DiskProperties";
-            this.Size = new System.Drawing.Size(640, 458);
+            this.Size = new System.Drawing.Size(640, 480);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -253,5 +267,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtTargetDiskName;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.RadioButton rbManagedDIsk;
     }
 }
