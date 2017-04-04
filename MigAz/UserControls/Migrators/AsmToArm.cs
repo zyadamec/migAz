@@ -499,7 +499,7 @@ namespace MigAz.UserControls.Migrators
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
-                            VirtualMachineProperties properties = new VirtualMachineProperties();
+                            VirtualMachineProperties properties = new VirtualMachineProperties(this.LogProvider);
                             properties.AllowManangedDisk = false;
                             properties.PropertyChanged += Properties_PropertyChanged;
                             await properties.Bind(e.Node, this);
@@ -533,7 +533,7 @@ namespace MigAz.UserControls.Migrators
 
                     this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
-                    DiskProperties properties = new DiskProperties();
+                    DiskProperties properties = new DiskProperties(this.LogProvider);
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.UserControls.Migrators;
+using MigAz.Core.Interface;
 
 namespace MigAz.UserControls
 {
@@ -18,13 +19,21 @@ namespace MigAz.UserControls
         private AsmToArm _AsmToArmForm;
         private TreeNode _ARMDataDiskNode;
         private Azure.Asm.Disk _AsmDataDisk;
+        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
-        public DiskProperties()
+        public DiskProperties(ILogProvider logProvider)
         {
             InitializeComponent();
+
+            _LogProvider = logProvider;
+        }
+
+        private DiskProperties()
+        {
+
         }
 
         public bool AllowManangedDisk
@@ -119,10 +128,9 @@ namespace MigAz.UserControls
                         }
                     }
 
-                    // In the event we couldn't find the target default storage account, alert user and select default
                     if (_AsmDataDisk.TargetStorageAccount == null)
                     {
-                        MessageBox.Show("Unable to location originating ASM Storage Account '" + _AsmDataDisk.StorageAccountName + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
+                        _LogProvider.WriteLog("rbStorageAccountInMigration_CheckedChanged", "Unable to location originating ASM Storage Account '" + _AsmDataDisk.StorageAccountName + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
                     }
                 }
                 else
@@ -137,7 +145,7 @@ namespace MigAz.UserControls
                     }
 
                     if (cmbTargetStorage.SelectedItem == null)
-                        MessageBox.Show("Unable to location previously selected ASM Storage Account '" + _AsmDataDisk.TargetStorageAccount.Id + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
+                        _LogProvider.WriteLog("rbStorageAccountInMigration_CheckedChanged", "Unable to location previously selected ASM Storage Account '" + _AsmDataDisk.TargetStorageAccount.Id + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
                 }
             }
 

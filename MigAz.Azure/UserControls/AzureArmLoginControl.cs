@@ -108,7 +108,7 @@ namespace MigAz.Azure.UserControls
 
         private async void btnAuthenticate_Click(object sender, EventArgs e)
         {
-            _AzureContext.LogProvider.WriteLog("GetToken_Click", "Start");
+            _AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "Start");
 
             try
             {
@@ -169,11 +169,10 @@ namespace MigAz.Azure.UserControls
             }
             catch (Exception exc)
             {
-                _AzureContext.LogProvider.WriteLog("Exception in GetToken_Click", exc.Message);
-                MessageBox.Show(exc.Message);
+                _AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "Exception: " + exc.Message);
             }
 
-            _AzureContext.LogProvider.WriteLog("GetToken_Click", "End");
+            _AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
         }
 
         private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)

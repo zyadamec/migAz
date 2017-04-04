@@ -91,6 +91,7 @@ namespace MigAz.Forms
             this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
             this.tabOutputResults.Height = splitContainer2.Panel2.Height - 5;
         }
+
         private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;

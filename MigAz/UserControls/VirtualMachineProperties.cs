@@ -11,6 +11,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.UserControls.Migrators;
 using MigAz.Core.ArmTemplate;
+using MigAz.Core.Interface;
 
 namespace MigAz.UserControls
 {
@@ -18,6 +19,7 @@ namespace MigAz.UserControls
     {
         private AsmToArm _AsmToArmForm;
         private TreeNode _VirtualMachineNode;
+        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -28,11 +30,19 @@ namespace MigAz.UserControls
             set { this.diskProperties1.AllowManangedDisk = value; }
         }
 
-        public VirtualMachineProperties()
-        {
-            InitializeComponent();
+        private VirtualMachineProperties() { }
 
+        public VirtualMachineProperties(ILogProvider logProvider)
+        {
+            _LogProvider = logProvider;
+
+            InitializeComponent();
             this.diskProperties1.PropertyChanged += DiskProperties1_PropertyChanged;
+        }
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
         }
 
         public async Task Bind(TreeNode armVirtualMachineNode, AsmToArm asmToArmForm)
@@ -75,10 +85,9 @@ namespace MigAz.UserControls
             }
         }
 
-        private Task DiskProperties1_PropertyChanged()
+        private async Task DiskProperties1_PropertyChanged()
         {
             PropertyChanged();
-            return null;
         }
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
