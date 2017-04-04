@@ -20,6 +20,7 @@ namespace MigAz.UserControls
         private AsmToArm _AsmToArmForm;
         private TreeNode _VirtualMachineNode;
         private ILogProvider _LogProvider;
+        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -47,6 +48,8 @@ namespace MigAz.UserControls
 
         public async Task Bind(TreeNode armVirtualMachineNode, AsmToArm asmToArmForm)
         {
+            _IsInitialBinding = true;
+
             _VirtualMachineNode = armVirtualMachineNode;
             _AsmToArmForm = asmToArmForm;
 
@@ -83,11 +86,14 @@ namespace MigAz.UserControls
             {
                 rbExistingARMVNet.Checked = true;
             }
+
+            _IsInitialBinding = false;
         }
 
         private async Task DiskProperties1_PropertyChanged()
         {
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
@@ -136,7 +142,8 @@ namespace MigAz.UserControls
                 }
             }
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
@@ -208,7 +215,8 @@ namespace MigAz.UserControls
                 }
             }
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
@@ -242,7 +250,8 @@ namespace MigAz.UserControls
                     cmbExistingArmVNets.SelectedIndex = 0;
             }
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
@@ -272,7 +281,8 @@ namespace MigAz.UserControls
                 }
             }
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private void txtARMVMName_TextChanged(object sender, EventArgs e)
@@ -283,7 +293,8 @@ namespace MigAz.UserControls
             asmVirtualMachine.TargetName = txtARMVMName.Text;
             _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
     }
 }

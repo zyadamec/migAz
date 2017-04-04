@@ -17,6 +17,7 @@ namespace MigAz.UserControls
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
+        private bool _IsInitialBinding = false;
 
         public VirtualNetworkProperties()
         {
@@ -25,6 +26,7 @@ namespace MigAz.UserControls
 
         public void Bind(TreeNode armVirtualNetworkNode)
         {
+            _IsInitialBinding = true;
             _ARMVirtualNetowrkNode = armVirtualNetworkNode;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
@@ -34,19 +36,23 @@ namespace MigAz.UserControls
             txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
             dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
 
+            _IsInitialBinding = false;
         }
 
         private void txtVirtualNetworkName_TextChanged(object sender, EventArgs e)
         {
-            TextBox txtSender = (TextBox)sender;
+            if (!_IsInitialBinding)
+            {
+                TextBox txtSender = (TextBox)sender;
 
-            TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
+                TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
+                VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
 
-            asmVirtualNetwork.TargetName = txtSender.Text.Trim();
-            _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
+                asmVirtualNetwork.TargetName = txtSender.Text.Trim();
+                _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
 
-            PropertyChanged();
+                PropertyChanged();
+            }
         }
 
         private void txtVirtualNetworkName_KeyPress(object sender, KeyPressEventArgs e)

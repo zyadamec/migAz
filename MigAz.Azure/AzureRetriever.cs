@@ -644,7 +644,7 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "tenants?api-version=2015-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
                     break;
-                case "Domains": // todo, move to graph class
+                case "Domains": // todo, move to a graph class?
                     url = AzureServiceUrls.GetGraphApiUrl(this._AzureContext.AzureEnvironment) + "myorganization/domains?api-version=1.6";
                     authenticationResult = await _AzureContext.TokenProvider.GetGraphToken(this._AzureContext.AzureEnvironment, info["tenantId"].ToString());
                     useCached = false;

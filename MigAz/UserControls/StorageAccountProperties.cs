@@ -16,6 +16,7 @@ namespace MigAz.UserControls
     {
         private TreeNode _ArmStorageAccountNode;
         private AzureContext _AzureContext;
+        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -27,6 +28,8 @@ namespace MigAz.UserControls
 
         public void Bind(AzureContext azureContext, TreeNode storageAccountNode)
         {
+            _IsInitialBinding = true;
+
             _AzureContext = azureContext;
             txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
 
@@ -41,6 +44,8 @@ namespace MigAz.UserControls
                 txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
             else
                 txtTargetName.Text = asmStorageAccount.TargetName;
+
+            _IsInitialBinding = false;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -53,7 +58,8 @@ namespace MigAz.UserControls
             asmStorageAccount.TargetName = txtSender.Text;
             _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

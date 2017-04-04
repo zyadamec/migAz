@@ -14,6 +14,7 @@ namespace MigAz.UserControls
     public partial class SubnetProperties : UserControl
     {
         private TreeNode _AsmSubnetNode;
+        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -25,6 +26,7 @@ namespace MigAz.UserControls
 
         internal void Bind(TreeNode asmSubnetNode)
         {
+            _IsInitialBinding = true;
             _AsmSubnetNode = asmSubnetNode;
 
             Subnet asmSubnet = (Subnet)_AsmSubnetNode.Tag;
@@ -32,6 +34,8 @@ namespace MigAz.UserControls
             lblSourceName.Text = asmSubnet.Name;
             lblAddressSpace.Text = asmSubnet.AddressPrefix;
             txtTargetName.Text = asmSubnet.TargetName;
+
+            _IsInitialBinding = false;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -42,7 +46,8 @@ namespace MigAz.UserControls
             asmSubnet.TargetName = txtSender.Text;
             _AsmSubnetNode.Text = asmSubnet.TargetName;
 
-            PropertyChanged();
+            if (!_IsInitialBinding)
+                PropertyChanged();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
