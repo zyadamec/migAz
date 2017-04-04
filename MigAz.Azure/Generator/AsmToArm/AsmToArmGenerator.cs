@@ -152,6 +152,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             TemplateStreams.Clear();
 
+            LogProvider.WriteLog("UpdateArtifacts", "Start export.json stream");
+
             String templateString = GetTemplateString();
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
             byte[] a = asciiEncoding.GetBytes(templateString);
@@ -159,11 +161,20 @@ namespace MigAz.Azure.Generator.AsmToArm
             templateStream.Write(a, 0, a.Length);
             TemplateStreams.Add("export.json", templateStream);
 
+            LogProvider.WriteLog("UpdateArtifacts", "End export.json stream");
+
+            LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
+
             string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             byte[] b = asciiEncoding.GetBytes(jsontext);
             MemoryStream copyBlobDetailStream = new MemoryStream();
             copyBlobDetailStream.Write(b, 0, b.Length);
             TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
+
+            LogProvider.WriteLog("UpdateArtifacts", "End copyblobdetails.json stream");
+
+
+            LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
@@ -210,7 +221,11 @@ namespace MigAz.Azure.Generator.AsmToArm
             instructionStream.Write(c, 0, c.Length);
             TemplateStreams.Add("DeployInstructions.html", instructionStream);
 
+            LogProvider.WriteLog("UpdateArtifacts", "End copyblobdetails.json stream");
+
+            LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
             OnTemplateChanged();
+            LogProvider.WriteLog("UpdateArtifacts", "End OnTemplateChanged Event");
 
             // post Telemetry Record to ASMtoARMToolAPI
             if (_settingsProvider.AllowTelemetry)

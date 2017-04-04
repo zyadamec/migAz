@@ -116,18 +116,20 @@ namespace MigAz.Forms
                     if (f.Key.EndsWith(".html"))
                     {
                         WebBrowser webBrowser = new WebBrowser();
-                        webBrowser.Width = tabPage.Width;
-                        webBrowser.Height = tabPage.Height;
+                        webBrowser.Width = tabOutputResults.Width - 15;
+                        webBrowser.Height = tabOutputResults.Height - 30;
+                        webBrowser.ScrollBarsEnabled = true;
                         tabPage.Controls.Add(webBrowser);
                     }
                     else if (f.Key.EndsWith(".json"))
                     {
                         TextBox textBox = new TextBox();
-                        textBox.Width = tabPage.Width;
-                        textBox.Height = tabPage.Height;
+                        textBox.Width = tabOutputResults.Width - 15;
+                        textBox.Height = tabOutputResults.Height - 30;
                         textBox.ReadOnly = true;
                         textBox.Multiline = true;
                         textBox.WordWrap = false;
+                        textBox.ScrollBars = ScrollBars.Both;
                         tabPage.Controls.Add(textBox);
                     }
                 }
@@ -223,6 +225,7 @@ namespace MigAz.Forms
 
             propertyPanel1.Clear();
             dataGridView1.DataSource = null;
+            tabOutputResults.TabPages.Clear();
             newMigrationToolStripMenuItem.Enabled = true;
             closeMigrationToolStripMenuItem.Enabled = false;
             this.Text = "MigAz";
@@ -280,6 +283,18 @@ namespace MigAz.Forms
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             MessageBox.Show("Future, double click selected Target TreeNode (thereby showing properties of alerted object).");
+        }
+
+        private void tabOutputResults_Resize(object sender, EventArgs e)
+        {
+            foreach (TabPage tabPage in tabOutputResults.TabPages)
+            {
+                foreach (Control control in tabPage.Controls)
+                {
+                    control.Width = tabOutputResults.Width - 15;
+                    control.Height = tabOutputResults.Height - 30;
+                }
+            }
         }
     }
 }

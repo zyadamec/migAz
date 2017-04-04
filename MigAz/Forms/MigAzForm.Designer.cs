@@ -39,6 +39,8 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabMessages = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabOutputResults = new System.Windows.Forms.TabControl();
             this.tabLog = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabRest = new System.Windows.Forms.TabPage();
@@ -61,8 +63,6 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabOutputResults = new System.Windows.Forms.TabControl();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -74,11 +74,11 @@
             this.tabControl1.SuspendLayout();
             this.tabMessages.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabPage1.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabRest.SuspendLayout();
             this.panel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -195,6 +195,25 @@
             this.dataGridView1.Size = new System.Drawing.Size(890, 236);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tabOutputResults);
+            this.tabPage1.Location = new System.Drawing.Point(8, 39);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(906, 242);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "Output";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabOutputResults
+            // 
+            this.tabOutputResults.Location = new System.Drawing.Point(4, 4);
+            this.tabOutputResults.Name = "tabOutputResults";
+            this.tabOutputResults.SelectedIndex = 0;
+            this.tabOutputResults.Size = new System.Drawing.Size(754, 154);
+            this.tabOutputResults.TabIndex = 0;
+            this.tabOutputResults.Resize += new System.EventHandler(this.tabOutputResults_Resize);
             // 
             // tabLog
             // 
@@ -323,7 +342,7 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -385,7 +404,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem
@@ -401,24 +420,6 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.tabOutputResults);
-            this.tabPage1.Location = new System.Drawing.Point(8, 39);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(906, 242);
-            this.tabPage1.TabIndex = 3;
-            this.tabPage1.Text = "Output";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabOutputResults
-            // 
-            this.tabOutputResults.Location = new System.Drawing.Point(4, 4);
-            this.tabOutputResults.Name = "tabOutputResults";
-            this.tabOutputResults.SelectedIndex = 0;
-            this.tabOutputResults.Size = new System.Drawing.Size(754, 154);
-            this.tabOutputResults.TabIndex = 0;
             // 
             // MigAzForm
             // 
@@ -451,6 +452,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabMessages.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabPage1.ResumeLayout(false);
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
             this.tabRest.ResumeLayout(false);
@@ -459,7 +461,6 @@
             this.panel1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
