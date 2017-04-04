@@ -39,19 +39,18 @@ namespace MigAz.UserControls
 
         public bool AllowManangedDisk
         {
-            get { return rbManagedDIsk.Enabled; }
+            get { return rbManagedDisk.Enabled; }
             set
             {
                 if (!value)
                 {
-                    if (rbManagedDIsk.Checked)
+                    if (rbManagedDisk.Checked)
                     {
-                        rbManagedDIsk.Checked = false;
+                        rbManagedDisk.Checked = false;
                     }
                 }
 
-                rbManagedDIsk.Enabled = value;
-                cmbTargetStorage.Enabled = !value;
+                rbManagedDisk.Enabled = value;
             }
         }
 
@@ -89,11 +88,9 @@ namespace MigAz.UserControls
             txtTargetDiskName.Text = _AsmDataDisk.TargetName;
 
             if (AllowManangedDisk)
-                rbManagedDIsk.Checked = true;
+                rbManagedDisk.Checked = true;
             else
             {
-                rbManagedDIsk.Enabled = false;
-
                 if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
                     rbStorageAccountInMigration.Checked = true;
                 else
@@ -103,6 +100,13 @@ namespace MigAz.UserControls
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
         {
+            RadioButton senderButton = (RadioButton)sender;
+            if (senderButton.Checked)
+            {
+                cmbTargetStorage.Items.Clear();
+                cmbTargetStorage.Enabled = false;
+
+            }
 
         }
 
@@ -113,6 +117,7 @@ namespace MigAz.UserControls
             if (rbSender.Checked)
             {
                 cmbTargetStorage.Items.Clear();
+                cmbTargetStorage.Enabled = true;
 
                 TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.Name, _AsmToArmForm.TargetResourceGroup.GetFinalTargetName(), _AsmToArmForm.TargetResourceGroup, false);
                 TreeNode storageAccountsNode = _AsmToArmForm.SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", false);
@@ -169,6 +174,7 @@ namespace MigAz.UserControls
             if (rbSender.Checked)
             {
                 cmbTargetStorage.Items.Clear();
+                cmbTargetStorage.Enabled = true;
                 _AsmDataDisk.TargetStorageAccount = null;
 
                 foreach (Azure.Arm.StorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())

@@ -500,7 +500,7 @@ namespace MigAz.UserControls.Migrators
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
                             VirtualMachineProperties properties = new VirtualMachineProperties(this.LogProvider);
-                            properties.AllowManangedDisk = false;
+                            properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
                             properties.PropertyChanged += Properties_PropertyChanged;
                             await properties.Bind(e.Node, this);
                             _PropertyPanel.PropertyDetailControl = properties;
@@ -534,6 +534,7 @@ namespace MigAz.UserControls.Migrators
                     this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
                     DiskProperties properties = new DiskProperties(this.LogProvider);
+                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;

@@ -40,6 +40,7 @@ namespace MigAz.Azure
         private List<Arm.StorageAccount> _ArmStorageAccounts;
         private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
+        private List<Arm.ManagedDisk> _ArmManagedDisks;
 
         private Dictionary<string, XmlDocument> _asmXmlDocumentCache = new Dictionary<string, XmlDocument>();
         private Dictionary<string, JObject> _armJsonDocumentCache = new Dictionary<string, JObject>();
@@ -62,6 +63,7 @@ namespace MigAz.Azure
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
+            _ArmManagedDisks = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
@@ -686,12 +688,17 @@ namespace MigAz.Azure
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_ListKeys
                     methodType = "POST";
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + info["ResourceGroupName"] + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Account Key for Subscription ID : " + _AzureSubscription.SubscriptionId + " / Storage Account: " + info["StorageAccountName"] + " ...");
                     break;
                 case "VirtualMachines":
                     // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-subscription
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
+                case "ManagedDisks":
+                    // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualMachines + "?api-version=2016-04-30-preview";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
             }
 
@@ -886,6 +893,26 @@ namespace MigAz.Azure
             return _ArmVirtualNetworks;
         }
 
+        public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks()
+        {
+            if (_ArmManagedDisks != null)
+                return _ArmManagedDisks;
+
+            JObject managedDisksJson = await this.GetAzureARMResources("ManagedDisks", null);
+
+            var managedDisks = from managedDisk in managedDisksJson["value"]
+                                  select managedDisk;
+
+            _ArmManagedDisks = new List<Arm.ManagedDisk>();
+
+            foreach (var managedDisk in managedDisks)
+            {
+                Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(managedDisk);
+                _ArmManagedDisks.Add(armManagedDisk);
+            }
+
+            return _ArmManagedDisks;
+        }
         public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
         {
             if (_ArmStorageAccounts != null)

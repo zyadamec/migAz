@@ -64,7 +64,7 @@ namespace MigAz.Azure
             set
             {
                 // Only allow value change when not authenticated
-                if (_TokenProvider != null && _AzureEnvironment != value)
+                if (_TokenProvider != null && _TokenProvider.AuthenticationResult != null && _AzureEnvironment != value)
                     throw new ArgumentException("Azure Environment cannot be changed while authenticated.  Sign out before chaning environments.");
                 else
                     _AzureEnvironment = value;

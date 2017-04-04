@@ -45,7 +45,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.txtTargetDiskName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.rbManagedDIsk = new System.Windows.Forms.RadioButton();
+            this.rbManagedDisk = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // label1
@@ -210,20 +210,20 @@
             // 
             // rbManagedDIsk
             // 
-            this.rbManagedDIsk.AutoSize = true;
-            this.rbManagedDIsk.Location = new System.Drawing.Point(200, 311);
-            this.rbManagedDIsk.Name = "rbManagedDIsk";
-            this.rbManagedDIsk.Size = new System.Drawing.Size(234, 29);
-            this.rbManagedDIsk.TabIndex = 25;
-            this.rbManagedDIsk.Text = "ARM Managed Disk";
-            this.rbManagedDIsk.UseVisualStyleBackColor = true;
-            this.rbManagedDIsk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
+            this.rbManagedDisk.AutoSize = true;
+            this.rbManagedDisk.Location = new System.Drawing.Point(200, 311);
+            this.rbManagedDisk.Name = "rbManagedDIsk";
+            this.rbManagedDisk.Size = new System.Drawing.Size(234, 29);
+            this.rbManagedDisk.TabIndex = 25;
+            this.rbManagedDisk.Text = "ARM Managed Disk";
+            this.rbManagedDisk.UseVisualStyleBackColor = true;
+            this.rbManagedDisk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
             // 
             // DiskProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.rbManagedDIsk);
+            this.Controls.Add(this.rbManagedDisk);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.txtTargetDiskName);
             this.Controls.Add(this.label8);
@@ -267,6 +267,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtTargetDiskName;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.RadioButton rbManagedDIsk;
+        private System.Windows.Forms.RadioButton rbManagedDisk;
     }
 }

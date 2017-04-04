@@ -454,8 +454,12 @@ namespace MigAz.Core.ArmTemplate
         public string uri;
     }
 
-    public class ManagedDisk
+    public class ManagedDisk : Disk
     {
+        public ManagedDisk(Guid executionGuid) : base(executionGuid)
+        {
+        }
+
         public string storageAccountType;
         public string id;
     }
