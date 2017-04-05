@@ -118,6 +118,7 @@ namespace MigAz.Forms
                         WebBrowser webBrowser = new WebBrowser();
                         webBrowser.Width = tabOutputResults.Width - 15;
                         webBrowser.Height = tabOutputResults.Height - 30;
+                        webBrowser.AllowNavigation = false;
                         webBrowser.ScrollBarsEnabled = true;
                         tabPage.Controls.Add(webBrowser);
                     }
@@ -266,6 +267,13 @@ namespace MigAz.Forms
             if (splitContainer2.Panel1.Controls.Count == 1)
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)splitContainer2.Panel1.Controls[0];
+
+                if (migrator.TemplateGenerator.HasErrors)
+                {
+                    MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
+                    return;
+                }
+
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
                 migrator.TemplateGenerator.Write();
 

@@ -77,6 +77,20 @@ namespace MigAz.Core.Generator
         public Dictionary<string, ArmTemplate.Parameter> Parameters { get { return _Parameters; } }
         public Dictionary<string, MemoryStream> TemplateStreams { get { return _TemplateStreams; } }
 
+        public bool HasErrors
+        {
+            get
+            {
+                foreach (MigAzGeneratorAlert alert in this.Alerts)
+                {
+                    if (alert.AlertType == AlertType.Error)
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
         public bool IsProcessed(ArmResource resource)
         {
             return this.Resources.Contains(resource);

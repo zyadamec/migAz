@@ -101,22 +101,6 @@ namespace MigAz.Azure
             _AzureContext.LogProvider.WriteLog(method, requestGuid.ToString() + " Received REST Response");
         }
 
-        internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
-        {
-            if (_ArmAvailabilitySets == null)
-                _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
-
-            foreach (Arm.AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
-            {
-                if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
-                    return armAvailabilitySet;
-            }
-
-            Arm.AvailabilitySet newArmAvailabilitySet = new Arm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
-            _ArmAvailabilitySets.Add(newArmAvailabilitySet);
-
-            return newArmAvailabilitySet;
-        }
 
         public Dictionary<string, string> GetVMLBMapping(string cloudservicename, XmlNodeList roles)
         {
@@ -199,6 +183,8 @@ namespace MigAz.Azure
 
         private async Task<XmlDocument> GetAzureAsmResources(string resourceType, Hashtable info)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzuereAsmResources", "Start");
+
             Guid requestGuid = Guid.NewGuid();
             _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Start REST Request");
 
@@ -335,6 +321,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Asm.Location>> GetAzureASMLocations()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureASMLocations", "Start");
+
             XmlNode locationsXml = await this.GetAzureAsmResources("Locations", null);
             List<Asm.Location> azureLocations = new List<Asm.Location>();
             foreach (XmlNode locationXml in locationsXml.SelectNodes("/Locations/Location"))
@@ -347,6 +335,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<ReservedIP>> GetAzureAsmReservedIPs()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmReservedIPs", "Start");
+
             if (_AsmReservedIPs != null)
                 return _AsmReservedIPs;
 
@@ -362,6 +352,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Asm.StorageAccount>> GetAzureAsmStorageAccounts()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmStorageAccounts", "Start");
+
             if (_StorageAccounts != null)
                 return _StorageAccounts;
 
@@ -386,6 +378,8 @@ namespace MigAz.Azure
 
         public async virtual Task<Asm.StorageAccount> GetAzureAsmStorageAccount(string storageAccountName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmStorageAccount", "Start");
+
             foreach (Asm.StorageAccount asmStorageAccount in await this.GetAzureAsmStorageAccounts())
             {
                 if (asmStorageAccount.Name == storageAccountName)
@@ -397,6 +391,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Asm.VirtualNetwork>> GetAzureAsmVirtualNetworks()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetworks", "Start");
+
             if (_VirtualNetworks != null)
                 return _VirtualNetworks;
 
@@ -412,6 +408,8 @@ namespace MigAz.Azure
 
         public async Task<Asm.VirtualNetwork> GetAzureAsmVirtualNetwork(string virtualNetworkName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetwork", "Start");
+
             foreach (Asm.VirtualNetwork asmVirtualNetwork in await this.GetAzureAsmVirtualNetworks())
             {
                 if (asmVirtualNetwork.Name == virtualNetworkName)
@@ -425,6 +423,8 @@ namespace MigAz.Azure
 
         internal async Task<AffinityGroup> GetAzureAsmAffinityGroup(string affinityGroupName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmAffinityGroup", "Start");
+
             Hashtable affinitygroupinfo = new Hashtable();
             affinitygroupinfo.Add("affinitygroupname", affinityGroupName);
 
@@ -435,6 +435,8 @@ namespace MigAz.Azure
 
         public async virtual Task<Asm.NetworkSecurityGroup> GetAzureAsmNetworkSecurityGroup(string networkSecurityGroupName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmNetworkSecurityGroup", "Start");
+
             Hashtable networkSecurityGroupInfo = new Hashtable();
             networkSecurityGroupInfo.Add("name", networkSecurityGroupName);
 
@@ -445,6 +447,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Asm.NetworkSecurityGroup>> GetAzureAsmNetworkSecurityGroups()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmNetworkSecurityGroups", "Start");
+
             List<Asm.NetworkSecurityGroup> networkSecurityGroups = new List<Asm.NetworkSecurityGroup>();
 
             XmlDocument x = await this.GetAzureAsmResources("NetworkSecurityGroups", null);
@@ -459,6 +463,8 @@ namespace MigAz.Azure
 
         public async virtual Task<Asm.RouteTable> GetAzureAsmRouteTable(string routeTableName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmRouteTable", "Start");
+
             Hashtable info = new Hashtable();
             info.Add("name", routeTableName);
             XmlDocument routeTableXml = await this.GetAzureAsmResources("RouteTable", info);
@@ -467,6 +473,8 @@ namespace MigAz.Azure
 
         internal async Task<Asm.VirtualMachine> GetAzureAsmVirtualMachine(CloudService asmCloudService, string virtualMachineName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualMachine", "Start");
+
             Hashtable vmDetails = await this.GetVMDetails(asmCloudService.ServiceName, virtualMachineName);
             XmlDocument virtualMachineXml = await this.GetAzureAsmResources("VirtualMachine", vmDetails);
             Asm.VirtualMachine asmVirtualMachine = new Asm.VirtualMachine(this._AzureContext, asmCloudService, this._AzureContext.SettingsProvider, virtualMachineXml, vmDetails);
@@ -477,6 +485,8 @@ namespace MigAz.Azure
 
         private async Task<Hashtable> GetVMDetails(string cloudServiceName, string virtualMachineName)
         {
+            _AzureContext.LogProvider.WriteLog("GetVMDetails", "Start");
+
             Hashtable cloudserviceinfo = new Hashtable();
             cloudserviceinfo.Add("name", cloudServiceName);
 
@@ -525,6 +535,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<CloudService>> GetAzureAsmCloudServices()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmCloudServices", "Start");
+
             if (_CloudServices != null)
                 return _CloudServices;
 
@@ -555,6 +567,8 @@ namespace MigAz.Azure
 
         public async virtual Task<CloudService> GetAzureAsmCloudService(string cloudServiceName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmCloudService", "Start");
+
             foreach (CloudService asmCloudService in await this.GetAzureAsmCloudServices())
             {
                 if (asmCloudService.ServiceName == cloudServiceName)
@@ -566,6 +580,8 @@ namespace MigAz.Azure
 
         public async Task<StorageAccountKeys> GetAzureAsmStorageAccountKeys(string storageAccountName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmStorageAccountKeys", "Start");
+
             Hashtable storageAccountInfo = new Hashtable();
             storageAccountInfo.Add("name", storageAccountName);
 
@@ -575,6 +591,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<ClientRootCertificate>> GetAzureAsmClientRootCertificates(Asm.VirtualNetwork asmVirtualNetwork)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmClientRootCertificates", "Start");
+
             Hashtable virtualNetworkInfo = new Hashtable();
             virtualNetworkInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
             XmlDocument clientRootCertificatesXml = await this.GetAzureAsmResources("ClientRootCertificates", virtualNetworkInfo);
@@ -592,6 +610,8 @@ namespace MigAz.Azure
 
         public async Task<XmlDocument> GetAzureAsmClientRootCertificateData(Asm.VirtualNetwork asmVirtualNetwork, string certificateThumbprint)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmClientRootCertificateData", "Start");
+
             Hashtable certificateInfo = new Hashtable();
             certificateInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
             certificateInfo.Add("thumbprint", certificateThumbprint);
@@ -601,6 +621,8 @@ namespace MigAz.Azure
 
         public async virtual Task<Asm.VirtualNetworkGateway> GetAzureAsmVirtualNetworkGateway(Asm.VirtualNetwork asmVirtualNetwork)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetworkGateway", "Start");
+
             Hashtable virtualNetworkGatewayInfo = new Hashtable();
             virtualNetworkGatewayInfo.Add("virtualnetworkname", asmVirtualNetwork.Name);
             virtualNetworkGatewayInfo.Add("localnetworksitename", String.Empty);
@@ -611,6 +633,8 @@ namespace MigAz.Azure
 
         public async virtual Task<string> GetAzureAsmVirtualNetworkSharedKey(string virtualNetworkName, string localNetworkSiteName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetworkSharedKey", "Start");
+
             Hashtable virtualNetworkGatewayInfo = new Hashtable();
             virtualNetworkGatewayInfo.Add("virtualnetworkname", virtualNetworkName);
             virtualNetworkGatewayInfo.Add("localnetworksitename", localNetworkSiteName);
@@ -626,8 +650,29 @@ namespace MigAz.Azure
 
         #region ARM Methods
 
+        internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySet", "Start");
+
+            if (_ArmAvailabilitySets == null)
+                _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
+
+            foreach (Arm.AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
+            {
+                if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
+                    return armAvailabilitySet;
+            }
+
+            Arm.AvailabilitySet newArmAvailabilitySet = new Arm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
+            _ArmAvailabilitySets.Add(newArmAvailabilitySet);
+
+            return newArmAvailabilitySet;
+        }
+
         private async Task<JObject> GetAzureARMResources(string resourceType, Hashtable info)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start");
+
             string methodType = "GET";
             string url = null;
             bool useCached = true;
@@ -757,6 +802,8 @@ namespace MigAz.Azure
 
         public async Task<List<AzureTenant>> GetAzureARMTenants()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMTenants", "Start");
+
             if (_ArmTenants != null)
                 return _ArmTenants;
 
@@ -779,6 +826,8 @@ namespace MigAz.Azure
 
         public async Task<List<AzureDomain>> GetAzureARMDomains(AzureTenant azureTenant)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
+
             Hashtable info = new Hashtable();
             info.Add("tenantId", azureTenant.TenantId);
 
@@ -800,6 +849,8 @@ namespace MigAz.Azure
 
         public async Task<List<AzureSubscription>> GetAzureARMSubscriptions()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start");
+
             if (_ArmSubscriptions != null)
                 return _ArmSubscriptions;
 
@@ -821,6 +872,8 @@ namespace MigAz.Azure
 
         public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureTenant azureTenant)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start");
+
             Hashtable info = new Hashtable();
             info.Add("tenantId", azureTenant.TenantId);
 
@@ -842,6 +895,8 @@ namespace MigAz.Azure
 
         public async Task<List<ResourceGroup>> GetAzureARMResourceGroups()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResourceGroups", "Start");
+
             if (_ArmResourceGroups != null)
                 return _ArmResourceGroups;
 
@@ -863,6 +918,8 @@ namespace MigAz.Azure
 
         public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
+
             foreach (Arm.VirtualNetwork armVirtualNetwork in await GetAzureARMVirtualNetworks())
             {
                 if (armVirtualNetwork.Name == virtualNetworkName)
@@ -874,6 +931,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Start");
+
             if (_ArmVirtualNetworks != null)
                 return _ArmVirtualNetworks;
 
@@ -895,6 +954,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMManagedDisks", "Start");
+
             if (_ArmManagedDisks != null)
                 return _ArmManagedDisks;
 
@@ -915,6 +976,8 @@ namespace MigAz.Azure
         }
         public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccounts", "Start");
+
             if (_ArmStorageAccounts != null)
                 return _ArmStorageAccounts;
 
@@ -939,6 +1002,8 @@ namespace MigAz.Azure
 
         public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "Start");
+
             if (_ArmLocations != null)
                 return _ArmLocations;
 
@@ -962,6 +1027,8 @@ namespace MigAz.Azure
 
         public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines()
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Start");
+
             if (_ArmVirtualMachines != null)
                 return _ArmVirtualMachines;
 
@@ -983,6 +1050,8 @@ namespace MigAz.Azure
 
         internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
         {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccountKeys", "Start");
+
             Hashtable storageAccountKeyInfo = new Hashtable();
             storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup);
             storageAccountKeyInfo.Add("StorageAccountName", armStorageAccount.Name);
@@ -1001,8 +1070,6 @@ namespace MigAz.Azure
 
             return;
         }
-
-
 
         #endregion
 
