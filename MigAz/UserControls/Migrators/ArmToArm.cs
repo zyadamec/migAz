@@ -59,7 +59,7 @@ namespace MigAz.UserControls.Migrators
                 _AzureContextARM.AzureEnvironment = AzureEnvironment.AzureCloud;
             }
 
-            NewVersionAvailable(); // check if there a new version of the app
+            AlertIfNewVersionAvailable(); // check if there a new version of the app
         }
 
         public AzureContext AzureContextARM
@@ -148,16 +148,20 @@ namespace MigAz.UserControls.Migrators
             //btnExport.Text = "Export " + numofobjects.ToString() + " objects";
         }
 
-        private void NewVersionAvailable()
+        #region New Version Check
+
+        private async Task AlertIfNewVersionAvailable()
         {
-            //if (MigAz.Core.VersionCheck.NewVersionAvailable(Version.ArmToArm, ""))
-            //{
-            //    if (version != availableversion)
-            //    {
-                    DialogResult dialogresult = MessageBox.Show("New version " + "x.x.x.x" + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    }
-            //}
+            string currentVersion = "2.0.0.0";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/ARMtoARM", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+
+        #endregion
 
         private List<TreeNode> GetSelectedNodes(TreeView treeView)
         {

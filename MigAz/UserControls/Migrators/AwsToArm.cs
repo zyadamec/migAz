@@ -7,6 +7,7 @@ using MigAz.Azure;
 using MigAz.AWS;
 using MigAz.AWS.Forms;
 using MigAz.AWS.Providers;
+using MigAz.Core;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -69,11 +70,26 @@ namespace MigAz.UserControls.Migrators
             if (LogProvider != null)
                 LogProvider.WriteLog("Window_Load", "Program start");
             // TODO instResponse = new DescribeInstancesResponse();
-           // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
+            // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 
             // TODO cmbRegion.DataSource = Regions;
-            //NewVersionAvailable(); // check if there a new version of the app
+            AlertIfNewVersionAvailable();
         }
+
+        #region New Version Check
+
+        private async Task AlertIfNewVersionAvailable()
+        {
+            string currentVersion = "2.0.0.0";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/AWStoARM", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #endregion
 
         //TODO CHECK
         private void Window_FormClosing(object sender, FormClosingEventArgs e)
@@ -208,21 +224,6 @@ namespace MigAz.UserControls.Migrators
             //}
 
             btnExport.Enabled = true;
-        }
-
-        private void NewVersionAvailable()
-        {
-            //try
-            //{
-                //if (version != availableversion)
-                //{
-                    DialogResult dialogresult = MessageBox.Show("New version " + "x.x.x.x" + " is available at http://aka.ms/MIGAZ", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    }
-            //}
-            //catch (Exception exception)
-            //{
-            //    DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
         }
 
         private void AutoSelectDependencies(ItemCheckedEventArgs listViewRow)

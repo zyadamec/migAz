@@ -258,14 +258,15 @@ namespace MigAz.UserControls.Migrators
 
         #region New Version Check
 
-        private async Task NewVersionAvailable()
+        private async Task AlertIfNewVersionAvailable()
         {
-            
-            //if (version != availableversion)
-            //{
-                DialogResult dialogresult = MessageBox.Show("New version " + "x.x.x.x" + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //}
-            
+            string currentVersion = "2.0.0.0";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://asmtoarmtoolapi.azurewebsites.net/api/version", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         #endregion
@@ -750,7 +751,7 @@ namespace MigAz.UserControls.Migrators
                 _AzureContextSourceASM.AzureEnvironment = AzureEnvironment.AzureCloud;
             }
 
-            await NewVersionAvailable(); // check if there a new version of the app
+            await AlertIfNewVersionAvailable(); // check if there a new version of the app
         }
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)

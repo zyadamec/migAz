@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -8,34 +9,85 @@ namespace MigAz.Core
 {
     public class VersionCheck
     {
-        public async Task NewVersionAvailable()
-        {
-            // AWS
-            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/version/AWStoARM");
-            //request.Method = "GET";
-            //request.ContentType = "application/x-www-form-urlencoded";
+        private ILogProvider _LogProvider;
 
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://asmtoarmtoolapi.azurewebsites.net/api/version");
+        private VersionCheck() { }
+
+        public VersionCheck(ILogProvider logProvider)
+        {
+            _LogProvider = logProvider;
+        }
+
+        public async Task<string> GetAvailableVersion(string url, string currentVersion)
+        {
+            _LogProvider.WriteLog("GetAvailableVersion", "Start");
+
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
             request.Method = "GET";
             request.ContentType = "application/x-www-form-urlencoded";
+
+            string availableversion = String.Empty;
 
             try
             {
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
                 string result = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                availableversion = result.ToString();
+            }
+            catch (Exception exc)
+            {
+                _LogProvider.WriteLog("GetAvailableVersion", exc.Message + exc.StackTrace);
+            }
 
-                string version = "\"" + Assembly.GetEntryAssembly().GetName().Version.ToString() + "\"";
-                string availableversion = result.ToString();
+            _LogProvider.WriteLog("GetAvailableVersion", "End");
+            return availableversion;
+        }
 
-                if (version != availableversion)
+        public bool IsVersionNewer(string currentVersion, string availableversion)
+        {
+            _LogProvider.WriteLog("IsVersionNewer", "Start");
+
+            // previous use of " in strings, removing if existing
+            currentVersion = currentVersion.Replace("\"", String.Empty);
+            availableversion = availableversion.Replace("\"", String.Empty);
+
+            string[] currentVersionArray = currentVersion.Split('.');
+            string[] availableversionArray = availableversion.Split('.');
+
+            if (currentVersionArray.Length != 4 || availableversionArray.Length != 4)
+            {
+                _LogProvider.WriteLog("IsVersionNewer", "Unable to split version for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
+                return true;
+            }
+
+            for (int i = 0; i < currentVersion.Length; i++)
+            {
+                try
                 {
-                    //MessageBox.Show("New version " + availableversion + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    int current = Convert.ToInt32(currentVersionArray[i]);
+                    int available = Convert.ToInt32(availableversionArray[i]);
+
+                    if (current > available)
+                    {
+                        _LogProvider.WriteLog("IsVersionNewer", "No newer version available (current " + currentVersion + " exceeds available " + availableversion + ").");
+                        return false;
+                    }
+
+                    if (current < available)
+                    {
+                        _LogProvider.WriteLog("IsVersionNewer", "Newer version available (current " + currentVersion + " available " + availableversion + ").");
+                        return true;
+                    }
+                }
+                catch
+                {
+                    _LogProvider.WriteLog("IsVersionNewer", "Unable to convert to int for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
+                    return true;
                 }
             }
-            catch (Exception exception)
-            {
-                //MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            _LogProvider.WriteLog("IsVersionNewer", "No new version found (matched version " + currentVersion + ").");
+            return false;
         }
     }
 }
