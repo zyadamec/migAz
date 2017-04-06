@@ -62,7 +62,7 @@ namespace MigAz.Forms
             get { return _statusProvider; }
         }
 
-        internal AppSettingsProvider AppSettingsProviders
+        internal AppSettingsProvider AppSettingsProvider
         {
             get { return _appSettingsProvider; }
         }
@@ -247,7 +247,6 @@ namespace MigAz.Forms
         private void panel1_Resize(object sender, EventArgs e)
         {
             btnExport.Width = panel1.Width - 15;
-            button1.Width = panel1.Width - 15;
             btnChoosePath.Left = panel1.Width - btnChoosePath.Width - 10;
             txtDestinationFolder.Width = panel1.Width - btnChoosePath.Width - 30;
         }
@@ -277,15 +276,16 @@ namespace MigAz.Forms
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
                 migrator.TemplateGenerator.Write();
 
+                // post Telemetry Record to ASMtoARMToolAPI
+                if (AppSettingsProvider.AllowTelemetry)
+                {
+                    StatusProvider.UpdateStatus("BUSY: saving telemetry information");
+                    migrator.PostTelemetryRecord();
+                }
+
                 var exportResults = new ExportResultsDialog(migrator.TemplateGenerator);
                 exportResults.ShowDialog(this);
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            OptionsDialog optionsDialog = new OptionsDialog();
-            optionsDialog.ShowDialog();
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -303,6 +303,12 @@ namespace MigAz.Forms
                     control.Height = tabOutputResults.Height - 30;
                 }
             }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsDialog optionsDialog = new OptionsDialog();
+            optionsDialog.ShowDialog();
         }
     }
 }

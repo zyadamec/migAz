@@ -27,15 +27,15 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(AsmToArmGenerator templateResult)
+        public void PostTelemetryRecord(AsmToArmGenerator templateGenerator)
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
-            telemetryrecord.ExecutionId = templateResult.ExecutionGuid;
-            telemetryrecord.SubscriptionId = templateResult.SourceSubscription.SubscriptionId;
-            telemetryrecord.TenantId = templateResult.SourceSubscription.AzureAdTenantId;
-            telemetryrecord.OfferCategories = templateResult.SourceSubscription.offercategories;
+            telemetryrecord.ExecutionId = templateGenerator.ExecutionGuid;
+            telemetryrecord.SubscriptionId = templateGenerator.SourceSubscription.SubscriptionId;
+            telemetryrecord.TenantId = templateGenerator.SourceSubscription.AzureAdTenantId;
+            telemetryrecord.OfferCategories = templateGenerator.SourceSubscription.offercategories;
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            telemetryrecord.ProcessedResources = this.GetProcessedItems(templateResult);
+            telemetryrecord.ProcessedResources = this.GetProcessedItems(templateGenerator);
 
             string jsontext = JsonConvert.SerializeObject(telemetryrecord, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             ASCIIEncoding encoding = new ASCIIEncoding();

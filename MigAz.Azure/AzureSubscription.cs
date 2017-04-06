@@ -80,12 +80,22 @@ namespace MigAz.Azure
 
         public string offercategories
         {
-            get { return _XmlNode.SelectSingleNode("OfferCategories").InnerText; }
+            get
+            {
+                if (_XmlNode != null && _XmlNode.SelectSingleNode("OfferCategories") != null)
+                    return _XmlNode.SelectSingleNode("OfferCategories").InnerText;
+                else return String.Empty;
+            }
         }
 
         public string SubscriptionStatus
         {
-            get { return _XmlNode.SelectSingleNode("SubscriptionStatus").InnerText; }
+            get
+            {
+                if (_XmlNode != null && _XmlNode.SelectSingleNode("SubscriptionStatus") != null)
+                    return _XmlNode.SelectSingleNode("SubscriptionStatus").InnerText;
+                else return String.Empty;
+            }
         }
 
         public string AccountAdminLiveEmailId

@@ -37,5 +37,10 @@ namespace MigAz.Core.Interface
             get { return _TemplateGenerator; }
             set { _TemplateGenerator = value; }
         }
+
+        public virtual void PostTelemetryRecord()
+        {
+
+        }
     }
 }

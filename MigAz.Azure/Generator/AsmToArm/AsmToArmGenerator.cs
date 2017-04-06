@@ -152,18 +152,10 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             TemplateStreams.Clear();
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start export.json stream");
-
-            String templateString = GetTemplateString();
-            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
-            byte[] a = asciiEncoding.GetBytes(templateString);
-            MemoryStream templateStream = new MemoryStream();
-            templateStream.Write(a, 0, a.Length);
-            TemplateStreams.Add("export.json", templateStream);
-
-            LogProvider.WriteLog("UpdateArtifacts", "End export.json stream");
+            await UpdateExportJsonStream();
 
             LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
             string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
             byte[] b = asciiEncoding.GetBytes(jsontext);
@@ -227,16 +219,23 @@ namespace MigAz.Azure.Generator.AsmToArm
             OnTemplateChanged();
             LogProvider.WriteLog("UpdateArtifacts", "End OnTemplateChanged Event");
 
-            // post Telemetry Record to ASMtoARMToolAPI
-            if (_settingsProvider.AllowTelemetry)
-            {
-                StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                //_telemetryProvider.PostTelemetryRecord(templateResult);// TODO
-            }
-
             StatusProvider.UpdateStatus("Ready");
 
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
+        }
+
+        private async Task UpdateExportJsonStream()
+        {
+            LogProvider.WriteLog("UpdateArtifacts", "Start export.json stream");
+
+            String templateString = await GetTemplateString();
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+            byte[] a = asciiEncoding.GetBytes(templateString);
+            MemoryStream templateStream = new MemoryStream();
+            templateStream.Write(a, 0, a.Length);
+            TemplateStreams.Add("export.json", templateStream);
+
+            LogProvider.WriteLog("UpdateArtifacts", "End export.json stream");
         }
 
         protected override void OnTemplateChanged()
@@ -1358,7 +1357,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             return JObject.Parse(myStr);
         }
 
-        private string GetTemplateString()
+        private async Task<string> GetTemplateString()
         {
             Template template = new Template()
             {

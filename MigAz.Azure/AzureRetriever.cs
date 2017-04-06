@@ -635,15 +635,23 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetworkSharedKey", "Start");
 
-            Hashtable virtualNetworkGatewayInfo = new Hashtable();
-            virtualNetworkGatewayInfo.Add("virtualnetworkname", virtualNetworkName);
-            virtualNetworkGatewayInfo.Add("localnetworksitename", localNetworkSiteName);
+            try
+            {
+                Hashtable virtualNetworkGatewayInfo = new Hashtable();
+                virtualNetworkGatewayInfo.Add("virtualnetworkname", virtualNetworkName);
+                virtualNetworkGatewayInfo.Add("localnetworksitename", localNetworkSiteName);
 
-            XmlDocument connectionShareKeyXml = await this.GetAzureAsmResources("VirtualNetworkGatewaySharedKey", virtualNetworkGatewayInfo);
-            if (connectionShareKeyXml.SelectSingleNode("//Value") == null)
+                XmlDocument connectionShareKeyXml = await this.GetAzureAsmResources("VirtualNetworkGatewaySharedKey", virtualNetworkGatewayInfo);
+                if (connectionShareKeyXml.SelectSingleNode("//Value") == null)
+                    return String.Empty;
+
+                return connectionShareKeyXml.SelectSingleNode("//Value").InnerText;
+            }
+            catch (Exception exc)
+            {
+                _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualNetworkSharedKey", "Exception: " + exc.Message + exc.StackTrace);
                 return String.Empty;
-
-            return connectionShareKeyXml.SelectSingleNode("//Value").InnerText;
+            }
         }
 
         #endregion

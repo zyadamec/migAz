@@ -47,7 +47,6 @@
             this.txtRest = new System.Windows.Forms.TextBox();
             this.propertyPanel1 = new MigAz.UserControls.PropertyPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
             this.btnChoosePath = new System.Windows.Forms.Button();
@@ -63,6 +62,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -270,7 +271,6 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.btnExport);
             this.panel1.Controls.Add(this.txtDestinationFolder);
             this.panel1.Controls.Add(this.btnChoosePath);
@@ -280,18 +280,6 @@
             this.panel1.TabIndex = 7;
             this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
             // 
-            // button1
-            // 
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(17, 112);
-            this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(676, 44);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "Options";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // btnExport
             // 
             this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -300,7 +288,7 @@
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(676, 44);
             this.btnExport.TabIndex = 9;
-            this.btnExport.Text = "&Export 0 objects";
+            this.btnExport.Text = "&Export Objects";
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click_1);
             // 
@@ -340,6 +328,8 @@
             this.newMigrationToolStripMenuItem,
             this.closeMigrationToolStripMenuItem,
             this.toolStripSeparator1,
+            this.optionsToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
@@ -404,7 +394,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem
@@ -420,6 +410,18 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(281, 6);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.optionsToolStripMenuItem.Text = "&Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // MigAzForm
             // 
@@ -490,7 +492,6 @@
         private System.Windows.Forms.TabPage tabRest;
         private System.Windows.Forms.TextBox txtRest;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.TextBox txtDestinationFolder;
         private System.Windows.Forms.Button btnChoosePath;
@@ -500,6 +501,8 @@
         private UserControls.PropertyPanel propertyPanel1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabControl tabOutputResults;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

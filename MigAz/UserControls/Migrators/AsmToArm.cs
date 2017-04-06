@@ -794,9 +794,11 @@ namespace MigAz.UserControls.Migrators
             {
                 selectedExportCount = _SelectedNodes.Count();
             }
+        }
 
-            //btnExport.Text = "Export " + selectedExportCount.ToString() + " objects";
-            //btnExport.Enabled = _SelectedNodes.Count() > 0;
+        public override void PostTelemetryRecord()
+        {
+            _telemetryProvider.PostTelemetryRecord((AsmToArmGenerator) this.TemplateGenerator);
         }
     }
 }
