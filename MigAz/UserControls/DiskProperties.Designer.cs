@@ -208,14 +208,15 @@
             this.label9.TabIndex = 24;
             this.label9.Text = "Target Name:";
             // 
-            // rbManagedDIsk
+            // rbManagedDisk
             // 
             this.rbManagedDisk.AutoSize = true;
+            this.rbManagedDisk.Enabled = false;
             this.rbManagedDisk.Location = new System.Drawing.Point(200, 311);
-            this.rbManagedDisk.Name = "rbManagedDIsk";
-            this.rbManagedDisk.Size = new System.Drawing.Size(234, 29);
+            this.rbManagedDisk.Name = "rbManagedDisk";
+            this.rbManagedDisk.Size = new System.Drawing.Size(383, 29);
             this.rbManagedDisk.TabIndex = 25;
-            this.rbManagedDisk.Text = "ARM Managed Disk";
+            this.rbManagedDisk.Text = "ARM Managed Disk (Coming Soon)";
             this.rbManagedDisk.UseVisualStyleBackColor = true;
             this.rbManagedDisk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
             // 

@@ -310,5 +310,12 @@ namespace MigAz.Forms
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
         }
+
+        private void btnChoosePath_Click(object sender, EventArgs e)
+        {
+            DialogResult result = folderBrowserDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+                txtDestinationFolder.Text = folderBrowserDialog1.SelectedPath;
+        }
     }
 }

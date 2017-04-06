@@ -264,7 +264,7 @@ namespace MigAz.Core.ArmTemplate
         public long frontendPort;
         public long backendPort;
         public bool enableFloatingIP;
-        public long idleTimeoutInMinutes;
+        public long idleTimeoutInMinutes = 4;
         public string protocol;
         public Reference frontendIPConfiguration;
     }

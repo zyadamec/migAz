@@ -42,15 +42,15 @@ namespace MigAz.UserControls
             get { return rbManagedDisk.Enabled; }
             set
             {
-                if (!value)
-                {
-                    if (rbManagedDisk.Checked)
-                    {
-                        rbManagedDisk.Checked = false;
-                    }
-                }
+                //if (!value)
+                //{
+                //    if (rbManagedDisk.Checked)
+                //    {
+                //        rbManagedDisk.Checked = false;
+                //    }
+                //}
 
-                rbManagedDisk.Enabled = value;
+                //rbManagedDisk.Enabled = value;
             }
         }
 

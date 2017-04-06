@@ -154,6 +154,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             await UpdateExportJsonStream();
 
+            StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
             LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
@@ -166,7 +167,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "End copyblobdetails.json stream");
 
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
+            StatusProvider.UpdateStatus("BUSY:  Generating DeployInstructions.html");
+            LogProvider.WriteLog("UpdateArtifacts", "Start DeployInstructions.html stream");
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
@@ -213,7 +215,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             instructionStream.Write(c, 0, c.Length);
             TemplateStreams.Add("DeployInstructions.html", instructionStream);
 
-            LogProvider.WriteLog("UpdateArtifacts", "End copyblobdetails.json stream");
+            LogProvider.WriteLog("UpdateArtifacts", "End DeployInstructions.html stream");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
             OnTemplateChanged();
@@ -226,6 +228,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private async Task UpdateExportJsonStream()
         {
+            StatusProvider.UpdateStatus("BUSY:  Generating export.json");
             LogProvider.WriteLog("UpdateArtifacts", "Start export.json stream");
 
             String templateString = await GetTemplateString();
