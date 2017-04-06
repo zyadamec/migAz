@@ -58,8 +58,8 @@ namespace MigAz.UserControls.Migrators
 
             _TargetResourceGroup = new ResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
 
-            azureLoginContextViewer21.Bind(_AzureContextSourceASM);
-            azureLoginContextViewer2.Bind(_AzureContextTargetARM);
+            azureLoginContextViewerASM.Bind(_AzureContextSourceASM);
+            azureLoginContextViewerARM.Bind(_AzureContextTargetARM);
 
             this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
         }
@@ -105,8 +105,8 @@ namespace MigAz.UserControls.Migrators
             ResetForm();
             await _AzureContextTargetARM.SetSubscriptionContext(null);
             await _AzureContextTargetARM.Logout();
-            azureLoginContextViewer2.Enabled = false;
-            azureLoginContextViewer2.Refresh();
+            azureLoginContextViewerARM.Enabled = false;
+            azureLoginContextViewerARM.Refresh();
         }
 
         private async Task _AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)
@@ -122,7 +122,7 @@ namespace MigAz.UserControls.Migrators
                         await _AzureContextTargetARM.SetSubscriptionContext(_AzureContextSourceASM.AzureSubscription);
                     }
 
-                    azureLoginContextViewer2.Enabled = true;
+                    azureLoginContextViewerARM.Enabled = true;
 
                     this.TemplateGenerator.SourceSubscription = _AzureContextSourceASM.AzureSubscription;
                     this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
@@ -209,6 +209,11 @@ namespace MigAz.UserControls.Migrators
             }
             
             StatusProvider.UpdateStatus("Ready");
+        }
+
+        internal void ChangeAzureContext()
+        {
+            azureLoginContextViewerASM.ChangeAzureContext();
         }
 
         private void ResetForm()

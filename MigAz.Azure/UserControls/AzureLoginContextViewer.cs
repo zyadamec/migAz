@@ -104,5 +104,10 @@ namespace MigAz.Azure.UserControls
         {
             btnAzureContext.Enabled = this.Enabled;
         }
+
+        public void ChangeAzureContext()
+        {
+            btnAzureContext_Click(this, null);
+        }
     }
 }

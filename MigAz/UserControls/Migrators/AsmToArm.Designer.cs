@@ -31,12 +31,12 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AsmToArm));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.azureLoginContextViewer2 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewerARM = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.treeARM = new System.Windows.Forms.TreeView();
             this.treeASM = new System.Windows.Forms.TreeView();
-            this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewerASM = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // imageList1
@@ -54,15 +54,15 @@
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
             // 
-            // azureLoginContextViewer2
+            // azureLoginContextViewerARM
             // 
-            this.azureLoginContextViewer2.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.SubscriptionOnly;
-            this.azureLoginContextViewer2.Enabled = false;
-            this.azureLoginContextViewer2.Location = new System.Drawing.Point(903, 3);
-            this.azureLoginContextViewer2.Name = "azureLoginContextViewer2";
-            this.azureLoginContextViewer2.Size = new System.Drawing.Size(894, 204);
-            this.azureLoginContextViewer2.TabIndex = 63;
-            this.azureLoginContextViewer2.Title = "Azure ARM (Target) Subscription";
+            this.azureLoginContextViewerARM.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.SubscriptionOnly;
+            this.azureLoginContextViewerARM.Enabled = false;
+            this.azureLoginContextViewerARM.Location = new System.Drawing.Point(903, 3);
+            this.azureLoginContextViewerARM.Name = "azureLoginContextViewerARM";
+            this.azureLoginContextViewerARM.Size = new System.Drawing.Size(894, 204);
+            this.azureLoginContextViewerARM.TabIndex = 63;
+            this.azureLoginContextViewerARM.Title = "Azure ARM (Target) Subscription";
             // 
             // label6
             // 
@@ -102,25 +102,25 @@
             this.treeASM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
             this.treeASM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);
             // 
-            // azureLoginContextViewer21
+            // azureLoginContextViewerASM
             // 
-            this.azureLoginContextViewer21.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
-            this.azureLoginContextViewer21.Location = new System.Drawing.Point(3, 3);
-            this.azureLoginContextViewer21.Name = "azureLoginContextViewer21";
-            this.azureLoginContextViewer21.Size = new System.Drawing.Size(894, 211);
-            this.azureLoginContextViewer21.TabIndex = 64;
-            this.azureLoginContextViewer21.Title = "Azure Subscription";
+            this.azureLoginContextViewerASM.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
+            this.azureLoginContextViewerASM.Location = new System.Drawing.Point(3, 3);
+            this.azureLoginContextViewerASM.Name = "azureLoginContextViewerASM";
+            this.azureLoginContextViewerASM.Size = new System.Drawing.Size(894, 211);
+            this.azureLoginContextViewerASM.TabIndex = 64;
+            this.azureLoginContextViewerASM.Title = "Azure Subscription";
             // 
             // AsmToArm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.azureLoginContextViewer2);
+            this.Controls.Add(this.azureLoginContextViewerARM);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.treeARM);
             this.Controls.Add(this.treeASM);
-            this.Controls.Add(this.azureLoginContextViewer21);
+            this.Controls.Add(this.azureLoginContextViewerASM);
             this.Name = "AsmToArm";
             this.Size = new System.Drawing.Size(1807, 803);
             this.Load += new System.EventHandler(this.AsmToArmForm_Load);
@@ -132,11 +132,11 @@
 
         #endregion
         private System.Windows.Forms.ImageList imageList1;
-        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer2;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerARM;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TreeView treeARM;
         private System.Windows.Forms.TreeView treeASM;
-        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer21;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerASM;
     }
 }

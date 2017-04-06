@@ -183,6 +183,10 @@ namespace MigAz.Forms
 
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
         }
 
         private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
