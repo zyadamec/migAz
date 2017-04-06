@@ -283,6 +283,8 @@ namespace MigAz.Forms
                     migrator.PostTelemetryRecord();
                 }
 
+                StatusProvider.UpdateStatus("Ready");
+
                 var exportResults = new ExportResultsDialog(migrator.TemplateGenerator);
                 exportResults.ShowDialog(this);
             }

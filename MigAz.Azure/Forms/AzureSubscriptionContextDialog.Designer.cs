@@ -73,6 +73,7 @@
             this.cmbSubscriptions.Location = new System.Drawing.Point(247, 92);
             this.cmbSubscriptions.Name = "cmbSubscriptions";
             this.cmbSubscriptions.Size = new System.Drawing.Size(915, 33);
+            this.cmbSubscriptions.Sorted = true;
             this.cmbSubscriptions.TabIndex = 1;
             this.cmbSubscriptions.SelectedIndexChanged += new System.EventHandler(this.cmbSubscriptions_SelectedIndexChanged);
             // 
