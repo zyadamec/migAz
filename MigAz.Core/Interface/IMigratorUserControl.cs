@@ -38,6 +38,11 @@ namespace MigAz.Core.Interface
             set { _TemplateGenerator = value; }
         }
 
+        public virtual void SeekAlertSource(object sourceObject)
+        {
+
+        }
+
         public virtual void PostTelemetryRecord()
         {
 

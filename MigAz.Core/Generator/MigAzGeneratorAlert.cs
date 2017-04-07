@@ -17,13 +17,13 @@ namespace MigAz.Core.Generator
     {
         public string Message;
         public AlertType AlertType = AlertType.Error;
-        public object SourceTreeNode;
+        public object SourceObject;
 
-        public MigAzGeneratorAlert(AlertType alertType, string message, object source)
+        public MigAzGeneratorAlert(AlertType alertType, string message, object sourceObject)
         {
             AlertType = alertType;
             Message = message;
-            SourceTreeNode = source;
+            SourceObject = sourceObject;
         }
     }
 }

@@ -801,6 +801,34 @@ namespace MigAz.UserControls.Migrators
             }
         }
 
+        private void SeekAlertSourceRecursive(object sourceObject, TreeNodeCollection nodes)
+        {
+            foreach (TreeNode treeNode in nodes)
+            {
+                if (treeNode.Tag != null)
+                {
+                    if (treeNode.Tag.GetType() == typeof(TreeNode))
+                    {
+                        TreeNode asmTreeNode = (TreeNode)treeNode.Tag;
+
+                        if (asmTreeNode.Tag.GetType() == sourceObject.GetType())
+                            treeARM.SelectedNode = treeNode;
+                    }
+                    else
+                    {
+                        if (treeNode.Tag.GetType() == sourceObject.GetType())
+                            treeARM.SelectedNode = treeNode;
+                    }
+                }
+                SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);
+            }
+        }
+
+        public override void SeekAlertSource(object sourceObject)
+        {
+            SeekAlertSourceRecursive(sourceObject, treeARM.Nodes);
+        }
+
         public override void PostTelemetryRecord()
         {
             _telemetryProvider.PostTelemetryRecord((AsmToArmGenerator) this.TemplateGenerator);

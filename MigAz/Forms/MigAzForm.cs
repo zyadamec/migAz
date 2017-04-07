@@ -96,8 +96,9 @@ namespace MigAz.Forms
         private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
-            dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
+            dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
             dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView1.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
         }
 
@@ -247,7 +248,15 @@ namespace MigAz.Forms
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            MessageBox.Show("Future, double click selected Target TreeNode (thereby showing properties of alerted object).");
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            if (parent.Controls.Count == 1)
+            {
+                IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
+                object alert = dataGridView1.Rows[e.RowIndex].Cells["SourceObject"].Value;
+                migrator.SeekAlertSource(alert);
+            }
+
         }
 
         private void tabOutputResults_Resize(object sender, EventArgs e)
