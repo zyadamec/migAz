@@ -190,5 +190,10 @@ namespace MigAz.Core.Generator
                 handler(this, null);
             }
         }
+
+        public virtual async Task SerializeStreams()
+        {
+
+        }
     }
 }

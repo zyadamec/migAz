@@ -264,7 +264,7 @@ namespace MigAz.Core.ArmTemplate
         public long frontendPort;
         public long backendPort;
         public bool enableFloatingIP;
-        public long idleTimeoutInMinutes = 4;
+        public long idleTimeoutInMinutes = 4; // https://azure.microsoft.com/en-us/blog/new-configurable-idle-timeout-for-azure-load-balancer/
         public string protocol;
         public Reference frontendIPConfiguration;
     }

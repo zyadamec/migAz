@@ -65,6 +65,8 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.btnRefreshOutput = new System.Windows.Forms.Button();
+            this.lblLastOutputRefresh = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -128,7 +130,7 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 40);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -140,7 +142,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.propertyPanel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 889);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -160,8 +162,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 889);
-            this.splitContainer2.SplitterDistance = 598;
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
+            this.splitContainer2.SplitterDistance = 599;
             this.splitContainer2.TabIndex = 0;
             // 
             // tabControl1
@@ -200,6 +202,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.lblLastOutputRefresh);
+            this.tabPage1.Controls.Add(this.btnRefreshOutput);
             this.tabPage1.Controls.Add(this.tabOutputResults);
             this.tabPage1.Location = new System.Drawing.Point(8, 39);
             this.tabPage1.Name = "tabPage1";
@@ -210,10 +214,10 @@
             // 
             // tabOutputResults
             // 
-            this.tabOutputResults.Location = new System.Drawing.Point(4, 4);
+            this.tabOutputResults.Location = new System.Drawing.Point(3, 60);
             this.tabOutputResults.Name = "tabOutputResults";
             this.tabOutputResults.SelectedIndex = 0;
-            this.tabOutputResults.Size = new System.Drawing.Size(754, 154);
+            this.tabOutputResults.Size = new System.Drawing.Size(754, 143);
             this.tabOutputResults.TabIndex = 0;
             this.tabOutputResults.Resize += new System.EventHandler(this.tabOutputResults_Resize);
             // 
@@ -320,7 +324,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1993, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(1993, 40);
             this.menuStrip1.TabIndex = 58;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -334,7 +338,7 @@
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -358,7 +362,7 @@
             // 
             this.aRMToARMToolStripMenuItem.Enabled = false;
             this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
             this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
             this.aRMToARMToolStripMenuItem.Visible = false;
             this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
@@ -427,6 +431,26 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
             // 
+            // btnRefreshOutput
+            // 
+            this.btnRefreshOutput.Enabled = false;
+            this.btnRefreshOutput.Location = new System.Drawing.Point(3, 13);
+            this.btnRefreshOutput.Name = "btnRefreshOutput";
+            this.btnRefreshOutput.Size = new System.Drawing.Size(162, 41);
+            this.btnRefreshOutput.TabIndex = 1;
+            this.btnRefreshOutput.Text = "Refresh";
+            this.btnRefreshOutput.UseVisualStyleBackColor = true;
+            this.btnRefreshOutput.Click += new System.EventHandler(this.btnRefreshOutput_Click);
+            // 
+            // lblLastOutputRefresh
+            // 
+            this.lblLastOutputRefresh.AutoSize = true;
+            this.lblLastOutputRefresh.Location = new System.Drawing.Point(182, 22);
+            this.lblLastOutputRefresh.Name = "lblLastOutputRefresh";
+            this.lblLastOutputRefresh.Size = new System.Drawing.Size(70, 25);
+            this.lblLastOutputRefresh.TabIndex = 2;
+            this.lblLastOutputRefresh.Text = "label1";
+            // 
             // MigAzForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -459,6 +483,7 @@
             this.tabMessages.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabLog.ResumeLayout(false);
             this.tabLog.PerformLayout();
             this.tabRest.ResumeLayout(false);
@@ -508,6 +533,8 @@
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Button btnRefreshOutput;
+        private System.Windows.Forms.Label lblLastOutputRefresh;
     }
 }
 

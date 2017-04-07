@@ -148,14 +148,25 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
 
-            LogProvider.WriteLog("UpdateArtifacts", "Updating Template Streams");
+            LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
+            OnTemplateChanged();
+            LogProvider.WriteLog("UpdateArtifacts", "End OnTemplateChanged Event");
+
+            StatusProvider.UpdateStatus("Ready");
+
+            LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
+        }
+
+        public override async Task SerializeStreams()
+        {
+            LogProvider.WriteLog("SerializeStreams", "Start Template Stream Update");
 
             TemplateStreams.Clear();
 
             await UpdateExportJsonStream();
 
             StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
-            LogProvider.WriteLog("UpdateArtifacts", "Start copyblobdetails.json stream");
+            LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
             string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
@@ -164,11 +175,11 @@ namespace MigAz.Azure.Generator.AsmToArm
             copyBlobDetailStream.Write(b, 0, b.Length);
             TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
 
-            LogProvider.WriteLog("UpdateArtifacts", "End copyblobdetails.json stream");
+            LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
 
 
             StatusProvider.UpdateStatus("BUSY:  Generating DeployInstructions.html");
-            LogProvider.WriteLog("UpdateArtifacts", "Start DeployInstructions.html stream");
+            LogProvider.WriteLog("SerializeStreams", "Start DeployInstructions.html stream");
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
@@ -215,15 +226,10 @@ namespace MigAz.Azure.Generator.AsmToArm
             instructionStream.Write(c, 0, c.Length);
             TemplateStreams.Add("DeployInstructions.html", instructionStream);
 
-            LogProvider.WriteLog("UpdateArtifacts", "End DeployInstructions.html stream");
+            LogProvider.WriteLog("SerializeStreams", "End DeployInstructions.html stream");
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
-            OnTemplateChanged();
-            LogProvider.WriteLog("UpdateArtifacts", "End OnTemplateChanged Event");
-
+            LogProvider.WriteLog("SerializeStreams", "End Template Stream Update");
             StatusProvider.UpdateStatus("Ready");
-
-            LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
         private async Task UpdateExportJsonStream()

@@ -33,6 +33,7 @@ namespace MigAz.Forms
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
+            lblLastOutputRefresh.Text = String.Empty;
         }
 
         private void _logProvider_OnMessage(string message)
@@ -89,7 +90,7 @@ namespace MigAz.Forms
             this.tabControl1.Width = splitContainer2.Panel2.Width - 5;
             this.tabControl1.Height = splitContainer2.Panel2.Height - 5;
             this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
-            this.tabOutputResults.Height = splitContainer2.Panel2.Height - 5;
+            this.tabOutputResults.Height = splitContainer2.Panel2.Height - 55;
         }
 
         private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
@@ -97,62 +98,7 @@ namespace MigAz.Forms
             TemplateGenerator a = (TemplateGenerator)sender;
             dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message }).ToList();
             dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-
-            foreach (TabPage tabPage in tabOutputResults.TabPages)
-            {
-                if (!a.TemplateStreams.ContainsKey(tabPage.Name))
-                    tabOutputResults.TabPages.Remove(tabPage);
-            }
-
-            foreach (var f in a.TemplateStreams)
-            {
-                TabPage tabPage = null;
-                if (!tabOutputResults.TabPages.ContainsKey(f.Key))
-                {
-                    tabPage = new TabPage(f.Key);
-                    tabPage.Name = f.Key;
-                    tabOutputResults.TabPages.Add(tabPage);
-
-                    if (f.Key.EndsWith(".html"))
-                    {
-                        WebBrowser webBrowser = new WebBrowser();
-                        webBrowser.Width = tabOutputResults.Width - 15;
-                        webBrowser.Height = tabOutputResults.Height - 30;
-                        webBrowser.AllowNavigation = false;
-                        webBrowser.ScrollBarsEnabled = true;
-                        tabPage.Controls.Add(webBrowser);
-                    }
-                    else if (f.Key.EndsWith(".json"))
-                    {
-                        TextBox textBox = new TextBox();
-                        textBox.Width = tabOutputResults.Width - 15;
-                        textBox.Height = tabOutputResults.Height - 30;
-                        textBox.ReadOnly = true;
-                        textBox.Multiline = true;
-                        textBox.WordWrap = false;
-                        textBox.ScrollBars = ScrollBars.Both;
-                        tabPage.Controls.Add(textBox);
-                    }
-                }
-                else
-                {
-                    tabPage = tabOutputResults.TabPages[f.Key];
-                }
-
-                if (tabPage.Controls[0].GetType() == typeof(TextBox))
-                {
-                    TextBox textBox = (TextBox)tabPage.Controls[0];
-                    f.Value.Position = 0;
-                    textBox.Text = new StreamReader(f.Value).ReadToEnd();
-                }
-                else if (tabPage.Controls[0].GetType() == typeof(WebBrowser))
-                {
-                    WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
-                    f.Value.Position = 0;
-                    webBrowser.DocumentText = new StreamReader(f.Value).ReadToEnd();
-                }
-
-            }
+            btnRefreshOutput.Enabled = true;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -231,6 +177,8 @@ namespace MigAz.Forms
             propertyPanel1.Clear();
             dataGridView1.DataSource = null;
             tabOutputResults.TabPages.Clear();
+            btnRefreshOutput.Enabled = false;
+            lblLastOutputRefresh.Text = String.Empty;
             newMigrationToolStripMenuItem.Enabled = true;
             closeMigrationToolStripMenuItem.Enabled = false;
             this.Text = "MigAz";
@@ -277,6 +225,9 @@ namespace MigAz.Forms
                     return;
                 }
 
+                // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                btnRefreshOutput_Click(this, null);
+
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
                 migrator.TemplateGenerator.Write();
 
@@ -322,6 +273,76 @@ namespace MigAz.Forms
             DialogResult result = folderBrowserDialog1.ShowDialog();
             if (result == DialogResult.OK)
                 txtDestinationFolder.Text = folderBrowserDialog1.SelectedPath;
+        }
+
+        private void btnRefreshOutput_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            if (parent.Controls.Count == 1)
+            {
+                IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
+
+                migrator.TemplateGenerator.SerializeStreams();
+
+                foreach (TabPage tabPage in tabOutputResults.TabPages)
+                {
+                    if (!migrator.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
+                        tabOutputResults.TabPages.Remove(tabPage);
+                }
+
+                foreach (var templateStream in migrator.TemplateGenerator.TemplateStreams)
+                {
+                    TabPage tabPage = null;
+                    if (!tabOutputResults.TabPages.ContainsKey(templateStream.Key))
+                    {
+                        tabPage = new TabPage(templateStream.Key);
+                        tabPage.Name = templateStream.Key;
+                        tabOutputResults.TabPages.Add(tabPage);
+
+                        if (templateStream.Key.EndsWith(".html"))
+                        {
+                            WebBrowser webBrowser = new WebBrowser();
+                            webBrowser.Width = tabOutputResults.Width - 15;
+                            webBrowser.Height = tabOutputResults.Height - 30;
+                            webBrowser.AllowNavigation = false;
+                            webBrowser.ScrollBarsEnabled = true;
+                            tabPage.Controls.Add(webBrowser);
+                        }
+                        else if (templateStream.Key.EndsWith(".json"))
+                        {
+                            TextBox textBox = new TextBox();
+                            textBox.Width = tabOutputResults.Width - 15;
+                            textBox.Height = tabOutputResults.Height - 30;
+                            textBox.ReadOnly = true;
+                            textBox.Multiline = true;
+                            textBox.WordWrap = false;
+                            textBox.ScrollBars = ScrollBars.Both;
+                            tabPage.Controls.Add(textBox);
+                        }
+                    }
+                    else
+                    {
+                        tabPage = tabOutputResults.TabPages[templateStream.Key];
+                    }
+
+                    if (tabPage.Controls[0].GetType() == typeof(TextBox))
+                    {
+                        TextBox textBox = (TextBox)tabPage.Controls[0];
+                        templateStream.Value.Position = 0;
+                        textBox.Text = new StreamReader(templateStream.Value).ReadToEnd();
+                    }
+                    else if (tabPage.Controls[0].GetType() == typeof(WebBrowser))
+                    {
+                        WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
+                        templateStream.Value.Position = 0;
+                        webBrowser.DocumentText = new StreamReader(templateStream.Value).ReadToEnd();
+                    }
+                }
+
+                lblLastOutputRefresh.Text = "Last Refresh Completed: " + DateTime.Now.ToString();
+                btnRefreshOutput.Enabled = false;
+            }
         }
     }
 }

@@ -20,6 +20,7 @@ namespace MigAz.Providers
         public void UpdateStatus(string message)
         {
             _label.Text = message;
+            Application.DoEvents();
         }
     }
 }
