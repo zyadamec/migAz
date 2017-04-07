@@ -20,7 +20,8 @@ namespace MigAz.UserControls.Migrators
         #region Variables
 
         private UISaveSelectionProvider _saveSelectionProvider;
-        private TreeNode _sourceCascadeNode;
+        private TreeNode _SourceAsmNode;
+        private TreeNode _SourceArmNode;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private AsmToArmTelemetryProvider _telemetryProvider;
         private AppSettingsProvider _appSettingsProvider;
@@ -404,18 +405,23 @@ namespace MigAz.UserControls.Migrators
 
         private async void treeASM_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            // Copy Marker Russell
-            if (_sourceCascadeNode == null)
+            if (_SourceAsmNode == null)
             {
-                _sourceCascadeNode = e.Node;
+                _SourceAsmNode = e.Node;
+            }
 
+            if (e.Node.Checked)
+                await AutoSelectDependencies(e.Node);
+
+            TreeNode resultUpdateARMTree = await UpdateARMTree(e.Node);
+
+            if (_SourceAsmNode != null && _SourceAsmNode == e.Node)
+            {
                 if (e.Node.Checked)
                 {
                     await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                     MigAzTreeView.FillUpIfFullDown(e.Node);
                     treeASM.SelectedNode = e.Node;
-
-                    await AutoSelectDependencies(e.Node);
                 }
                 else
                 {
@@ -423,14 +429,15 @@ namespace MigAz.UserControls.Migrators
                     await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
-                _sourceCascadeNode = null;
-
                 _SelectedNodes = this.GetSelectedNodes(treeASM);
                 UpdateExportItemsCount();
-                this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
-            }
+                await this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
 
-            await UpdateARMTree(e.Node);
+                _SourceAsmNode = null;
+
+                if (resultUpdateARMTree != null)
+                    treeARM.SelectedNode = resultUpdateARMTree;
+            }
         }
 
         private ExportArtifacts GetAsmArtifacts()
@@ -466,10 +473,11 @@ namespace MigAz.UserControls.Migrators
 
         private async void treeARM_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            LogProvider.WriteLog("treeARM_AfterSelect", "Start");
+            _SourceArmNode = e.Node;
+
             _PropertyPanel.Clear();
-
             _PropertyPanel.ResourceText = String.Empty;
-
             if (e.Node.Tag != null)
             {
                 if (e.Node.Tag.GetType() == typeof(TreeNode))
@@ -565,15 +573,18 @@ namespace MigAz.UserControls.Migrators
                 }
             }
 
+            _SourceArmNode = null;
+            LogProvider.WriteLog("treeARM_AfterSelect", "End");
             StatusProvider.UpdateStatus("Ready");
         }
 
         private async Task Properties_PropertyChanged()
         {
-            this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+            if (_SourceAsmNode == null && _SourceArmNode == null) // we are not going to update on every property bind during TreeView updates
+                await this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
         }
 
-        private async Task UpdateARMTree(TreeNode asmTreeNode)
+        private async Task<TreeNode> UpdateARMTree(TreeNode asmTreeNode)
         {
             if (asmTreeNode.Tag != null)
             {
@@ -584,11 +595,17 @@ namespace MigAz.UserControls.Migrators
                     (tagType == typeof(Azure.Asm.NetworkSecurityGroup)))
                 {
                     if (asmTreeNode.Checked)
-                        await AddASMNodeToARMTree(asmTreeNode);
+                    {
+                        return await AddASMNodeToARMTree(asmTreeNode);
+                    }
                     else
+                    {
                         await RemoveASMNodeFromARMTree(asmTreeNode);
+                    }
                 }
             }
+
+            return null;
         }
 
         private async Task RemoveASMNodeFromARMTree(TreeNode asmTreeNode)
@@ -657,7 +674,7 @@ namespace MigAz.UserControls.Migrators
                 return childNodeMatch[0];
         }
 
-        private async Task AddASMNodeToARMTree(TreeNode asmTreeNode)
+        private async Task<TreeNode> AddASMNodeToARMTree(TreeNode asmTreeNode)
         {
             TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup, true);
 
@@ -678,8 +695,7 @@ namespace MigAz.UserControls.Migrators
                 }
 
                 virtualNetworkNode.ExpandAll();
-                treeARM.SelectedNode = virtualNetworkNode;
-                treeARM.Focus();
+                return virtualNetworkNode;
             }
             else if (tagType == typeof(Azure.Asm.StorageAccount))
             {
@@ -687,8 +703,7 @@ namespace MigAz.UserControls.Migrators
 
                 TreeNode storageAccountsNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", true);
                 TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, asmTreeNode.Name, asmStorageAccount.GetFinalTargetName(), asmTreeNode, true);
-                treeARM.SelectedNode = storageAccountNode;
-                treeARM.Focus();
+                return storageAccountNode;
             }
             else if (tagType == typeof(Azure.Asm.VirtualMachine))
             {
@@ -707,17 +722,14 @@ namespace MigAz.UserControls.Migrators
                     TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmNetworkInterface.Name, asmNetworkInterface.Name, asmNetworkInterface, true);
                 }
 
-                treeARM.SelectedNode = virtualMachineNode;
-                treeARM.Focus();
+                return virtualMachineNode;
             }
             else if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
             {
                 Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)asmTreeNode.Tag;
                 TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
                 TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, asmNetworkSecurityGroup.Name, asmNetworkSecurityGroup.Name, asmTreeNode, true);
-
-                treeARM.SelectedNode = networkSecurityGroupNode;
-                treeARM.Focus();
+                return networkSecurityGroupNode;
             }
             else
                 throw new Exception("Unhandled Node Type: " + tagType);

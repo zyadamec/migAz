@@ -15,7 +15,6 @@ namespace MigAz.UserControls
     public partial class NetworkSecurityGroupProperties : UserControl
     {
         private TreeNode _NetworkSecurityGroupNode;
-        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -27,8 +26,6 @@ namespace MigAz.UserControls
 
         internal void Bind(TreeNode networkSecurityGroupNode, AsmToArm asmToArmForm)
         {
-            _IsInitialBinding = true;
-
             _NetworkSecurityGroupNode = networkSecurityGroupNode;
 
             TreeNode asmNetworkSecurityGroupNode = (TreeNode)_NetworkSecurityGroupNode.Tag;
@@ -36,8 +33,6 @@ namespace MigAz.UserControls
 
             lblSourceName.Text = asmNetworkSecurityGroup.Name;
             txtTargetName.Text = asmNetworkSecurityGroup.TargetName;
-
-            _IsInitialBinding = false;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -49,8 +44,7 @@ namespace MigAz.UserControls
             asmNetworkSecurityGroup.TargetName = txtSender.Text;
             _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.GetFinalTargetName();
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
     }
 }

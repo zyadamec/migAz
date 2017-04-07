@@ -15,7 +15,6 @@ namespace MigAz.UserControls
     public partial class AvailabilitySetProperties : UserControl
     {
         TreeNode _armAvailabilitySetNode;
-        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -27,30 +26,24 @@ namespace MigAz.UserControls
 
         internal void Bind(TreeNode availabilitySetNode)
         {
-            _IsInitialBinding = true;
             _armAvailabilitySetNode = availabilitySetNode;
 
             AvailabilitySet armAvailabilitySet = (AvailabilitySet)_armAvailabilitySetNode.Tag;
 
             //lblAccountType.Text = asmCloudService.AccountType;
             txtTargetName.Text = armAvailabilitySet.TargetName;
-
-            _IsInitialBinding = false;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
-            if (!_IsInitialBinding)
-            {
-                TextBox txtSender = (TextBox)sender;
+            TextBox txtSender = (TextBox)sender;
 
-                AvailabilitySet armAvailabilitySet = (AvailabilitySet)_armAvailabilitySetNode.Tag;
+            AvailabilitySet armAvailabilitySet = (AvailabilitySet)_armAvailabilitySetNode.Tag;
 
-                armAvailabilitySet.TargetName = txtSender.Text;
-                _armAvailabilitySetNode.Text = armAvailabilitySet.GetFinalTargetName();
+            armAvailabilitySet.TargetName = txtSender.Text;
+            _armAvailabilitySetNode.Text = armAvailabilitySet.GetFinalTargetName();
 
-                PropertyChanged();
-            }
+            PropertyChanged();
         }
     }
 }

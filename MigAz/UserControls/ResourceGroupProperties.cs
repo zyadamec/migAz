@@ -21,7 +21,6 @@ namespace MigAz.UserControls
     {
         private AsmToArm _ParentForm;
         private TreeNode _ResourceGroupNode;
-        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -33,7 +32,6 @@ namespace MigAz.UserControls
 
         internal async Task Bind(AsmToArm parentForm, TreeNode resourceGroupNode)
         {
-            _IsInitialBinding = true;
             _ParentForm = parentForm;
             _ResourceGroupNode = resourceGroupNode;
 
@@ -70,8 +68,6 @@ namespace MigAz.UserControls
                         cboTargetLocation.SelectedItem = armLocation;
                 }
             }
-
-            _IsInitialBinding = false;
         }
 
         private void txtName_TextChanged(object sender, EventArgs e)
@@ -84,8 +80,7 @@ namespace MigAz.UserControls
             _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
             _ResourceGroupNode.Name = armResourceGroup.Name;
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
 
         private void cboTargetLocation_SelectedIndexChanged(object sender, EventArgs e)
@@ -95,8 +90,7 @@ namespace MigAz.UserControls
             ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
             armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
     }
 }

@@ -20,7 +20,6 @@ namespace MigAz.UserControls
         private TreeNode _ARMDataDiskNode;
         private Azure.Asm.Disk _AsmDataDisk;
         private ILogProvider _LogProvider;
-        private bool _IsInitialBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -56,27 +55,19 @@ namespace MigAz.UserControls
 
         internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)
         {
-            _IsInitialBinding = true;
-
             _AsmToArmForm = asmToArmForm;
             _AsmDataDisk = asmDisk;
 
             BindCommon();
-
-            _IsInitialBinding = false;
         }
 
         internal void Bind(AsmToArm asmToArmForm, TreeNode armDataDiskNode)
         {
-            _IsInitialBinding = true;
-
             _AsmToArmForm = asmToArmForm;
             _ARMDataDiskNode = armDataDiskNode;
             _AsmDataDisk = (Azure.Asm.Disk)_ARMDataDiskNode.Tag;
 
             BindCommon();
-
-            _IsInitialBinding = false;
         }
 
         private void BindCommon()
@@ -163,8 +154,7 @@ namespace MigAz.UserControls
                 }
             }
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
 
         private async void rbExistingARMStorageAccount_CheckedChanged(object sender, EventArgs e)
@@ -197,8 +187,7 @@ namespace MigAz.UserControls
                 }
             }
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)
@@ -226,8 +215,7 @@ namespace MigAz.UserControls
             }
 
             UpdateParentNode();
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
 
         private void UpdateParentNode()
@@ -259,8 +247,7 @@ namespace MigAz.UserControls
                 UpdateParentNode();
             }
 
-            if (!_IsInitialBinding)
-                PropertyChanged();
+            PropertyChanged();
         }
 
 
