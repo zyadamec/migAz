@@ -183,18 +183,6 @@ namespace MigAz.UserControls
                     }
                 }
 
-                if ((cmbExistingArmVNets.SelectedItem == null) && (cmbExistingArmVNets.Items.Count > 0))
-                {
-                    foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
-                    {
-                        if (listVirtualNetwork.Name == asmVirtualMachine.VirtualNetworkName)
-                            cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
-                    }
-
-                    if (cmbExistingArmVNets.SelectedItem == null)
-                        cmbExistingArmVNets.SelectedIndex = 0;
-                }
-
                 if ((cmbExistingArmSubnet.SelectedItem == null) && (cmbExistingArmSubnet.Items.Count > 0))
                 {
                     foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
@@ -202,9 +190,6 @@ namespace MigAz.UserControls
                         if (listSubnet.Name == asmVirtualMachine.SubnetName)
                             cmbExistingArmSubnet.SelectedItem = listSubnet;
                     }
-
-                    if (cmbExistingArmSubnet.SelectedItem == null)
-                        cmbExistingArmSubnet.SelectedIndex = 0;
                 }
             }
 
@@ -237,9 +222,6 @@ namespace MigAz.UserControls
                             cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
                     }
                 }
-
-                if ((cmbExistingArmVNets.SelectedItem == null) && (cmbExistingArmVNets.Items.Count > 0))
-                    cmbExistingArmVNets.SelectedIndex = 0;
             }
 
             await PropertyChanged();

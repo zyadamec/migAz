@@ -124,19 +124,7 @@ namespace MigAz.UserControls
 
                 if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount)))
                 {
-                    foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                    {
-                        if (asmStorageAccount.Name == _AsmDataDisk.StorageAccountName)
-                        {
-                            cmbTargetStorage.SelectedItem = asmStorageAccount;
-                            break;
-                        }
-                    }
 
-                    if (_AsmDataDisk.TargetStorageAccount == null)
-                    {
-                        _LogProvider.WriteLog("rbStorageAccountInMigration_CheckedChanged", "Unable to location originating ASM Storage Account '" + _AsmDataDisk.StorageAccountName + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
-                    }
                 }
                 else
                 {
@@ -174,8 +162,7 @@ namespace MigAz.UserControls
 
                 if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
                 {
-                    if (cmbTargetStorage.Items.Count > 0)
-                        cmbTargetStorage.SelectedIndex = 0;
+
                 }
                 else
                 {
