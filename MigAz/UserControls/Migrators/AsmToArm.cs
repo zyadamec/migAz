@@ -729,7 +729,7 @@ namespace MigAz.UserControls.Migrators
                     }
                 }
 
-                virtualNetworkNode.ExpandAll();
+                targetResourceGroupNode.ExpandAll();
                 return virtualNetworkNode;
             }
             else if (tagType == typeof(Azure.Asm.StorageAccount))
@@ -738,6 +738,8 @@ namespace MigAz.UserControls.Migrators
 
                 TreeNode storageAccountsNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", true);
                 TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, asmTreeNode.Name, asmStorageAccount.GetFinalTargetName(), asmTreeNode, true);
+
+                targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
             }
             else if (tagType == typeof(Azure.Asm.VirtualMachine))
@@ -757,6 +759,7 @@ namespace MigAz.UserControls.Migrators
                     TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmNetworkInterface.Name, asmNetworkInterface.Name, asmNetworkInterface, true);
                 }
 
+                targetResourceGroupNode.ExpandAll();
                 return virtualMachineNode;
             }
             else if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
@@ -764,10 +767,13 @@ namespace MigAz.UserControls.Migrators
                 Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)asmTreeNode.Tag;
                 TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
                 TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, asmNetworkSecurityGroup.Name, asmNetworkSecurityGroup.Name, asmTreeNode, true);
+
+                targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
             }
             else
                 throw new Exception("Unhandled Node Type: " + tagType);
+
         }
 
         #endregion
@@ -854,17 +860,37 @@ namespace MigAz.UserControls.Migrators
             {
                 if (treeNode.Tag != null)
                 {
+                    object nodeObject = null;
+
                     if (treeNode.Tag.GetType() == typeof(TreeNode))
                     {
                         TreeNode asmTreeNode = (TreeNode)treeNode.Tag;
-
-                        if (asmTreeNode.Tag.GetType() == sourceObject.GetType())
-                            treeARM.SelectedNode = treeNode;
+                        nodeObject = asmTreeNode.Tag;
                     }
                     else
                     {
-                        if (treeNode.Tag.GetType() == sourceObject.GetType())
+                        nodeObject = treeNode.Tag;
+                    }
+
+                    // Note, this could probably be object compares, but was written this was to get it done.  Possible future change to object compares
+                    if (nodeObject.GetType() == sourceObject.GetType())
+                    {
+                        if (sourceObject.GetType() == typeof(ResourceGroup))
                             treeARM.SelectedNode = treeNode;
+                        else if (sourceObject.GetType() == typeof(Azure.Asm.VirtualMachine))
+                        {
+                            Azure.Asm.VirtualMachine sourceMachine = (Azure.Asm.VirtualMachine)sourceObject;
+                            Azure.Asm.VirtualMachine nodeMachine = (Azure.Asm.VirtualMachine)nodeObject;
+                            if (sourceMachine.RoleName == nodeMachine.RoleName)
+                                treeARM.SelectedNode = treeNode;
+                        }
+                        else if (sourceObject.GetType() == typeof(Azure.Asm.Disk))
+                        {
+                            Azure.Asm.Disk sourceDisk = (Azure.Asm.Disk)sourceObject;
+                            Azure.Asm.Disk nodeDisk = (Azure.Asm.Disk)nodeObject;
+                            if (sourceDisk.DiskName == nodeDisk.DiskName)
+                                treeARM.SelectedNode = treeNode;
+                        }
                     }
                 }
                 SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);

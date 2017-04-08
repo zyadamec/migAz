@@ -40,6 +40,8 @@
             this.tabMessages = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lblLastOutputRefresh = new System.Windows.Forms.Label();
+            this.btnRefreshOutput = new System.Windows.Forms.Button();
             this.tabOutputResults = new System.Windows.Forms.TabControl();
             this.tabLog = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
@@ -65,8 +67,6 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.btnRefreshOutput = new System.Windows.Forms.Button();
-            this.lblLastOutputRefresh = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -198,7 +198,7 @@
             this.dataGridView1.RowTemplate.Height = 33;
             this.dataGridView1.Size = new System.Drawing.Size(890, 236);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellDoubleClick);
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
             // tabPage1
             // 
@@ -211,6 +211,26 @@
             this.tabPage1.TabIndex = 3;
             this.tabPage1.Text = "Output";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // lblLastOutputRefresh
+            // 
+            this.lblLastOutputRefresh.AutoSize = true;
+            this.lblLastOutputRefresh.Location = new System.Drawing.Point(182, 22);
+            this.lblLastOutputRefresh.Name = "lblLastOutputRefresh";
+            this.lblLastOutputRefresh.Size = new System.Drawing.Size(70, 25);
+            this.lblLastOutputRefresh.TabIndex = 2;
+            this.lblLastOutputRefresh.Text = "label1";
+            // 
+            // btnRefreshOutput
+            // 
+            this.btnRefreshOutput.Enabled = false;
+            this.btnRefreshOutput.Location = new System.Drawing.Point(3, 13);
+            this.btnRefreshOutput.Name = "btnRefreshOutput";
+            this.btnRefreshOutput.Size = new System.Drawing.Size(162, 41);
+            this.btnRefreshOutput.TabIndex = 1;
+            this.btnRefreshOutput.Text = "Refresh";
+            this.btnRefreshOutput.UseVisualStyleBackColor = true;
+            this.btnRefreshOutput.Click += new System.EventHandler(this.btnRefreshOutput_Click);
             // 
             // tabOutputResults
             // 
@@ -430,26 +450,6 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
-            // 
-            // btnRefreshOutput
-            // 
-            this.btnRefreshOutput.Enabled = false;
-            this.btnRefreshOutput.Location = new System.Drawing.Point(3, 13);
-            this.btnRefreshOutput.Name = "btnRefreshOutput";
-            this.btnRefreshOutput.Size = new System.Drawing.Size(162, 41);
-            this.btnRefreshOutput.TabIndex = 1;
-            this.btnRefreshOutput.Text = "Refresh";
-            this.btnRefreshOutput.UseVisualStyleBackColor = true;
-            this.btnRefreshOutput.Click += new System.EventHandler(this.btnRefreshOutput_Click);
-            // 
-            // lblLastOutputRefresh
-            // 
-            this.lblLastOutputRefresh.AutoSize = true;
-            this.lblLastOutputRefresh.Location = new System.Drawing.Point(182, 22);
-            this.lblLastOutputRefresh.Name = "lblLastOutputRefresh";
-            this.lblLastOutputRefresh.Size = new System.Drawing.Size(70, 25);
-            this.lblLastOutputRefresh.TabIndex = 2;
-            this.lblLastOutputRefresh.Text = "label1";
             // 
             // MigAzForm
             // 

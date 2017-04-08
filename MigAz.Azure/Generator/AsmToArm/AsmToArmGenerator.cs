@@ -153,7 +153,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                             }
 
                             if (!targetAsmStorageExists)
-                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", dataDisk);
                         }
                     }
                 }
