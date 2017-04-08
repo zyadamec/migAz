@@ -182,15 +182,6 @@ namespace MigAz.UserControls
                         }
                     }
                 }
-
-                if ((cmbExistingArmSubnet.SelectedItem == null) && (cmbExistingArmSubnet.Items.Count > 0))
-                {
-                    foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                    {
-                        if (listSubnet.Name == asmVirtualMachine.SubnetName)
-                            cmbExistingArmSubnet.SelectedItem = listSubnet;
-                    }
-                }
             }
 
             await PropertyChanged();

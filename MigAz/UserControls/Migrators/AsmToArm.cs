@@ -421,19 +421,28 @@ namespace MigAz.UserControls.Migrators
 
                     if (asmVirtualMachine.TargetVirtualNetwork == null)
                     {
+                        asmVirtualMachine.TargetVirtualNetwork = await AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetwork(asmVirtualMachine.VirtualNetworkName);
 
+                        if (asmVirtualMachine.TargetVirtualNetwork != null)
+                        {
+                            foreach (Azure.Asm.Subnet asmSubnect in asmVirtualMachine.TargetVirtualNetwork.Subnets)
+                            {
+                                if (asmSubnect.Name == asmVirtualMachine.SubnetName)
+                                    asmVirtualMachine.TargetSubnet = asmSubnect;
+                            }
+                        }
                     }
 
                     if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                     {
-
+                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName);
                     }
 
                     foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
                     {
                         if (asmDisk.TargetStorageAccount == null)
                         {
-
+                            asmDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmDisk.StorageAccountName);
                         }
                     }
                 }
