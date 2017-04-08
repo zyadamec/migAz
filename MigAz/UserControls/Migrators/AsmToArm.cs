@@ -413,6 +413,32 @@ namespace MigAz.UserControls.Migrators
             if (e.Node.Checked)
                 await AutoSelectDependencies(e.Node);
 
+            if (e.Node.Tag != null)
+            {
+                if (e.Node.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+                {
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)e.Node.Tag;
+
+                    if (asmVirtualMachine.TargetVirtualNetwork == null)
+                    {
+
+                    }
+
+                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                    {
+
+                    }
+
+                    foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
+                    {
+                        if (asmDisk.TargetStorageAccount == null)
+                        {
+
+                        }
+                    }
+                }
+            }
+
             TreeNode resultUpdateARMTree = await UpdateARMTree(e.Node);
 
             if (_SourceAsmNode != null && _SourceAsmNode == e.Node)
