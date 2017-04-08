@@ -82,18 +82,79 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 if (asmVirtualMachine.TargetVirtualNetwork == null)
                     this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
+                else
+                {
+                    if (asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+                    {
+                        Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)asmVirtualMachine.TargetVirtualNetwork;
+                        bool targetVNetExists = false;
+
+                        foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
+                        {
+                            if (asmVirtualNetwork.Name == targetAsmVirtualNetwork.Name)
+                            {
+                                targetVNetExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!targetVNetExists)
+                            this.AddAlert(AlertType.Error, "Target ASM Virtual Network '" + targetAsmVirtualNetwork.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                    }
+
+                }
 
                 if (asmVirtualMachine.TargetSubnet == null)
                     this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
                 if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                     this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
+                else
+                {
+                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                    {
+                        Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                        bool targetAsmStorageExists = false;
+
+                        foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
+                        {
+                            if (asmStorageAccount.Name == targetAsmStorageAccount.Name)
+                            {
+                                targetAsmStorageExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!targetAsmStorageExists)
+                            this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                    }
+                }
 
                 foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                 {
                     if (dataDisk.TargetStorageAccount == null)
                     {
                         this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
+                    }
+                    else
+                    {
+                        if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                        {
+                            Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
+                            bool targetAsmStorageExists = false;
+
+                            foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
+                            {
+                                if (asmStorageAccount.Name == targetAsmStorageAccount.Name)
+                                {
+                                    targetAsmStorageExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!targetAsmStorageExists)
+                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                        }
                     }
                 }
             }
