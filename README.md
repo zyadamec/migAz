@@ -32,6 +32,8 @@ migAz AWS version will help you on your AWS to Azure migrations. migAz AWS versi
 [Link to this version](aws)
 
 
+## Get it
+Download the latest zip file from release folder
 
 ### Pre-requisites
 1. Windows 8 or Windows Server 2012, or later

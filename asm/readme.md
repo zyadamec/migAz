@@ -74,9 +74,6 @@ The tool uses Service Management REST API calls to gather all the details on Net
 
 <br>
 
-## Get it
-Download the latest zip file from release folder
-
 ## How to use
 
 ### Launch migAz.exe
