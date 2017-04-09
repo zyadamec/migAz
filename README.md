@@ -17,23 +17,23 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 migAz ASM version will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
 
-[Link to this version](asm)
+[ASM to ARM Instructions](asm)
 
 # migAz ARM version
 
 migAz ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
 
-[Link to this version](arm)
+[ARM to ARM Instructions](arm)
 
 # migAz AWS version
 
 migAz AWS version will help you on your AWS to Azure migrations. migAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
 
-[Link to this version](aws)
+[AWS to ARM Instructions](aws)
 
 
 ## Get it
-Download the latest zip file from release folder
+Download the latest zip file from [release](release) folder for MigAz release (currently ASM to ARM Migration).  
 
 ### Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
