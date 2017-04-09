@@ -1,4 +1,4 @@
-# Azure Resource Manager IaaS to Azure Resource Manager IaaS migration using migAz ARM
+﻿# Azure Resource Manager IaaS to Azure Resource Manager IaaS migration using migAz ARM
 
 This article will show you how to use migAz ARM to migrate or clone Azure Resource Manager IaaS solutions to Azure Resource Manager IaaS. Refer the [link](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-move-resources) to know more about the Azure native supported method to move the resource around Azure Resource Manager to Azure Resource Manager model.
 
@@ -80,11 +80,11 @@ Download the latest zip file from release folder
 
 ### Launch migAz.exe
 
-![migAz main window](./media/virtual-machines-windows-migration-migaz/main.png)
+![migAz main window](./images/main.png)
 
 **Step 1:** Click the “Sign In” button. The “Sign In” button will launch the Azure Authentication page and user has to enter the credentials to access the source subscription.
 
-![migAz main window](./media/virtual-machines-windows-migration-migaz/login.png)
+![migAz main window](./images/login.png)
 
 Post successful authentication the Tenants and the Subscriptions will be loaded.
 
@@ -132,7 +132,7 @@ Execute steps 7 to 9 only if virtual machines were included on the export.
 
 ## Tool Options
 
-![migAz options window](./media/virtual-machines-windows-migration-migaz/options.png)
+![migAz options window](./images/options.png)
 
 ### Uniqueness suffix
 
@@ -158,7 +158,7 @@ If this option is selected, migAz will record the last selected resources per ea
 
 To enable deployment of the ARM template to the new Microsoft National Clouds you can choose from the options windows which cloud you want to use.
 
-![migAz options window](./media/virtual-machines-windows-migration-migaz/options-clouds.png)
+![migAz options window](./images/options-clouds.png)
 
 ## Scenarios
 

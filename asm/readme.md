@@ -78,11 +78,11 @@ The tool uses Service Management REST API calls to gather all the details on Net
 
 ### Launch migAz.exe
 
-![migAz main window](./media/virtual-machines-windows-migration-migaz/main.png)
+![migAz main window](./images/main.png)
 
 **Step 1:** Click the “Sign In” button. The “Sign In” button will launch the Azure Authentication page and user has to enter the credentials to access the source subscription.
 
-![migAz main window](./media/virtual-machines-windows-migration-migaz/login.png)
+![migAz main window](./images/login.png)
 
 Post successful authentication the Subscriptions will be loaded.
 
@@ -128,7 +128,7 @@ Execute steps 7 to 9 only if virtual machines were included on the export.
 
 ## Tool Options
 
-![migAz options window](./media/virtual-machines-windows-migration-migaz/options.png)
+![migAz options window](./images/options.png)
 
 ### Uniqueness suffix
 
@@ -154,7 +154,7 @@ If this option is selected, migAz will record the last selected resources per ea
 
 To enable deployment of the ARM template to the new Microsoft National Clouds you can choose from the options windows which cloud you want to use.
 
-![migAz options window](./media/virtual-machines-windows-migration-migaz/options-clouds.png)
+![migAz options window](./images/options-clouds.png)
 
 ## Scenarios
 
