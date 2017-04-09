@@ -125,6 +125,7 @@ namespace MigAz.Forms
 
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
             asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             parent.Controls.Add(asmToArm);
 
@@ -134,6 +135,14 @@ namespace MigAz.Forms
             this.Refresh();
             Application.DoEvents();
             asmToArm.ChangeAzureContext();
+        }
+
+        private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(Azure.AzureContext sender)
+        {
+            dataGridView1.DataSource = null;
+            tabOutputResults.TabPages.Clear();
+            btnRefreshOutput.Enabled = false;
+            lblLastOutputRefresh.Text = String.Empty;
         }
 
         private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
