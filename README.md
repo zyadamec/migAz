@@ -33,7 +33,7 @@ migAz AWS version will help you on your AWS to Azure migrations. migAz AWS versi
 
 
 ## Get it
-Download the latest zip file from [release](release) folder for MigAz release (currently ASM to ARM Migration).  
+Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM Migration).  Note that ARM and AWS are not yet integrated into the new v2 project baseline and remain available via their respective release folders ([ARM Release](arm/release) and [AWS Release](aws/release)).
 
 ### Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
