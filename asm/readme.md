@@ -80,7 +80,7 @@ The tool uses Service Management REST API calls to gather all the details on Net
 
 **Step 1:** View the options dialog and set MigAz options prior to utilizing MigAz for ARM Template generation.
 
-**Step 2:** Click the ASM (Source) Subscription “Change” button to present the ASM (Source) Subscription dialog. 
+**Step 2:** From the File Menu, select New Migration -> ASM to ARM.
 
 ![migAz main window](./images/ASMSubscriptionDialog.png)
 
