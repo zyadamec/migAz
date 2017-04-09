@@ -1,4 +1,4 @@
-# Classic IaaS to Azure Resource Manager IaaS migration using migAz ASM
+﻿# Classic IaaS to Azure Resource Manager IaaS migration using migAz ASM
 
 This article will show you how to use migAz to migrate or clone classic IaaS solutions to Azure Resource Manager IaaS.
 
@@ -78,13 +78,6 @@ The tool uses Service Management REST API calls to gather all the details on Net
 Download the latest zip file from release folder
 
 ## How to use
-
-### Pre-requisites
-1. Windows 8 or Windows Server 2012, or later
-2. .Net Framework 4.0 or higher
-3. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
-4. Login credentials at source Azure subscription
-5. Login credentials at destination Azure subscription
 
 ### Launch migAz.exe
 
@@ -192,55 +185,3 @@ Use “Build empty environment” option to enable this.
 
 ### Storage account names
 As the Storage Accounts supports a maximum of 24 characters in the name, and the tool adds the "uniqueness string" in the target Storage Account name, it is possible that the deployment fails if the name exceeds the limit. In such cases you need to modify the export.JSON and copyblobdetails.JSON to make it 24 characters. This is also true if the target Storage Account name is already in use.
-
-### Troubleshooting
-The detailed logs and output of the REST API are captured in the location %USERPROFILE%\appdata\Local with the file name migAz-&lt;YYYYMMDD&gt;.log and migAz-XML-&lt;YYYYMMDD&gt;.log.
-In case of any issues during the deployment of the export.JSON you need to troubleshoot the template properties and fix the invalid entries. Report any issue on the tool site.
-
-
-## Release Notes
-### v1.4.10.0
-- Fix script samples in generated HTML instructions
-
-### v1.4.9.0
-- Performance improvements, minor fixes to generated resource names
-
-### v1.4.8.0
-- Fix error when exporting a VM that is in a VNET with no subnets defined
-
-### v1.4.7.0
-- New dialog after exporting template that generates instructions on how to deploy to ARM.
-
-### v1.4.6.0
-- Support for VNETs attached to ExpressRoute circuts
-- Fix unit tests
-
-### v1.4.5.0
-- Add Auto Select Dependencies option
-- Add Save Selection feature
-- Fix error when LoadBalancedEndpointSetName have spaces. Remove spaces
-- Correct behavior when new storage account name have more than 24 chars
-
-### v1.4.4.0
-- Add requirement for Azure.Storage and AzureRM.Storage modules to be 2.0.1
-- Add to BloblCopy.ps1 the option to cancel the blobs copy jobs
-- Remove clear screen command from BlobCopy.ps1 bor better results reading
-
-### v1.4.3.0
-- Add ability to export resources deployed on Affinity Groups
-- Prevent exception when VPN Gateway connection shared key is not defined
-
-### v1.4.2.1
-- . Fix reported issue when logging directory does not exist
-
-### v1.4.2.0
-- Process Cloud Services Reserved IPs to Static Public IPs
-- Add tool version and subscription offer categories to telemetry
-- Improvements on typical exceptions handling
-- Minor UI updates
-
-### v1.4.1.1
-- Correcting case where VM disk URL does not end with ".vhd". Not an usual situation, but possible.
-- Add logging when retrieving objects from xml cache
-- Correcting TabIndex for better usability
-- Resetting xml cache when re-login
