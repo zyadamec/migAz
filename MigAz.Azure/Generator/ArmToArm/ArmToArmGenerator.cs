@@ -176,7 +176,7 @@ namespace MigAz.Azure.Generator.ArmToArm
                 targetSubscriptionGuid = _TargetSubscription.SubscriptionId;
 
                 if (_TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
-                    azureEnvironmentSwitch = " -Environment \"" + _TargetSubscription.AzureEnvironment.ToString() + "\"";
+                    azureEnvironmentSwitch = " -EnvironmentName " + _TargetSubscription.AzureEnvironment.ToString();
             }
 
             instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
