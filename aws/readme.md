@@ -50,18 +50,6 @@ The tool uses AWS .net SDK to gather all the details on VPC and EC2 instance rel
 
 <br>
 
-## Get it
-Download the latest zip file from release folder
-
-## How to use
-
-### Pre-requisites
-1. Windows 8 or Windows Server 2012, or later
-2. .Net Framework 4.0 or higher
-3. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
-4. Login credentials at source Azure subscription
-5. Login credentials at destination Azure subscription
-
 ### Launch migAz.exe
 
 ![migAz main window](./images/main.png)
