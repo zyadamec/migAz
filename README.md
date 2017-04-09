@@ -32,22 +32,22 @@ migAz AWS version will help you on your AWS to Azure migrations. migAz AWS versi
 [AWS to ARM Instructions](aws)
 
 
-## Get it
+# Get it
 Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM Migration).  Note that ARM and AWS are not yet integrated into the new v2 project baseline and remain available via their respective release folders ([ARM Release](arm/release) and [AWS Release](aws/release)).
 
-### Pre-requisites
+## Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
 2. .Net Framework 4.0 or higher
 3. Latest [Azure PowerShell Module](https://azure.microsoft.com/en-us/documentation/articles/powershell-install-configure)
 4. Login credentials at source Azure subscription
 5. Login credentials at destination Azure subscription
 
-### Troubleshooting
+## Troubleshooting
 The detailed logs and output of the REST API are captured in the location %USERPROFILE%\appdata\Local with the file name migAz-&lt;YYYYMMDD&gt;.log and migAz-XML-&lt;YYYYMMDD&gt;.log.
 In case of any issues during the deployment of the export.JSON you need to troubleshoot the template properties and fix the invalid entries. Report any issue on the tool site.
 
 
-### Release Notes
+## Release Notes
 ### v2.0.0.0
 - Multiple enhancements and bug fixes
 - MigAz ASM to ARM updated and released as MigAz v2.0.0.0
