@@ -60,7 +60,7 @@ namespace MigAz.Core
                 return true;
             }
 
-            for (int i = 0; i < currentVersion.Length; i++)
+            for (int i = 0; i < currentVersionArray.Length; i++)
             {
                 try
                 {
