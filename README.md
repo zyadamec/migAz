@@ -1,8 +1,8 @@
 Hello Azure expert!
 
-This repo is the home for all migAz tools. migAz intent is to help you on Azure deployments and migrations.
+This repo is the home for all MigAz tools. MigAz intent is to help you on Azure deployments and migrations.
 
-The base principal of migAz tools is to work on top of ARM templates. This creates the foundations for you to create, change and migrate deployments with the power and flexibility of ARM templates deployment model. This is true if you are now starting to work with ARM templates and want to learn, or you already have advanced knowledge but need a tool to make you even more productive.
+The base principal of MigAz tools is to work on top of ARM templates. This creates the foundations for you to create, change and migrate deployments with the power and flexibility of ARM templates deployment model. This is true if you are now starting to work with ARM templates and want to learn, or you already have advanced knowledge but need a tool to make you even more productive.
 
 All versions (except ASM Native) work the same way. Connects to the source environment, allows you to select the objects you need to export and create an ARM template from it. With this ARM template you can now make changes, clone or migrate an environment.
 Have a look to each ASM, ARM and AWS versions and see where it helps you.
@@ -11,30 +11,6 @@ Give us feedback so we continue to improve this tools and, specially, help us by
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-
-
-# migAz ASM version
-
-migAz ASM version will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
-
-[ASM to ARM Instructions](asm)
-
-# migAz ARM version
-
-migAz ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
-
-[ARM to ARM Instructions](arm)
-
-# migAz AWS version
-
-migAz AWS version will help you on your AWS to Azure migrations. migAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
-
-[AWS to ARM Instructions](aws)
-
-
-# Get it
-Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM Migration).  Note that ARM and AWS are not yet integrated into the new v2 project baseline and remain available via their respective release folders ([ARM Release](arm/release) and [AWS Release](aws/release)).
-
 ## Pre-requisites
 1. Windows 8 or Windows Server 2012, or later
 2. .Net Framework 4.0 or higher
@@ -42,8 +18,18 @@ Download from the [Release](release) folder to obtain the latest MigAz v2 releas
 4. Login credentials at source Azure subscription
 5. Login credentials at destination Azure subscription
 
+## Get it
+Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM Migration).  Note that ARM and AWS are not yet integrated into the new v2 project baseline and remain available via their respective release folders ([ARM Release](arm/release) and [AWS Release](aws/release)).
+
+## Instructions
+[Azure ASM to Azure ARM Migration](asm) - MigAz ASM version will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
+
+[Azure ARM to Azure ARM Migration](arm) - MigAz ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
+
+[AWS to Azure ARM Migration](aws) - MigAz AWS version will help you on your AWS to Azure migrations. MigAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
+
 ## Troubleshooting
-The detailed logs and output of the REST API are captured in the location %USERPROFILE%\appdata\Local with the file name migAz-&lt;YYYYMMDD&gt;.log and migAz-XML-&lt;YYYYMMDD&gt;.log.
+The detailed logs and output of the REST API are captured in the location %USERPROFILE%\appdata\Local with the file name MigAz-&lt;YYYYMMDD&gt;.log and MigAz-XML-&lt;YYYYMMDD&gt;.log.
 In case of any issues during the deployment of the export.JSON you need to troubleshoot the template properties and fix the invalid entries. Report any issue on the tool site.
 
 
