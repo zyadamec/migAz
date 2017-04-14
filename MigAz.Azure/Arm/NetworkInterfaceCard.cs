@@ -8,5 +8,6 @@ namespace MigAz.Azure.Arm
 {
     public class NetworkInterfaceCard
     {
+        public string Name { get; set; }
     }
 }

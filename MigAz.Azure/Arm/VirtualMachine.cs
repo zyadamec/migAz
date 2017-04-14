@@ -44,5 +44,10 @@ namespace MigAz.Azure.Arm
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
         public VirtualNetwork VirtualNetwork => _VirtualNetwork;
         public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
+
+        public AvailabilitySet TargetAvailabilitySet
+        {
+            get; set;
+        }
     }
 }

@@ -149,12 +149,20 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider, propertyPanel1);
-            armToArm.AzureContextARM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            parent.Controls.Add(armToArm);
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
 
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
+
+            asmToArm.ActivateSourceARMTab();
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
         }
 
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)

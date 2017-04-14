@@ -138,5 +138,15 @@ namespace MigAz.Azure.Arm
         {
             return this.Name;
         }
+
+        public string TargetName // todo
+        {
+            get; set;
+        }
+
+        public string GetFinalTargetName() // todo
+        {
+            return this.Name;
+        }
     }
 }

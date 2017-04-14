@@ -128,16 +128,18 @@ namespace MigAz.UserControls.Migrators
                     this.TemplateGenerator.SourceSubscription = _AzureContextSourceASM.AzureSubscription;
                     this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
 
-                    TreeNode subscriptionNode = new TreeNode(sender.AzureSubscription.Name);
-                    treeASM.Nodes.Add(subscriptionNode);
-                    subscriptionNode.Expand();
+                    #region Bind Source ASM Objects
+
+                    TreeNode subscriptionNodeASM = new TreeNode(sender.AzureSubscription.Name);
+                    treeSourceASM.Nodes.Add(subscriptionNodeASM);
+                    subscriptionNodeASM.Expand();
 
                     List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
                     foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                     {
                         if (asmVirtualNetwork.HasNonGatewaySubnet)
                         {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmVirtualNetwork.Location, "Virtual Networks");
+                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
                             TreeNode tnVirtualNetwork = new TreeNode(asmVirtualNetwork.Name);
                             tnVirtualNetwork.Name = asmVirtualNetwork.Name;
                             tnVirtualNetwork.Tag = asmVirtualNetwork;
@@ -148,7 +150,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
                         TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
                         tnStorageAccount.Name = tnStorageAccount.Text;
                         tnStorageAccount.Tag = asmStorageAccount;
@@ -161,7 +163,7 @@ namespace MigAz.UserControls.Migrators
                     {
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                         {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmCloudService.Location, "Cloud Services");
+                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
                             TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
                             TreeNode cloudServiceNode = null;
                             if (cloudServiceNodeSearch.Count() == 1)
@@ -188,7 +190,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
                         TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
                         tnStorageAccount.Name = tnStorageAccount.Text;
                         tnStorageAccount.Tag = asmNetworkSecurityGroup;
@@ -196,11 +198,64 @@ namespace MigAz.UserControls.Migrators
                         parentNode.Expand();
                     }
 
-                    subscriptionNode.ExpandAll();
+                    subscriptionNodeASM.ExpandAll();
+
+                    #endregion
+
+                    #region Bind Source ARM Objects
+
+                    TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
+                    treeSourceARM.Nodes.Add(subscriptionNodeARM);
+                    subscriptionNodeARM.Expand();
+
+                    foreach (ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                    {
+
+                    }
+
+                    List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
+                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
+                    {
+                        if (armVirtualNetwork.HasNonGatewaySubnet)
+                        {
+                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.Location, "Virtual Networks");
+                            TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
+                            tnVirtualNetwork.Name = armVirtualNetwork.Name;
+                            tnVirtualNetwork.Tag = armVirtualNetwork;
+                            parentNode.Nodes.Add(tnVirtualNetwork);
+                            parentNode.Expand();
+                        }
+                    }
+
+                    foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts())
+                    {
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.PrimaryLocation, "Storage Accounts");
+                        TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
+                        tnStorageAccount.Name = tnStorageAccount.Text;
+                        tnStorageAccount.Tag = armStorageAccount;
+                        parentNode.Nodes.Add(tnStorageAccount);
+                        parentNode.Expand();
+                    }
+
+                    foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
+                    {
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.Location, "Virtual Machines");
+                        TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
+                        tnVirtualMachine.Name = tnVirtualMachine.Text;
+                        tnVirtualMachine.Tag = armVirtualMachine;
+                        parentNode.Nodes.Add(tnVirtualMachine);
+                        parentNode.Expand();
+                    }
+
+                    subscriptionNodeARM.ExpandAll();
+
+                    #endregion
+
                     await ReadSubscriptionSettings(sender.AzureSubscription);
 
-                    treeARM.Enabled = true;
-                    treeASM.Enabled = true;
+                    treeSourceASM.Enabled = true;
+                    treeSourceARM.Enabled = true;
+                    treeTargetARM.Enabled = true;
                 }
             }
             catch (Exception exc)
@@ -212,6 +267,11 @@ namespace MigAz.UserControls.Migrators
             StatusProvider.UpdateStatus("Ready");
         }
 
+        internal void ActivateSourceARMTab()
+        {
+            tabSourceResources.SelectedTab = tabSourceResources.TabPages[1];
+        }
+
         internal void ChangeAzureContext()
         {
             azureLoginContextViewerASM.ChangeAzureContext();
@@ -219,13 +279,15 @@ namespace MigAz.UserControls.Migrators
 
         private void ResetForm()
         {
-            treeASM.Nodes.Clear();
-            treeARM.Nodes.Clear();
+            treeSourceASM.Nodes.Clear();
+            treeSourceARM.Nodes.Clear();
+            treeTargetARM.Nodes.Clear();
             _SelectedNodes.Clear();
             UpdateExportItemsCount();
             _PropertyPanel.Clear();
-            treeARM.Enabled = false;
-            treeASM.Enabled = false;
+            treeSourceASM.Enabled = false;
+            treeSourceARM.Enabled = false;
+            treeTargetARM.Enabled = false;
         }
 
         #region Properties
@@ -291,7 +353,7 @@ namespace MigAz.UserControls.Migrators
                     #region process virtual network
                     if (asmVirtualMachine.VirtualNetworkName != string.Empty)
                     {
-                        foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
+                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
                         {
                             if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork)))
                             {
@@ -305,7 +367,7 @@ namespace MigAz.UserControls.Migrators
 
                     #region OS Disk Storage Account
 
-                    foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                    foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
                     {
                         if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount)))
                         {
@@ -320,7 +382,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                     {
-                        foreach (TreeNode treeNode in treeASM.Nodes.Find(dataDisk.StorageAccountName, true))
+                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(dataDisk.StorageAccountName, true))
                         {
                             if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount)))
                             {
@@ -336,7 +398,7 @@ namespace MigAz.UserControls.Migrators
 
                     if (asmVirtualMachine.NetworkSecurityGroup != null)
                     {
-                        foreach (TreeNode treeNode in treeASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
+                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
                         {
                             if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
                             {
@@ -358,7 +420,7 @@ namespace MigAz.UserControls.Migrators
                     {
                         if (asmSubnet.NetworkSecurityGroup != null)
                         {
-                            foreach (TreeNode treeNode in treeASM.Nodes.Find(asmSubnet.NetworkSecurityGroup.Name, true))
+                            foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmSubnet.NetworkSecurityGroup.Name, true))
                             {
                                 if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
                                 {
@@ -456,7 +518,7 @@ namespace MigAz.UserControls.Migrators
                 {
                     await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                     MigAzTreeView.FillUpIfFullDown(e.Node);
-                    treeASM.SelectedNode = e.Node;
+                    treeSourceASM.SelectedNode = e.Node;
                 }
                 else
                 {
@@ -464,14 +526,14 @@ namespace MigAz.UserControls.Migrators
                     await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
-                _SelectedNodes = this.GetSelectedNodes(treeASM);
+                _SelectedNodes = this.GetSelectedNodes(treeSourceASM);
                 UpdateExportItemsCount();
                 await this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
 
                 _SourceAsmNode = null;
 
                 if (resultUpdateARMTree != null)
-                    treeARM.SelectedNode = resultUpdateARMTree;
+                    treeTargetARM.SelectedNode = resultUpdateARMTree;
             }
         }
 
@@ -523,7 +585,7 @@ namespace MigAz.UserControls.Migrators
                     {
                         _PropertyPanel.ResourceText = e.Node.Text;
 
-                        if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
+                        if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
@@ -532,7 +594,7 @@ namespace MigAz.UserControls.Migrators
                             properties.Bind(e.Node);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
+                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["StorageAccount"];
 
@@ -544,7 +606,7 @@ namespace MigAz.UserControls.Migrators
                             properties.Bind(this._AzureContextTargetARM, e.Node);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
@@ -554,7 +616,7 @@ namespace MigAz.UserControls.Migrators
                             await properties.Bind(e.Node, this);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
 
@@ -565,7 +627,7 @@ namespace MigAz.UserControls.Migrators
                         }
                     }
                 }
-                if (e.Node.Tag.GetType() == typeof(Azure.Asm.Subnet))
+                if (e.Node.Tag.GetType() == typeof(Azure.Asm.Subnet) || e.Node.Tag.GetType() == typeof(Azure.Arm.Subnet))
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
@@ -576,7 +638,7 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
-                else if (e.Node.Tag.GetType() == typeof(Azure.Asm.Disk))
+                else if (e.Node.Tag.GetType() == typeof(Azure.Asm.Disk) || e.Node.Tag.GetType() == typeof(Azure.Arm.Disk))
                 {
                     Azure.Asm.Disk asmDisk = (Azure.Asm.Disk)e.Node.Tag;
 
@@ -627,7 +689,11 @@ namespace MigAz.UserControls.Migrators
                 if ((tagType == typeof(Azure.Asm.VirtualNetwork)) ||
                     (tagType == typeof(Azure.Asm.StorageAccount)) ||
                     (tagType == typeof(Azure.Asm.VirtualMachine)) ||
-                    (tagType == typeof(Azure.Asm.NetworkSecurityGroup)))
+                    (tagType == typeof(Azure.Asm.NetworkSecurityGroup)) ||
+                    (tagType == typeof(Azure.Arm.VirtualNetwork)) ||
+                    (tagType == typeof(Azure.Arm.StorageAccount)) ||
+                    (tagType == typeof(Azure.Arm.VirtualMachine)) ||
+                    (tagType == typeof(Azure.Arm.NetworkSecurityGroup)))
                 {
                     if (asmTreeNode.Checked)
                     {
@@ -645,7 +711,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task RemoveASMNodeFromARMTree(TreeNode asmTreeNode)
         {
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup);
             if (targetResourceGroupNode != null)
             {
                 TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(asmTreeNode.Name, true);
@@ -685,7 +751,7 @@ namespace MigAz.UserControls.Migrators
 
         internal TreeNode SeekARMChildTreeNode(string name, string text, object tag, bool allowCreated = false)
         {
-            return SeekARMChildTreeNode(this.treeARM.Nodes, name, text, tag, allowCreated);
+            return SeekARMChildTreeNode(this.treeTargetARM.Nodes, name, text, tag, allowCreated);
         }
 
         internal TreeNode SeekARMChildTreeNode(TreeNodeCollection nodeCollection, string name, string text, object tag, bool allowCreated = false)
@@ -711,7 +777,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task<TreeNode> AddASMNodeToARMTree(TreeNode asmTreeNode)
         {
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup, true);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup, true);
 
             Type tagType = asmTreeNode.Tag.GetType();
             if (tagType == typeof(Azure.Asm.VirtualNetwork))
@@ -771,8 +837,65 @@ namespace MigAz.UserControls.Migrators
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
             }
+            else if (tagType == typeof(Azure.Arm.VirtualNetwork))
+            {
+                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)asmTreeNode.Tag;
+                TreeNode virtualNetworksNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Virtual Networks", "Virtual Networks", "Virtual Networks", true);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(virtualNetworksNode.Nodes, asmTreeNode.Name, armVirtualNetwork.GetFinalTargetName(), asmTreeNode, true);
+
+                foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+                {
+                    // Property dialog not made available for Gateway Subnet
+                    if (!armSubnet.IsGatewaySubnet)
+                    {
+                        TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, armSubnet.Name, armSubnet.Name, armSubnet, true);
+                    }
+                }
+
+                targetResourceGroupNode.ExpandAll();
+                return virtualNetworkNode;
+            }
+            else if (tagType == typeof(Azure.Arm.StorageAccount))
+            {
+                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)asmTreeNode.Tag;
+
+                TreeNode storageAccountsNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, asmTreeNode.Name, armStorageAccount.GetFinalTargetName(), asmTreeNode, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return storageAccountNode;
+            }
+            else if (tagType == typeof(Azure.Arm.VirtualMachine))
+            {
+                Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
+                TreeNode availabilitySets = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Availability Sets", "Availability Sets", "Availability Sets", true);
+                TreeNode availabilitySet = SeekARMChildTreeNode(availabilitySets.Nodes, armVirtualMachine.TargetAvailabilitySet.TargetName, armVirtualMachine.TargetAvailabilitySet.GetFinalTargetName(), armVirtualMachine.TargetAvailabilitySet, true);
+                TreeNode virtualMachineNode = SeekARMChildTreeNode(availabilitySet.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, asmTreeNode, true);
+
+                foreach (Azure.Arm.Disk armDataDisk in armVirtualMachine.DataDisks)
+                {
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, armDataDisk.Name, armDataDisk.Name, armDataDisk, true);
+                }
+
+                foreach (Azure.Arm.NetworkInterfaceCard asmNetworkInterface in armVirtualMachine.NetworkInterfaces)
+                {
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmNetworkInterface.Name, asmNetworkInterface.Name, asmNetworkInterface, true);
+                }
+
+                targetResourceGroupNode.ExpandAll();
+                return virtualMachineNode;
+            }
+            else if (tagType == typeof(Azure.Arm.NetworkSecurityGroup))
+            {
+                Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)asmTreeNode.Tag;
+                TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, armNetworkSecurityGroup.Name, armNetworkSecurityGroup.Name, asmTreeNode, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return networkSecurityGroupNode;
+            }
             else
-                throw new Exception("Unhandled Node Type: " + tagType);
+                throw new Exception("Unhandled Node Type in AddASMNodeToARMTree: " + tagType);
 
         }
 
@@ -814,8 +937,8 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            treeASM.Height = this.Height - 195;
-            treeARM.Height = treeASM.Height;
+            treeSourceASM.Height = this.Height - 195;
+            treeTargetARM.Height = treeSourceASM.Height;
         }
 
         #endregion
@@ -837,7 +960,7 @@ namespace MigAz.UserControls.Migrators
             if (app.Default.SaveSelection)
             {
                 StatusProvider.UpdateStatus("BUSY: Reading saved selection");
-                await _saveSelectionProvider.Read(azureSubscription.SubscriptionId, _AzureContextSourceASM.AzureRetriever, AzureContextTargetARM.AzureRetriever, treeASM);
+                await _saveSelectionProvider.Read(azureSubscription.SubscriptionId, _AzureContextSourceASM.AzureRetriever, AzureContextTargetARM.AzureRetriever, treeSourceASM);
                 UpdateExportItemsCount();
             }
         }
@@ -876,20 +999,20 @@ namespace MigAz.UserControls.Migrators
                     if (nodeObject.GetType() == sourceObject.GetType())
                     {
                         if (sourceObject.GetType() == typeof(ResourceGroup))
-                            treeARM.SelectedNode = treeNode;
+                            treeTargetARM.SelectedNode = treeNode;
                         else if (sourceObject.GetType() == typeof(Azure.Asm.VirtualMachine))
                         {
                             Azure.Asm.VirtualMachine sourceMachine = (Azure.Asm.VirtualMachine)sourceObject;
                             Azure.Asm.VirtualMachine nodeMachine = (Azure.Asm.VirtualMachine)nodeObject;
                             if (sourceMachine.RoleName == nodeMachine.RoleName)
-                                treeARM.SelectedNode = treeNode;
+                                treeTargetARM.SelectedNode = treeNode;
                         }
                         else if (sourceObject.GetType() == typeof(Azure.Asm.Disk))
                         {
                             Azure.Asm.Disk sourceDisk = (Azure.Asm.Disk)sourceObject;
                             Azure.Asm.Disk nodeDisk = (Azure.Asm.Disk)nodeObject;
                             if (sourceDisk.DiskName == nodeDisk.DiskName)
-                                treeARM.SelectedNode = treeNode;
+                                treeTargetARM.SelectedNode = treeNode;
                         }
                     }
                 }
@@ -899,7 +1022,7 @@ namespace MigAz.UserControls.Migrators
 
         public override void SeekAlertSource(object sourceObject)
         {
-            SeekAlertSourceRecursive(sourceObject, treeARM.Nodes);
+            SeekAlertSourceRecursive(sourceObject, treeTargetARM.Nodes);
         }
 
         public override void PostTelemetryRecord()
