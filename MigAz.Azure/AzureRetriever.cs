@@ -12,6 +12,7 @@ using MigAz.Azure.Arm;
 using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
+using System.Windows.Forms;
 
 namespace MigAz.Azure
 {
@@ -292,7 +293,44 @@ namespace MigAz.Azure
             try
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + request.Method + " " + url);
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+
+                // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
+                HttpWebResponse response = null;
+                Int32 retrySeconds = 1;
+                bool boolRetryGetResponse = true;
+                while (boolRetryGetResponse)
+                {
+                    try
+                    {
+                        response = (HttpWebResponse)await request.GetResponseAsync();
+                        boolRetryGetResponse = false;
+                    }
+                    catch (WebException webException)
+                    {
+                        _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " EXCEPTION " + webException.Message);
+
+                        HttpWebResponse exceptionResponse = (HttpWebResponse) webException.Response;
+
+                        if ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        {
+                            DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
+                            string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + sleepMessage);
+                            _AzureContext.StatusProvider.UpdateStatus(sleepMessage);
+                            while (DateTime.Now < sleepUntil)
+                            { 
+                                Application.DoEvents();
+                            }
+                            retrySeconds = retrySeconds * 2;
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Initiating retry of Web Request.");
+                            _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
+                        }
+                        else
+                            throw webException;
+                    }
+                }
 
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Status Code " + response.StatusCode);
 
@@ -779,9 +817,46 @@ namespace MigAz.Azure
             JObject webRequestResultJson = null;
             try
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + "  " + request.Method + " " + url);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " " + request.Method + " " + url);
 
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
+                HttpWebResponse response = null;
+                Int32 retrySeconds = 1;
+                bool boolRetryGetResponse = true;
+                while (boolRetryGetResponse)
+                {
+                    try
+                    {
+                        response = (HttpWebResponse)await request.GetResponseAsync();
+                        boolRetryGetResponse = false;
+                    }
+                    catch (WebException webException)
+                    {
+                        _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " EXCEPTION " + webException.Message);
+
+                        HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
+
+                        if ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        {
+                            DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
+                            string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " " + sleepMessage);
+                            _AzureContext.StatusProvider.UpdateStatus(sleepMessage);
+                            while (DateTime.Now < sleepUntil)
+                            {
+                                Application.DoEvents();
+                            }
+                            retrySeconds = retrySeconds * 2;
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Initiating retry of Web Request.");
+                            _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
+                        }
+                        else
+                            throw webException;
+                    }
+                }
+
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
                 writeRetreiverResultToLog(requestGuid, "GetAzureARMResources", url, webRequesetResult);
