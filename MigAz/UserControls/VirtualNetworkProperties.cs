@@ -28,11 +28,14 @@ namespace MigAz.UserControls
             _ARMVirtualNetowrkNode = armVirtualNetworkNode;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
+            if (asmVirtualNetworkNode.Tag.GetType() == typeof(VirtualNetwork))
+            {
+                VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
 
-            lblVNetName.Text = asmVirtualNetwork.Name.ToString();
-            txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
-            dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+                lblVNetName.Text = asmVirtualNetwork.Name.ToString();
+                txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
+                dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+            }
         }
 
         private void txtVirtualNetworkName_TextChanged(object sender, EventArgs e)

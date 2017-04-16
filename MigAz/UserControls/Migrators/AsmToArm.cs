@@ -213,6 +213,11 @@ namespace MigAz.UserControls.Migrators
 
                     }
 
+                    foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
+                    {
+
+                    }
+
                     List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
                     foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
                     {
@@ -650,7 +655,7 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
-                else if (e.Node.Tag.GetType() == typeof(AvailabilitySet))
+                else if (e.Node.Tag.GetType() == typeof(Azure.Asm.AvailabilitySet))
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["AvailabilitySet"];
 
@@ -868,9 +873,21 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Arm.VirtualMachine))
             {
                 Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
-                TreeNode availabilitySets = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Availability Sets", "Availability Sets", "Availability Sets", true);
-                TreeNode availabilitySet = SeekARMChildTreeNode(availabilitySets.Nodes, armVirtualMachine.TargetAvailabilitySet.TargetName, armVirtualMachine.TargetAvailabilitySet.GetFinalTargetName(), armVirtualMachine.TargetAvailabilitySet, true);
-                TreeNode virtualMachineNode = SeekARMChildTreeNode(availabilitySet.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, asmTreeNode, true);
+
+                TreeNode virtualMachineNode = null;
+                if (armVirtualMachine.TargetAvailabilitySet != null)
+                {
+                    TreeNode availabilitySets = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Availability Sets", "Availability Sets", "Availability Sets", true);
+                    TreeNode availabilitySet = SeekARMChildTreeNode(availabilitySets.Nodes, armVirtualMachine.TargetAvailabilitySet.TargetName, armVirtualMachine.TargetAvailabilitySet.GetFinalTargetName(), armVirtualMachine.TargetAvailabilitySet, true);
+                    virtualMachineNode = SeekARMChildTreeNode(availabilitySet.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, asmTreeNode, true);
+                }
+                else
+                {
+                    virtualMachineNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, asmTreeNode, true);
+
+                }
+
+                
 
                 foreach (Azure.Arm.Disk armDataDisk in armVirtualMachine.DataDisks)
                 {

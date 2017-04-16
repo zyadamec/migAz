@@ -38,6 +38,21 @@ namespace MigAz.Azure.Arm
         public Guid VmId => new Guid((string)_VirtualMachine["properties"]["vmId"]);
         public string VmSize => (string)_VirtualMachine["properties"]["hardwareProfile"]["vmSize"];
 
+        internal string AvailabilitySetId
+        {
+            get
+            {
+                try
+                {
+                    return (string)_VirtualMachine["properties"]["availabilitySet"]["id"];
+                }
+                catch (NullReferenceException)
+                {
+                    return null;
+                }
+            }
+        }
+
         public List<Disk> DataDisks => _DataDisks;
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
         public ResourceGroup ResourceGroup => _ResourceGroup;
@@ -45,9 +60,23 @@ namespace MigAz.Azure.Arm
         public VirtualNetwork VirtualNetwork => _VirtualNetwork;
         public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
 
+        public AvailabilitySet AvailabilitySet
+        {
+            get; private set;
+        }
         public AvailabilitySet TargetAvailabilitySet
         {
             get; set;
         }
+
+        internal async Task InitializeChildrenAsync(AzureContext azureContext)
+        {
+            this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
+            if (this.AvailabilitySet != null)
+                this.AvailabilitySet.VirtualMachines.Add(this);
+
+            return;
+        }
+
     }
 }
