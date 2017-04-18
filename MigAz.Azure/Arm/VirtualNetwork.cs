@@ -56,9 +56,11 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public string TargetName { get; set; }
+
         public string GetFinalTargetName()
         {
-            return this.Name;
+            return this.TargetName;
         }
 
     }

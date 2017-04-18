@@ -453,7 +453,16 @@ namespace MigAz.UserControls.Migrators
 
         private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
         {
-            if (parentNode.Checked && parentNode.Tag != null && (parentNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup) || parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork) || parentNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount) || parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine)))
+            if (parentNode.Checked && parentNode.Tag != null && 
+                (parentNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup) || 
+                parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork) || 
+                parentNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount) ||
+                parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine) ||
+                parentNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup) ||
+                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork) ||
+                parentNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount) ||
+                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine)
+                ))
                 selectedNodes.Add(parentNode);
 
             foreach (TreeNode childNode in parentNode.Nodes)
@@ -548,19 +557,19 @@ namespace MigAz.UserControls.Migrators
             foreach (TreeNode selectedNode in _SelectedNodes)
             {
                 Type tagType = selectedNode.Tag.GetType();
-                if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
+                if (tagType == typeof(Azure.Asm.NetworkSecurityGroup) || tagType == typeof(Azure.Arm.NetworkSecurityGroup))
                 {
                     artifacts.NetworkSecurityGroups.Add((INetworkSecurityGroup)selectedNode.Tag);
                 }
-                else if (tagType == typeof(Azure.Asm.VirtualNetwork))
+                else if (tagType == typeof(Azure.Asm.VirtualNetwork) || tagType == typeof(Azure.Arm.VirtualNetwork))
                 {
                     artifacts.VirtualNetworks.Add((IVirtualNetwork)selectedNode.Tag);
                 }
-                else if (tagType == typeof(Azure.Asm.StorageAccount))
+                else if (tagType == typeof(Azure.Asm.StorageAccount) || tagType == typeof(Azure.Arm.StorageAccount))
                 {
                     artifacts.StorageAccounts.Add((IStorageAccount)selectedNode.Tag);
                 }
-                else if (tagType == typeof(Azure.Asm.VirtualMachine))
+                else if (tagType == typeof(Azure.Asm.VirtualMachine) || tagType == typeof(Azure.Arm.VirtualMachine))
                 {
                     artifacts.VirtualMachines.Add((IVirtualMachine)selectedNode.Tag);
                 }
@@ -603,9 +612,6 @@ namespace MigAz.UserControls.Migrators
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["StorageAccount"];
 
-                            Azure.Asm.StorageAccount storageAccount = (Azure.Asm.StorageAccount)asmTreeNode.Tag;
-                            _PropertyPanel.ResourceText = storageAccount.Name;
-
                             StorageAccountProperties properties = new StorageAccountProperties();
                             properties.PropertyChanged += Properties_PropertyChanged;
                             properties.Bind(this._AzureContextTargetARM, e.Node);
@@ -615,7 +621,8 @@ namespace MigAz.UserControls.Migrators
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
-                            VirtualMachineProperties properties = new VirtualMachineProperties(this.LogProvider);
+                            VirtualMachineProperties properties = new VirtualMachineProperties();
+                            properties.LogProvider = LogProvider;
                             properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
                             properties.PropertyChanged += Properties_PropertyChanged;
                             await properties.Bind(e.Node, this);
@@ -636,8 +643,6 @@ namespace MigAz.UserControls.Migrators
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
-                    Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)e.Node.Tag;
-
                     SubnetProperties properties = new SubnetProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(e.Node);
@@ -649,7 +654,8 @@ namespace MigAz.UserControls.Migrators
 
                     this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
-                    DiskProperties properties = new DiskProperties(this.LogProvider);
+                    DiskProperties properties = new DiskProperties();
+                    properties.LogProvider = this.LogProvider;
                     properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);

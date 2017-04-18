@@ -60,6 +60,7 @@ namespace MigAz.Azure.Arm
             get { return this.Name == ArmConst.GatewaySubnetName; }
         }
 
+        public string TargetName { get; set; }
 
         public override string ToString()
         {

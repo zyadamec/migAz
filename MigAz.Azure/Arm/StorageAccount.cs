@@ -146,7 +146,7 @@ namespace MigAz.Azure.Arm
 
         public string GetFinalTargetName() // todo
         {
-            return this.Name;
+            return this.TargetName;
         }
     }
 }

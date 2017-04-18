@@ -40,22 +40,28 @@ namespace MigAz.UserControls
                 lblAccountType.Text = asmStorageAccount.AccountType;
                 lblSourceASMName.Text = asmStorageAccount.Name;
 
-                if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
-                    txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
-                else
-                    txtTargetName.Text = asmStorageAccount.TargetName;
+                if (asmStorageAccount.TargetName != null)
+                {
+                    if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
+                        txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
+                    else
+                        txtTargetName.Text = asmStorageAccount.TargetName;
+                }
             }
             else if (storageAccountNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
             {
-                StorageAccount armStorageAccount = (StorageAccount)storageAccountNode.Tag;
+                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)storageAccountNode.Tag;
 
                 lblAccountType.Text = armStorageAccount.AccountType;
                 lblSourceASMName.Text = armStorageAccount.Name;
 
-                if (armStorageAccount.TargetName.Length > txtTargetName.MaxLength)
-                    txtTargetName.Text = armStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
-                else
-                    txtTargetName.Text = armStorageAccount.TargetName;
+                if (armStorageAccount.TargetName != null)
+                {
+                    if (armStorageAccount.TargetName.Length > txtTargetName.MaxLength)
+                        txtTargetName.Text = armStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
+                    else
+                        txtTargetName.Text = armStorageAccount.TargetName;
+                }
             }
         }
 

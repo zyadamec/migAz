@@ -24,16 +24,9 @@ namespace MigAz.UserControls
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
-        public DiskProperties(ILogProvider logProvider)
+        public DiskProperties()
         {
             InitializeComponent();
-
-            _LogProvider = logProvider;
-        }
-
-        private DiskProperties()
-        {
-
         }
 
         public bool AllowManangedDisk
@@ -51,6 +44,12 @@ namespace MigAz.UserControls
 
                 //rbManagedDisk.Enabled = value;
             }
+        }
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+            set { _LogProvider = value; }
         }
 
         internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)

@@ -68,6 +68,11 @@ namespace MigAz.Azure.Arm
         {
             get; set;
         }
+        public Subnet TargetSubnet
+        {
+            get; set;
+        }
+        public string TargetName { get; set; }
 
         internal async Task InitializeChildrenAsync(AzureContext azureContext)
         {

@@ -28,9 +28,17 @@ namespace MigAz.UserControls
             _ARMVirtualNetowrkNode = armVirtualNetworkNode;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            if (asmVirtualNetworkNode.Tag.GetType() == typeof(VirtualNetwork))
+            if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
-                VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
+                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)asmVirtualNetworkNode.Tag;
+
+                lblVNetName.Text = asmVirtualNetwork.Name.ToString();
+                txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
+                dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+            }
+            else if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+            {
+                Azure.Arm.VirtualNetwork asmVirtualNetwork = (Azure.Arm.VirtualNetwork)asmVirtualNetworkNode.Tag;
 
                 lblVNetName.Text = asmVirtualNetwork.Name.ToString();
                 txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
@@ -43,10 +51,20 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            VirtualNetwork asmVirtualNetwork = (VirtualNetwork)asmVirtualNetworkNode.Tag;
+            if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
+            {
+                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)asmVirtualNetworkNode.Tag;
 
-            asmVirtualNetwork.TargetName = txtSender.Text.Trim();
-            _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
+                asmVirtualNetwork.TargetName = txtSender.Text.Trim();
+                _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
+            }
+            else if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+            {
+                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)asmVirtualNetworkNode.Tag;
+
+                armVirtualNetwork.TargetName = txtSender.Text.Trim();
+                _ARMVirtualNetowrkNode.Text = armVirtualNetwork.GetFinalTargetName();
+            }
 
             PropertyChanged();
         }

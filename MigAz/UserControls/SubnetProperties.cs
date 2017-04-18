@@ -27,20 +27,43 @@ namespace MigAz.UserControls
         {
             _AsmSubnetNode = asmSubnetNode;
 
-            Subnet asmSubnet = (Subnet)_AsmSubnetNode.Tag;
+            if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Asm.Subnet))
+            {
+                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)_AsmSubnetNode.Tag;
 
-            lblSourceName.Text = asmSubnet.Name;
-            lblAddressSpace.Text = asmSubnet.AddressPrefix;
-            txtTargetName.Text = asmSubnet.TargetName;
+                lblSourceName.Text = asmSubnet.Name;
+                lblAddressSpace.Text = asmSubnet.AddressPrefix;
+                txtTargetName.Text = asmSubnet.TargetName;
+            }
+            else if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Arm.Subnet))
+            {
+                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)_AsmSubnetNode.Tag;
+
+                lblSourceName.Text = armSubnet.Name;
+                lblAddressSpace.Text = armSubnet.AddressPrefix;
+                txtTargetName.Text = armSubnet.TargetName;
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-            Subnet asmSubnet = (Subnet)_AsmSubnetNode.Tag;
 
-            asmSubnet.TargetName = txtSender.Text;
-            _AsmSubnetNode.Text = asmSubnet.TargetName;
+
+            if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Asm.Subnet))
+            {
+                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)_AsmSubnetNode.Tag;
+
+                asmSubnet.TargetName = txtSender.Text;
+                _AsmSubnetNode.Text = asmSubnet.TargetName;
+            }
+            else if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Arm.Subnet))
+            {
+                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)_AsmSubnetNode.Tag;
+
+                armSubnet.TargetName = txtSender.Text;
+                _AsmSubnetNode.Text = armSubnet.TargetName;
+            }
 
             PropertyChanged();
         }
