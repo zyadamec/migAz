@@ -254,6 +254,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
 
             Guid targetSubscriptionGuid = Guid.Empty;
+            Guid targetTennantGuid = Guid.Empty;
             string targetResourceGroupName = String.Empty;
             string resourceGroupLocation = String.Empty;
             string azureEnvironmentSwitch = String.Empty;
@@ -267,12 +268,14 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (this.TargetSubscription != null)
             {
-                targetSubscriptionGuid = this.TargetSubscription.SubscriptionId;
+                targetSubscriptionGuid = TargetSubscription.SubscriptionId;
+                targetTennantGuid = TargetSubscription.AzureAdTenantId;
 
                 if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
             }
 
+            instructionContent = instructionContent.Replace("{tennantId}", targetTennantGuid.ToString());
             instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
