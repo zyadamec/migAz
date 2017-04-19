@@ -93,7 +93,7 @@
             this.treeSourceASM.CheckBoxes = true;
             this.treeSourceASM.Location = new System.Drawing.Point(0, 0);
             this.treeSourceASM.Name = "treeSourceASM";
-            this.treeSourceASM.Size = new System.Drawing.Size(842, 545);
+            this.treeSourceASM.Size = new System.Drawing.Size(842, 500);
             this.treeSourceASM.TabIndex = 56;
             this.treeSourceASM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
             this.treeSourceASM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);
@@ -111,6 +111,8 @@
             // 
             this.tabSourceResources.Controls.Add(this.tabPage1);
             this.tabSourceResources.Controls.Add(this.tabPage2);
+            this.tabSourceResources.HotTrack = true;
+            this.tabSourceResources.ImeMode = System.Windows.Forms.ImeMode.On;
             this.tabSourceResources.Location = new System.Drawing.Point(3, 210);
             this.tabSourceResources.Name = "tabSourceResources";
             this.tabSourceResources.SelectedIndex = 0;
@@ -125,7 +127,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(873, 529);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "ASM Resources";
+            this.tabPage1.Text = "Source ASM Resources";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
@@ -136,7 +138,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(873, 529);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "ARM Resources";
+            this.tabPage2.Text = "Source ARM Resources";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // treeSourceARM
@@ -144,7 +146,7 @@
             this.treeSourceARM.CheckBoxes = true;
             this.treeSourceARM.Location = new System.Drawing.Point(0, 0);
             this.treeSourceARM.Name = "treeSourceARM";
-            this.treeSourceARM.Size = new System.Drawing.Size(842, 545);
+            this.treeSourceARM.Size = new System.Drawing.Size(842, 500);
             this.treeSourceARM.TabIndex = 57;
             this.treeSourceARM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);
             this.treeSourceARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterSelect);

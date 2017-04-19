@@ -960,7 +960,7 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            treeSourceASM.Height = this.Height - 195;
+            treeSourceASM.Height = 500;// this.Height - 195;
             treeTargetARM.Height = treeSourceASM.Height;
         }
 

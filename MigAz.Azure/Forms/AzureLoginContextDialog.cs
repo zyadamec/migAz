@@ -4,16 +4,16 @@ using System.Windows.Forms;
 
 namespace MigAz.Azure.Forms
 {
-    public partial class AzureLoginContextDialog2 : Form
+    public partial class AzureLoginContextDialog : Form
     {
-        public AzureLoginContextDialog2()
+        public AzureLoginContextDialog()
         {
             InitializeComponent();
         }
 
         public async Task InitializeDialog(AzureContext azureContext)
         {
-            await this.azureArmLoginControl21.BindContext(azureContext);
+            await this.azureArmLoginControl.BindContext(azureContext);
             azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 

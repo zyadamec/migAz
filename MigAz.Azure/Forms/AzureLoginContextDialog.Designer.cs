@@ -1,6 +1,6 @@
 ﻿namespace MigAz.Azure.Forms
 {
-    partial class AzureLoginContextDialog2
+    partial class AzureLoginContextDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@
         {
             this.label4 = new System.Windows.Forms.Label();
             this.btnCloseDialog = new System.Windows.Forms.Button();
-            this.azureArmLoginControl21 = new MigAz.Azure.UserControls.AzureArmLoginControl();
+            this.azureArmLoginControl = new MigAz.Azure.UserControls.AzureArmLoginControl();
             this.SuspendLayout();
             // 
             // label4
@@ -54,25 +54,25 @@
             this.btnCloseDialog.UseVisualStyleBackColor = true;
             this.btnCloseDialog.Click += new System.EventHandler(this.btnCloseDialog_Click);
             // 
-            // azureArmLoginControl21
+            // azureArmLoginControl
             // 
-            this.azureArmLoginControl21.Location = new System.Drawing.Point(22, 68);
-            this.azureArmLoginControl21.Name = "azureArmLoginControl21";
-            this.azureArmLoginControl21.Size = new System.Drawing.Size(1171, 267);
-            this.azureArmLoginControl21.TabIndex = 55;
+            this.azureArmLoginControl.Location = new System.Drawing.Point(22, 68);
+            this.azureArmLoginControl.Name = "azureArmLoginControl";
+            this.azureArmLoginControl.Size = new System.Drawing.Size(1171, 267);
+            this.azureArmLoginControl.TabIndex = 55;
             // 
-            // AzureLoginContextDialog2
+            // AzureLoginContextDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1212, 417);
-            this.Controls.Add(this.azureArmLoginControl21);
+            this.Controls.Add(this.azureArmLoginControl);
             this.Controls.Add(this.btnCloseDialog);
             this.Controls.Add(this.label4);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AzureLoginContextDialog2";
+            this.Name = "AzureLoginContextDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Azure Authentication";
             this.ResumeLayout(false);
@@ -83,6 +83,6 @@
         #endregion
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnCloseDialog;
-        private UserControls.AzureArmLoginControl azureArmLoginControl21;
+        private UserControls.AzureArmLoginControl azureArmLoginControl;
     }
 }
