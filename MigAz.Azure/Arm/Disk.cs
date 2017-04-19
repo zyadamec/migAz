@@ -33,5 +33,7 @@ namespace MigAz.Azure.Arm
         } 
 
         public string StorageAccountName => VhdUri == String.Empty ? String.Empty : VhdUri.Substring(VhdUri.IndexOf("://") + 3, VhdUri.IndexOf(".") - VhdUri.IndexOf("://") - 3);
+
+        public StorageAccount TargetStorageAccount { get; set; }
     }
 }

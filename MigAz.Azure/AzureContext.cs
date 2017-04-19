@@ -168,7 +168,7 @@ namespace MigAz.Azure
 
             await this.SetTenantContext(null);
 
-            _AzureRetriever = null;
+            _AzureRetriever.ClearCache();
             _TokenProvider.AuthenticationResult = null;
 
             if (AfterUserSignOut != null)
