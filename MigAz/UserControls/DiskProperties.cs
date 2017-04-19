@@ -107,9 +107,7 @@ namespace MigAz.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = false;
-
             }
-
         }
 
         private void rbStorageAccountInMigration_CheckedChanged(object sender, EventArgs e)
