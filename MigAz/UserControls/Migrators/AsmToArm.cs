@@ -204,53 +204,54 @@ namespace MigAz.UserControls.Migrators
 
                     #region Bind Source ARM Objects
 
-                    TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
+                    TreeNode subscriptionNodeARM = new TreeNode("ARM Resources Coming Soon!!");
+//                    TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
                     treeSourceARM.Nodes.Add(subscriptionNodeARM);
                     subscriptionNodeARM.Expand();
 
-                    foreach (ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
-                    {
+                    //foreach (ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                    //{
 
-                    }
+                    //}
 
-                    foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
-                    {
+                    //foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
+                    //{
 
-                    }
+                    //}
 
-                    List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
-                    {
-                        if (armVirtualNetwork.HasNonGatewaySubnet)
-                        {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.Location, "Virtual Networks");
-                            TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
-                            tnVirtualNetwork.Name = armVirtualNetwork.Name;
-                            tnVirtualNetwork.Tag = armVirtualNetwork;
-                            parentNode.Nodes.Add(tnVirtualNetwork);
-                            parentNode.Expand();
-                        }
-                    }
+                    //List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
+                    //foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
+                    //{
+                    //    if (armVirtualNetwork.HasNonGatewaySubnet)
+                    //    {
+                    //        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.Location, "Virtual Networks");
+                    //        TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
+                    //        tnVirtualNetwork.Name = armVirtualNetwork.Name;
+                    //        tnVirtualNetwork.Tag = armVirtualNetwork;
+                    //        parentNode.Nodes.Add(tnVirtualNetwork);
+                    //        parentNode.Expand();
+                    //    }
+                    //}
 
-                    foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts())
-                    {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.PrimaryLocation, "Storage Accounts");
-                        TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
-                        tnStorageAccount.Name = tnStorageAccount.Text;
-                        tnStorageAccount.Tag = armStorageAccount;
-                        parentNode.Nodes.Add(tnStorageAccount);
-                        parentNode.Expand();
-                    }
+                    //foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts())
+                    //{
+                    //    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.PrimaryLocation, "Storage Accounts");
+                    //    TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
+                    //    tnStorageAccount.Name = tnStorageAccount.Text;
+                    //    tnStorageAccount.Tag = armStorageAccount;
+                    //    parentNode.Nodes.Add(tnStorageAccount);
+                    //    parentNode.Expand();
+                    //}
 
-                    foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
-                    {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.Location, "Virtual Machines");
-                        TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
-                        tnVirtualMachine.Name = tnVirtualMachine.Text;
-                        tnVirtualMachine.Tag = armVirtualMachine;
-                        parentNode.Nodes.Add(tnVirtualMachine);
-                        parentNode.Expand();
-                    }
+                    //foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
+                    //{
+                    //    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.Location, "Virtual Machines");
+                    //    TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
+                    //    tnVirtualMachine.Name = tnVirtualMachine.Text;
+                    //    tnVirtualMachine.Tag = armVirtualMachine;
+                    //    parentNode.Nodes.Add(tnVirtualMachine);
+                    //    parentNode.Expand();
+                    //}
 
                     subscriptionNodeARM.ExpandAll();
 
@@ -259,7 +260,7 @@ namespace MigAz.UserControls.Migrators
                     await ReadSubscriptionSettings(sender.AzureSubscription);
 
                     treeSourceASM.Enabled = true;
-                    treeSourceARM.Enabled = true;
+                    //treeSourceARM.Enabled = true;
                     treeTargetARM.Enabled = true;
                 }
             }
@@ -333,7 +334,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.0.0.0";
+            string currentVersion = "2.1.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://asmtoarmtoolapi.azurewebsites.net/api/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

@@ -34,6 +34,12 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.1.0.0
+- Added retry logic with back off timer to Azure REST API calls on 500 HTTP Error response
+- Fixed ARM Disk Target Storage Account drop down binding continually defaulting to first ARM Storage Account
+- Added Tenant Selection to Target Subscription selection dialog
+- Updated and deployed TenantId in HTML Documentation
+
 ### v2.0.0.0
 - Multiple enhancements and bug fixes
 - MigAz ASM to ARM updated and released as MigAz v2.0.0.0
