@@ -15,10 +15,9 @@ namespace MigAz.Azure
 
         private AzureSubscription() { }
 
-        internal AzureSubscription(XmlNode xmlNode, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
+        internal AzureSubscription(XmlNode xmlNode, AzureEnvironment azureEnvironment)
         {
             _XmlNode = xmlNode;
-            _ParentTenant = parentAzureTenant;
             _AzureEnvironment = azureEnvironment;
         }
 

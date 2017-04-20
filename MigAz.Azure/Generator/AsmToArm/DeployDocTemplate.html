@@ -32,8 +32,8 @@
             </li>
             <li>
                 <p>Open Azure PowerShell and sign into your target subscription.</p>
-<pre>Login-AzureRmAccount{migAzAzureEnvironmentSwitch}
-Select-AzureRmSubscription -SubscriptionId "{subscriptionId}"</pre>
+                <pre>Login-AzureRmAccount{migAzAzureEnvironmentSwitch}{subscriptionSwitch}{tenantSwitch}
+Select-AzureRmSubscription{subscriptionSwitch}</pre>
             </li>
             <li>
                 <p>Create a new Resource Group in your chosen region</p>

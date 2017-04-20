@@ -175,7 +175,7 @@ namespace MigAz.Azure
             XmlDocument subscriptionsXml = await this.GetAzureAsmResources("Subscriptions", null);
             foreach (XmlNode subscriptionXml in subscriptionsXml.SelectNodes("//Subscription"))
             {
-                AzureSubscription azureSubscription = new AzureSubscription(subscriptionXml, null, this._AzureContext.AzureEnvironment);
+                AzureSubscription azureSubscription = new AzureSubscription(subscriptionXml, this._AzureContext.AzureEnvironment);
                 _AzureSubscriptions.Add(azureSubscription);
             }
 
