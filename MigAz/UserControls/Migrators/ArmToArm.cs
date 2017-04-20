@@ -79,47 +79,7 @@ namespace MigAz.UserControls.Migrators
                 treeSource.Nodes.Add(subscriptionNode);
                 subscriptionNode.Expand();
 
-                foreach (ResourceGroup armResourceGroup in await _AzureContextARM.AzureRetriever.GetAzureARMResourceGroups())
-                {
-
-                }
-
-                List<VirtualNetwork> armVirtualNetworks = await _AzureContextARM.AzureRetriever.GetAzureARMVirtualNetworks();
-                foreach (VirtualNetwork armVirtualNetwork in armVirtualNetworks)
-                {
-                    if (armVirtualNetwork.HasNonGatewaySubnet)
-                    {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualNetwork.Location, "Virtual Networks");
-                        TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
-                        tnVirtualNetwork.Name = armVirtualNetwork.Name;
-                        tnVirtualNetwork.Tag = armVirtualNetwork;
-                        parentNode.Nodes.Add(tnVirtualNetwork);
-                        parentNode.Expand();
-                    }
-                }
-
-                foreach (StorageAccount armStorageAccount in await _AzureContextARM.AzureRetriever.GetAzureARMStorageAccounts())
-                {
-                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armStorageAccount.PrimaryLocation, "Storage Accounts");
-                    TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
-                    tnStorageAccount.Name = tnStorageAccount.Text;
-                    tnStorageAccount.Tag = armStorageAccount;
-                    parentNode.Nodes.Add(tnStorageAccount);
-                    parentNode.Expand();
-                }
-
-                foreach (VirtualMachine armVirtualMachine in await _AzureContextARM.AzureRetriever.GetAzureArmVirtualMachines())
-                {
-                    TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNode, armVirtualMachine.Location, "Virtual Machines");
-                    TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
-                    tnVirtualMachine.Name = tnVirtualMachine.Text;
-                    tnVirtualMachine.Tag = armVirtualMachine;
-                    parentNode.Nodes.Add(tnVirtualMachine);
-                    parentNode.Expand();
-                }
-
-                subscriptionNode.ExpandAll();
-
+               
                 //    if (app.Default.SaveSelection)
                 //    {
                 //        lblStatus.Text = "BUSY: Reading saved selection";
@@ -152,7 +112,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.0.0.0";
+            string currentVersion = "2.1.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/ARMtoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

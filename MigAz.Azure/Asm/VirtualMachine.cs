@@ -71,7 +71,7 @@ namespace MigAz.Azure.Asm
 
         public async Task InitializeChildren()
         {
-            this._TargetAvailabilitySet = _AzureContext.AzureRetriever.GetAzureARMAvailabilitySet(this);
+            this._TargetAvailabilitySet = _AzureContext.AzureRetriever.GetAzureASMAvailabilitySet(this);
 
 
             if (this.VirtualNetworkName != String.Empty)

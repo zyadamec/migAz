@@ -47,7 +47,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.diskProperties1 = new MigAz.UserControls.DiskProperties(this.LogProvider);
+            this.diskProperties1 = new MigAz.UserControls.DiskProperties();
             this.label12 = new System.Windows.Forms.Label();
             this.lblASMVMName = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -169,9 +169,9 @@
             this.rbVNetInMigration.AutoSize = true;
             this.rbVNetInMigration.Location = new System.Drawing.Point(181, 342);
             this.rbVNetInMigration.Name = "rbVNetInMigration";
-            this.rbVNetInMigration.Size = new System.Drawing.Size(403, 29);
+            this.rbVNetInMigration.Size = new System.Drawing.Size(274, 29);
             this.rbVNetInMigration.TabIndex = 0;
-            this.rbVNetInMigration.Text = "VNet in MigAz ASM to ARM Migration";
+            this.rbVNetInMigration.Text = "VNet in MigAz Migration";
             this.rbVNetInMigration.UseVisualStyleBackColor = true;
             this.rbVNetInMigration.CheckedChanged += new System.EventHandler(this.rbVNetInMigration_CheckedChanged);
             // 
@@ -180,9 +180,9 @@
             this.rbExistingARMVNet.AutoSize = true;
             this.rbExistingARMVNet.Location = new System.Drawing.Point(181, 386);
             this.rbExistingARMVNet.Name = "rbExistingARMVNet";
-            this.rbExistingARMVNet.Size = new System.Drawing.Size(359, 29);
+            this.rbExistingARMVNet.Size = new System.Drawing.Size(316, 29);
             this.rbExistingARMVNet.TabIndex = 1;
-            this.rbExistingARMVNet.Text = "ARM VNet in Target Subscription";
+            this.rbExistingARMVNet.Text = "Existing ARM VNet in Target";
             this.rbExistingARMVNet.UseVisualStyleBackColor = true;
             this.rbExistingARMVNet.CheckedChanged += new System.EventHandler(this.rbExistingARMVNet_CheckedChanged);
             // 
@@ -235,7 +235,9 @@
             // 
             // diskProperties1
             // 
+            this.diskProperties1.AllowManangedDisk = false;
             this.diskProperties1.Location = new System.Drawing.Point(0, 630);
+            this.diskProperties1.LogProvider = null;
             this.diskProperties1.Name = "diskProperties1";
             this.diskProperties1.Size = new System.Drawing.Size(640, 487);
             this.diskProperties1.TabIndex = 19;

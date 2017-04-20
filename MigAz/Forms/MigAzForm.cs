@@ -87,8 +87,8 @@ namespace MigAz.Forms
 
         private void splitContainer2_Panel2_Resize(object sender, EventArgs e)
         {
-            this.tabControl1.Width = splitContainer2.Panel2.Width - 5;
-            this.tabControl1.Height = splitContainer2.Panel2.Height - 5;
+            this.tabMigAzMonitoring.Width = splitContainer2.Panel2.Width - 5;
+            this.tabMigAzMonitoring.Height = splitContainer2.Panel2.Height - 5;
             this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
             this.tabOutputResults.Height = splitContainer2.Panel2.Height - 55;
         }
@@ -96,9 +96,9 @@ namespace MigAz.Forms
         private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
         {
             TemplateGenerator a = (TemplateGenerator)sender;
-            dataGridView1.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
-            dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridView1.Columns["SourceObject"].Visible = false;
+            dgvMigAzMessages.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
         }
 
@@ -109,12 +109,12 @@ namespace MigAz.Forms
 
         private void tabControl1_Resize(object sender, EventArgs e)
         {
-            dataGridView1.Width = tabControl1.Width - 10;
-            dataGridView1.Height = tabControl1.Height - 30;
-            txtLog.Width = tabControl1.Width - 10;
-            txtLog.Height = tabControl1.Height - 30;
-            txtRest.Width = tabControl1.Width - 10;
-            txtRest.Height = tabControl1.Height - 30;
+            dgvMigAzMessages.Width = tabMigAzMonitoring.Width - 10;
+            dgvMigAzMessages.Height = tabMigAzMonitoring.Height - 30;
+            txtLog.Width = tabMigAzMonitoring.Width - 10;
+            txtLog.Height = tabMigAzMonitoring.Height - 30;
+            txtRest.Width = tabMigAzMonitoring.Width - 10;
+            txtRest.Height = tabMigAzMonitoring.Height - 30;
         }
 
         #region Menu Items
@@ -139,7 +139,7 @@ namespace MigAz.Forms
 
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(Azure.AzureContext sender)
         {
-            dataGridView1.DataSource = null;
+            dgvMigAzMessages.DataSource = null;
             tabOutputResults.TabPages.Clear();
             btnRefreshOutput.Enabled = false;
             lblLastOutputRefresh.Text = String.Empty;
@@ -149,12 +149,20 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            ArmToArm armToArm = new ArmToArm(StatusProvider, LogProvider, propertyPanel1);
-            armToArm.AzureContextARM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            parent.Controls.Add(armToArm);
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
 
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
+
+            asmToArm.ActivateSourceARMTab();
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
         }
 
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
@@ -185,7 +193,7 @@ namespace MigAz.Forms
             }
 
             propertyPanel1.Clear();
-            dataGridView1.DataSource = null;
+            dgvMigAzMessages.DataSource = null;
             tabOutputResults.TabPages.Clear();
             btnRefreshOutput.Enabled = false;
             lblLastOutputRefresh.Text = String.Empty;
@@ -231,6 +239,7 @@ namespace MigAz.Forms
 
                 if (migrator.TemplateGenerator.HasErrors)
                 {
+                    tabMigAzMonitoring.SelectTab("tabMessages");
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
@@ -240,13 +249,6 @@ namespace MigAz.Forms
 
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
                 migrator.TemplateGenerator.Write();
-
-                // post Telemetry Record to ASMtoARMToolAPI
-                if (AppSettingsProvider.AllowTelemetry)
-                {
-                    StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                    migrator.PostTelemetryRecord();
-                }
 
                 StatusProvider.UpdateStatus("Ready");
 
@@ -262,7 +264,7 @@ namespace MigAz.Forms
             if (parent.Controls.Count == 1)
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
-                object alert = dataGridView1.Rows[e.RowIndex].Cells["SourceObject"].Value;
+                object alert = dgvMigAzMessages.Rows[e.RowIndex].Cells["SourceObject"].Value;
                 migrator.SeekAlertSource(alert);
             }
 
@@ -300,6 +302,13 @@ namespace MigAz.Forms
             if (parent.Controls.Count == 1)
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
+
+                if (migrator.TemplateGenerator.HasErrors)
+                {
+                    tabMigAzMonitoring.SelectTab("tabMessages");
+                    MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
+                    return;
+                }
 
                 migrator.TemplateGenerator.SerializeStreams();
 
@@ -360,6 +369,13 @@ namespace MigAz.Forms
 
                 lblLastOutputRefresh.Text = "Last Refresh Completed: " + DateTime.Now.ToString();
                 btnRefreshOutput.Enabled = false;
+
+                // post Telemetry Record to ASMtoARMToolAPI
+                if (AppSettingsProvider.AllowTelemetry)
+                {
+                    StatusProvider.UpdateStatus("BUSY: saving telemetry information");
+                    migrator.PostTelemetryRecord();
+                }
             }
         }
     }

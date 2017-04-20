@@ -36,9 +36,9 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabMigAzMonitoring = new System.Windows.Forms.TabControl();
             this.tabMessages = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dgvMigAzMessages = new System.Windows.Forms.DataGridView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.lblLastOutputRefresh = new System.Windows.Forms.Label();
             this.btnRefreshOutput = new System.Windows.Forms.Button();
@@ -75,9 +75,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.tabMigAzMonitoring.SuspendLayout();
             this.tabMessages.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMigAzMessages)).BeginInit();
             this.tabPage1.SuspendLayout();
             this.tabLog.SuspendLayout();
             this.tabRest.SuspendLayout();
@@ -160,28 +160,29 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
+            this.splitContainer2.Panel2.Controls.Add(this.tabMigAzMonitoring);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
             this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
-            this.splitContainer2.SplitterDistance = 599;
+            this.splitContainer2.SplitterDistance = 598;
             this.splitContainer2.TabIndex = 0;
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabMessages);
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabLog);
-            this.tabControl1.Controls.Add(this.tabRest);
-            this.tabControl1.Location = new System.Drawing.Point(3, 3);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(922, 289);
-            this.tabControl1.TabIndex = 0;
-            this.tabControl1.Resize += new System.EventHandler(this.tabControl1_Resize);
+            this.tabMigAzMonitoring.Controls.Add(this.tabMessages);
+            this.tabMigAzMonitoring.Controls.Add(this.tabPage1);
+            this.tabMigAzMonitoring.Controls.Add(this.tabLog);
+            this.tabMigAzMonitoring.Controls.Add(this.tabRest);
+            this.tabMigAzMonitoring.HotTrack = true;
+            this.tabMigAzMonitoring.Location = new System.Drawing.Point(3, 3);
+            this.tabMigAzMonitoring.Name = "tabControl1";
+            this.tabMigAzMonitoring.SelectedIndex = 0;
+            this.tabMigAzMonitoring.Size = new System.Drawing.Size(922, 289);
+            this.tabMigAzMonitoring.TabIndex = 0;
+            this.tabMigAzMonitoring.Resize += new System.EventHandler(this.tabControl1_Resize);
             // 
             // tabMessages
             // 
-            this.tabMessages.Controls.Add(this.dataGridView1);
+            this.tabMessages.Controls.Add(this.dgvMigAzMessages);
             this.tabMessages.Location = new System.Drawing.Point(8, 39);
             this.tabMessages.Name = "tabMessages";
             this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
@@ -192,13 +193,13 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(890, 236);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dgvMigAzMessages.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvMigAzMessages.Location = new System.Drawing.Point(0, 0);
+            this.dgvMigAzMessages.Name = "dataGridView1";
+            this.dgvMigAzMessages.RowTemplate.Height = 33;
+            this.dgvMigAzMessages.Size = new System.Drawing.Size(890, 236);
+            this.dgvMigAzMessages.TabIndex = 0;
+            this.dgvMigAzMessages.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
             // tabPage1
             // 
@@ -234,6 +235,7 @@
             // 
             // tabOutputResults
             // 
+            this.tabOutputResults.HotTrack = true;
             this.tabOutputResults.Location = new System.Drawing.Point(3, 60);
             this.tabOutputResults.Name = "tabOutputResults";
             this.tabOutputResults.SelectedIndex = 0;
@@ -358,7 +360,7 @@
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -374,7 +376,7 @@
             // aSMToARMToolStripMenuItem
             // 
             this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aSMToARMToolStripMenuItem.Text = "ASM To ARM";
             this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
             // 
@@ -382,7 +384,7 @@
             // 
             this.aRMToARMToolStripMenuItem.Enabled = false;
             this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
             this.aRMToARMToolStripMenuItem.Visible = false;
             this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
@@ -391,7 +393,7 @@
             // 
             this.aWSToARMToolStripMenuItem.Enabled = false;
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
-            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
             this.aWSToARMToolStripMenuItem.Visible = false;
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
@@ -434,7 +436,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem
@@ -479,9 +481,9 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
+            this.tabMigAzMonitoring.ResumeLayout(false);
             this.tabMessages.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMigAzMessages)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabLog.ResumeLayout(false);
@@ -504,7 +506,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabMigAzMonitoring;
         private System.Windows.Forms.TabPage tabMessages;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -514,7 +516,7 @@
         private System.Windows.Forms.ToolStripMenuItem aWSToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dgvMigAzMessages;
         private System.Windows.Forms.TabPage tabLog;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.ToolStripMenuItem closeMigrationToolStripMenuItem;

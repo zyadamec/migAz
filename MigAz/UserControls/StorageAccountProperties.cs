@@ -25,22 +25,44 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        public void Bind(AzureContext azureContext, TreeNode storageAccountNode)
+        public void Bind(AzureContext azureContext, TreeNode sourceStorageAccountNode)
         {
             _AzureContext = azureContext;
             txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
 
-            _ArmStorageAccountNode = storageAccountNode;
-            TreeNode asmStorageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
-            StorageAccount asmStorageAccount = (StorageAccount)asmStorageAccountNode.Tag;
+            _ArmStorageAccountNode = sourceStorageAccountNode;
+            TreeNode storageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
 
-            lblAccountType.Text = asmStorageAccount.AccountType;
-            lblSourceASMName.Text = asmStorageAccount.Name;
+            if (storageAccountNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
+            {
+                StorageAccount asmStorageAccount = (StorageAccount)storageAccountNode.Tag;
 
-            if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
-                txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
-            else
-                txtTargetName.Text = asmStorageAccount.TargetName;
+                lblAccountType.Text = asmStorageAccount.AccountType;
+                lblSourceASMName.Text = asmStorageAccount.Name;
+
+                if (asmStorageAccount.TargetName != null)
+                {
+                    if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
+                        txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
+                    else
+                        txtTargetName.Text = asmStorageAccount.TargetName;
+                }
+            }
+            else if (storageAccountNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
+            {
+                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)storageAccountNode.Tag;
+
+                lblAccountType.Text = armStorageAccount.AccountType;
+                lblSourceASMName.Text = armStorageAccount.Name;
+
+                if (armStorageAccount.TargetName != null)
+                {
+                    if (armStorageAccount.TargetName.Length > txtTargetName.MaxLength)
+                        txtTargetName.Text = armStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
+                    else
+                        txtTargetName.Text = armStorageAccount.TargetName;
+                }
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -48,10 +70,21 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             TreeNode asmStorageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
-            StorageAccount asmStorageAccount = (StorageAccount)asmStorageAccountNode.Tag;
 
-            asmStorageAccount.TargetName = txtSender.Text;
-            _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();
+            if (asmStorageAccountNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
+            {
+                Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)asmStorageAccountNode.Tag;
+
+                asmStorageAccount.TargetName = txtSender.Text;
+                _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();
+            }
+            else if (asmStorageAccountNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
+            {
+                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)asmStorageAccountNode.Tag;
+
+                armStorageAccount.TargetName = txtSender.Text;
+                _ArmStorageAccountNode.Text = armStorageAccount.GetFinalTargetName();
+            }
 
             PropertyChanged();
         }

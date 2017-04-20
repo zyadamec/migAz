@@ -86,7 +86,7 @@ namespace MigAz.Azure.UserControls
         {
             if (_ChangeType == AzureLoginChangeType.Full)
             {
-                AzureLoginContextDialog2 azureLoginContextDialog = new AzureLoginContextDialog2();
+                AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
                 await azureLoginContextDialog.InitializeDialog(_AzureContext);
                 azureLoginContextDialog.ShowDialog();
                 azureLoginContextDialog.Dispose();

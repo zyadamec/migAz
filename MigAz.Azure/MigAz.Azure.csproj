@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arm\AvailabilitySet.cs" />
+    <Compile Include="Asm\AvailabilitySet.cs" />
     <Compile Include="Arm\DataDisk.cs" />
     <Compile Include="Arm\Disk.cs" />
     <Compile Include="Arm\Location.cs" />
@@ -76,12 +77,6 @@
     <Compile Include="Arm\Subnet.cs" />
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
-    <Compile Include="Forms\AzureLoginContextDialog2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AzureLoginContextDialog2.Designer.cs">
-      <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,9 +144,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\AzureLoginContextDialog2.resx">
-      <DependentUpon>AzureLoginContextDialog2.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AzureLoginContextDialog.resx">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </EmbeddedResource>

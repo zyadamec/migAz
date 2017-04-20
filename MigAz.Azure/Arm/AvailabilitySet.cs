@@ -1,32 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class AvailabilitySet : Core.ArmTemplate.AvailabilitySet
+    public class AvailabilitySet
     {
-        private String _TargetName = String.Empty;
-        private AzureContext _AzureContext;
+        private JToken _AvailabilitySet;
+        private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();
 
-        private AvailabilitySet() : base(Guid.Empty) { }
-
-        public AvailabilitySet(AzureContext azureContext, Asm.VirtualMachine asmVirtualMachine) : base(Guid.Empty)
+        public AvailabilitySet(JToken availabilitySet)
         {
-            _AzureContext = azureContext;
-            if (asmVirtualMachine.AvailabilitySetName != String.Empty)
-                TargetName = asmVirtualMachine.AvailabilitySetName;
-            else
-                TargetName = asmVirtualMachine.CloudServiceName;
+            this._AvailabilitySet = availabilitySet;
         }
 
         public string TargetName
         {
-            get { return _TargetName; }
-            set { _TargetName = value; }
+            get;set;
+        }
+        public string Id => (string)_AvailabilitySet["id"];
+        public string Name => (string)_AvailabilitySet["name"];
+        public string Location => (string)_AvailabilitySet["location"];
+        public Int32 PlatformUpdateDomainCount => (Int32)_AvailabilitySet["properties"]["platformUpdateDomainCount"];
+        public Int32 PlatformFaultDomainCount => (Int32)_AvailabilitySet["properties"]["platformFaultDomainCount"];
+        public string SkuName => (string)_AvailabilitySet["sku"]["name"];
+
+        public List<VirtualMachine> VirtualMachines
+        {
+            get { return _VirtualMachines; }
         }
 
         public string GetFinalTargetName()
         {
-            return this.TargetName + this._AzureContext.SettingsProvider.AvailabilitySetSuffix;
+            return this.TargetName;
         }
     }
 }

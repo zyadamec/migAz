@@ -12,6 +12,7 @@ using MigAz.Azure.Arm;
 using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
+using System.Windows.Forms;
 
 namespace MigAz.Azure
 {
@@ -38,6 +39,7 @@ namespace MigAz.Azure
         private List<ResourceGroup> _ArmResourceGroups;
         private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
         private List<Arm.StorageAccount> _ArmStorageAccounts;
+        private List<Asm.AvailabilitySet> _AsmAvailabilitySets;
         private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
         private List<Arm.ManagedDisk> _ArmManagedDisks;
@@ -63,6 +65,7 @@ namespace MigAz.Azure
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
+            _AsmAvailabilitySets = null;
             _ArmManagedDisks = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
@@ -292,7 +295,44 @@ namespace MigAz.Azure
             try
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + request.Method + " " + url);
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+
+                // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
+                HttpWebResponse response = null;
+                Int32 retrySeconds = 1;
+                bool boolRetryGetResponse = true;
+                while (boolRetryGetResponse)
+                {
+                    try
+                    {
+                        response = (HttpWebResponse)await request.GetResponseAsync();
+                        boolRetryGetResponse = false;
+                    }
+                    catch (WebException webException)
+                    {
+                        _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " EXCEPTION " + webException.Message);
+
+                        HttpWebResponse exceptionResponse = (HttpWebResponse) webException.Response;
+
+                        if ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        {
+                            DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
+                            string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + sleepMessage);
+                            _AzureContext.StatusProvider.UpdateStatus(sleepMessage);
+                            while (DateTime.Now < sleepUntil)
+                            { 
+                                Application.DoEvents();
+                            }
+                            retrySeconds = retrySeconds * 2;
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Initiating retry of Web Request.");
+                            _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
+                        }
+                        else
+                            throw webException;
+                    }
+                }
 
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Status Code " + response.StatusCode);
 
@@ -658,21 +698,21 @@ namespace MigAz.Azure
 
         #region ARM Methods
 
-        internal Arm.AvailabilitySet GetAzureARMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
+        internal Asm.AvailabilitySet GetAzureASMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySet", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureASMAvailabilitySet", "Start");
 
-            if (_ArmAvailabilitySets == null)
-                _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
+            if (_AsmAvailabilitySets == null)
+                _AsmAvailabilitySets = new List<Asm.AvailabilitySet>();
 
-            foreach (Arm.AvailabilitySet armAvailabilitySet in _ArmAvailabilitySets)
+            foreach (Asm.AvailabilitySet armAvailabilitySet in _AsmAvailabilitySets)
             {
                 if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
                     return armAvailabilitySet;
             }
 
-            Arm.AvailabilitySet newArmAvailabilitySet = new Arm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
-            _ArmAvailabilitySets.Add(newArmAvailabilitySet);
+            Asm.AvailabilitySet newArmAvailabilitySet = new Asm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
+            _AsmAvailabilitySets.Add(newArmAvailabilitySet);
 
             return newArmAvailabilitySet;
         }
@@ -725,6 +765,11 @@ namespace MigAz.Azure
                     // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions#Subscriptions_ListLocations
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.Locations + "?api-version=2016-06-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Locations for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
+                case "AvailabilitySets":
+                    // https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/availabilitysets-list-subscription
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderAvailabilitySets + "?api-version=2017-03-30";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Compute Availability Sets for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
@@ -779,9 +824,46 @@ namespace MigAz.Azure
             JObject webRequestResultJson = null;
             try
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + "  " + request.Method + " " + url);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " " + request.Method + " " + url);
 
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
+                HttpWebResponse response = null;
+                Int32 retrySeconds = 1;
+                bool boolRetryGetResponse = true;
+                while (boolRetryGetResponse)
+                {
+                    try
+                    {
+                        response = (HttpWebResponse)await request.GetResponseAsync();
+                        boolRetryGetResponse = false;
+                    }
+                    catch (WebException webException)
+                    {
+                        _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " EXCEPTION " + webException.Message);
+
+                        HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
+
+                        if ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        {
+                            DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
+                            string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " " + sleepMessage);
+                            _AzureContext.StatusProvider.UpdateStatus(sleepMessage);
+                            while (DateTime.Now < sleepUntil)
+                            {
+                                Application.DoEvents();
+                            }
+                            retrySeconds = retrySeconds * 2;
+
+                            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Initiating retry of Web Request.");
+                            _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
+                        }
+                        else
+                            throw webException;
+                    }
+                }
+
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
                 writeRetreiverResultToLog(requestGuid, "GetAzureARMResources", url, webRequesetResult);
@@ -1050,6 +1132,7 @@ namespace MigAz.Azure
             foreach (var virtualMachine in virtualMachines)
             {
                 Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                await armVirtualMachine.InitializeChildrenAsync(this._AzureContext);
                 _ArmVirtualMachines.Add(armVirtualMachine);
             }
 
@@ -1077,6 +1160,42 @@ namespace MigAz.Azure
             }
 
             return;
+        }
+
+        public async Task<List<Arm.AvailabilitySet>> GetAzureARMAvailabilitySets()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySets", "Start");
+
+            if (_ArmAvailabilitySets != null)
+                return _ArmAvailabilitySets;
+
+            JObject availabilitySetJson = await this.GetAzureARMResources("AvailabilitySets", null);
+
+            var availabilitySets = from availabilitySet in availabilitySetJson["value"]
+                                   select availabilitySet;
+
+            _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
+
+            foreach (var availabilitySet in availabilitySets)
+            {
+                Arm.AvailabilitySet armAvailabilitySet = new Arm.AvailabilitySet(availabilitySet);
+                _ArmAvailabilitySets.Add(armAvailabilitySet);
+            }
+
+            return _ArmAvailabilitySets;
+        }
+
+        public async Task<Arm.AvailabilitySet> GetAzureARMAvailabilitySet(string availabilitySetId)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySet", "Start");
+
+            foreach (Arm.AvailabilitySet availabilitySet in await this.GetAzureARMAvailabilitySets())
+            {
+                if (availabilitySet.Id == availabilitySetId)
+                    return availabilitySet;
+            }
+
+            return null;
         }
 
         #endregion

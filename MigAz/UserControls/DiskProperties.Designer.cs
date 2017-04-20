@@ -125,9 +125,9 @@
             this.rbExistingARMStorageAccount.AutoSize = true;
             this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 395);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
-            this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(387, 29);
+            this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(344, 29);
             this.rbExistingARMStorageAccount.TabIndex = 2;
-            this.rbExistingARMStorageAccount.Text = "ARM Storage in Target Subscription";
+            this.rbExistingARMStorageAccount.Text = "Existing ARM Storage in Target";
             this.rbExistingARMStorageAccount.UseVisualStyleBackColor = true;
             this.rbExistingARMStorageAccount.CheckedChanged += new System.EventHandler(this.rbExistingARMStorageAccount_CheckedChanged);
             // 
@@ -136,9 +136,9 @@
             this.rbStorageAccountInMigration.AutoSize = true;
             this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 353);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
-            this.rbStorageAccountInMigration.Size = new System.Drawing.Size(431, 29);
+            this.rbStorageAccountInMigration.Size = new System.Drawing.Size(302, 29);
             this.rbStorageAccountInMigration.TabIndex = 1;
-            this.rbStorageAccountInMigration.Text = "Storage in MigAz ASM to ARM Migration";
+            this.rbStorageAccountInMigration.Text = "Storage in MigAz Migration";
             this.rbStorageAccountInMigration.UseVisualStyleBackColor = true;
             this.rbStorageAccountInMigration.CheckedChanged += new System.EventHandler(this.rbStorageAccountInMigration_CheckedChanged);
             // 

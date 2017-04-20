@@ -147,6 +147,11 @@ namespace MigAz.Azure
             if (BeforeAzureSubscriptionChange != null)
                 await BeforeAzureSubscriptionChange?.Invoke(this);
 
+            if (azureSubscription != null)
+                if (azureSubscription.Parent != null)
+                    if (azureSubscription.Parent != this._AzureTenant)
+                        await SetTenantContext(azureSubscription.Parent);
+
             _AzureSubscription = azureSubscription;
 
             if (_AzureSubscription != null)
@@ -168,7 +173,7 @@ namespace MigAz.Azure
 
             await this.SetTenantContext(null);
 
-            _AzureRetriever = null;
+            _AzureRetriever.ClearCache();
             _TokenProvider.AuthenticationResult = null;
 
             if (AfterUserSignOut != null)

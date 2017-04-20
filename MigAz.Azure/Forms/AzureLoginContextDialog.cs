@@ -13,7 +13,7 @@ namespace MigAz.Azure.Forms
 
         public async Task InitializeDialog(AzureContext azureContext)
         {
-            await this.azureArmLoginControl1.BindContext(azureContext);
+            await this.azureArmLoginControl.BindContext(azureContext);
             azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 

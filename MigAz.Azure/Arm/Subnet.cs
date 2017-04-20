@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core.ArmTemplate;
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 
 namespace MigAz.Azure.Arm
@@ -53,6 +54,13 @@ namespace MigAz.Azure.Arm
                 return null; // TODO
             }
         }
+
+        public bool IsGatewaySubnet
+        {
+            get { return this.Name == ArmConst.GatewaySubnetName; }
+        }
+
+        public string TargetName { get; set; }
 
         public override string ToString()
         {

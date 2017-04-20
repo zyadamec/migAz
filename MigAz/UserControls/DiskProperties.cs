@@ -24,16 +24,9 @@ namespace MigAz.UserControls
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
-        public DiskProperties(ILogProvider logProvider)
+        public DiskProperties()
         {
             InitializeComponent();
-
-            _LogProvider = logProvider;
-        }
-
-        private DiskProperties()
-        {
-
         }
 
         public bool AllowManangedDisk
@@ -50,6 +43,23 @@ namespace MigAz.UserControls
                 //}
 
                 //rbManagedDisk.Enabled = value;
+            }
+        }
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+            set { _LogProvider = value; }
+        }
+
+        public IStorageAccount TargetStorageAccount
+        {
+            get
+            {
+                if (cmbTargetStorage.SelectedItem == null)
+                    return null;
+                else
+                    return (IStorageAccount)cmbTargetStorage.SelectedItem;
             }
         }
 
@@ -72,12 +82,6 @@ namespace MigAz.UserControls
 
         private void BindCommon()
         {
-            lblAsmStorageAccount.Text = _AsmDataDisk.StorageAccountName;
-            lblDiskName.Text = _AsmDataDisk.DiskName;
-            lblHostCaching.Text = _AsmDataDisk.HostCaching;
-            lblLUN.Text = _AsmDataDisk.Lun.ToString();
-            txtTargetDiskName.Text = _AsmDataDisk.TargetName;
-
             if (AllowManangedDisk)
                 rbManagedDisk.Checked = true;
             else
@@ -87,6 +91,13 @@ namespace MigAz.UserControls
                 else
                     rbExistingARMStorageAccount.Checked = true;
             }
+
+            lblAsmStorageAccount.Text = _AsmDataDisk.StorageAccountName;
+            lblDiskName.Text = _AsmDataDisk.DiskName;
+            lblHostCaching.Text = _AsmDataDisk.HostCaching;
+            lblLUN.Text = _AsmDataDisk.Lun.ToString();
+
+            txtTargetDiskName.Text = _AsmDataDisk.TargetName;
         }
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
@@ -96,9 +107,7 @@ namespace MigAz.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = false;
-
             }
-
         }
 
         private void rbStorageAccountInMigration_CheckedChanged(object sender, EventArgs e)
@@ -128,21 +137,30 @@ namespace MigAz.UserControls
                 }
                 else
                 {
-                    foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                    for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                     {
-                        if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        Azure.Asm.StorageAccount cmbStorageAccount = (Azure.Asm.StorageAccount)cmbTargetStorage.Items[i];
+                        if (cmbStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
                         {
-                            cmbTargetStorage.SelectedItem = asmStorageAccount;
+                            cmbTargetStorage.SelectedIndex = i;
                             break;
                         }
                     }
+
+                    // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                    //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                    //{
+                    //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                    //    {
+                    //        cmbTargetStorage.SelectedItem = asmStorageAccount;
+                    //        break;
+                    //    }
+                    //}
 
                     if (cmbTargetStorage.SelectedItem == null)
                         _LogProvider.WriteLog("rbStorageAccountInMigration_CheckedChanged", "Unable to location previously selected ASM Storage Account '" + _AsmDataDisk.TargetStorageAccount.Id + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
                 }
             }
-
-            PropertyChanged();
         }
 
         private async void rbExistingARMStorageAccount_CheckedChanged(object sender, EventArgs e)
@@ -153,7 +171,6 @@ namespace MigAz.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
-                _AsmDataDisk.TargetStorageAccount = null;
 
                 foreach (Azure.Arm.StorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
                 {
@@ -166,15 +183,26 @@ namespace MigAz.UserControls
                 }
                 else
                 {
-                    foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
+                    for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                     {
-                        if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                            cmbTargetStorage.SelectedItem = armStorageAccount;
+                        Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
+                        if (cmbStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        {
+                            cmbTargetStorage.SelectedIndex = i;
+                            break;
+                        }
                     }
+
+                    // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                    //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
+                    //{
+                    //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                    //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
+                    //}
                 }
             }
 
-            PropertyChanged();
+            _AsmToArmForm.AzureContextTargetARM.StatusProvider.UpdateStatus("Ready");
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)

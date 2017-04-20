@@ -36,12 +36,14 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.lblAzureEnvironment = new System.Windows.Forms.Label();
             this.lblAzureUsername = new System.Windows.Forms.Label();
+            this.cboTenant = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 25);
+            this.label1.Location = new System.Drawing.Point(25, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(200, 25);
             this.label1.TabIndex = 59;
@@ -50,7 +52,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 59);
+            this.label2.Location = new System.Drawing.Point(25, 59);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(160, 25);
             this.label2.TabIndex = 60;
@@ -59,7 +61,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 95);
+            this.label3.Location = new System.Drawing.Point(25, 144);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(137, 25);
             this.label3.TabIndex = 61;
@@ -70,7 +72,7 @@
             this.cmbSubscriptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSubscriptions.Enabled = false;
             this.cmbSubscriptions.FormattingEnabled = true;
-            this.cmbSubscriptions.Location = new System.Drawing.Point(247, 92);
+            this.cmbSubscriptions.Location = new System.Drawing.Point(250, 141);
             this.cmbSubscriptions.Name = "cmbSubscriptions";
             this.cmbSubscriptions.Size = new System.Drawing.Size(915, 33);
             this.cmbSubscriptions.Sorted = true;
@@ -80,7 +82,7 @@
             // btnClose
             // 
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnClose.Location = new System.Drawing.Point(959, 172);
+            this.btnClose.Location = new System.Drawing.Point(952, 196);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(213, 47);
             this.btnClose.TabIndex = 4;
@@ -91,7 +93,7 @@
             // lblAzureEnvironment
             // 
             this.lblAzureEnvironment.AutoSize = true;
-            this.lblAzureEnvironment.Location = new System.Drawing.Point(247, 24);
+            this.lblAzureEnvironment.Location = new System.Drawing.Point(250, 20);
             this.lblAzureEnvironment.Name = "lblAzureEnvironment";
             this.lblAzureEnvironment.Size = new System.Drawing.Size(19, 25);
             this.lblAzureEnvironment.TabIndex = 64;
@@ -100,17 +102,40 @@
             // lblAzureUsername
             // 
             this.lblAzureUsername.AutoSize = true;
-            this.lblAzureUsername.Location = new System.Drawing.Point(247, 59);
+            this.lblAzureUsername.Location = new System.Drawing.Point(250, 60);
             this.lblAzureUsername.Name = "lblAzureUsername";
             this.lblAzureUsername.Size = new System.Drawing.Size(19, 25);
             this.lblAzureUsername.TabIndex = 65;
             this.lblAzureUsername.Text = "-";
             // 
+            // cboTenant
+            // 
+            this.cboTenant.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTenant.Enabled = false;
+            this.cboTenant.FormattingEnabled = true;
+            this.cboTenant.Location = new System.Drawing.Point(250, 94);
+            this.cboTenant.Name = "cboTenant";
+            this.cboTenant.Size = new System.Drawing.Size(915, 33);
+            this.cboTenant.Sorted = true;
+            this.cboTenant.TabIndex = 66;
+            this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(25, 100);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(85, 25);
+            this.label4.TabIndex = 67;
+            this.label4.Text = "Tenant:";
+            // 
             // AzureSubscriptionContextDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1188, 245);
+            this.ClientSize = new System.Drawing.Size(1188, 268);
+            this.Controls.Add(this.cboTenant);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.lblAzureUsername);
             this.Controls.Add(this.lblAzureEnvironment);
             this.Controls.Add(this.btnClose);
@@ -137,5 +162,7 @@
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label lblAzureEnvironment;
         private System.Windows.Forms.Label lblAzureUsername;
+        private System.Windows.Forms.ComboBox cboTenant;
+        private System.Windows.Forms.Label label4;
     }
 }

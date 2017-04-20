@@ -252,12 +252,12 @@ namespace MigAz.Azure.Generator.AsmToArm
                 instructionContent = reader.ReadToEnd();
             }
 
-
-            Guid targetSubscriptionGuid = Guid.Empty;
-            Guid targetTennantGuid = Guid.Empty;
             string targetResourceGroupName = String.Empty;
             string resourceGroupLocation = String.Empty;
             string azureEnvironmentSwitch = String.Empty;
+            string tenantSwitch = String.Empty;
+            string subscriptionSwitch = String.Empty;
+
             if (_TargetResourceGroup != null)
             {
                 targetResourceGroupName = _TargetResourceGroup.GetFinalTargetName();
@@ -268,22 +268,29 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (this.TargetSubscription != null)
             {
-                targetSubscriptionGuid = TargetSubscription.SubscriptionId;
-                targetTennantGuid = TargetSubscription.AzureAdTenantId;
+
+                subscriptionSwitch = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
+
 
                 if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
+                if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
+                    azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
+
+                if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
+                    tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
 
-            instructionContent = instructionContent.Replace("{tennantId}", targetTennantGuid.ToString());
-            instructionContent = instructionContent.Replace("{subscriptionId}", targetSubscriptionGuid.ToString());
+
+            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
+            instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
+            instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
             instructionContent = instructionContent.Replace("{resourceGroupName}", targetResourceGroupName);
             instructionContent = instructionContent.Replace("{location}", resourceGroupLocation);
             instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
-            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
 
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
