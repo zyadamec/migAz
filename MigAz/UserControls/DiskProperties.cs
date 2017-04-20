@@ -201,6 +201,8 @@ namespace MigAz.UserControls
                     //}
                 }
             }
+
+            _AsmToArmForm.AzureContextTargetARM.StatusProvider.UpdateStatus("Ready");
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)

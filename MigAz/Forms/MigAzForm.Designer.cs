@@ -360,7 +360,7 @@
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newMigrationToolStripMenuItem
@@ -376,22 +376,24 @@
             // aSMToARMToolStripMenuItem
             // 
             this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aSMToARMToolStripMenuItem.Text = "ASM To ARM";
             this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
             // 
             // aRMToARMToolStripMenuItem
             // 
+            this.aRMToARMToolStripMenuItem.Enabled = false;
             this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
+            this.aRMToARMToolStripMenuItem.Visible = false;
             this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
             // 
             // aWSToARMToolStripMenuItem
             // 
             this.aWSToARMToolStripMenuItem.Enabled = false;
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
-            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(256, 38);
+            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
             this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
             this.aWSToARMToolStripMenuItem.Visible = false;
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
@@ -434,7 +436,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem

@@ -80,10 +80,10 @@ namespace MigAz.Azure.Forms
             cmbSubscriptions.Items.Clear();
             if (cboTenant.SelectedItem != null)
             {
-                cmbSubscriptions.Items.Clear();
+                AzureTenant azureTenant = (AzureTenant)cboTenant.SelectedItem;
                 if (_AzureContext.AzureRetriever != null)
                 {
-                    foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureContext.AzureTenant))
+                    foreach (AzureSubscription azureSubscription in azureTenant.Subscriptions)
                     {
                         cmbSubscriptions.Items.Add(azureSubscription);
                     }
@@ -98,6 +98,9 @@ namespace MigAz.Azure.Forms
                             cmbSubscriptions.SelectedItem = azureSubscription;
                     }
                 }
+
+                if (cmbSubscriptions.SelectedItem == null && cmbSubscriptions.Items.Count == 1)
+                    cmbSubscriptions.SelectedIndex = 0;
             }
 
         }
