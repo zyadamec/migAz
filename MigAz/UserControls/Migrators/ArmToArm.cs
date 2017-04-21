@@ -112,7 +112,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.1.0.0";
+            string currentVersion = "2.2.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/ARMtoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
