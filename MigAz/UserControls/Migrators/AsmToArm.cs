@@ -56,6 +56,7 @@ namespace MigAz.UserControls.Migrators
             _AzureContextSourceASM.AfterAzureTenantChange += _AzureContextSourceASM_AfterAzureTenantChange;
 
             _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, _appSettingsProvider);
+            _AzureContextTargetARM.AfterAzureSubscriptionChange += _AzureContextTargetARM_AfterAzureSubscriptionChange;
 
             _TargetResourceGroup = new ResourceGroup(this.AzureContextSourceASM, "Target Resource Group");
 
@@ -63,6 +64,11 @@ namespace MigAz.UserControls.Migrators
             azureLoginContextViewerARM.Bind(_AzureContextTargetARM);
 
             this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
+        }
+
+        private async Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
+        {
+            this.TemplateGenerator.TargetSubscription = sender.AzureSubscription;
         }
 
         private async Task _AzureContextSourceASM_AfterAzureTenantChange(AzureContext sender)
