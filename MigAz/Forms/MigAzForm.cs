@@ -167,9 +167,6 @@ namespace MigAz.Forms
 
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("AWS To ARM has not been finalized in this newer MigAz tool.  Continue to use the stand alone AWS To ARM MigAz tool for AWS.");
-            return;
-
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);

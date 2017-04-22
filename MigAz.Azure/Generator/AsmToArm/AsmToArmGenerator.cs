@@ -168,46 +168,121 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Network Security Groups");
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected virtual networks");
-            // process selected virtual networks
-            foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Virtual Networks");
+            foreach (IVirtualNetwork virtualNetwork in _ASMArtifacts.VirtualNetworks)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
-                await BuildVirtualNetworkObject(asmVirtualNetwork);
+                if (virtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
+                {
+                    Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)virtualNetwork;
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
+                    await BuildVirtualNetworkObject(asmVirtualNetwork);
+                }
+                else if (virtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                {
+                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)virtualNetwork;
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + armVirtualNetwork.GetFinalTargetName());
+                    BuildARMVirtualNetworkObject(armVirtualNetwork);
+                }
             }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected virtual networks");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Virtual Networks");
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected storage accounts");
-
-            // process selected storage accounts
-            foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Storage Accounts");
+            foreach (IStorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
-                BuildStorageAccountObject(asmStorageAccount);
+                if (storageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
+                {
+                    Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)storageAccount;
+                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + asmStorageAccount.GetFinalTargetName());
+                    BuildStorageAccountObject(asmStorageAccount);
+                }
+                else if (storageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                {
+                    Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)storageAccount;
+                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + armStorageAccount.GetFinalTargetName());
+                    BuildStorageAccountObject(armStorageAccount);
+                }
             }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected storage accounts");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Storage Accounts");
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected cloud services and virtual machines");
-
-            // process selected cloud services and virtual machines
-            foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Cloud Services / Virtual Machines");
+            foreach (IVirtualMachine virtualMachine in _ASMArtifacts.VirtualMachines)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
+                if (virtualMachine.GetType() == typeof(Azure.Asm.VirtualMachine))
+                {
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine;
 
-                BuildPublicIPAddressObject(asmVirtualMachine);
-                BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ASMArtifacts);
+                    StatusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
 
-                // process availability set
-                BuildAvailabilitySetObject(asmVirtualMachine);
+                    BuildPublicIPAddressObject(asmVirtualMachine);
+                    BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ASMArtifacts);
 
-                // process network interface
-                List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
-                await BuildNetworkInterfaceObject(asmVirtualMachine, networkinterfaces);
+                    // process availability set
+                    BuildAvailabilitySetObject(asmVirtualMachine);
 
-                // process virtual machine
-                await BuildVirtualMachineObject(asmVirtualMachine, networkinterfaces);
+                    // process network interface
+                    List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
+                    await BuildNetworkInterfaceObject(asmVirtualMachine, networkinterfaces);
+
+                    // process virtual machine
+                    await BuildVirtualMachineObject(asmVirtualMachine, networkinterfaces);
+                }
+                else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine;
+
+                    //LoadBalancer Processing
+                    foreach (Arm.NetworkInterfaceCard nicint in armVirtualMachine.NetworkInterfaces)
+                    {
+                        // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
+                        //{
+                        // todo
+                        //string[] stringSeparators = new string[] { "/backendAddressPools/" };
+
+                        //string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
+                        //string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
+                        //NWInfo.Add("LBId", Loadbalancerid);
+
+                        ////Get LBDetails
+                        //var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", NWInfo, null);
+                        //var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
+
+                        //string PubIPName = null;
+
+                        ////Process the Public IP for the Loadbalancer
+                        //if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
+                        //{
+                        //    //Get PublicIP details
+                        //    string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
+                        //    PubId = PubId.Replace("/subscriptions", "subscriptions");
+
+                        //    NWInfo.Add("publicipId", PubId);
+                        //    var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", NWInfo, null);
+                        //    var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
+
+                        //    PubIPName = LBPubIpResults.name;
+
+                        //    //Build the Public IP for the Loadbalancer
+                        //    BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
+
+                        //}
+
+                        //Build the Loadbalancer
+                        // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
+                        //}
+                    }
+
+                    // process availability set
+                    // todoBuildARMAvailabilitySetObject();
+
+                    // process network interface
+                    List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
+                    //todo BuildARMNetworkInterfaceObject(ref networkinterfaces);
+
+                    // process virtual machine
+                    //BuildARMVirtualMachineObject(armVirtualMachine);
+                }
             }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected cloud services and virtual machines");
+            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Cloud Services / Virtual Machines");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
             OnTemplateChanged();
@@ -649,6 +724,108 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildVirtualNetworkObject", "End");
         }
 
+        private void BuildARMVirtualNetworkObject(Arm.VirtualNetwork armVirtualNetwork)
+        {
+            LogProvider.WriteLog("BuildVirtualNetworkObject", "Start Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
+
+            List<string> dependson = new List<string>();
+
+            List<string> addressprefixes = armVirtualNetwork.AddressPrefixes;
+
+            AddressSpace addressspace = new AddressSpace();
+            addressspace.addressPrefixes = addressprefixes;
+
+            List<string> dnsservers = armVirtualNetwork.DnsServers;
+
+            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
+            dhcpoptions.dnsServers = dnsservers;
+
+            Core.ArmTemplate.VirtualNetwork virtualnetwork = new Core.ArmTemplate.VirtualNetwork(this.ExecutionGuid);
+
+            virtualnetwork.name = armVirtualNetwork.Name;
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                virtualnetwork.location = _TargetResourceGroup.Location.Name;
+
+            virtualnetwork.dependsOn = dependson;
+            List<Core.ArmTemplate.Subnet> subnets = new List<Core.ArmTemplate.Subnet>();
+
+            if (!armVirtualNetwork.HasNonGatewaySubnet)
+            {
+                Subnet_Properties properties = new Subnet_Properties();
+                properties.addressPrefix = addressprefixes[0];
+
+                Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
+                subnet.name = "Subnet1";
+                subnet.properties = properties;
+
+                subnets.Add(subnet);
+                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", armVirtualNetwork);
+            }
+            else
+            {
+                foreach (Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+                {
+                    Subnet_Properties properties = new Subnet_Properties();
+                    properties.addressPrefix = armSubnet.AddressPrefix;
+
+                    Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
+                    subnet.name = armSubnet.Name;
+                    subnet.properties = properties;
+                    subnets.Add(subnet);
+
+                    //NSG Setup - Single NSG per subnet
+                    if (armSubnet.NetworkSecurityGroup != null)
+                    {
+                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
+
+                        // Add NSG reference to the subnet
+                        Reference networksecuritygroup_ref = new Reference();
+                        networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
+
+                        properties.networkSecurityGroup = networksecuritygroup_ref;
+
+                        // Add NSG dependsOn to the Virtual Network object
+                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                        {
+                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                        }
+                    }
+
+                    // add Route Table if exists
+                    if (armSubnet.RouteTable != null)
+                    {
+                        Core.ArmTemplate.RouteTable routetable = BuildARMRouteTable(armSubnet.RouteTable);
+
+                        // Add Route Table reference to the subnet
+                        Reference routetable_ref = new Reference();
+                        routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
+
+                        properties.routeTable = routetable_ref;
+
+                        // Add Route Table dependsOn to the Virtual Network object
+                        if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
+                        {
+                            virtualnetwork.dependsOn.Add(routetable_ref.id);
+                        }
+                    }
+                }
+
+            }
+
+
+            VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
+            virtualnetwork_properties.addressSpace = addressspace;
+            virtualnetwork_properties.subnets = subnets;
+            virtualnetwork_properties.dhcpOptions = dhcpoptions;
+
+            virtualnetwork.properties = virtualnetwork_properties;
+
+            this.AddResource(virtualnetwork);
+            // todo AddGatewaysToVirtualNetworkARM(resource, virtualnetwork);
+
+            LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
+        }
+
         private async Task AddGatewaysToVirtualNetwork(Asm.VirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
         {
             // Process Virtual Network Gateway, if exists
@@ -878,6 +1055,49 @@ namespace MigAz.Azure.Generator.AsmToArm
             return networksecuritygroup;
         }
 
+        private Core.ArmTemplate.NetworkSecurityGroup BuildARMNetworkSecurityGroup(Arm.NetworkSecurityGroup networkSecurityGroup)
+        {
+            LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.Name);
+
+            Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = new Core.ArmTemplate.NetworkSecurityGroup(this.ExecutionGuid);
+            networksecuritygroup.name = networkSecurityGroup.Name;
+            networksecuritygroup.location = _TargetResourceGroup.Location.Name;
+
+            NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
+            networksecuritygroup_properties.securityRules = new List<SecurityRule>();
+
+            //foreach rule without System Rule
+            foreach (Arm.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
+            {
+                SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
+                securityrule_properties.description = rule.Name;
+                securityrule_properties.direction = rule.Direction;
+                securityrule_properties.priority = rule.Priority;
+                securityrule_properties.access = rule.Access;
+                securityrule_properties.sourceAddressPrefix = rule.SourceAddressPrefix;
+                securityrule_properties.sourceAddressPrefix.Replace("_", "");
+                securityrule_properties.destinationAddressPrefix = rule.DestinationAddressPrefix;
+                securityrule_properties.destinationAddressPrefix.Replace("_", "");
+                securityrule_properties.sourcePortRange = rule.SourcePortRange;
+                securityrule_properties.destinationPortRange = rule.DestinationPortRange;
+                securityrule_properties.protocol = rule.Protocol;
+
+                SecurityRule securityrule = new SecurityRule();
+                securityrule.name = rule.Name;
+                securityrule.properties = securityrule_properties;
+
+                networksecuritygroup_properties.securityRules.Add(securityrule);
+            }
+
+            networksecuritygroup.properties = networksecuritygroup_properties;
+
+            this.AddResource(networksecuritygroup);
+
+            LogProvider.WriteLog("BuildNetworkSecurityGroup", "End Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.Name);
+
+            return networksecuritygroup;
+        }
+
         private async Task<RouteTable> BuildRouteTable(Asm.RouteTable asmRouteTable)
         {
             LogProvider.WriteLog("BuildRouteTable", "Start");
@@ -931,6 +1151,45 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(routetable);
 
             LogProvider.WriteLog("BuildRouteTable", "End");
+
+            return routetable;
+        }
+
+        private Core.ArmTemplate.RouteTable BuildARMRouteTable(Arm.RouteTable routeTable)
+        {
+            LogProvider.WriteLog("BuildRouteTable", "Start Microsoft.Network/routeTables/" + routeTable.Name);
+
+            Core.ArmTemplate.RouteTable routetable = new Core.ArmTemplate.RouteTable(this.ExecutionGuid);
+            routetable.name = routeTable.Name;
+            routetable.location = _TargetResourceGroup.Location.Name;
+
+            RouteTable_Properties routetable_properties = new RouteTable_Properties();
+            routetable_properties.routes = new List<Core.ArmTemplate.Route>();
+
+            // for each route
+            foreach (Arm.Route armRoute in routeTable.Routes)
+            {
+                //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
+                Route_Properties route_properties = new Route_Properties();
+                route_properties.addressPrefix = armRoute.AddressPrefix;
+                route_properties.nextHopType = armRoute.NextHopType;
+
+
+                if (route_properties.nextHopType == "VirtualAppliance")
+                    route_properties.nextHopIpAddress = armRoute.NextHopIpAddress;
+
+                Core.ArmTemplate.Route route = new Core.ArmTemplate.Route();
+                route.name = armRoute.Name;
+                route.properties = route_properties;
+
+                routetable_properties.routes.Add(route);
+            }
+
+            routetable.properties = routetable_properties;
+
+            this.AddResource(routetable);
+
+            LogProvider.WriteLog("BuildRouteTable", "End Microsoft.Network/routeTables/" + routeTable.Name);
 
             return routetable;
         }
@@ -1380,7 +1639,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private void BuildStorageAccountObject(Asm.StorageAccount asmStorageAccount)
         {
-            LogProvider.WriteLog("BuildStorageAccountObject", "Start");
+            LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + asmStorageAccount.GetFinalTargetName());
 
             StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
             storageaccount_properties.accountType = asmStorageAccount.AccountType;
@@ -1393,6 +1652,23 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             this.AddResource(storageaccount);
 
+            LogProvider.WriteLog("BuildStorageAccountObject", "End");
+        }
+
+        private void BuildStorageAccountObject(Arm.StorageAccount armStorageAccount)
+        {
+            LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + armStorageAccount.GetFinalTargetName());
+
+            StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
+            storageaccount_properties.accountType = armStorageAccount.SkuName;
+
+            Core.ArmTemplate.StorageAccount storageaccount = new Core.ArmTemplate.StorageAccount(this.ExecutionGuid);
+            storageaccount.name = armStorageAccount.GetFinalTargetName();
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                storageaccount.location = _TargetResourceGroup.Location.Name;
+            storageaccount.properties = storageaccount_properties;
+
+            this.AddResource(storageaccount);
             LogProvider.WriteLog("BuildStorageAccountObject", "End");
         }
 

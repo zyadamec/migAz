@@ -130,12 +130,6 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserControls\Migrators\ArmToArm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\Migrators\ArmToArm.Designer.cs">
-      <DependentUpon>ArmToArm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\Migrators\AsmToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -224,9 +218,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UserControls\Migrators\ArmToArm.resx">
-      <DependentUpon>ArmToArm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Migrators\AsmToArm.resx">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </EmbeddedResource>
