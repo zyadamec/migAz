@@ -327,7 +327,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                 instructionContent = reader.ReadToEnd();
             }
 
-
             string targetResourceGroupName = String.Empty;
             string resourceGroupLocation = String.Empty;
             string azureEnvironmentSwitch = String.Empty;
@@ -344,7 +343,9 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (this.TargetSubscription != null)
             {
+
                 subscriptionSwitch = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
+
 
                 if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
@@ -354,6 +355,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
                     tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
+
 
             instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
             instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
