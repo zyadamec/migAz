@@ -63,7 +63,7 @@ namespace MigAz.UserControls.Migrators
             azureLoginContextViewerASM.Bind(_AzureContextSourceASM);
             azureLoginContextViewerARM.Bind(_AzureContextTargetARM);
 
-            this.TemplateGenerator = new AsmToArmGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
+            this.TemplateGenerator = new AzureGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
         }
 
         private async Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
@@ -1055,6 +1055,13 @@ namespace MigAz.UserControls.Migrators
                     {
                         if (sourceObject.GetType() == typeof(ResourceGroup))
                             treeTargetARM.SelectedNode = treeNode;
+                        else if (sourceObject.GetType() == typeof(Azure.Arm.VirtualMachine))
+                        {
+                            Azure.Arm.VirtualMachine sourceMachine = (Azure.Arm.VirtualMachine)sourceObject;
+                            Azure.Arm.VirtualMachine nodeMachine = (Azure.Arm.VirtualMachine)nodeObject;
+                            if (sourceMachine.Name == nodeMachine.Name)
+                                treeTargetARM.SelectedNode = treeNode;
+                        }
                         else if (sourceObject.GetType() == typeof(Azure.Asm.VirtualMachine))
                         {
                             Azure.Asm.VirtualMachine sourceMachine = (Azure.Asm.VirtualMachine)sourceObject;
@@ -1067,6 +1074,13 @@ namespace MigAz.UserControls.Migrators
                             Azure.Asm.Disk sourceDisk = (Azure.Asm.Disk)sourceObject;
                             Azure.Asm.Disk nodeDisk = (Azure.Asm.Disk)nodeObject;
                             if (sourceDisk.DiskName == nodeDisk.DiskName)
+                                treeTargetARM.SelectedNode = treeNode;
+                        }
+                        else if (sourceObject.GetType() == typeof(Azure.Arm.Disk))
+                        {
+                            Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk)sourceObject;
+                            Azure.Arm.Disk nodeDisk = (Azure.Arm.Disk)nodeObject;
+                            if (sourceDisk.Name == nodeDisk.Name)
                                 treeTargetARM.SelectedNode = treeNode;
                         }
                     }
@@ -1082,7 +1096,7 @@ namespace MigAz.UserControls.Migrators
 
         public override void PostTelemetryRecord()
         {
-            _telemetryProvider.PostTelemetryRecord((AsmToArmGenerator) this.TemplateGenerator);
+            _telemetryProvider.PostTelemetryRecord((AzureGenerator) this.TemplateGenerator);
         }
     }
 }

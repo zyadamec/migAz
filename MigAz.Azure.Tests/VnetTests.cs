@@ -25,7 +25,7 @@ namespace MigAz.Tests
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET1"));
-            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("10.2.0.0"));
@@ -69,7 +69,7 @@ namespace MigAz.Tests
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET2"));
-            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmtest"));
@@ -122,7 +122,7 @@ namespace MigAz.Tests
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET3"));
-            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("vnet3"));
@@ -172,7 +172,7 @@ namespace MigAz.Tests
             AzureContext azureContextUSCommercial = TestHelper.SetupAzureContext();
             FakeAzureRetriever azureContextUSCommercialRetriever = (FakeAzureRetriever)azureContextUSCommercial.AzureRetriever;
             azureContextUSCommercialRetriever.LoadDocuments(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\VNET4"));
-            AsmToArmGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
             artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmnet"));

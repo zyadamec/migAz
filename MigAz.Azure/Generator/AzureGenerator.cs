@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace MigAz.Azure.Generator.AsmToArm
 {
-    public class AsmToArmGenerator : TemplateGenerator
+    public class AzureGenerator : TemplateGenerator
     {
         private Arm.ResourceGroup _TargetResourceGroup;
         private ITelemetryProvider _telemetryProvider;
@@ -24,9 +24,9 @@ namespace MigAz.Azure.Generator.AsmToArm
         private ExportArtifacts _ASMArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
 
-        private AsmToArmGenerator() : base(null, null, null, null) { } 
+        private AzureGenerator() : base(null, null, null, null) { } 
 
-        public AsmToArmGenerator(
+        public AzureGenerator(
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
             Arm.ResourceGroup targetResourceGroup,
@@ -72,75 +72,52 @@ namespace MigAz.Azure.Generator.AsmToArm
                     this.AddAlert(AlertType.Error, "Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.", asmNetworkSecurityGroup);
             }
 
-            foreach (Asm.VirtualMachine asmVirtualMachine in _ASMArtifacts.VirtualMachines)
+            foreach (IVirtualMachine virtualMachine in _ASMArtifacts.VirtualMachines)
             {
-                if (asmVirtualMachine.TargetName == string.Empty)
-                    this.AddAlert(AlertType.Error, "Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-
-                if (asmVirtualMachine.TargetAvailabilitySet == null)
-                    this.AddAlert(AlertType.Error, "Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-
-                if (asmVirtualMachine.TargetVirtualNetwork == null)
-                    this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-                else
+                if (virtualMachine.GetType() == typeof(Azure.Asm.VirtualMachine))
                 {
-                    if (asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
-                    {
-                        Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)asmVirtualMachine.TargetVirtualNetwork;
-                        bool targetVNetExists = false;
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine;
 
-                        foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
-                        {
-                            if (asmVirtualNetwork.Name == targetAsmVirtualNetwork.Name)
-                            {
-                                targetVNetExists = true;
-                                break;
-                            }
-                        }
+                    if (asmVirtualMachine.TargetName == string.Empty)
+                        this.AddAlert(AlertType.Error, "Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
-                        if (!targetVNetExists)
-                            this.AddAlert(AlertType.Error, "Target ASM Virtual Network '" + targetAsmVirtualNetwork.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
-                    }
+                    if (asmVirtualMachine.TargetAvailabilitySet == null)
+                        this.AddAlert(AlertType.Error, "Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
-                }
-
-                if (asmVirtualMachine.TargetSubnet == null)
-                    this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-
-                if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
-                else
-                {
-                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
-                    {
-                        Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                        bool targetAsmStorageExists = false;
-
-                        foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
-                        {
-                            if (asmStorageAccount.Name == targetAsmStorageAccount.Name)
-                            {
-                                targetAsmStorageExists = true;
-                                break;
-                            }
-                        }
-
-                        if (!targetAsmStorageExists)
-                            this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk is invalid, as it is not included in the migration / template.", asmVirtualMachine);
-                    }
-                }
-
-                foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
-                {
-                    if (dataDisk.TargetStorageAccount == null)
-                    {
-                        this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
-                    }
+                    if (asmVirtualMachine.TargetVirtualNetwork == null)
+                        this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
                     else
                     {
-                        if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                        if (asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
                         {
-                            Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
+                            Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)asmVirtualMachine.TargetVirtualNetwork;
+                            bool targetVNetExists = false;
+
+                            foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
+                            {
+                                if (asmVirtualNetwork.Name == targetAsmVirtualNetwork.Name)
+                                {
+                                    targetVNetExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!targetVNetExists)
+                                this.AddAlert(AlertType.Error, "Target ASM Virtual Network '" + targetAsmVirtualNetwork.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                        }
+
+                    }
+
+                    if (asmVirtualMachine.TargetSubnet == null)
+                        this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
+
+                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                        this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
+                    else
+                    {
+                        if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                        {
+                            Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                             bool targetAsmStorageExists = false;
 
                             foreach (Asm.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
@@ -153,14 +130,96 @@ namespace MigAz.Azure.Generator.AsmToArm
                             }
 
                             if (!targetAsmStorageExists)
-                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                        }
+                    }
+
+                    foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
+                    {
+                        if (dataDisk.TargetStorageAccount == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
+                        }
+                        else
+                        {
+                            if (dataDisk.TargetStorageAccount.GetType() == typeof(Asm.StorageAccount))
+                            {
+                                Asm.StorageAccount targetAsmStorageAccount = (Asm.StorageAccount)dataDisk.TargetStorageAccount;
+                                bool targetAsmStorageExists = false;
+
+                                foreach (IStorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+                                {
+                                    if (storageAccount.Name == targetAsmStorageAccount.Name && storageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
+                                    {
+                                        targetAsmStorageExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!targetAsmStorageExists)
+                                    this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                            }
+                        }
+                    }
+                }
+                else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine;
+
+                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                        this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk must be specified.", armVirtualMachine);
+                    else
+                    {
+                        if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                        {
+                            Arm.StorageAccount targetArmStorageAccount = (Arm.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                            bool targetArmStorageExists = false;
+
+                            foreach (Arm.StorageAccount armStorageAccount in _ASMArtifacts.StorageAccounts)
+                            {
+                                if (armStorageAccount.Name == targetArmStorageAccount.Name)
+                                {
+                                    targetArmStorageExists = true;
+                                    break;
+                                }
+                            }
+
+                            if (!targetArmStorageExists)
+                                this.AddAlert(AlertType.Error, "Target ARM Storage Account '" + targetArmStorageAccount.Name + "' for ASM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk is invalid, as it is not included in the migration / template.", armVirtualMachine);
+                        }
+                    }
+
+                    foreach (Arm.Disk dataDisk in armVirtualMachine.DataDisks)
+                    {
+                        if (dataDisk.TargetStorageAccount == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.name + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
+                        }
+                        else
+                        {
+                            if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                            {
+                                Arm.StorageAccount targetAsmStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorageAccount;
+                                bool targetArmStorageExists = false;
+
+                                foreach (IStorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+                                {
+                                    if (storageAccount.Name == targetAsmStorageAccount.Name && storageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                                    {
+                                        targetArmStorageExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!targetArmStorageExists)
+                                    this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetAsmStorageAccount.Name + "' for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                            }
                         }
                     }
                 }
             }
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
-            // process selected virtual networks
             foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
@@ -279,7 +338,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     //todo BuildARMNetworkInterfaceObject(ref networkinterfaces);
 
                     // process virtual machine
-                    //BuildARMVirtualMachineObject(armVirtualMachine);
+                    BuildARMVirtualMachineObject(armVirtualMachine);
                 }
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Cloud Services / Virtual Machines");
@@ -318,7 +377,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("SerializeStreams", "Start DeployInstructions.html stream");
 
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "MigAz.Azure.Generator.AsmToArm.DeployDocTemplate.html";
+            var resourceName = "MigAz.Azure.Generator.DeployDocTemplate.html";
             string instructionContent;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -1637,6 +1696,249 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(virtualmachine);
 
             LogProvider.WriteLog("BuildVirtualMachineObject", "End");
+        }
+
+        private void BuildARMVirtualMachineObject(Arm.VirtualMachine armVirtualMachine)
+        {
+            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + armVirtualMachine.name);
+
+            Hashtable storageaccountdependencies = new Hashtable();
+            // todo string ostype = armVirtualMachine.properties.storageProfile.osDisk.osType;
+
+            Vhd vhd = new Vhd();
+
+            OsDisk osdisk = new OsDisk();
+            osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
+            osdisk.vhd = vhd;
+            osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
+
+            HardwareProfile hardwareprofile = new HardwareProfile();
+            hardwareprofile.vmSize = armVirtualMachine.VmSize;
+
+            NetworkProfile networkprofile = new NetworkProfile();
+            // todo networkprofile.networkInterfaces = networkinterfaces;
+
+            ImageReference imagereference = new ImageReference();
+            OsProfile osprofile = new OsProfile();
+
+            // if the tool is configured to create new VMs with empty data disks
+            if (_settingsProvider.BuildEmpty)
+            {
+                osdisk.createOption = "FromImage";
+
+                osprofile.computerName = armVirtualMachine.Name;
+                osprofile.adminUsername = "[parameters('adminUsername')]";
+                osprofile.adminPassword = "[parameters('adminPassword')]";
+
+                if (!Parameters.ContainsKey("adminUsername"))
+                {
+                    Parameter parameter = new Parameter();
+                    parameter.type = "string";
+                    Parameters.Add("adminUsername", parameter);
+                }
+
+                if (!Parameters.ContainsKey("adminPassword"))
+                {
+                    Parameter parameter = new Parameter();
+                    parameter.type = "securestring";
+                    Parameters.Add("adminPassword", parameter);
+                }
+
+                //todo
+                //imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
+                //imagereference.offer = resource.properties.storageProfile.imageReference.offer;
+                //imagereference.sku = resource.properties.storageProfile.imageReference.sku;
+                //imagereference.version = resource.properties.storageProfile.imageReference.version;
+            }
+            // if the tool is configured to attach copied disks
+            else
+            {
+                osdisk.createOption = "Attach";
+                // todoosdisk.osType = ostype;
+
+                if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
+                {
+                    // todo storageaccountdependencies.Add(newstorageaccountname, "");
+
+                    CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                    if (this.SourceSubscription != null)
+                        copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+                    copyblobdetail.SourceSA = armVirtualMachine.OSVirtualHardDisk.StorageAccountName;
+                    copyblobdetail.SourceContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+                    copyblobdetail.SourceBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                    // todo copyblobdetail.SourceKey = armVirtualMachine.OSVirtualHardDisk.SourceStorageAccount.Keys.Primary;
+                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                    {
+                        copyblobdetail.DestinationSA = armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.TargetName;
+                    }
+                    copyblobdetail.DestinationContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+                    copyblobdetail.DestinationBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                    _CopyBlobDetails.Add(copyblobdetail);
+                }
+
+                // end of block of code to help copying the blobs to the new storage accounts
+            }
+
+            // process data disks
+            List<DataDisk> datadisks = new List<DataDisk>();
+            foreach (Arm.DataDisk sourceDataDisk in armVirtualMachine.DataDisks)
+            {
+                DataDisk datadisk = new DataDisk();
+                datadisk.name = sourceDataDisk.Name;
+                datadisk.caching = sourceDataDisk.Caching;
+                datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
+                datadisk.lun = sourceDataDisk.Lun;
+
+                // if the tool is configured to create new VMs with empty data disks
+                vhd = new Vhd();
+                if (_settingsProvider.BuildEmpty)
+                {
+                    datadisk.createOption = "Empty";
+                }
+                // if the tool is configured to attach copied disks
+                else
+                {
+                    datadisk.createOption = "Attach";
+
+                    if (sourceDataDisk.VhdUri != String.Empty)
+                    {
+                        // todo try { storageaccountdependencies.Add(newstorageaccountname, ""); }
+                        // catch { }
+
+                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+                        if (this.SourceSubscription != null)
+                            copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+                        copyblobdetail.SourceSA = sourceDataDisk.StorageAccountName;
+                        copyblobdetail.SourceContainer = sourceDataDisk.StorageAccountContainer;
+                        copyblobdetail.SourceBlob = sourceDataDisk.StorageAccountBlob;
+                        // todo copyblobdetail.SourceKey = sourceDataDisk.SourceStorageAccount.Keys.Primary;
+                        if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                        {
+                            copyblobdetail.DestinationSA = armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.TargetName;
+                        }
+                        copyblobdetail.DestinationContainer = sourceDataDisk.StorageAccountContainer;
+                        copyblobdetail.DestinationBlob = sourceDataDisk.StorageAccountBlob;
+                        _CopyBlobDetails.Add(copyblobdetail);
+                        // end of block of code to help copying the blobs to the new storage accounts
+                    }
+                }
+
+                datadisk.vhd = vhd;
+
+                datadisks.Add(datadisk);
+            }
+
+            StorageProfile storageprofile = new StorageProfile();
+            if (_settingsProvider.BuildEmpty) { storageprofile.imageReference = imagereference; }
+            storageprofile.osDisk = osdisk;
+            storageprofile.dataDisks = datadisks;
+
+            VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
+            virtualmachine_properties.hardwareProfile = hardwareprofile;
+            if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
+            virtualmachine_properties.networkProfile = networkprofile;
+            virtualmachine_properties.storageProfile = storageprofile;
+
+            List<string> dependson = new List<string>();
+                
+            //foreach (var nic in networkinterfaces)
+            //{
+            //    dependson.Add(nic.id.ToString());
+            //}
+
+            // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
+
+            // Diagnostics Extension
+            Extension extension_iaasdiagnostics = null;
+
+            //XmlNodeList resourceextensionreferences = resource.SelectNodes("//ResourceExtensionReferences/ResourceExtensionReference");
+            //foreach (XmlNode resourceextensionreference in resourceextensionreferences)
+            //{
+            //    if (resourceextensionreference.SelectSingleNode("Name").InnerText == "IaaSDiagnostics")
+            //    {
+            //        string json = Base64Decode(resourceextensionreference.SelectSingleNode("ResourceExtensionParameterValues/ResourceExtensionParameterValue/Value").InnerText);
+            //        var resourceextensionparametervalue = JsonConvert.DeserializeObject<dynamic>(json);
+            //        string diagnosticsstorageaccount = resourceextensionparametervalue.storageAccount.Value + _settingsProvider.UniquenessSuffix;
+            //        string xmlcfgvalue = Base64Decode(resourceextensionparametervalue.xmlCfg.Value);
+            //        xmlcfgvalue = xmlcfgvalue.Replace("\n", "");
+            //        xmlcfgvalue = xmlcfgvalue.Replace("\r", "");
+
+            //        XmlDocument xmlcfg = new XmlDocument();
+            //        xmlcfg.LoadXml(xmlcfgvalue);
+
+            //        XmlNodeList mynodelist = xmlcfg.SelectNodes("/wadCfg/DiagnosticMonitorConfiguration/Metrics");
+
+
+
+
+            //        extension_iaasdiagnostics = new Extension();
+            //        extension_iaasdiagnostics.name = "Microsoft.Insights.VMDiagnosticsSettings";
+            //        extension_iaasdiagnostics.type = "extensions";
+            //        extension_iaasdiagnostics.location = virtualmachineinfo["location"].ToString();
+            //        extension_iaasdiagnostics.dependsOn = new List<string>();
+            //        extension_iaasdiagnostics.dependsOn.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/virtualMachines/" + virtualmachinename + "')]");
+            //        extension_iaasdiagnostics.dependsOn.Add("[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/" + diagnosticsstorageaccount + "')]");
+
+            //        Extension_Properties extension_iaasdiagnostics_properties = new Extension_Properties();
+            //        extension_iaasdiagnostics_properties.publisher = "Microsoft.Azure.Diagnostics";
+            //        extension_iaasdiagnostics_properties.type = "IaaSDiagnostics";
+            //        extension_iaasdiagnostics_properties.typeHandlerVersion = "1.5";
+            //        extension_iaasdiagnostics_properties.autoUpgradeMinorVersion = true;
+            //        extension_iaasdiagnostics_properties.settings = new Dictionary<string, string>();
+            //        extension_iaasdiagnostics_properties.settings.Add("xmlCfg", "[base64('" + xmlcfgvalue + "')]");
+            //        extension_iaasdiagnostics_properties.settings.Add("storageAccount", diagnosticsstorageaccount);
+            //        extension_iaasdiagnostics.properties = new Extension_Properties();
+            //        extension_iaasdiagnostics.properties = extension_iaasdiagnostics_properties;
+            //    }
+            //}
+
+            // Availability Set
+            // string availabilitysetname = virtualmachineinfo["cloudservicename"] + "-defaultAS";
+            string availabilitysetname = null;
+            //if (resource.properties.availabilitySet != null)
+            //{
+            //    Hashtable availabilitySetinfo = new Hashtable();
+            //    string AVId = resource.properties.availabilitySet.id;
+            //    AVId = AVId.Replace("/subscriptions", "subscriptions");
+            //    availabilitySetinfo.Add("AvailId", AVId);
+
+            //    //var AvailList = null; // todo _asmRetriever.GetAzureARMResources("AvailabilitySet", availabilitySetinfo, null);
+            //    //var Availresults = JsonConvert.DeserializeObject<dynamic>(AvailList);
+
+            //    availabilitysetname = "TODO"; // Availresults.name;
+
+            //    Reference availabilityset = new Reference();
+            //    availabilityset.id = "[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]";
+            //    virtualmachine_properties.availabilitySet = availabilityset;
+
+            //    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]");
+
+            //}
+            //else
+            //{
+            //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
+            //}
+
+            foreach (DictionaryEntry storageaccountdependency in storageaccountdependencies)
+            {
+                if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
+                {
+                    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/" + storageaccountdependency.Key + "')]");
+                }
+            }
+
+            Core.ArmTemplate.VirtualMachine virtualmachine = new Core.ArmTemplate.VirtualMachine(this.ExecutionGuid);
+            virtualmachine.name = armVirtualMachine.TargetName;
+            if (_TargetResourceGroup != null && _TargetResourceGroup.Location != null)
+                virtualmachine.location = _TargetResourceGroup.Location.Name;
+            virtualmachine.properties = virtualmachine_properties;
+            virtualmachine.dependsOn = dependson;
+            virtualmachine.resources = new List<ArmResource>();
+            if (extension_iaasdiagnostics != null) { virtualmachine.resources.Add(extension_iaasdiagnostics); }
+
+            this.AddResource(virtualmachine);
+
+            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + armVirtualMachine.name);
         }
 
         private void BuildStorageAccountObject(Asm.StorageAccount asmStorageAccount)

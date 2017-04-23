@@ -19,6 +19,7 @@ namespace MigAz.Azure.Arm
         {
             _AzureContext = azureContext;
             _StorageAccount = storageAccount;
+            this.TargetName = this.Name;
         }
 
         public List<StorageAccountKey> Keys

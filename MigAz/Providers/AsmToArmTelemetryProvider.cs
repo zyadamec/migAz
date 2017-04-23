@@ -14,7 +14,7 @@ namespace MigAz.Providers
 {
     public class AsmToArmTelemetryProvider : MigAz.Core.Interface.ITelemetryProvider
     {
-        private Dictionary<string,string> GetProcessedItems(AsmToArmGenerator templateResult)
+        private Dictionary<string,string> GetProcessedItems(AzureGenerator templateResult)
         {
             Dictionary<string, string> processedItems = new Dictionary<string, string>();
 
@@ -27,7 +27,7 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(AsmToArmGenerator templateGenerator)
+        public void PostTelemetryRecord(AzureGenerator templateGenerator)
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
             telemetryrecord.ExecutionId = templateGenerator.ExecutionGuid;

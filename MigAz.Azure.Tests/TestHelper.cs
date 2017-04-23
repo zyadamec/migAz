@@ -58,10 +58,10 @@ namespace MigAz.Tests
             }
         }
         
-        public static async Task<AsmToArmGenerator> SetupTemplateGenerator(AzureContext azureContext)
+        public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
         {
             ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
-            return new AsmToArmGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), await TestHelper.GetTargetResourceGroup(azureContext), azureContext.LogProvider, azureContext.StatusProvider, telemetryProvider, azureContext.SettingsProvider);
+            return new AzureGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), await TestHelper.GetTargetResourceGroup(azureContext), azureContext.LogProvider, azureContext.StatusProvider, telemetryProvider, azureContext.SettingsProvider);
         }
 
         public static JObject GetJsonData(MemoryStream closedStream)

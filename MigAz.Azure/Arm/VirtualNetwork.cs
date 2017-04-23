@@ -19,6 +19,7 @@ namespace MigAz.Azure.Arm
         public VirtualNetwork(JToken virtualNetwork) : base(Guid.Empty)
         {
             _VirtualNetwork = virtualNetwork;
+            this.TargetName = this.Name;
 
             var subnets = from vnet in _VirtualNetwork["properties"]["subnets"]
                           select vnet;

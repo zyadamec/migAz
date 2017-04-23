@@ -100,6 +100,7 @@ namespace MigAz.UserControls
                 //lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
                 txtARMVMName.Text = armVirtualMachine.TargetName;
 
+                this.diskProperties1.Bind(asmToArmForm, armVirtualMachine.OSVirtualHardDisk);
             }
         }
 

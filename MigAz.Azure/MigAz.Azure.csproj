@@ -129,8 +129,7 @@
     <Compile Include="AzureSubscription.cs" />
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
-    <Compile Include="Generator\AsmToArm\ArmToArmGenerator.cs" />
-    <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
+    <Compile Include="Generator\AzureGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
@@ -156,7 +155,7 @@
     <EmbeddedResource Include="UserControls\AzureLoginContextViewer.resx">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
+    <EmbeddedResource Include="Generator\DeployDocTemplate.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
