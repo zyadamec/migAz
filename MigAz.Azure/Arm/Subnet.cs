@@ -15,6 +15,8 @@ namespace MigAz.Azure.Arm
         {
             _Parent = parent;
             _Subnet = subnet;
+
+            this.TargetName = this.Name;
         }
 
         public string Name

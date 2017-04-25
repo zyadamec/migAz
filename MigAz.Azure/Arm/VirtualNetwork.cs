@@ -29,6 +29,14 @@ namespace MigAz.Azure.Arm
                 Subnet armSubnet = new Subnet(this, subnet);
                 _Subnets.Add(armSubnet);
             }
+
+            var addressPrefixes = from vnet in _VirtualNetwork["properties"]["addressSpace"]["addressPrefixes"]
+                          select vnet;
+
+            foreach (var addressPrefix in addressPrefixes)
+            {
+                _AddressPrefixes.Add(addressPrefix.ToString());
+            }
         }
 
         public string Name => (string)_VirtualNetwork["name"];

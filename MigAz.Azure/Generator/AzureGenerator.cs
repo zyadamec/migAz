@@ -93,9 +93,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                             Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)asmVirtualMachine.TargetVirtualNetwork;
                             bool targetVNetExists = false;
 
-                            foreach (Asm.VirtualNetwork asmVirtualNetwork in _ASMArtifacts.VirtualNetworks)
+                            foreach (IVirtualNetwork iVirtualNetwork in _ASMArtifacts.VirtualNetworks)
                             {
-                                if (asmVirtualNetwork.Name == targetAsmVirtualNetwork.Name)
+                                if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
                                 {
                                     targetVNetExists = true;
                                     break;
