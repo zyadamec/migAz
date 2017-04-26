@@ -166,7 +166,7 @@ namespace MigAz.Tests
             var artifacts = new ExportArtifacts();
             Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)(await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0];
 
-            asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await azureContextUSGovernmentRetriever.GetAzureAsmStorageAccount("targetstorage");
+            // todo asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await azureContextUSGovernmentRetriever.GetAzureAsmStorageAccount("targetstorage");
 
             artifacts.VirtualMachines.Add(asmVirtualMachine);
 

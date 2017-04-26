@@ -10,7 +10,7 @@ namespace MigAz.Azure.Asm
         private XmlNode _DataDiskNode;
         private AzureContext _AzureContext;
         private StorageAccount _SourceStorageAccount;
-        private IStorageAccount _TargetStorageAccount;
+        private IStorageTarget _TargetStorageAccount;
         private String _TargetName = String.Empty;
 
         public Disk(AzureContext azureContext, XmlNode dataDiskNode)
@@ -44,13 +44,16 @@ namespace MigAz.Azure.Asm
             {
                 string targetMediaLink = this.MediaLink;
 
-                if (this.TargetStorageAccount.GetType() == typeof(StorageAccount))
+                if (this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
                 {
-                    StorageAccount targetStorageAccount = (StorageAccount)this.TargetStorageAccount;
+                    Azure.Arm.StorageAccount targetStorageAccount = (Azure.Arm.StorageAccount)this.TargetStorageAccount;
+                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.Name + "." + targetStorageAccount.BlobStorageNamespace);
+                }
+                else if(this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
                     targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.GetFinalTargetName() + "." + targetStorageAccount.BlobStorageNamespace);
                 }
-                else
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, this.TargetStorageAccount.Name + "." + this.TargetStorageAccount.BlobStorageNamespace);
 
                 targetMediaLink = targetMediaLink.Replace(this.DiskName, this.TargetName);
 
@@ -119,7 +122,7 @@ namespace MigAz.Azure.Asm
             get { return _SourceStorageAccount; }
         }
 
-        public IStorageAccount TargetStorageAccount
+        public IStorageTarget TargetStorageAccount
         {
             get { return _TargetStorageAccount; }
             set { _TargetStorageAccount = value; }

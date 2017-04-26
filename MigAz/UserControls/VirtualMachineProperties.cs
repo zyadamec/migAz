@@ -165,20 +165,26 @@ namespace MigAz.UserControls
 
                 if (rbVNetInMigration.Checked)
                 {
-                    Azure.Arm.VirtualNetwork selectedArmVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
-
-                    foreach (Azure.Arm.Subnet armSubnet in selectedArmVirtualNetwork.Subnets)
+                    if (cmbExistingArmVNets.SelectedItem != null)
                     {
-                        if (armSubnet.Name != ArmConst.GatewaySubnetName)
-                            cmbExistingArmSubnet.Items.Add(armSubnet);
-                    }
-
-                    if (armVirtualMachine.TargetSubnet != null)
-                    {
-                        foreach (Azure.Arm.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                        if (cmbExistingArmVNets.SelectedItem.GetType() == typeof(Azure.Arm.VirtualNetwork))
                         {
-                            if (listSubnet.Id == armVirtualMachine.TargetSubnet.Id)
-                                cmbExistingArmSubnet.SelectedItem = listSubnet;
+                            Azure.Arm.VirtualNetwork selectedArmVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
+
+                            foreach (Azure.Arm.Subnet armSubnet in selectedArmVirtualNetwork.Subnets)
+                            {
+                                if (armSubnet.Name != ArmConst.GatewaySubnetName)
+                                    cmbExistingArmSubnet.Items.Add(armSubnet);
+                            }
+
+                            if (armVirtualMachine.TargetSubnet != null)
+                            {
+                                foreach (Azure.Arm.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                                {
+                                    if (listSubnet.Id == armVirtualMachine.TargetSubnet.Id)
+                                        cmbExistingArmSubnet.SelectedItem = listSubnet;
+                                }
+                            }
                         }
                     }
                 }

@@ -8,6 +8,7 @@ using MigAz.Core.Generator;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using MigAz.Azure;
 
 namespace MigAz.Forms
 {
@@ -42,10 +43,10 @@ namespace MigAz.Forms
             txtLog.SelectionStart = txtLog.TextLength;
         }
 
-        private void AzureRetriever_OnRestResult(Guid requestGuid, string url, string response)
+        private void AzureRetriever_OnRestResult(AzureRestResponse response)
         {
-            txtRest.AppendText(requestGuid.ToString() + " " + url + Environment.NewLine);
-            txtRest.AppendText(response + Environment.NewLine + Environment.NewLine);
+            txtRest.AppendText(response.RequestGuid.ToString() + " " + response.Url + Environment.NewLine);
+            txtRest.AppendText(response.Response + Environment.NewLine + Environment.NewLine);
             txtRest.SelectionStart = txtRest.TextLength;
         }
 

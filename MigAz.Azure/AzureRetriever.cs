@@ -23,7 +23,7 @@ namespace MigAz.Azure
         private AzureSubscription _AzureSubscription = null;
         private List<AzureSubscription> _AzureSubscriptions;
 
-        public delegate void OnRestResultHandler(Guid requestGuid, string url, string response);
+        public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
 
         // ASM Object Cache (Subscription Context Specific)
@@ -284,7 +284,6 @@ namespace MigAz.Azure
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
 
             string authorizationHeader = "Bearer " + _AzureContext.TokenProvider.AuthenticationResult.AccessToken;
-            _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " " + "Adding authorization header: " + authorizationHeader);
             request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
 
             request.Headers.Add("x-ms-version", "2015-04-01");
@@ -337,6 +336,7 @@ namespace MigAz.Azure
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Status Code " + response.StatusCode);
 
                 httpWebResponseValue = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                writeRetreiverResultToLog(requestGuid, "GetAzureAsmResources", url, authorizationHeader);
                 writeRetreiverResultToLog(requestGuid, "GetAzureAsmResources", url, httpWebResponseValue);
                 if (httpWebResponseValue != String.Empty)
                 {
@@ -354,7 +354,13 @@ namespace MigAz.Azure
 
             _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " End REST Request");
 
-            OnRestResult?.Invoke(requestGuid, url, httpWebResponseValue);
+            AzureRestResponse azureRestResponse = new AzureRestResponse(
+                requestGuid,
+                url,
+                _AzureContext.TokenProvider.AuthenticationResult.AccessToken,
+                xmlDocument.InnerXml);
+
+            OnRestResult?.Invoke(azureRestResponse);
 
             return xmlDocument;
         }
@@ -811,7 +817,6 @@ namespace MigAz.Azure
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
             string authorizationHeader = "Bearer " + authenticationResult.AccessToken;
-            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Adding authorization header - " + authorizationHeader);
             request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
 
             request.ContentType = "application/json";
@@ -866,6 +871,7 @@ namespace MigAz.Azure
 
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
+                writeRetreiverResultToLog(requestGuid, "GetAzureARMResources", url, authorizationHeader);
                 writeRetreiverResultToLog(requestGuid, "GetAzureARMResources", url, webRequesetResult);
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + "  Status Code " + response.StatusCode);
 
@@ -885,7 +891,9 @@ namespace MigAz.Azure
 
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " End REST Request");
 
-            OnRestResult?.Invoke(requestGuid, url, webRequesetResult);
+            AzureRestResponse azureRestResponse = new AzureRestResponse(requestGuid, url, authenticationResult.AccessToken, webRequestResultJson.ToString());
+            OnRestResult?.Invoke(azureRestResponse);
+
 
             return webRequestResultJson;
         }

@@ -77,6 +77,8 @@
     <Compile Include="Arm\Subnet.cs" />
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
+    <Compile Include="AzureRestResponse.cs" />
+    <Compile Include="ExportArtifacts.cs" />
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,6 +91,8 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="MigrationTarget\StorageAccount.cs" />
+    <Compile Include="MigrationTarget\VirtualMachine.cs" />
     <Compile Include="Models\ArmToArmTelemetryRecord.cs" />
     <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
@@ -163,6 +167,7 @@
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

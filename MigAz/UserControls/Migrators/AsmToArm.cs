@@ -515,18 +515,18 @@ namespace MigAz.UserControls.Migrators
                         }
                     }
 
-                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    {
-                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName);
-                    }
+                    // todo now russell if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                    //{
+                    //    asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName);
+                    //}
 
-                    foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
-                    {
-                        if (asmDisk.TargetStorageAccount == null)
-                        {
-                            asmDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmDisk.StorageAccountName);
-                        }
-                    }
+                    //foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
+                    //{
+                    //    if (asmDisk.TargetStorageAccount == null)
+                    //    {
+                    //        asmDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmDisk.StorageAccountName);
+                    //    }
+                    //}
                 }
             }
 
@@ -573,7 +573,7 @@ namespace MigAz.UserControls.Migrators
                         Type subNodeTagType = originatingNode.Tag.GetType();
                         if (subNodeTagType == typeof(Azure.Asm.StorageAccount) || subNodeTagType == typeof(Azure.Arm.StorageAccount))
                         {
-                            exportArtifacts.StorageAccounts.Add((IStorageAccount)originatingNode.Tag);
+                            exportArtifacts.StorageAccounts.Add((MigAz.Azure.MigrationTarget.StorageAccount)originatingNode.Tag);
                         }
                         else if (subNodeTagType == typeof(Azure.Asm.VirtualNetwork) || subNodeTagType == typeof(Azure.Arm.VirtualNetwork))
                         {
@@ -639,15 +639,6 @@ namespace MigAz.UserControls.Migrators
                             properties.Bind(e.Node);
                             _PropertyPanel.PropertyDetailControl = properties;
                         }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
-                        {
-                            this._PropertyPanel.ResourceImage = imageList1.Images["StorageAccount"];
-
-                            StorageAccountProperties properties = new StorageAccountProperties();
-                            properties.PropertyChanged += Properties_PropertyChanged;
-                            properties.Bind(this._AzureContextTargetARM, e.Node);
-                            _PropertyPanel.PropertyDetailControl = properties;
-                        }
                         else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
                         {
                             this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
@@ -677,6 +668,15 @@ namespace MigAz.UserControls.Migrators
                     SubnetProperties properties = new SubnetProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["StorageAccount"];
+
+                    StorageAccountProperties properties = new StorageAccountProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(this._AzureContextTargetARM, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
                 else if (e.Node.Tag.GetType() == typeof(Azure.Asm.Disk) || e.Node.Tag.GetType() == typeof(Azure.Arm.Disk))
@@ -843,9 +843,10 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Asm.StorageAccount))
             {
                 Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)asmTreeNode.Tag;
+                Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, asmStorageAccount);
 
                 TreeNode storageAccountsNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", true);
-                TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, asmTreeNode.Name, asmStorageAccount.GetFinalTargetName(), asmTreeNode, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, targetStorageAccount.GetFinalTargetName(), targetStorageAccount.GetFinalTargetName(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -900,9 +901,10 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Arm.StorageAccount))
             {
                 Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)asmTreeNode.Tag;
+                Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
 
                 TreeNode storageAccountsNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", true);
-                TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, asmTreeNode.Name, armStorageAccount.GetFinalTargetName(), asmTreeNode, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(storageAccountsNode.Nodes, targetStorageAccount.GetFinalTargetName(), targetStorageAccount.GetFinalTargetName(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -991,9 +993,12 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            tabSourceResources.Height = 500;
-            treeSourceASM.Height = 500;
-            treeTargetARM.Height = treeSourceASM.Height;
+            tabSourceResources.Height = 265;
+            treeSourceASM.Width = tabSourceResources.Width - 10;
+            treeSourceASM.Height = tabSourceResources.Height - 30;
+            treeSourceARM.Width = tabSourceResources.Width - 10;
+            treeSourceARM.Height = tabSourceResources.Height - 30;
+            treeTargetARM.Height = 250;
         }
 
         #endregion

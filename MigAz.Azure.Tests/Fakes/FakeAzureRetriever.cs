@@ -93,14 +93,14 @@ namespace MigAz.Tests.Fakes
                         CloudService parentCloudService = this.GetAzureAsmCloudService(parts[2]).Result;
                         VirtualMachine asmVirtualMachine = new VirtualMachine(_AzureContext, parentCloudService, this._AzureContext.SettingsProvider, doc, info);
                         await asmVirtualMachine.InitializeChildren();
-                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
+                        // todo asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
                         asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
                         asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
 
-                        foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
-                        {
-                            dataDisk.TargetStorageAccount = dataDisk.SourceStorageAccount;
-                        }
+                        // todo foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
+                        //{
+                        //    dataDisk.TargetStorageAccount = dataDisk.SourceStorageAccount;
+                        //}
 
                         parentCloudService.VirtualMachines.Add(asmVirtualMachine);
 

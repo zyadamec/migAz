@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MigAz.Azure.Arm
 {
-    public class StorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount
+    public class StorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount, IStorageTarget
     {
         private AzureContext _AzureContext;
         private JToken _StorageAccount;
@@ -19,7 +19,6 @@ namespace MigAz.Azure.Arm
         {
             _AzureContext = azureContext;
             _StorageAccount = storageAccount;
-            this.TargetName = this.Name;
         }
 
         public List<StorageAccountKey> Keys
@@ -138,16 +137,6 @@ namespace MigAz.Azure.Arm
         public override string ToString()
         {
             return this.Name;
-        }
-
-        public string TargetName // todo
-        {
-            get; set;
-        }
-
-        public string GetFinalTargetName() // todo
-        {
-            return this.TargetName;
         }
     }
 }

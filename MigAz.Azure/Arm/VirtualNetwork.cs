@@ -13,6 +13,7 @@ namespace MigAz.Azure.Arm
         private List<ISubnet> _Subnets = new List<ISubnet>();
         private List<string> _DnsServers = new List<string>();
         private List<string> _AddressPrefixes = new List<string>();
+        private List<string> _DnsPrefixes = new List<string>();
 
         private VirtualNetwork() : base(Guid.Empty) { }
 
@@ -31,12 +32,20 @@ namespace MigAz.Azure.Arm
             }
 
             var addressPrefixes = from vnet in _VirtualNetwork["properties"]["addressSpace"]["addressPrefixes"]
-                          select vnet;
+                                  select vnet;
 
             foreach (var addressPrefix in addressPrefixes)
             {
                 _AddressPrefixes.Add(addressPrefix.ToString());
             }
+
+            //var dnsPrefixes = from vnet in _VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"]
+            //                      select vnet;
+
+            //foreach (var dnsPrefix in dnsPrefixes)
+            //{
+            //    _DnsPrefixes.Add(dnsPrefix.ToString());
+            //}
         }
 
         public string Name => (string)_VirtualNetwork["name"];
@@ -47,6 +56,7 @@ namespace MigAz.Azure.Arm
         public List<ISubnet> Subnets => _Subnets;
         public List<string> DnsServers => _DnsServers;
         public List<string> AddressPrefixes => _AddressPrefixes;
+        public List<string> DnsPrefixes => _DnsPrefixes;
 
         public override string ToString()
         {

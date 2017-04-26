@@ -27,7 +27,7 @@ namespace MigAz.Tests
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
-            artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
+            // todo artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
             templateGenerator.UpdateArtifacts(artifacts);
 
             JObject templateJson = templateGenerator.GetTemplate();

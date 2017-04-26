@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
@@ -11,7 +12,7 @@ namespace MigAz.Azure.Arm
     {
         private JToken jToken;
         private StorageAccount _SourceStorageAccount;
-        private StorageAccount _TargetStorageAccount;
+        private IStorageTarget _TargetStorageAccount;
 
         public Disk(JToken jToken)
         {
@@ -73,7 +74,7 @@ namespace MigAz.Azure.Arm
             get { return _SourceStorageAccount; }
         }
 
-        public StorageAccount TargetStorageAccount
+        public IStorageTarget TargetStorageAccount
         {
             get { return _TargetStorageAccount; }
             set { _TargetStorageAccount = value; }
