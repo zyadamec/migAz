@@ -515,18 +515,18 @@ namespace MigAz.UserControls.Migrators
                         }
                     }
 
-                    // todo now russell if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    //{
-                    //    asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName);
-                    //}
+                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                    {
+                        // todo russell asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName);
+                    }
 
-                    //foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
-                    //{
-                    //    if (asmDisk.TargetStorageAccount == null)
-                    //    {
-                    //        asmDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmDisk.StorageAccountName);
-                    //    }
-                    //}
+                    foreach (Azure.Asm.Disk asmDisk in asmVirtualMachine.DataDisks)
+                    {
+                        if (asmDisk.TargetStorageAccount == null)
+                        {
+                            // todo russell asmDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(asmDisk.StorageAccountName);
+                        }
+                    }
                 }
             }
 
@@ -548,7 +548,7 @@ namespace MigAz.UserControls.Migrators
 
                 _SelectedNodes = this.GetSelectedNodes(treeSourceASM);
                 UpdateExportItemsCount();
-                await this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+                await this.TemplateGenerator.UpdateArtifacts(GetExportArtifacts());
 
                 _SourceAsmNode = null;
 
@@ -571,11 +571,7 @@ namespace MigAz.UserControls.Migrators
                     if (originatingNode.Tag != null)
                     {
                         Type subNodeTagType = originatingNode.Tag.GetType();
-                        if (subNodeTagType == typeof(Azure.Asm.StorageAccount) || subNodeTagType == typeof(Azure.Arm.StorageAccount))
-                        {
-                            exportArtifacts.StorageAccounts.Add((MigAz.Azure.MigrationTarget.StorageAccount)originatingNode.Tag);
-                        }
-                        else if (subNodeTagType == typeof(Azure.Asm.VirtualNetwork) || subNodeTagType == typeof(Azure.Arm.VirtualNetwork))
+                        if (subNodeTagType == typeof(Azure.Asm.VirtualNetwork) || subNodeTagType == typeof(Azure.Arm.VirtualNetwork))
                         {
                             exportArtifacts.VirtualNetworks.Add((IVirtualNetwork)originatingNode.Tag);
                         }
@@ -589,6 +585,10 @@ namespace MigAz.UserControls.Migrators
                         }
                     }
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
@@ -597,7 +597,7 @@ namespace MigAz.UserControls.Migrators
             }
         }
 
-        private ExportArtifacts GetAsmArtifacts()
+        private ExportArtifacts GetExportArtifacts()
         {
             ExportArtifacts exportArtifacts = new ExportArtifacts();
 
@@ -720,7 +720,7 @@ namespace MigAz.UserControls.Migrators
         private async Task Properties_PropertyChanged()
         {
             if (_SourceAsmNode == null && _SourceArmNode == null) // we are not going to update on every property bind during TreeView updates
-                await this.TemplateGenerator.UpdateArtifacts(GetAsmArtifacts());
+                await this.TemplateGenerator.UpdateArtifacts(GetExportArtifacts());
         }
 
         private async Task<TreeNode> UpdateARMTree(TreeNode asmTreeNode)
