@@ -76,7 +76,7 @@ namespace MigAz.Tests
         {
             List<Azure.Asm.Location> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
             ResourceGroup targetResourceGroup = new ResourceGroup(azureContext, "Target Resource Group");
-            targetResourceGroup.Location = azureLocations[0];
+            targetResourceGroup.TargetLocation = azureLocations[0];
             return targetResourceGroup;
         }
     }

@@ -36,52 +36,11 @@ namespace MigAz.Core
                 dataCenterNode.Expand();
             }
 
-            if (containerName == "Virtual Networks")
-            {
-                TreeNode tnVirtualNetworks = new TreeNode("Virtual Networks");
-                dataCenterNode.Nodes.Add(tnVirtualNetworks);
-                tnVirtualNetworks.Expand();
+            TreeNode containerNode = new TreeNode(containerName);
+            dataCenterNode.Nodes.Add(containerNode);
+            containerNode.Expand();
 
-                return tnVirtualNetworks;
-            }
-            else if (containerName == "Storage Accounts")
-            {
-                TreeNode tnStorageAccounts = new TreeNode("Storage Accounts");
-                dataCenterNode.Nodes.Add(tnStorageAccounts);
-                tnStorageAccounts.Expand();
-
-                return tnStorageAccounts;
-            }
-            else if (containerName == "Cloud Services")
-            {
-                TreeNode tnCloudServicesNode = new TreeNode("Cloud Services");
-                dataCenterNode.Nodes.Add(tnCloudServicesNode);
-                tnCloudServicesNode.Expand();
-
-                return tnCloudServicesNode;
-            }
-            else if (containerName == "Virtual Machines")
-            {
-                TreeNode tnVirtualMachinesNode = new TreeNode("Virtual Machines");
-                dataCenterNode.Nodes.Add(tnVirtualMachinesNode);
-                tnVirtualMachinesNode.Expand();
-
-                return tnVirtualMachinesNode;
-            }
-            else if (containerName == "Network Security Groups")
-            {
-                TreeNode tnNetworkSecurityGroupsNode = new TreeNode("Network Security Groups");
-                dataCenterNode.Nodes.Add(tnNetworkSecurityGroupsNode);
-                tnNetworkSecurityGroupsNode.Expand();
-
-                return tnNetworkSecurityGroupsNode;
-            }
-            else
-            {
-                throw new ArgumentException("Unknown Tree Node Container Name: " + containerName);
-            }
-
-            return null;
+            return containerNode;
         }
 
         public static void FillUpIfFullDown(TreeNode node)

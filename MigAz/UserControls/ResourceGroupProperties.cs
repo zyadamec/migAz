@@ -37,7 +37,7 @@ namespace MigAz.UserControls
 
             ResourceGroup armResourceGroup = (ResourceGroup) _ResourceGroupNode.Tag;
 
-            txtName.Text = armResourceGroup.Name;
+            txtName.Text = armResourceGroup.TargetName;
 
             try
             {
@@ -60,11 +60,11 @@ namespace MigAz.UserControls
                 }
             }
 
-            if (armResourceGroup.Location != null)
+            if (armResourceGroup.TargetLocation != null)
             {
                 foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
                 {
-                    if (armLocation.Name == armResourceGroup.Location.Name)
+                    if (armLocation.Name == armResourceGroup.TargetLocation.Name)
                         cboTargetLocation.SelectedItem = armLocation;
                 }
             }
@@ -76,9 +76,9 @@ namespace MigAz.UserControls
 
             ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
 
-            armResourceGroup.Name = txtSender.Text;
+            armResourceGroup.TargetName = txtSender.Text;
             _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
-            _ResourceGroupNode.Name = armResourceGroup.Name;
+            _ResourceGroupNode.Name = armResourceGroup.TargetName;
 
             PropertyChanged();
         }
@@ -88,7 +88,7 @@ namespace MigAz.UserControls
             ComboBox cmbSender = (ComboBox)sender;
 
             ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
+            armResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
 
             PropertyChanged();
         }

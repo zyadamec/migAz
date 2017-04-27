@@ -216,12 +216,22 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
                     {
-
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armResourceGroup.Location, "Resource Groups");
+                        TreeNode tnResourceGroup = new TreeNode(armResourceGroup.Name);
+                        tnResourceGroup.Name = armResourceGroup.Name;
+                        tnResourceGroup.Tag = armResourceGroup;
+                        parentNode.Nodes.Add(tnResourceGroup);
+                        parentNode.Expand();
                     }
 
                     foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
                     {
-
+                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armAvailabilitySet.Location, "Availability Sets");
+                        TreeNode tnResourceGroup = new TreeNode(armAvailabilitySet.Name);
+                        tnResourceGroup.Name = armAvailabilitySet.Name;
+                        tnResourceGroup.Tag = armAvailabilitySet;
+                        parentNode.Nodes.Add(tnResourceGroup);
+                        parentNode.Expand();
                     }
 
                     List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
@@ -753,7 +763,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task RemoveASMNodeFromARMTree(TreeNode asmTreeNode)
         {
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.TargetName, _TargetResourceGroup.TargetName, _TargetResourceGroup);
             if (targetResourceGroupNode != null)
             {
                 TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(asmTreeNode.Name, true);
@@ -819,7 +829,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task<TreeNode> AddASMNodeToARMTree(TreeNode asmTreeNode)
         {
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.Name, _TargetResourceGroup.Name, _TargetResourceGroup, true);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.TargetName, _TargetResourceGroup.TargetName, _TargetResourceGroup, true);
 
             Type tagType = asmTreeNode.Tag.GetType();
             if (tagType == typeof(Azure.Asm.VirtualNetwork))
