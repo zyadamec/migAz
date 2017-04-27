@@ -220,5 +220,20 @@ namespace MigAz.Azure.Asm
 
         #endregion
 
+        public static bool operator ==(VirtualNetwork lhs, VirtualNetwork rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.Id == rhs.Id))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(VirtualNetwork lhs, VirtualNetwork rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }

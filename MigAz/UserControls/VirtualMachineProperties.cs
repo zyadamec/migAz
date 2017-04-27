@@ -93,11 +93,11 @@ namespace MigAz.UserControls
                 Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
 
                 lblRoleSize.Text = armVirtualMachine.VmSize;
-                //lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
+                // todo russell lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 if (armVirtualMachine.VirtualNetwork != null)
                     lblVirtualNetworkName.Text = armVirtualMachine.VirtualNetwork.Name;
-                //lblSubnetName.Text = armVirtualMachine.SubnetName;
-                //lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
+                // todo russell lblSubnetName.Text = armVirtualMachine.SubnetName;
+                // todo russell lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
                 txtARMVMName.Text = armVirtualMachine.TargetName;
 
                 this.diskProperties1.Bind(asmToArmForm, armVirtualMachine.OSVirtualHardDisk);
@@ -113,79 +113,27 @@ namespace MigAz.UserControls
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
 
-            if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+            cmbExistingArmSubnet.Items.Clear();
+            if (cmbExistingArmVNets.SelectedItem != null)
             {
-                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
-
-                cmbExistingArmSubnet.Items.Clear();
-
-                if (rbVNetInMigration.Checked)
+                if (cmbExistingArmVNets.SelectedItem.GetType() == typeof(Azure.Asm.VirtualNetwork))
                 {
-                    Azure.Asm.VirtualNetwork selectedAsmVirtualNetwork = (Azure.Asm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
+                    Azure.Asm.VirtualNetwork selectedNetwork = (Azure.Asm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
 
-                    foreach (Azure.Asm.Subnet asmSubnet in selectedAsmVirtualNetwork.Subnets)
+                    foreach (Azure.Asm.Subnet subnet in selectedNetwork.Subnets)
                     {
-                        if (asmSubnet.Name != ArmConst.GatewaySubnetName)
-                            cmbExistingArmSubnet.Items.Add(asmSubnet);
-                    }
-
-                    if (asmVirtualMachine.TargetSubnet != null)
-                    {
-                        foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                        {
-                            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
-                                cmbExistingArmSubnet.SelectedItem = listSubnet;
-                        }
+                        if (!subnet.IsGatewaySubnet)
+                            cmbExistingArmSubnet.Items.Add(subnet);
                     }
                 }
-                else
+                else if (cmbExistingArmVNets.SelectedItem.GetType() == typeof(Azure.Arm.VirtualNetwork))
                 {
-                    Azure.Arm.VirtualNetwork selectedArmVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
+                    Azure.Arm.VirtualNetwork selectedNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
 
-                    foreach (Azure.Arm.Subnet armSubnet in selectedArmVirtualNetwork.Subnets)
+                    foreach (Azure.Arm.Subnet subnet in selectedNetwork.Subnets)
                     {
-                        if (armSubnet.Name != ArmConst.GatewaySubnetName)
-                            cmbExistingArmSubnet.Items.Add(armSubnet);
-                    }
-
-                    if (asmVirtualMachine.TargetSubnet != null)
-                    {
-                        foreach (Azure.Arm.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                        {
-                            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
-                                cmbExistingArmSubnet.SelectedItem = listSubnet;
-                        }
-                    }
-                }
-            }
-            else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-            {
-                Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
-                cmbExistingArmSubnet.Items.Clear();
-
-                if (rbVNetInMigration.Checked)
-                {
-                    if (cmbExistingArmVNets.SelectedItem != null)
-                    {
-                        if (cmbExistingArmVNets.SelectedItem.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                        {
-                            Azure.Arm.VirtualNetwork selectedArmVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
-
-                            foreach (Azure.Arm.Subnet armSubnet in selectedArmVirtualNetwork.Subnets)
-                            {
-                                if (armSubnet.Name != ArmConst.GatewaySubnetName)
-                                    cmbExistingArmSubnet.Items.Add(armSubnet);
-                            }
-
-                            if (armVirtualMachine.TargetSubnet != null)
-                            {
-                                foreach (Azure.Arm.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                                {
-                                    if (listSubnet.Id == armVirtualMachine.TargetSubnet.Id)
-                                        cmbExistingArmSubnet.SelectedItem = listSubnet;
-                                }
-                            }
-                        }
+                        if (!subnet.IsGatewaySubnet)
+                            cmbExistingArmSubnet.Items.Add(subnet);
                     }
                 }
             }
@@ -203,6 +151,8 @@ namespace MigAz.UserControls
 
                 if (rb.Checked)
                 {
+                    #region Add "In MigAz Migration" Virtual Networks to cmbExistingArmVNets
+
                     cmbExistingArmVNets.Items.Clear();
                     cmbExistingArmSubnet.Items.Clear();
 
@@ -228,6 +178,10 @@ namespace MigAz.UserControls
                         }
                     }
 
+                    #endregion
+
+                    #region Seek Target VNet and Subnet as ComboBox SelectedItems
+
                     if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
                     {
                         Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
@@ -237,7 +191,10 @@ namespace MigAz.UserControls
                             foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                             {
                                 if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
+                                {
                                     cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                                    break;
+                                }
                             }
 
                             if (cmbExistingArmVNets.SelectedItem != null && asmVirtualMachine.TargetSubnet != null)
@@ -245,16 +202,39 @@ namespace MigAz.UserControls
                                 foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
                                 {
                                     if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
+                                    {
                                         cmbExistingArmSubnet.SelectedItem = listSubnet;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
+                    else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                    {
+                        //Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
+                        //if (armVirtualMachine.TargetVirtualNetwork != null)
+                        //{
+                        //    // Attempt to match target to list items
+                        //    foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                        //    {
+                        //        if (listVirtualNetwork.Id == armVirtualMachine.TargetVirtualNetwork.Id)
+                        //            cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                        //    }
+
+                        //    if (cmbExistingArmVNets.SelectedItem != null && armVirtualMachine.TargetSubnet != null)
+                        //    {
+                        //        foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                        //        {
+                        //            if (listSubnet.Id == armVirtualMachine.TargetSubnet.Id)
+                        //                cmbExistingArmSubnet.SelectedItem = listSubnet;
+                        //        }
+                        //    }
+                        //}
+                    }
+
+                    #endregion
                 }
-            }
-            else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-            {
-                Azure.Arm.VirtualMachine asmVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
             }
 
             await PropertyChanged();
@@ -264,36 +244,60 @@ namespace MigAz.UserControls
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
 
-            if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+            RadioButton rb = (RadioButton)sender;
+
+            if (rb.Checked)
             {
-                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
-                RadioButton rb = (RadioButton)sender;
 
-                if (rb.Checked)
+                #region Add "In MigAz Migration" Virtual Networks to cmbExistingArmVNets
+
+                cmbExistingArmVNets.Items.Clear();
+                cmbExistingArmSubnet.Items.Clear();
+
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
                 {
-                    cmbExistingArmVNets.Items.Clear();
-                    cmbExistingArmSubnet.Items.Clear();
+                    if (armVirtualNetwork.HasNonGatewaySubnet)
+                        cmbExistingArmVNets.Items.Add(armVirtualNetwork);
+                }
 
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
-                    {
-                        if (armVirtualNetwork.HasNonGatewaySubnet)
-                            cmbExistingArmVNets.Items.Add(armVirtualNetwork);
-                    }
+                #endregion
 
+                #region Seek Target VNet and Subnet as ComboBox SelectedItems
+
+                if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+                {
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
                     if (asmVirtualMachine.TargetVirtualNetwork != null)
                     {
                         // Attempt to match target to list items
-                        foreach (Azure.Arm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                        for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
                         {
+                            Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
                             if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
-                                cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                            {
+                                cmbExistingArmVNets.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (asmVirtualMachine.TargetSubnet != null)
+                    {
+                        // Attempt to match target to list items
+                        for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
+                        {
+                            Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
+                            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
+                            {
+                                cmbExistingArmSubnet.SelectedIndex = i;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-            {
-                Azure.Arm.VirtualMachine asmVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
+
+                #endregion
+
             }
 
             await PropertyChanged();

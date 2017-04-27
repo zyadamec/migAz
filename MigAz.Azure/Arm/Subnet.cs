@@ -68,5 +68,21 @@ namespace MigAz.Azure.Arm
         {
             return this.Name;
         }
+
+        public static bool operator ==(Subnet lhs, Subnet rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.Id == rhs.Id))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(Subnet lhs, Subnet rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }

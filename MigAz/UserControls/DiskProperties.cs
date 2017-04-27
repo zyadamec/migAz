@@ -253,6 +253,7 @@ namespace MigAz.UserControls
 
             UpdateParentNode();
             PropertyChanged();
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
         private void UpdateParentNode()

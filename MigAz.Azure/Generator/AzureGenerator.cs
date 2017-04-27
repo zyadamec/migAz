@@ -1653,7 +1653,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + asmVirtualMachine.TargetAvailabilitySet.GetFinalTargetName() + "')]");
 
-            foreach (IStorageAccount storageaccountdependency in storageaccountdependencies)
+            foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
                 if (storageaccountdependency.GetType() == typeof(Asm.StorageAccount))
                     dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
