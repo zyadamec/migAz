@@ -13,6 +13,7 @@ using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MigAz.Azure
 {
@@ -44,8 +45,7 @@ namespace MigAz.Azure
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
         private List<Arm.ManagedDisk> _ArmManagedDisks;
 
-        private Dictionary<string, XmlDocument> _asmXmlDocumentCache = new Dictionary<string, XmlDocument>();
-        private Dictionary<string, JObject> _armJsonDocumentCache = new Dictionary<string, JObject>();
+        private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
         private AzureRetriever() { }
 
@@ -56,8 +56,7 @@ namespace MigAz.Azure
 
         public void ClearCache()
         {
-            _asmXmlDocumentCache = new Dictionary<string, XmlDocument>();
-            _armJsonDocumentCache = new Dictionary<string, JObject>();
+            _RestApiCache = new Dictionary<string, AzureRestResponse>();
             _ArmLocations = null;
             _ArmTenants = null;
             _ArmSubscriptions = null;
@@ -70,6 +69,20 @@ namespace MigAz.Azure
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
+        }
+
+        public void SaveRestCache()
+        {
+            string jsontext = JsonConvert.SerializeObject(_RestApiCache, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+
+            string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
+            if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }
+
+            string filePath = filedir + "\\AzureRestResponse-" + this._AzureContext.AzureEnvironment.ToString() + "-" + this._AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId + ".json";
+
+            StreamWriter saveSelectionWriter = new StreamWriter(filePath);
+            saveSelectionWriter.Write(jsontext);
+            saveSelectionWriter.Close();
         }
 
         protected XmlDocument RemoveXmlns(String xml)
@@ -161,7 +174,6 @@ namespace MigAz.Azure
 
         internal async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
-            ClearCache();
             _AzureSubscription = azureSubscription;
             await this._AzureContext.TokenProvider.GetToken(azureSubscription);
         }
@@ -274,11 +286,14 @@ namespace MigAz.Azure
 
             _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Url: " + url);
 
-            if (_asmXmlDocumentCache.ContainsKey(url))
+            if (_RestApiCache.ContainsKey(url))
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " Using Cached Response");
                 _AzureContext.LogProvider.WriteLog("GetAzureASMResources", requestGuid.ToString() + " End REST Request");
-                return _asmXmlDocumentCache[url];
+                AzureRestResponse cachedRestResponse = _RestApiCache[url];
+                XmlDocument cachedDocument = new XmlDocument();
+                cachedDocument.LoadXml(cachedRestResponse.Response);
+                return cachedDocument;
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
@@ -341,9 +356,6 @@ namespace MigAz.Azure
                 if (httpWebResponseValue != String.Empty)
                 {
                     xmlDocument = RemoveXmlns(httpWebResponseValue);
-
-                    if (!_asmXmlDocumentCache.ContainsKey(url))
-                        _asmXmlDocumentCache.Add(url, xmlDocument);
                 }
             }
             catch (Exception exception)
@@ -359,6 +371,9 @@ namespace MigAz.Azure
                 url,
                 _AzureContext.TokenProvider.AuthenticationResult.AccessToken,
                 xmlDocument.InnerXml);
+
+            if (!_RestApiCache.ContainsKey(url))
+                _RestApiCache.Add(url, azureRestResponse);
 
             OnRestResult?.Invoke(azureRestResponse);
 
@@ -808,11 +823,12 @@ namespace MigAz.Azure
 
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Url: " + url);
 
-            if (useCached && _armJsonDocumentCache.ContainsKey(url))
+            if (useCached && _RestApiCache.ContainsKey(url))
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " Using Cached Response");
                 _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " End REST Request");
-                return _armJsonDocumentCache[url];
+                AzureRestResponse cachedRestResponse = (AzureRestResponse)_RestApiCache[url];
+                return JObject.Parse(cachedRestResponse.Response);
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
@@ -878,9 +894,6 @@ namespace MigAz.Azure
                 if (webRequesetResult != String.Empty)
                 {
                     webRequestResultJson = JObject.Parse(webRequesetResult);
-
-                    if (useCached && !_armJsonDocumentCache.ContainsKey(url))
-                        _armJsonDocumentCache.Add(url, webRequestResultJson);
                 }
             }
             catch (Exception exception)
@@ -892,8 +905,11 @@ namespace MigAz.Azure
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", requestGuid.ToString() + " End REST Request");
 
             AzureRestResponse azureRestResponse = new AzureRestResponse(requestGuid, url, authenticationResult.AccessToken, webRequestResultJson.ToString());
-            OnRestResult?.Invoke(azureRestResponse);
 
+            if (!_RestApiCache.ContainsKey(url))
+                _RestApiCache.Add(url, azureRestResponse);
+
+            OnRestResult?.Invoke(azureRestResponse);
 
             return webRequestResultJson;
         }

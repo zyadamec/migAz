@@ -49,7 +49,7 @@ namespace MigAz.Azure.Arm
                 }
                 catch (NullReferenceException)
                 {
-                    return null;
+                    return String.Empty;
                 }
             }
         }

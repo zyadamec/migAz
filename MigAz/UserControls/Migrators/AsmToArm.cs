@@ -272,6 +272,7 @@ namespace MigAz.UserControls.Migrators
 
                     #endregion
 
+                    _AzureContextSourceASM.AzureRetriever.SaveRestCache();
                     await ReadSubscriptionSettings(sender.AzureSubscription);
 
                     treeSourceASM.Enabled = true;
