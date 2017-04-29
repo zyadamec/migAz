@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure;
-using MigAz.Azure.Arm;
 using System.Net;
-using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.UserControls.Migrators;
-using MigAz.Core.Interface;
 
 namespace MigAz.UserControls
 {
@@ -35,7 +25,7 @@ namespace MigAz.UserControls
             _ParentForm = parentForm;
             _ResourceGroupNode = resourceGroupNode;
 
-            ResourceGroup armResourceGroup = (ResourceGroup) _ResourceGroupNode.Tag;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
 
             txtName.Text = armResourceGroup.TargetName;
 
@@ -74,7 +64,7 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
 
             armResourceGroup.TargetName = txtSender.Text;
             _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
@@ -87,7 +77,7 @@ namespace MigAz.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
             armResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
 
             PropertyChanged();

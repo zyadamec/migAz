@@ -726,10 +726,10 @@ namespace MigAz.Azure
             if (_AsmAvailabilitySets == null)
                 _AsmAvailabilitySets = new List<Asm.AvailabilitySet>();
 
-            foreach (Asm.AvailabilitySet armAvailabilitySet in _AsmAvailabilitySets)
+            foreach (Asm.AvailabilitySet asmAvailabilitySet in _AsmAvailabilitySets)
             {
-                if (armAvailabilitySet.name == asmVirtualMachine.GetDefaultAvailabilitySetName())
-                    return armAvailabilitySet;
+                if (asmAvailabilitySet.Name == asmVirtualMachine.GetDefaultAvailabilitySetName())
+                    return asmAvailabilitySet;
             }
 
             Asm.AvailabilitySet newArmAvailabilitySet = new Asm.AvailabilitySet(this._AzureContext, asmVirtualMachine);

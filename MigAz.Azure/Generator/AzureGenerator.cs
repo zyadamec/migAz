@@ -18,10 +18,10 @@ namespace MigAz.Azure.Generator.AsmToArm
 {
     public class AzureGenerator : TemplateGenerator
     {
-        private Arm.ResourceGroup _TargetResourceGroup;
+        private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
-        private ExportArtifacts _ASMArtifacts;
+        private ExportArtifacts _ExportArtifacts;
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
 
         private AzureGenerator() : base(null, null, null, null) { } 
@@ -29,7 +29,7 @@ namespace MigAz.Azure.Generator.AsmToArm
         public AzureGenerator(
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
-            Arm.ResourceGroup targetResourceGroup,
+            Azure.MigrationTarget.ResourceGroup targetResourceGroup,
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
@@ -40,7 +40,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             _settingsProvider = settingsProvider;
         }
 
-        public Arm.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
+        public Azure.MigrationTarget.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
 
 
         // Use of Treeview has been added here with aspect of transitioning full output towards this as authoritative source
@@ -54,7 +54,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             Resources.Clear();
             _CopyBlobDetails.Clear();
 
-            _ASMArtifacts = (ExportArtifacts)artifacts;
+            _ExportArtifacts = (ExportArtifacts)artifacts;
 
             if (_TargetResourceGroup == null)
             {
@@ -66,51 +66,52 @@ namespace MigAz.Azure.Generator.AsmToArm
                 this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _TargetResourceGroup);
             }
 
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
                 if (asmNetworkSecurityGroup.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.", asmNetworkSecurityGroup);
             }
 
-            foreach (IVirtualMachine virtualMachine in _ASMArtifacts.VirtualMachines)
+            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
             {
-                if (virtualMachine.GetType() == typeof(Azure.Asm.VirtualMachine))
+                if (virtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
                 {
-                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine;
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine.Source;
 
-                    if (asmVirtualMachine.TargetName == string.Empty)
+                    if (virtualMachine.TargetName == string.Empty)
                         this.AddAlert(AlertType.Error, "Target Name for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
-                    if (asmVirtualMachine.TargetAvailabilitySet == null)
+                    if (virtualMachine.TargetAvailabilitySet == null)
                         this.AddAlert(AlertType.Error, "Target Availability Set for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
 
-                    if (asmVirtualMachine.TargetVirtualNetwork == null)
-                        this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-                    else
+                    foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                     {
-                        if (asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+                        if (networkInterface.TargetVirtualNetwork == null)
+                            this.AddAlert(AlertType.Error, "Target Virtual Network for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
+                        else
                         {
-                            Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)asmVirtualMachine.TargetVirtualNetwork;
-                            bool targetVNetExists = false;
-
-                            foreach (IVirtualNetwork iVirtualNetwork in _ASMArtifacts.VirtualNetworks)
+                            if (networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
                             {
-                                if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
-                                {
-                                    targetVNetExists = true;
-                                    break;
-                                }
-                            }
+                                Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)networkInterface.TargetVirtualNetwork;
+                                bool targetVNetExists = false;
 
-                            if (!targetVNetExists)
-                                this.AddAlert(AlertType.Error, "Target ASM Virtual Network '" + targetAsmVirtualNetwork.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                                foreach (IVirtualNetwork iVirtualNetwork in _ExportArtifacts.VirtualNetworks)
+                                {
+                                    if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
+                                    {
+                                        targetVNetExists = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!targetVNetExists)
+                                    this.AddAlert(AlertType.Error, "Target ASM Virtual Network '" + targetAsmVirtualNetwork.Name + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                            }
                         }
 
+                        if (networkInterface.TargetSubnet == null)
+                            this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
                     }
-
-                    if (asmVirtualMachine.TargetSubnet == null)
-                        this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
-
                     if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                         this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
                     else
@@ -120,7 +121,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                             Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                             bool targetAsmStorageExists = false;
 
-                            foreach (Azure.MigrationTarget.StorageAccount asmStorageAccount in _ASMArtifacts.StorageAccounts)
+                            foreach (Azure.MigrationTarget.StorageAccount asmStorageAccount in _ExportArtifacts.StorageAccounts)
                             {
                                 if (asmStorageAccount.SourceAccount.ToString() == targetStorageAccount.ToString())
                                 {
@@ -147,7 +148,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                                 Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
                                 bool targetStorageExists = false;
 
-                                foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+                                foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
                                 {
                                     if (storageAccount.ToString() == targetStorageAccount.ToString())
                                     {
@@ -164,7 +165,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
                 else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
                 {
-                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine;
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine.Source;
 
                     if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                         this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk must be specified.", armVirtualMachine);
@@ -175,7 +176,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                             Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                             bool targetArmStorageExists = false;
 
-                            foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+                            foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
                             {
                                 if (storageAccount.ToString() == targetStorageAccount.ToString())
                                 {
@@ -202,7 +203,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                                 Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
                                 bool targetArmStorageExists = false;
 
-                                foreach (IStorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+                                foreach (IStorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
                                 {
                                     if (storageAccount.ToString() == targetStorageAccount.ToString())
                                     {
@@ -220,7 +221,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ASMArtifacts.NetworkSecurityGroups)
+            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
                 await BuildNetworkSecurityGroup(asmNetworkSecurityGroup);
@@ -228,7 +229,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Network Security Groups");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Virtual Networks");
-            foreach (IVirtualNetwork virtualNetwork in _ASMArtifacts.VirtualNetworks)
+            foreach (IVirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
             {
                 if (virtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
                 {
@@ -246,7 +247,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Virtual Networks");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Storage Accounts");
-            foreach (MigrationTarget.StorageAccount storageAccount in _ASMArtifacts.StorageAccounts)
+            foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.GetFinalTargetName());
                 BuildStorageAccountObject(storageAccount);
@@ -254,30 +255,29 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Storage Accounts");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Cloud Services / Virtual Machines");
-            foreach (IVirtualMachine virtualMachine in _ASMArtifacts.VirtualMachines)
+            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
             {
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.GetFinalTargetName());
+
+                // process availability set
+                if (virtualMachine.ParentAvailabilitySet != null)
+                    BuildAvailabilitySetObject(virtualMachine.ParentAvailabilitySet);
+
+
                 if (virtualMachine.GetType() == typeof(Azure.Asm.VirtualMachine))
                 {
-                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine;
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine.Source;
 
-                    StatusProvider.UpdateStatus("BUSY: Exporting Cloud Service : " + asmVirtualMachine.CloudServiceName);
 
                     BuildPublicIPAddressObject(asmVirtualMachine);
-                    BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ASMArtifacts);
-
-                    // process availability set
-                    BuildAvailabilitySetObject(asmVirtualMachine);
-
-                    // process network interface
-                    List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
-                    await BuildNetworkInterfaceObject(asmVirtualMachine, networkinterfaces);
+                    BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
 
                     // process virtual machine
-                    await BuildVirtualMachineObject(asmVirtualMachine, networkinterfaces);
+                    //await BuildVirtualMachineObject(asmVirtualMachine);
                 }
                 else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
                 {
-                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine;
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine.Source;
 
                     //LoadBalancer Processing
                     foreach (Arm.NetworkInterfaceCard nicint in armVirtualMachine.NetworkInterfaces)
@@ -319,13 +319,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                         // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
                         //}
                     }
-
-                    // process availability set
-                    // todoBuildARMAvailabilitySetObject();
-
-                    // process network interface
-                    List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
-                    //todo BuildARMNetworkInterfaceObject(ref networkinterfaces);
 
                     // process virtual machine
                     BuildARMVirtualMachineObject(armVirtualMachine);
@@ -497,16 +490,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildAvailabilitySetObject(Asm.VirtualMachine asmVirtualMachine)
+        private void BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet availabilitySet)
         {
             LogProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
-            string virtualmachinename = asmVirtualMachine.RoleName;
-            string cloudservicename = asmVirtualMachine.CloudServiceName;
-
             AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
 
-            availabilityset.name = asmVirtualMachine.TargetAvailabilitySet.GetFinalTargetName();
+            availabilityset.name = availabilitySet.GetFinalTargetName();
             if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
                 availabilityset.location = this.TargetResourceGroup.TargetLocation.Name;
 
@@ -718,7 +708,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (asmSubnet.NetworkSecurityGroup != null)
                     {
-                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup) _ASMArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
+                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup) _ExportArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
 
                         if (asmNetworkSecurityGroup == null)
                         {
@@ -1245,196 +1235,191 @@ namespace MigAz.Azure.Generator.AsmToArm
             return routetable;
         }
 
-        private async Task BuildNetworkInterfaceObject(Asm.VirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private async Task BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface networkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start");
+            // todo now russell
+            //Reference subnet_ref = new Reference();
 
-            Reference subnet_ref = new Reference();
+            //if (networkInterface.TargetSubnet != null)
+            //    subnet_ref.id = networkInterface.TargetSubnet.TargetId;
 
-            if (asmVirtualMachine.TargetSubnet != null)
-                subnet_ref.id = asmVirtualMachine.TargetSubnet.TargetId;
+            //string privateIPAllocationMethod = "Dynamic";
+            //string privateIPAddress = null;
+            //if (networkInterface.TargetStaticIpAddress != String.Empty)
+            //{
+            //    privateIPAllocationMethod = "Static";
+            //    privateIPAddress = networkInterface.TargetStaticIpAddress;
+            //}
 
-            string privateIPAllocationMethod = "Dynamic";
-            string privateIPAddress = null;
-            if (asmVirtualMachine.StaticVirtualNetworkIPAddress != String.Empty)
-            {
-                privateIPAllocationMethod = "Static";
-                privateIPAddress = asmVirtualMachine.StaticVirtualNetworkIPAddress;
-            }
+            //List<string> dependson = new List<string>();
+            //if (networkInterface.TargetVirtualNetwork != null && networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+            //    dependson.Add(networkInterface.TargetVirtualNetwork.TargetId);
 
-            List<string> dependson = new List<string>();
-            if (asmVirtualMachine.TargetVirtualNetwork != null && asmVirtualMachine.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
-                dependson.Add(asmVirtualMachine.TargetVirtualNetwork.TargetId);
+            //// If there is at least one endpoint add the reference to the LB backend pool
+            //List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
+            //if (networkInterface.LoadBalancerRules.Count > 0)
+            //{
+            //    Reference loadBalancerBackendAddressPool = new Reference();
+            //    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/backendAddressPools/default')]";
 
-            // If there is at least one endpoint add the reference to the LB backend pool
-            List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-            if (asmVirtualMachine.LoadBalancerRules.Count > 0)
-            {
-                Reference loadBalancerBackendAddressPool = new Reference();
-                loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + asmVirtualMachine.LoadBalancerName + "/backendAddressPools/default')]";
+            //    loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
+            //    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "')]");
+            //}
 
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + asmVirtualMachine.LoadBalancerName + "')]");
-            }
+            //// Adds the references to the inboud nat rules
+            //List<Reference> loadBalancerInboundNatRules = new List<Reference>();
+            //foreach (Asm.LoadBalancerRule asmLoadBalancerRule in networkInterface.LoadBalancerRules)
+            //{
+            //    if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
+            //    {
+            //        string inboundnatrulename = networkInterface.GetFinalTargetName() + "-" + asmLoadBalancerRule.Name;
+            //        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
 
-            // Adds the references to the inboud nat rules
-            List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
-            {
-                if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-                {
-                    string inboundnatrulename = asmVirtualMachine.RoleName + "-" + asmLoadBalancerRule.Name;
-                    inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+            //        Reference loadBalancerInboundNatRule = new Reference();
+            //        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
 
-                    Reference loadBalancerInboundNatRule = new Reference();
-                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + asmVirtualMachine.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
+            //        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+            //    }
+            //}
 
-                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-                }
-            }
+            //IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
+            //ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
+            //ipconfiguration_properties.privateIPAddress = privateIPAddress;
+            //ipconfiguration_properties.subnet = subnet_ref;
+            //ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
 
-            IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
-            ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-            ipconfiguration_properties.privateIPAddress = privateIPAddress;
-            ipconfiguration_properties.subnet = subnet_ref;
-            ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+            //string ipconfiguration_name = "ipconfig1";
+            //IpConfiguration ipconfiguration = new IpConfiguration();
+            //ipconfiguration.name = ipconfiguration_name;
+            //ipconfiguration.properties = ipconfiguration_properties;
 
-            // basic size VMs cannot have load balancer rules
-            if (!asmVirtualMachine.RoleSize.Contains("Basic"))
-            {
-                ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
-                // TODO, shouldn't this have an upgrade warning of being skipped if not Basic??
-            }
+            //List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
+            //ipConfigurations.Add(ipconfiguration);
 
-            string ipconfiguration_name = "ipconfig1";
-            IpConfiguration ipconfiguration = new IpConfiguration();
-            ipconfiguration.name = ipconfiguration_name;
-            ipconfiguration.properties = ipconfiguration_properties;
+            //foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
+            //{
+            //    NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
+            //    networkinterface_properties.ipConfigurations = ipConfigurations;
+            //    networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
 
-            List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
-            ipConfigurations.Add(ipconfiguration);
+            //    NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
+            //    networkInterface.name = targetNetworkInterface.GetFinalTargetName();
+            //    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+            //        networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+            //    networkInterface.properties = networkinterface_properties;
+            //    networkInterface.dependsOn = dependson;
 
-            NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
-            networkinterface_properties.ipConfigurations = ipConfigurations;
-            if (asmVirtualMachine.EnabledIpForwarding)
-            {
-                networkinterface_properties.enableIPForwarding = true;
-            }
+            //    NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+            //    networkinterface_ref_properties.primary = true;
 
-            NetworkInterface primaryNetworkInterface = new NetworkInterface(this.ExecutionGuid);
-            primaryNetworkInterface.name = asmVirtualMachine.PrimaryNetworkInterface.GetFinalTargetName();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                primaryNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-            primaryNetworkInterface.properties = networkinterface_properties;
-            primaryNetworkInterface.dependsOn = dependson;
+            //    NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
+            //    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
+            //    networkinterface_ref.properties = networkinterface_ref_properties;
+            //}
 
-            NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-            networkinterface_ref_properties.primary = true;
+            //if (virtualMachine.NetworkSecurityGroup != null)
+            //{
+            //    Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(virtualMachine.NetworkSecurityGroup.Name);
 
-            NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-            networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + primaryNetworkInterface.name + "')]";
-            networkinterface_ref.properties = networkinterface_ref_properties;
+            //    if (asmNetworkSecurityGroup == null)
+            //    {
+            //        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + virtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
+            //    }
+            //    else
+            //    {
+            //        // Add NSG reference to the network interface
+            //        Reference networksecuritygroup_ref = new Reference();
+            //        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.GetFinalTargetName() + "')]";
 
-            if (asmVirtualMachine.NetworkSecurityGroup != null)
-            {
-                Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ASMArtifacts.SeekNetworkSecurityGroup(asmVirtualMachine.NetworkSecurityGroup.Name);
+            //        networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
+            //        primaryNetworkInterface.properties = networkinterface_properties;
 
-                if (asmNetworkSecurityGroup == null)
-                {
-                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + asmVirtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
-                }
-                else
-                {
-                    // Add NSG reference to the network interface
-                    Reference networksecuritygroup_ref = new Reference();
-                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.GetFinalTargetName() + "')]";
+            //        // Add NSG dependsOn to the Network Interface object
+            //        if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
+            //        {
+            //            primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
+            //        }
+            //    }
 
-                    networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
-                    primaryNetworkInterface.properties = networkinterface_properties;
+            //}
 
-                    // Add NSG dependsOn to the Network Interface object
-                    if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
-                    {
-                        primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
-                    }
-                }
+            //if (virtualMachine.HasPublicIPs)
+            //{
+            //    BuildPublicIPAddressObject(ref primaryNetworkInterface);
+            //}
 
-            }
+            //networkinterfaces.Add(networkinterface_ref);
 
-            if (asmVirtualMachine.HasPublicIPs)
-            {
-                BuildPublicIPAddressObject(ref primaryNetworkInterface);
-            }
+            //this.AddResource(primaryNetworkInterface);
 
-            networkinterfaces.Add(networkinterface_ref);
+            //foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
+            //{
+            //    subnet_ref = new Reference();
+            //    subnet_ref.id = targetNetworkInterface.TargetSubnet.TargetId;
 
-            this.AddResource(primaryNetworkInterface);
+            //    privateIPAllocationMethod = "Dynamic";
+            //    privateIPAddress = null;
+            //    if (targetNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
+            //    {
+            //        privateIPAllocationMethod = "Static";
+            //        privateIPAddress = targetNetworkInterface.StaticVirtualNetworkIPAddress;
+            //    }
 
-            foreach (Asm.NetworkInterface asmNetworkInterface in asmVirtualMachine.NetworkInterfaces)
-            {
-                subnet_ref = new Reference();
-                subnet_ref.id = asmNetworkInterface.Parent.TargetSubnet.TargetId;
+            //    ipconfiguration_properties = new IpConfiguration_Properties();
+            //    ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
+            //    ipconfiguration_properties.privateIPAddress = privateIPAddress;
+            //    ipconfiguration_properties.subnet = subnet_ref;
 
-                privateIPAllocationMethod = "Dynamic";
-                privateIPAddress = null;
-                if (asmNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
-                {
-                    privateIPAllocationMethod = "Static";
-                    privateIPAddress = asmNetworkInterface.StaticVirtualNetworkIPAddress;
-                }
+            //    ipconfiguration_name = "ipconfig1";
+            //    ipconfiguration = new IpConfiguration();
+            //    ipconfiguration.name = ipconfiguration_name;
+            //    ipconfiguration.properties = ipconfiguration_properties;
 
-                ipconfiguration_properties = new IpConfiguration_Properties();
-                ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-                ipconfiguration_properties.privateIPAddress = privateIPAddress;
-                ipconfiguration_properties.subnet = subnet_ref;
+            //    ipConfigurations = new List<IpConfiguration>();
+            //    ipConfigurations.Add(ipconfiguration);
 
-                ipconfiguration_name = "ipconfig1";
-                ipconfiguration = new IpConfiguration();
-                ipconfiguration.name = ipconfiguration_name;
-                ipconfiguration.properties = ipconfiguration_properties;
+            //    networkinterface_properties = new NetworkInterface_Properties();
+            //    networkinterface_properties.ipConfigurations = ipConfigurations;
+            //    if (targetNetworkInterface.EnableIPForwarding)
+            //    {
+            //        networkinterface_properties.enableIPForwarding = true;
+            //    }
 
-                ipConfigurations = new List<IpConfiguration>();
-                ipConfigurations.Add(ipconfiguration);
+            //    dependson = new List<string>();
+            //    dependson.Add(targetNetworkInterface.TargetVirtualNetwork.TargetId);
 
-                networkinterface_properties = new NetworkInterface_Properties();
-                networkinterface_properties.ipConfigurations = ipConfigurations;
-                if (asmNetworkInterface.EnableIPForwarding)
-                {
-                    networkinterface_properties.enableIPForwarding = true;
-                }
+            //    NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
+            //    additionalNetworkInterface.name = targetNetworkInterface.GetFinalTargetName();
+            //    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+            //        additionalNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+            //    additionalNetworkInterface.properties = networkinterface_properties;
+            //    additionalNetworkInterface.dependsOn = dependson;
 
-                dependson = new List<string>();
-                dependson.Add(asmNetworkInterface.Parent.TargetVirtualNetwork.TargetId);
+            //    networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+            //    networkinterface_ref_properties.primary = false;
 
-                NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
-                additionalNetworkInterface.name = asmNetworkInterface.GetFinalTargetName();
-                if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                    additionalNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-                additionalNetworkInterface.properties = networkinterface_properties;
-                additionalNetworkInterface.dependsOn = dependson;
+            //    networkinterface_ref = new NetworkProfile_NetworkInterface();
+            //    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + additionalNetworkInterface.name + "')]";
+            //    networkinterface_ref.properties = networkinterface_ref_properties;
 
-                networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-                networkinterface_ref_properties.primary = false;
+            //    networkinterfaces.Add(networkinterface_ref);
 
-                networkinterface_ref = new NetworkProfile_NetworkInterface();
-                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + additionalNetworkInterface.name + "')]";
-                networkinterface_ref.properties = networkinterface_ref_properties;
-
-                networkinterfaces.Add(networkinterface_ref);
-
-                this.AddResource(additionalNetworkInterface);
-            }
+            //    this.AddResource(additionalNetworkInterface);
+            //}
 
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "End");
         }
 
-        private async Task BuildVirtualMachineObject(Asm.VirtualMachine asmVirtualMachine, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet, Azure.MigrationTarget.VirtualMachine virtualMachine)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
 
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
-            string virtualmachinename = asmVirtualMachine.GetFinalTargetName();
+            string virtualmachinename = virtualMachine.GetFinalTargetName();
+
+            Asm.VirtualMachine asmVirtualMachine = (Asm.VirtualMachine) virtualMachine.Source;
             string ostype = asmVirtualMachine.OSVirtualHardDiskOS;
             string newdiskurl = String.Empty;
             string osDiskTargetStorageAccountName = String.Empty;
@@ -1451,6 +1436,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 storageaccountdependencies.Add(asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
             }
 
+            // process network interface
+            List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
+            //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
 
             HardwareProfile hardwareprofile = new HardwareProfile();
             hardwareprofile.vmSize = GetVMSize(asmVirtualMachine.RoleSize);
@@ -1647,11 +1635,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             //}
 
             // Availability Set
-            Reference availabilityset = new Reference();
-            availabilityset.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + asmVirtualMachine.TargetAvailabilitySet.GetFinalTargetName() + "')]";
-            virtualmachine_properties.availabilitySet = availabilityset;
-
-            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + asmVirtualMachine.TargetAvailabilitySet.GetFinalTargetName() + "')]");
+            if (targetAvailabilitySet != null)
+            {
+                Reference availabilityset = new Reference();
+                virtualmachine_properties.availabilitySet = availabilityset;
+                availabilityset.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.GetFinalTargetName() + "')]";
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.GetFinalTargetName() + "')]");
+            }
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
@@ -1924,15 +1914,15 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + armVirtualMachine.name);
         }
 
-        private void BuildStorageAccountObject(MigrationTarget.StorageAccount storageAccount)
+        private void BuildStorageAccountObject(MigrationTarget.StorageAccount targetStorageAccount)
         {
-            LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + storageAccount.GetFinalTargetName());
+            LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + targetStorageAccount.GetFinalTargetName());
 
             StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
-            storageaccount_properties.accountType = storageAccount.SourceAccount.AccountType; // todo, this should be a new property on the target storage account definition, not the source account
+            storageaccount_properties.accountType = targetStorageAccount.AccountType;
 
             StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
-            storageaccount.name = storageAccount.GetFinalTargetName();
+            storageaccount.name = targetStorageAccount.GetFinalTargetName();
             if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
                 storageaccount.location = this.TargetResourceGroup.TargetLocation.Name;   
             storageaccount.properties = storageaccount_properties;

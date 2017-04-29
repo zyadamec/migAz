@@ -48,14 +48,15 @@ namespace MigAz.Tests
 
             Azure.Arm.VirtualNetwork armVirtualNetwork = new Azure.Arm.VirtualNetwork(webRequestResultJson);
 
-            foreach (Azure.Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
-            {
-                if (asmVirtualMachine.TargetVirtualNetwork == null)
-                    asmVirtualMachine.TargetVirtualNetwork = armVirtualNetwork;
+            // todo??
+            //foreach (Azure.Asm.VirtualMachine asmVirtualMachine in artifacts.VirtualMachines)
+            //{
+            //    if (asmVirtualMachine.TargetVirtualNetwork == null)
+            //        asmVirtualMachine.TargetVirtualNetwork = armVirtualNetwork;
 
-                if (asmVirtualMachine.TargetSubnet == null)
-                    asmVirtualMachine.TargetSubnet = armVirtualNetwork.Subnets[0];
-            }
+            //    if (asmVirtualMachine.TargetSubnet == null)
+            //        asmVirtualMachine.TargetSubnet = armVirtualNetwork.Subnets[0];
+            //}
         }
         
         public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
@@ -72,10 +73,10 @@ namespace MigAz.Tests
             return JObject.Parse(templateText);
         }
 
-        internal static async Task<ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
+        internal static async Task<Azure.MigrationTarget.ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
             List<Azure.Asm.Location> azureLocations = await azureContext.AzureRetriever.GetAzureASMLocations();
-            ResourceGroup targetResourceGroup = new ResourceGroup(azureContext, "Target Resource Group");
+            Azure.MigrationTarget.ResourceGroup targetResourceGroup = new Azure.MigrationTarget.ResourceGroup(azureContext);
             targetResourceGroup.TargetLocation = azureLocations[0];
             return targetResourceGroup;
         }

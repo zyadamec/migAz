@@ -5,17 +5,17 @@ using System.Collections.Generic;
 
 namespace MigAz.Azure.Arm
 {
-    public class StorageAccount : Core.ArmTemplate.StorageAccount, IStorageAccount, IStorageTarget
+    public class StorageAccount : IStorageAccount, IStorageTarget
     {
         private AzureContext _AzureContext;
         private JToken _StorageAccount;
         private List<StorageAccountKey> _StorageAccountKeys = new List<StorageAccountKey>();
 
-        private StorageAccount() : base(Guid.Empty) { }
+        private StorageAccount() { }
 
         public StorageAccount(
             AzureContext azureContext,
-            JToken storageAccount) : base(Guid.Empty)
+            JToken storageAccount)
         {
             _AzureContext = azureContext;
             _StorageAccount = storageAccount;
@@ -36,9 +36,9 @@ namespace MigAz.Azure.Arm
             get { return (string)_StorageAccount["id"]; }
         }
 
-        public string AccountType // todo is this needed
+        public string AccountType
         {
-            get { return ""; } //  resource.properties.accountType.Value;
+            get { return this.SkuName; }
         }
 
         public string Location

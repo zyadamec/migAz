@@ -91,6 +91,9 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="MigrationTarget\AvailabilitySet.cs" />
+    <Compile Include="MigrationTarget\NetworkInterface.cs" />
+    <Compile Include="MigrationTarget\ResourceGroup.cs" />
     <Compile Include="MigrationTarget\StorageAccount.cs" />
     <Compile Include="MigrationTarget\VirtualMachine.cs" />
     <Compile Include="Models\ArmToArmTelemetryRecord.cs" />

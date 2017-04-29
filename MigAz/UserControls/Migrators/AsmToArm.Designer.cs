@@ -82,8 +82,11 @@
             // 
             // treeTargetARM
             // 
+            this.treeTargetARM.ImageIndex = 0;
+            this.treeTargetARM.ImageList = this.imageList1;
             this.treeTargetARM.Location = new System.Drawing.Point(905, 241);
             this.treeTargetARM.Name = "treeTargetARM";
+            this.treeTargetARM.SelectedImageIndex = 0;
             this.treeTargetARM.Size = new System.Drawing.Size(855, 545);
             this.treeTargetARM.TabIndex = 57;
             this.treeTargetARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeARM_AfterSelect);

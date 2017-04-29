@@ -19,9 +19,11 @@ namespace MigAz.Azure.MigrationTarget
             _AzureContext = azureContext;
             _Source = source;
             this.TargetName = source.Name;
+            this.AccountType = source.AccountType;
         }
 
         public string TargetName { get; set; }
+        public string AccountType { get; set; }
         public string BlobStorageNamespace { get; } // todo has no value assigned
         public IStorageAccount SourceAccount
         {

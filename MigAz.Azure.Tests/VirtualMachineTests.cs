@@ -29,7 +29,7 @@ namespace MigAz.Tests
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
-            artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
+            //artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
             templateGenerator.UpdateArtifacts(artifacts);
@@ -73,7 +73,7 @@ namespace MigAz.Tests
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
-            artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
+            //artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
             templateGenerator.UpdateArtifacts(artifacts);
@@ -105,7 +105,7 @@ namespace MigAz.Tests
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
-            artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
+            //artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
 
             templateGenerator.UpdateArtifacts(artifacts);
 
@@ -131,7 +131,7 @@ namespace MigAz.Tests
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
             var artifacts = new ExportArtifacts();
-            artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
+            //artifacts.VirtualMachines.Add((await azureContextUSCommercialRetriever.GetAzureAsmCloudServices())[0].VirtualMachines[0]);
             TestHelper.SetTargetSubnets(artifacts);
 
             templateGenerator.UpdateArtifacts(artifacts);
@@ -168,7 +168,7 @@ namespace MigAz.Tests
 
             // todo asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await azureContextUSGovernmentRetriever.GetAzureAsmStorageAccount("targetstorage");
 
-            artifacts.VirtualMachines.Add(asmVirtualMachine);
+            //artifacts.VirtualMachines.Add(asmVirtualMachine);
 
             Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.MediaLink, "https://mystorage.blob.core.windows.net/vhds/mydisk.vhd");
             Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink, "https://targetstoragev2.blob.core.usgovcloudapi.net/vhds/mydisk.vhd");

@@ -94,8 +94,8 @@ namespace MigAz.Tests.Fakes
                         VirtualMachine asmVirtualMachine = new VirtualMachine(_AzureContext, parentCloudService, this._AzureContext.SettingsProvider, doc, info);
                         await asmVirtualMachine.InitializeChildren();
                         // todo asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
-                        asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
-                        asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
+                        //asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
+                        //asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
 
                         // todo foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
                         //{

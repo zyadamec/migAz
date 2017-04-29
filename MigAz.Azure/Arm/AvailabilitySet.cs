@@ -17,10 +17,6 @@ namespace MigAz.Azure.Arm
             this._AvailabilitySet = availabilitySet;
         }
 
-        public string TargetName
-        {
-            get;set;
-        }
         public string Id => (string)_AvailabilitySet["id"];
         public string Name => (string)_AvailabilitySet["name"];
         public string Location => (string)_AvailabilitySet["location"];
@@ -33,9 +29,6 @@ namespace MigAz.Azure.Arm
             get { return _VirtualMachines; }
         }
 
-        public string GetFinalTargetName()
-        {
-            return this.TargetName;
-        }
+
     }
 }

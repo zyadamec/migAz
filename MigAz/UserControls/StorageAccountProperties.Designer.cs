@@ -52,9 +52,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(5, 97);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(209, 25);
+            this.label2.Size = new System.Drawing.Size(142, 25);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Target (ARM) Name:";
+            this.label2.Text = "Target Name:";
             // 
             // lblAccountType
             // 
@@ -88,9 +88,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(5, 52);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(214, 25);
+            this.label4.Size = new System.Drawing.Size(148, 25);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Source (ASM) Name:";
+            this.label4.Text = "Source Name:";
             // 
             // StorageAccountProperties
             // 
@@ -103,7 +103,7 @@
             this.Controls.Add(this.lblAccountType);
             this.Controls.Add(this.label1);
             this.Name = "StorageAccountProperties";
-            this.Size = new System.Drawing.Size(625, 140);
+            this.Size = new System.Drawing.Size(625, 242);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -23,12 +23,8 @@ namespace MigAz.Azure.Asm
         List<NetworkInterface> _NetworkInterfaces;
         private VirtualNetwork _SourceVirtualNetwork;
         private Subnet _SourceSubnet;
-        private IVirtualNetwork _TargetVirtualNetwork;
-        private ISubnet _TargetSubnet;
-        private AvailabilitySet _TargetAvailabilitySet = null;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
         private NetworkInterface _PrimaryNetworkInterface = null;
-        private string _TargetName = String.Empty;
 
         #endregion
 
@@ -42,7 +38,6 @@ namespace MigAz.Azure.Asm
             this._AzureContext = azureContext;
             this._XmlNode = virtualMachineXml;
             this._VmDetails = vmDetails;
-            this.TargetName = this.RoleName;
             this._PrimaryNetworkInterface = new NetworkInterface(azureContext, this, settingsProvider, null);
 
             _OSVirtualHardDisk = new Disk(azureContext, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
@@ -71,9 +66,6 @@ namespace MigAz.Azure.Asm
 
         public async Task InitializeChildren()
         {
-            this._TargetAvailabilitySet = _AzureContext.AzureRetriever.GetAzureASMAvailabilitySet(this);
-
-
             if (this.VirtualNetworkName != String.Empty)
             {
                 _SourceVirtualNetwork = await _AzureContext.AzureRetriever.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
@@ -153,11 +145,7 @@ namespace MigAz.Azure.Asm
             get { return _AsmNetworkSecurityGroup; }
         }
 
-        public AvailabilitySet TargetAvailabilitySet
-        {
-            get { return _TargetAvailabilitySet; }
-            set { _TargetAvailabilitySet = value; }
-        }
+
 
         public string RoleName
         {
@@ -240,11 +228,6 @@ namespace MigAz.Azure.Asm
             }
         }
 
-        public IVirtualNetwork TargetVirtualNetwork
-        {
-            get { return _TargetVirtualNetwork; }
-            set { _TargetVirtualNetwork = value; }
-        }
 
         public Subnet SourceSubnet
         {
@@ -255,22 +238,6 @@ namespace MigAz.Azure.Asm
             get { return _SourceVirtualNetwork; }
         }
 
-        public ISubnet TargetSubnet
-        {
-            get { return _TargetSubnet; }
-            set { _TargetSubnet = value; }
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value; }
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
-        }
 
         #endregion
     }

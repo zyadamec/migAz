@@ -62,7 +62,7 @@ namespace MigAz.UserControls
                 lblVirtualNetworkName.Text = asmVirtualMachine.VirtualNetworkName;
                 lblSubnetName.Text = asmVirtualMachine.SubnetName;
                 lblStaticIpAddress.Text = asmVirtualMachine.StaticVirtualNetworkIPAddress;
-                txtARMVMName.Text = asmVirtualMachine.TargetName;
+                // todo now russell txtARMVMName.Text = asmVirtualMachine.TargetName;
 
                 this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
 
@@ -77,16 +77,17 @@ namespace MigAz.UserControls
                     rbExistingARMVNet.Enabled = false;
                 }
 
-                if ((asmVirtualMachine.TargetSubnet == null) ||
-                        (asmVirtualMachine.TargetSubnet.GetType() == typeof(Azure.Asm.Subnet)) ||
-                        (rbExistingARMVNet.Enabled == false))
-                {
-                    rbVNetInMigration.Checked = true;
-                }
-                else
-                {
-                    rbExistingARMVNet.Checked = true;
-                }
+                // TODO Now Russell
+                //if ((asmVirtualMachine.TargetSubnet == null) ||
+                //        (asmVirtualMachine.TargetSubnet.GetType() == typeof(Azure.Asm.Subnet)) ||
+                //        (rbExistingARMVNet.Enabled == false))
+                //{
+                //    rbVNetInMigration.Checked = true;
+                //}
+                //else
+                //{
+                //    rbExistingARMVNet.Checked = true;
+                //}
             }
             else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
             {
@@ -185,30 +186,31 @@ namespace MigAz.UserControls
                     if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
                     {
                         Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
-                        if (asmVirtualMachine.TargetVirtualNetwork != null)
-                        {
-                            // Attempt to match target to list items
-                            foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
-                            {
-                                if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
-                                {
-                                    cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
-                                    break;
-                                }
-                            }
+                        //Todo now russell
+                        //if (asmVirtualMachine.TargetVirtualNetwork != null)
+                        //{
+                        //    // Attempt to match target to list items
+                        //    foreach (Azure.Asm.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                        //    {
+                        //        if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
+                        //        {
+                        //            cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                        //            break;
+                        //        }
+                        //    }
 
-                            if (cmbExistingArmVNets.SelectedItem != null && asmVirtualMachine.TargetSubnet != null)
-                            {
-                                foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                                {
-                                    if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
-                                    {
-                                        cmbExistingArmSubnet.SelectedItem = listSubnet;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        //    if (cmbExistingArmVNets.SelectedItem != null && asmVirtualMachine.TargetSubnet != null)
+                        //    {
+                        //        foreach (Azure.Asm.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                        //        {
+                        //            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
+                        //            {
+                        //                cmbExistingArmSubnet.SelectedItem = listSubnet;
+                        //                break;
+                        //            }
+                        //        }
+                        //    }
+                        //}
                     }
                     else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
                     {
@@ -267,33 +269,35 @@ namespace MigAz.UserControls
                 if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
                 {
                     Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
-                    if (asmVirtualMachine.TargetVirtualNetwork != null)
-                    {
-                        // Attempt to match target to list items
-                        for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
-                        {
-                            Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
-                            if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
-                            {
-                                cmbExistingArmVNets.SelectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
 
-                    if (asmVirtualMachine.TargetSubnet != null)
-                    {
-                        // Attempt to match target to list items
-                        for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
-                        {
-                            Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
-                            if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
-                            {
-                                cmbExistingArmSubnet.SelectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
+                    // todo now russell
+                    //if (asmVirtualMachine.TargetVirtualNetwork != null)
+                    //{
+                    //    // Attempt to match target to list items
+                    //    for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
+                    //    {
+                    //        Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
+                    //        if (listVirtualNetwork.Id == asmVirtualMachine.TargetVirtualNetwork.Id)
+                    //        {
+                    //            cmbExistingArmVNets.SelectedIndex = i;
+                    //            break;
+                    //        }
+                    //    }
+                    //}
+
+                    //if (asmVirtualMachine.TargetSubnet != null)
+                    //{
+                    //    // Attempt to match target to list items
+                    //    for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
+                    //    {
+                    //        Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
+                    //        if (listSubnet.Id == asmVirtualMachine.TargetSubnet.Id)
+                    //        {
+                    //            cmbExistingArmSubnet.SelectedIndex = i;
+                    //            break;
+                    //        }
+                    //    }
+                    //}
                 }
 
                 #endregion
@@ -312,26 +316,27 @@ namespace MigAz.UserControls
                 Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
                 ComboBox cmbSender = (ComboBox)sender;
 
-                if (cmbSender.SelectedItem == null)
-                {
-                    asmVirtualMachine.TargetVirtualNetwork = null;
-                    asmVirtualMachine.TargetSubnet = null;
-                }
-                else
-                {
-                    if (cmbSender.SelectedItem.GetType() == typeof(Azure.Asm.Subnet))
-                    {
-                        Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)cmbSender.SelectedItem;
-                        asmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
-                        asmVirtualMachine.TargetSubnet = asmSubnet;
-                    }
-                    else if (cmbSender.SelectedItem.GetType() == typeof(Azure.Arm.Subnet))
-                    {
-                        Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)cmbSender.SelectedItem;
-                        asmVirtualMachine.TargetVirtualNetwork = armSubnet.Parent;
-                        asmVirtualMachine.TargetSubnet = armSubnet;
-                    }
-                }
+                // TODO NOW RUssell
+                //if (cmbSender.SelectedItem == null)
+                //{
+                //    asmVirtualMachine.TargetVirtualNetwork = null;
+                //    asmVirtualMachine.TargetSubnet = null;
+                //}
+                //else
+                //{
+                //    if (cmbSender.SelectedItem.GetType() == typeof(Azure.Asm.Subnet))
+                //    {
+                //        Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)cmbSender.SelectedItem;
+                //        asmVirtualMachine.TargetVirtualNetwork = asmSubnet.Parent;
+                //        asmVirtualMachine.TargetSubnet = asmSubnet;
+                //    }
+                //    else if (cmbSender.SelectedItem.GetType() == typeof(Azure.Arm.Subnet))
+                //    {
+                //        Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)cmbSender.SelectedItem;
+                //        asmVirtualMachine.TargetVirtualNetwork = armSubnet.Parent;
+                //        asmVirtualMachine.TargetSubnet = armSubnet;
+                //    }
+                //}
             }
             else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
             {
@@ -345,20 +350,21 @@ namespace MigAz.UserControls
         {
             TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
 
-            if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
-            {
-                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
+            // todo now russell
+            //if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+            //{
+            //    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
 
-                asmVirtualMachine.TargetName = txtARMVMName.Text;
-                _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
-            }
-            else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-            {
-                Azure.Arm.VirtualMachine asmVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
+            //    asmVirtualMachine.TargetName = txtARMVMName.Text;
+            //    _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
+            //}
+            //else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+            //{
+            //    Azure.Arm.VirtualMachine asmVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
 
-                asmVirtualMachine.TargetName = txtARMVMName.Text;
-                _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
-            }
+            //    asmVirtualMachine.TargetName = txtARMVMName.Text;
+            //    _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
+            //}
 
             PropertyChanged();
         }

@@ -82,32 +82,40 @@ namespace MigAz.Providers
 
                             saveSelection.StorageAccounts.Add(saveSelectionStorageAccount);
                         }
-                        else if (tagType == typeof(Azure.Asm.VirtualMachine))
+                        else if (tagType == typeof(Azure.MigrationTarget.VirtualMachine))
                         {
-                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)treeNode.Tag;
+                            Azure.MigrationTarget.VirtualMachine virtualMachine = (Azure.MigrationTarget.VirtualMachine)treeNode.Tag;
 
-                            SaveSelectionVirtualMachine saveSelectionVirtualMachine = new SaveSelectionVirtualMachine();
-                            saveSelectionVirtualMachine.CloudService = asmVirtualMachine.CloudServiceName;
-                            saveSelectionVirtualMachine.VirtualMachine = asmVirtualMachine.RoleName;
-
-                            if (asmVirtualMachine.TargetVirtualNetwork != null)
-                                saveSelectionVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.TargetVirtualNetwork.Id;
-
-                            if (asmVirtualMachine.TargetSubnet != null)
-                                saveSelectionVirtualMachine.TargetSubnet = asmVirtualMachine.TargetSubnet.Id;
-
-                            //Add OS Disk Target Storage Account
-                             if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-                                saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString());
-
-                            // Add OS Disk Target Storage Account
-                            foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                            if (virtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
                             {
-                                if (asmDataDisk.TargetStorageAccount != null)
-                                    saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.ToString());
+                                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine.Source;
+
+                                SaveSelectionVirtualMachine saveSelectionVirtualMachine = new SaveSelectionVirtualMachine();
+                                saveSelectionVirtualMachine.CloudService = asmVirtualMachine.CloudServiceName;
+                                saveSelectionVirtualMachine.VirtualMachine = asmVirtualMachine.RoleName;
+
+                                // todo now russell
+
+                                //if (virtualMachine.TargetVirtualNetwork != null)
+                                //    saveSelectionVirtualMachine.TargetVirtualNetwork = virtualMachine.TargetVirtualNetwork.Id;
+
+                                //if (virtualMachine.TargetSubnet != null)
+                                //    saveSelectionVirtualMachine.TargetSubnet = virtualMachine.TargetSubnet.Id;
+
+                                //Add OS Disk Target Storage Account
+                                if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                                    saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString());
+
+                                // Add OS Disk Target Storage Account
+                                foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                                {
+                                    if (asmDataDisk.TargetStorageAccount != null)
+                                        saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.ToString());
+                                }
+
+                                saveSelection.VirtualMachines.Add(saveSelectionVirtualMachine);
                             }
 
-                            saveSelection.VirtualMachines.Add(saveSelectionVirtualMachine);
                         }
                     }
                 }
@@ -182,17 +190,18 @@ namespace MigAz.Providers
 
                                 if (asmVirtualMachine.CloudServiceName == saveSelectionVirtualMachine.CloudService && asmVirtualMachine.RoleName == saveSelectionVirtualMachine.VirtualMachine)
                                 {
-                                    asmVirtualMachine.TargetVirtualNetwork = SeekVirtualNetwork(saveSelectionVirtualMachine.TargetVirtualNetwork, await sourceAzureRetreiver.GetAzureAsmVirtualNetworks(), await targetAzureRetreiver.GetAzureARMVirtualNetworks());
-                                    asmVirtualMachine.TargetSubnet = SeekSubnet(saveSelectionVirtualMachine.TargetSubnet, asmVirtualMachine.TargetVirtualNetwork);
+                                    // todo now russell
+                                    //asmVirtualMachine.TargetVirtualNetwork = SeekVirtualNetwork(saveSelectionVirtualMachine.TargetVirtualNetwork, await sourceAzureRetreiver.GetAzureAsmVirtualNetworks(), await targetAzureRetreiver.GetAzureARMVirtualNetworks());
+                                    //asmVirtualMachine.TargetSubnet = SeekSubnet(saveSelectionVirtualMachine.TargetSubnet, asmVirtualMachine.TargetVirtualNetwork);
 
-                                    if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmVirtualMachine.OSVirtualHardDisk.DiskName))
-                                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmVirtualMachine.OSVirtualHardDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
+                                    //if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmVirtualMachine.OSVirtualHardDisk.DiskName))
+                                    //    asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmVirtualMachine.OSVirtualHardDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
 
-                                    foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
-                                    {
-                                        if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmDataDisk.DiskName))
-                                            asmDataDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmDataDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
-                                    }
+                                    //foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                                    //{
+                                    //    if (saveSelectionVirtualMachine.TargetDiskStorageAccounts.ContainsKey(asmDataDisk.DiskName))
+                                    //        asmDataDisk.TargetStorageAccount = SeekStorageAccount(saveSelectionVirtualMachine.TargetDiskStorageAccounts[asmDataDisk.DiskName].ToString(), await sourceAzureRetreiver.GetAzureAsmStorageAccounts(), await targetAzureRetreiver.GetAzureARMStorageAccounts());
+                                    //}
 
                                     virtualMachineNode.Checked = true;
                                 }

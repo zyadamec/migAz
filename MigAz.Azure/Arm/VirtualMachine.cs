@@ -23,7 +23,6 @@ namespace MigAz.Azure.Arm
         public VirtualMachine(JToken virtualMachine) : base(Guid.Empty)
         {
             _VirtualMachine = virtualMachine;
-            this.TargetName = this.Name;
 
             _OSVirtualHardDisk = new Disk(_VirtualMachine["properties"]["storageProfile"]["osDisk"]);
             foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
