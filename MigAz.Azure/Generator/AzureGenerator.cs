@@ -515,7 +515,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 if (asmCloudService.LoadBalancers.Count > 0)
                 {
                     string virtualnetworkname = String.Empty; // todo now russell asmCloudService.VirtualNetwork.GetFinalTargetName();
-                    string subnetname = asmCloudService.LoadBalancers[0].Subnet.TargetName;
+                    string subnetname = String.Empty; // todo now russell asmCloudService.LoadBalancers[0].Subnet.TargetName;
 
                     frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
                     if (asmCloudService.StaticVirtualNetworkIPAddress != String.Empty)

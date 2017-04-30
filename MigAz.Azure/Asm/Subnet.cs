@@ -16,7 +16,6 @@ namespace MigAz.Azure.Asm
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
         private RouteTable _AsmRouteTable = null;
         private XmlNode _XmlNode = null;
-        private String _TargetName = null;
 
         #endregion
 
@@ -29,8 +28,6 @@ namespace MigAz.Azure.Asm
             _AzureContext = azureContext;
             _Parent = parent;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
         }
 
         #endregion
@@ -40,11 +37,6 @@ namespace MigAz.Azure.Asm
         public string Name
         {
             get { return _XmlNode.SelectSingleNode("Name").InnerText; }
-        }
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Replace(" ", String.Empty); }
         }
 
         public string Id

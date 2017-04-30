@@ -15,8 +15,6 @@ namespace MigAz.Azure.Arm
         {
             _Parent = parent;
             _Subnet = subnet;
-
-            this.TargetName = this.Name;
         }
 
         public string Name
@@ -61,8 +59,6 @@ namespace MigAz.Azure.Arm
         {
             get { return this.Name == ArmConst.GatewaySubnetName; }
         }
-
-        public string TargetName { get; set; }
 
         public override string ToString()
         {

@@ -31,7 +31,12 @@ namespace MigAz.Azure.MigrationTarget
         public String TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
+            set { _TargetName = value.Replace(" ", String.Empty).Trim(); }
+        }
+
+        public ISubnet Source
+        {
+            get { return _Source; }
         }
 
         public MigrationTarget.VirtualNetwork ParentVirtualNetwork
