@@ -62,14 +62,14 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetSubnets; }
         }
 
-        public string GetFinalTargetName()
+        public override string ToString()
         {
             return this.TargetName + _AzureContext.SettingsProvider.VirtualNetworkSuffix;
         }
 
         public string TargetId
         {
-            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.GetFinalTargetName() + "')]"; }
+            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.ToString() + "')]"; }
         }
 
 

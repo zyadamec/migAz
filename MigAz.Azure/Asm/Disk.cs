@@ -52,7 +52,7 @@ namespace MigAz.Azure.Asm
                 else if(this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                 {
                     Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.GetFinalTargetName() + "." + targetStorageAccount.BlobStorageNamespace);
+                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.ToString() + "." + targetStorageAccount.BlobStorageNamespace);
                 }
 
                 targetMediaLink = targetMediaLink.Replace(this.DiskName, this.TargetName);

@@ -68,7 +68,7 @@ namespace MigAz.Azure.Asm
             get { return _XmlNode.SelectNodes("IPForwarding").Count > 0; }
         }
 
-        public string GetFinalTargetName()
+        public string ToString()
         {
             return this.TargetName + this._AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
         }

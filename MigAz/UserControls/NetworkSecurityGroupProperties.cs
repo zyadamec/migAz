@@ -43,7 +43,7 @@ namespace MigAz.UserControls
             NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
 
             asmNetworkSecurityGroup.TargetName = txtSender.Text;
-            _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.GetFinalTargetName();
+            _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.ToString();
 
             PropertyChanged();
         }

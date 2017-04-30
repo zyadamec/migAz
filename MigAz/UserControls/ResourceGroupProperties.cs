@@ -67,7 +67,7 @@ namespace MigAz.UserControls
             Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
 
             armResourceGroup.TargetName = txtSender.Text;
-            _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
+            _ResourceGroupNode.Text = armResourceGroup.ToString();
             _ResourceGroupNode.Name = armResourceGroup.TargetName;
 
             PropertyChanged();

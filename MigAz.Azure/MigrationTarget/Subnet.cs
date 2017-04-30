@@ -44,18 +44,14 @@ namespace MigAz.Azure.MigrationTarget
             get { return _ParentVirtualNetwork; }
         }
 
-        public string GetFinalTargetName()
+        public string ToString()
         {
             return this.TargetName;
         }
 
-        public override string ToString()
-        {
-            return this.GetFinalTargetName();
-        }
         public string TargetId
         {
-            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.ParentVirtualNetwork.GetFinalTargetName() + "/subnets/" + this.TargetName + "')]"; }
+            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.ParentVirtualNetwork.ToString() + "/subnets/" + this.TargetName + "')]"; }
         }
 
         public RouteTable RouteTable { get; set;  }

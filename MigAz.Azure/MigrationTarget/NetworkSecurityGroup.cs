@@ -40,7 +40,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Trim(); }
         }
 
-        public string GetFinalTargetName()
+        public string ToString()
         {
             return this.TargetName + _AzureContext.SettingsProvider.NetworkSecurityGroupSuffix;
         }

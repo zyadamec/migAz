@@ -51,7 +51,7 @@ namespace MigAz.UserControls
             Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
 
             targetVirtualNetwork.TargetName = txtSender.Text.Trim();
-            _ARMVirtualNetowrkNode.Text = targetVirtualNetwork.GetFinalTargetName();
+            _ARMVirtualNetowrkNode.Text = targetVirtualNetwork.ToString();
 
             PropertyChanged();
         }

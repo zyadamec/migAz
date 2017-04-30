@@ -43,7 +43,7 @@ namespace MigAz.Azure.Asm
             set { _TargetName = value; }
         }
 
-        public string GetFinalTargetName()
+        public string ToString()
         {
             return this.TargetName + this._AzureContext.SettingsProvider.LoadBalancerSuffix;
         }

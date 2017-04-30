@@ -50,7 +50,7 @@ namespace MigAz.UserControls
 
             Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)_StorageAccountNode.Tag;
             storageAccount.TargetName = txtSender.Text;
-            _StorageAccountNode.Text = storageAccount.GetFinalTargetName();
+            _StorageAccountNode.Text = storageAccount.ToString();
 
             PropertyChanged();
         }

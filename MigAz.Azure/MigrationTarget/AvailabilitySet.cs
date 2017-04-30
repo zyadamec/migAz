@@ -23,7 +23,7 @@ namespace MigAz.Azure.MigrationTarget
             get; set;
         }
 
-        public string GetFinalTargetName()
+        public string ToString()
         {
             return this.TargetName + this._AzureContext.SettingsProvider.AvailabilitySetSuffix;
         }

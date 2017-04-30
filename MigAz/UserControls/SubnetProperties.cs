@@ -53,7 +53,7 @@ namespace MigAz.UserControls
 
             Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
             targetSubnet.TargetName = txtSender.Text;
-            _AsmSubnetNode.Text = targetSubnet.GetFinalTargetName();
+            _AsmSubnetNode.Text = targetSubnet.ToString();
 
             PropertyChanged();
         }

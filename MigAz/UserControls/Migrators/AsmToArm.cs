@@ -651,7 +651,7 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
-                else if (e.Node.Tag.GetType() == typeof(Azure.Asm.AvailabilitySet))
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["AvailabilitySet"];
 
@@ -828,14 +828,14 @@ namespace MigAz.UserControls.Migrators
             {
                 Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)parentNode.Tag;
                 Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork);
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.GetFinalTargetName(), targetVirtualNetwork, true);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
 
                 foreach (Azure.Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
                 {
                     Azure.MigrationTarget.Subnet targetSubnet = new Azure.MigrationTarget.Subnet(this.AzureContextTargetARM, targetVirtualNetwork, asmSubnet);
                     targetVirtualNetwork.TargetSubnets.Add(targetSubnet);
 
-                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, asmSubnet.Name, targetSubnet.GetFinalTargetName(), targetSubnet, true);
+                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, asmSubnet.Name, targetSubnet.ToString(), targetSubnet, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -846,7 +846,7 @@ namespace MigAz.UserControls.Migrators
                 Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)parentNode.Tag;
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, asmStorageAccount);
 
-                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetStorageAccount.GetFinalTargetName(), targetStorageAccount, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -891,7 +891,7 @@ namespace MigAz.UserControls.Migrators
                     }
                 }
 
-                TreeNode availabilitySetNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.GetFinalTargetName(), asdf, true);
+                TreeNode availabilitySetNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.ToString(), asdf, true);
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(availabilitySetNode.Nodes, asmVirtualMachine.RoleName, asmVirtualMachine.RoleName, targetVirtualMachine, true);
 
                 foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
@@ -920,14 +920,14 @@ namespace MigAz.UserControls.Migrators
             {
                 Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)parentNode.Tag;
                 Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork);
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.GetFinalTargetName(), targetVirtualNetwork, true);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
 
                 foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
                 {
                     Azure.MigrationTarget.Subnet targetSubnet = new Azure.MigrationTarget.Subnet(this.AzureContextTargetARM, targetVirtualNetwork, armSubnet);
                     targetVirtualNetwork.TargetSubnets.Add(targetSubnet);
 
-                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, armSubnet.Name, targetSubnet.GetFinalTargetName(), targetSubnet, true);
+                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, armSubnet.Name, targetSubnet.ToString(), targetSubnet, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -938,7 +938,7 @@ namespace MigAz.UserControls.Migrators
                 Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)parentNode.Tag;
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
 
-                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetStorageAccount.GetFinalTargetName(), targetStorageAccount, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -952,7 +952,7 @@ namespace MigAz.UserControls.Migrators
                 {
                     Azure.MigrationTarget.AvailabilitySet asdf = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM); // todo now russell
                     asdf.TargetName = "TODO";
-                    TreeNode availabilitySet = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.GetFinalTargetName(), asdf, true);
+                    TreeNode availabilitySet = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.ToString(), asdf, true);
                     virtualMachineNode = SeekARMChildTreeNode(availabilitySet.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, armVirtualMachine, true);
                 }
                 else

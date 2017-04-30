@@ -156,7 +156,7 @@ namespace MigAz.UserControls
                     cmbExistingArmVNets.Items.Clear();
                     cmbExistingArmSubnet.Items.Clear();
 
-                    TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.TargetName, _AsmToArmForm.TargetResourceGroup.GetFinalTargetName(), _AsmToArmForm.TargetResourceGroup, false);
+                    TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.TargetName, _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
                     TreeNode virtualNetworksNode = _AsmToArmForm.SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Virtual Networks", "Virtual Networks", "Virtual Networks", false);
 
                     if (virtualNetworksNode != null)
@@ -350,7 +350,7 @@ namespace MigAz.UserControls
             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
 
             targetVirtualMachine.TargetName = txtARMVMName.Text;
-            _VirtualMachineNode.Text = targetVirtualMachine.GetFinalTargetName();
+            _VirtualMachineNode.Text = targetVirtualMachine.ToString();
 
 
             PropertyChanged();

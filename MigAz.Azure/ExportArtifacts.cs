@@ -23,7 +23,7 @@ namespace MigAz.Azure
         {
             foreach (NetworkSecurityGroup networkSecurityGroup in NetworkSecurityGroups)
             {
-                if (networkSecurityGroup.GetFinalTargetName() == sourceName)
+                if (networkSecurityGroup.ToString() == sourceName)
                     return networkSecurityGroup;
             }
 
