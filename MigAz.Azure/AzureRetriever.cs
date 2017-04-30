@@ -40,7 +40,7 @@ namespace MigAz.Azure
         private List<ResourceGroup> _ArmResourceGroups;
         private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
         private List<Arm.StorageAccount> _ArmStorageAccounts;
-        private List<Asm.AvailabilitySet> _AsmAvailabilitySets;
+        private List<MigrationTarget.AvailabilitySet> _MigrationAvailabilitySets;
         private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
         private List<Arm.ManagedDisk> _ArmManagedDisks;
@@ -64,7 +64,7 @@ namespace MigAz.Azure
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
-            _AsmAvailabilitySets = null;
+            _MigrationAvailabilitySets = null;
             _ArmManagedDisks = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
@@ -719,21 +719,21 @@ namespace MigAz.Azure
 
         #region ARM Methods
 
-        internal Asm.AvailabilitySet GetAzureASMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
+        internal MigrationTarget.AvailabilitySet GetAzureASMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureASMAvailabilitySet", "Start");
 
-            if (_AsmAvailabilitySets == null)
-                _AsmAvailabilitySets = new List<Asm.AvailabilitySet>();
+            if (_MigrationAvailabilitySets == null)
+                _MigrationAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
 
-            foreach (Asm.AvailabilitySet asmAvailabilitySet in _AsmAvailabilitySets)
+            foreach (MigrationTarget.AvailabilitySet migrationAvailabilitySet in _MigrationAvailabilitySets)
             {
-                if (asmAvailabilitySet.Name == asmVirtualMachine.GetDefaultAvailabilitySetName())
-                    return asmAvailabilitySet;
+                if (migrationAvailabilitySet.TargetName == asmVirtualMachine.GetDefaultAvailabilitySetName())
+                    return migrationAvailabilitySet;
             }
 
-            Asm.AvailabilitySet newArmAvailabilitySet = new Asm.AvailabilitySet(this._AzureContext, asmVirtualMachine);
-            _AsmAvailabilitySets.Add(newArmAvailabilitySet);
+            MigrationTarget.AvailabilitySet newArmAvailabilitySet = new MigrationTarget.AvailabilitySet(this._AzureContext, asmVirtualMachine);
+            _MigrationAvailabilitySets.Add(newArmAvailabilitySet);
 
             return newArmAvailabilitySet;
         }

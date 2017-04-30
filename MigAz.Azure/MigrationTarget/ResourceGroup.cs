@@ -33,7 +33,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetLocation = value; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.TargetName + this._AzureContext.SettingsProvider.ResourceGroupSuffix;
         }

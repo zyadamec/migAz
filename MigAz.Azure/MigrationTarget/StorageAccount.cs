@@ -30,7 +30,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _Source; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
                 return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;

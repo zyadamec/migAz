@@ -44,7 +44,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _ParentVirtualNetwork; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.TargetName;
         }

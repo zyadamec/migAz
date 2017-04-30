@@ -50,7 +50,7 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
         }

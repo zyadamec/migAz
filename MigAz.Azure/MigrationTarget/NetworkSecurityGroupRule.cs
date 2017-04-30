@@ -58,5 +58,10 @@ namespace MigAz.Azure.MigrationTarget
         {
             get;set;
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

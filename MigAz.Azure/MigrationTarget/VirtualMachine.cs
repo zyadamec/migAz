@@ -61,7 +61,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
         }
