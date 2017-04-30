@@ -4,6 +4,5 @@
     {
         string Id { get; }
         string Name { get; }
-        string TargetId { get; }
     }
 }

@@ -21,7 +21,6 @@ namespace MigAz.Azure.Asm
         private List<VirtualNetworkGateway> _AsmVirtualNetworkGateways2 = null;
         private List<LocalNetworkSite> _AsmLocalNetworkSites = null;
         private List<ClientRootCertificate> _AsmClientRootCertificates = null;
-        private String _TargetName = String.Empty;
 
         #endregion
 
@@ -33,8 +32,6 @@ namespace MigAz.Azure.Asm
         {
             _AzureContext = azureContext;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
         }
 
         public async Task InitializeChildrenAsync()
@@ -72,20 +69,9 @@ namespace MigAz.Azure.Asm
             get { return _XmlNode.SelectSingleNode("Name").InnerText; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Replace(" ", String.Empty); }
-        }
-
         public string Id
         {
             get { return this.Name; }
-        }
-
-        public string TargetId
-        {
-            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.GetFinalTargetName() + "')]"; }
         }
 
         public string Location
@@ -210,12 +196,7 @@ namespace MigAz.Azure.Asm
 
         public override string ToString()
         {
-            return this.TargetName;
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName + this._AzureContext.SettingsProvider.VirtualNetworkSuffix;
+            return this.Name;
         }
 
         #endregion

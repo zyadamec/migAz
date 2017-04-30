@@ -66,10 +66,10 @@ namespace MigAz.Azure.Generator.AsmToArm
                 this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _TargetResourceGroup);
             }
 
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
-                if (asmNetworkSecurityGroup.TargetName == string.Empty)
-                    this.AddAlert(AlertType.Error, "Target Name for ASM Network Security Group '" + asmNetworkSecurityGroup.Name + "' must be specified.", asmNetworkSecurityGroup);
+                if (targetNetworkSecurityGroup.TargetName == string.Empty)
+                    this.AddAlert(AlertType.Error, "Target Name for Network Security Group must be specified.", targetNetworkSecurityGroup);
             }
 
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
@@ -221,28 +221,18 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
-            foreach (Asm.NetworkSecurityGroup asmNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmNetworkSecurityGroup.GetFinalTargetName());
-                await BuildNetworkSecurityGroup(asmNetworkSecurityGroup);
+                StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.GetFinalTargetName());
+                await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Network Security Groups");
 
             LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Virtual Networks");
-            foreach (IVirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
+            foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
             {
-                if (virtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                {
-                    Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)virtualNetwork;
-                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + asmVirtualNetwork.GetFinalTargetName());
-                    await BuildVirtualNetworkObject(asmVirtualNetwork);
-                }
-                else if (virtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                {
-                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)virtualNetwork;
-                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + armVirtualNetwork.GetFinalTargetName());
-                    BuildARMVirtualNetworkObject(armVirtualNetwork);
-                }
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.GetFinalTargetName());
+                await BuildVirtualNetworkObject(virtualNetwork);
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Virtual Networks");
 
@@ -524,7 +514,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 // shouldn't this change to a foreach loop?
                 if (asmCloudService.LoadBalancers.Count > 0)
                 {
-                    string virtualnetworkname = asmCloudService.VirtualNetwork.GetFinalTargetName();
+                    string virtualnetworkname = String.Empty; // todo now russell asmCloudService.VirtualNetwork.GetFinalTargetName();
                     string subnetname = asmCloudService.LoadBalancers[0].Subnet.TargetName;
 
                     frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
@@ -661,64 +651,64 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildLoadBalancerObject", "End");
         }
 
-        private async Task BuildVirtualNetworkObject(Asm.VirtualNetwork asmVirtualNetwork)
+        private async Task BuildVirtualNetworkObject(Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork)
         {
             LogProvider.WriteLog("BuildVirtualNetworkObject", "Start");
 
             List<string> dependson = new List<string>();
 
             AddressSpace addressspace = new AddressSpace();
-            addressspace.addressPrefixes = asmVirtualNetwork.AddressPrefixes;
+            addressspace.addressPrefixes = targetVirtualNetwork.AddressPrefixes;
 
             VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
-            dhcpoptions.dnsServers = asmVirtualNetwork.DnsServers;
+            dhcpoptions.dnsServers = targetVirtualNetwork.DnsServers;
 
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
-            virtualnetwork.name = asmVirtualNetwork.GetFinalTargetName();
+            virtualnetwork.name = targetVirtualNetwork.GetFinalTargetName();
             if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
                 virtualnetwork.location = this.TargetResourceGroup.TargetLocation.Name;
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
-            if (asmVirtualNetwork.Subnets.Count == 0)
+            if (targetVirtualNetwork.TargetSubnets.Count == 0)
             {
                 Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = asmVirtualNetwork.AddressPrefixes[0];
+                properties.addressPrefix = targetVirtualNetwork.AddressPrefixes[0];
 
                 Subnet subnet = new Subnet();
                 subnet.name = "Subnet1";
                 subnet.properties = properties;
 
                 subnets.Add(subnet);
-                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", asmVirtualNetwork);
+                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", targetVirtualNetwork);
             }
             else
             {
-                foreach (Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
+                foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
                 {
                     Subnet_Properties properties = new Subnet_Properties();
-                    properties.addressPrefix = asmSubnet.AddressPrefix;
+                    properties.addressPrefix = targetSubnet.AddressPrefix;
 
                     Subnet subnet = new Subnet();
-                    subnet.name = asmSubnet.TargetName;
+                    subnet.name = targetSubnet.TargetName;
                     subnet.properties = properties;
 
                     subnets.Add(subnet);
 
                     // add Network Security Group if exists
-                    if (asmSubnet.NetworkSecurityGroup != null)
+                    if (targetSubnet.NetworkSecurityGroup != null)
                     {
-                        Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup) _ExportArtifacts.SeekNetworkSecurityGroup(asmSubnet.NetworkSecurityGroup.Name);
+                        MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (MigrationTarget.NetworkSecurityGroup) _ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.GetFinalTargetName());
 
-                        if (asmNetworkSecurityGroup == null)
+                        if (targetNetworkSecurityGroup == null)
                         {
-                            this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + asmSubnet.NetworkSecurityGroup.Name + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
+                            this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.GetFinalTargetName() + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", targetNetworkSecurityGroup);
                         }
                         else
                         {
                             // Add NSG reference to the subnet
                             Reference networksecuritygroup_ref = new Reference();
-                            networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.GetFinalTargetName() + "')]";
+                            networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + targetNetworkSecurityGroup.GetFinalTargetName() + "')]";
 
                             properties.networkSecurityGroup = networksecuritygroup_ref;
 
@@ -732,9 +722,9 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     // add Route Table if exists
 //                    if (subnetnode.SelectNodes("RouteTableName").Count > 0)
-                    if (asmSubnet.RouteTable != null)
+                    if (targetSubnet.RouteTable != null)
                     {
-                        RouteTable routetable = await BuildRouteTable(asmSubnet.RouteTable);
+                        RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
 
                         // Add Route Table reference to the subnet
                         Reference routetable_ref = new Reference();
@@ -760,221 +750,126 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             this.AddResource(virtualnetwork);
 
-            await AddGatewaysToVirtualNetwork(asmVirtualNetwork, virtualnetwork);
+            // todo now russell await AddGatewaysToVirtualNetwork(targetVirtualNetwork, virtualnetwork);
 
             LogProvider.WriteLog("BuildVirtualNetworkObject", "End");
         }
 
-        private void BuildARMVirtualNetworkObject(Arm.VirtualNetwork armVirtualNetwork)
+
+
+        private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
         {
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "Start Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
-
-            List<string> dependson = new List<string>();
-
-            List<string> addressprefixes = armVirtualNetwork.AddressPrefixes;
-
-            AddressSpace addressspace = new AddressSpace();
-            addressspace.addressPrefixes = addressprefixes;
-
-            List<string> dnsservers = armVirtualNetwork.DnsServers;
-
-            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
-            dhcpoptions.dnsServers = dnsservers;
-
-            Core.ArmTemplate.VirtualNetwork virtualnetwork = new Core.ArmTemplate.VirtualNetwork(this.ExecutionGuid);
-
-            virtualnetwork.name = armVirtualNetwork.Name;
-            if (_TargetResourceGroup != null && _TargetResourceGroup.TargetLocation != null)
-                virtualnetwork.location = _TargetResourceGroup.TargetLocation.Name;
-
-            virtualnetwork.dependsOn = dependson;
-            List<Core.ArmTemplate.Subnet> subnets = new List<Core.ArmTemplate.Subnet>();
-
-            if (!armVirtualNetwork.HasNonGatewaySubnet)
+            if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
-                Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = addressprefixes[0];
+                Asm.VirtualNetwork asmVirtualNetwork = (Asm.VirtualNetwork)targetVirtualNetwork.Source;
 
-                Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
-                subnet.name = "Subnet1";
-                subnet.properties = properties;
-
-                subnets.Add(subnet);
-                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", armVirtualNetwork);
-            }
-            else
-            {
-                foreach (Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+                // Process Virtual Network Gateway, if exists
+                if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
                 {
-                    Subnet_Properties properties = new Subnet_Properties();
-                    properties.addressPrefix = armSubnet.AddressPrefix;
+                    // Gateway Public IP Address
+                    PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+                    publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
 
-                    Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
-                    subnet.name = armSubnet.Name;
-                    subnet.properties = properties;
-                    subnets.Add(subnet);
+                    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+                    publicipaddress.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
+                    publicipaddress.location = templateVirtualNetwork.location;
+                    publicipaddress.properties = publicipaddress_properties;
 
-                    //NSG Setup - Single NSG per subnet
-                    if (armSubnet.NetworkSecurityGroup != null)
+                    this.AddResource(publicipaddress);
+
+                    // Virtual Network Gateway
+                    Reference subnet_ref = new Reference();
+                    subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "/subnets/" + ArmConst.GatewaySubnetName + "')]";
+
+                    Reference publicipaddress_ref = new Reference();
+                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
+
+                    var dependson = new List<string>();
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "')]");
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]");
+
+                    IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
+                    ipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
+                    ipconfiguration_properties.subnet = subnet_ref;
+                    ipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+
+                    IpConfiguration virtualnetworkgateway_ipconfiguration = new IpConfiguration();
+                    virtualnetworkgateway_ipconfiguration.name = "GatewayIPConfig";
+                    virtualnetworkgateway_ipconfiguration.properties = ipconfiguration_properties;
+
+                    VirtualNetworkGateway_Sku virtualnetworkgateway_sku = new VirtualNetworkGateway_Sku();
+                    virtualnetworkgateway_sku.name = "Basic";
+                    virtualnetworkgateway_sku.tier = "Basic";
+
+                    List<IpConfiguration> virtualnetworkgateway_ipconfigurations = new List<IpConfiguration>();
+                    virtualnetworkgateway_ipconfigurations.Add(virtualnetworkgateway_ipconfiguration);
+
+                    VirtualNetworkGateway_Properties virtualnetworkgateway_properties = new VirtualNetworkGateway_Properties();
+                    virtualnetworkgateway_properties.ipConfigurations = virtualnetworkgateway_ipconfigurations;
+                    virtualnetworkgateway_properties.sku = virtualnetworkgateway_sku;
+
+                    // If there is VPN Client configuration
+                    if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
                     {
-                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
+                        AddressSpace vpnclientaddresspool = new AddressSpace();
+                        vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
 
-                        // Add NSG reference to the subnet
-                        Reference networksecuritygroup_ref = new Reference();
-                        networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
+                        VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
+                        vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
 
-                        properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                        // Add NSG dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                        //Process vpnClientRootCertificates
+                        List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
+                        foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
                         {
-                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                            VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
+                            vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
+
+                            VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
+                            vpnclientcertificate.name = certificate.TargetSubject;
+                            vpnclientcertificate.properties = vpnclientcertificate_properties;
+
+                            vpnclientrootcertificates.Add(vpnclientcertificate);
                         }
+
+                        vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
+
+                        virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
                     }
 
-                    // add Route Table if exists
-                    if (armSubnet.RouteTable != null)
+                    if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
                     {
-                        Core.ArmTemplate.RouteTable routetable = BuildARMRouteTable(armSubnet.RouteTable);
-
-                        // Add Route Table reference to the subnet
-                        Reference routetable_ref = new Reference();
-                        routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
-
-                        properties.routeTable = routetable_ref;
-
-                        // Add Route Table dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
+                        virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
+                        virtualnetworkgateway_properties.enableBgp = null;
+                        virtualnetworkgateway_properties.vpnType = null;
+                    }
+                    else
+                    {
+                        virtualnetworkgateway_properties.gatewayType = "Vpn";
+                        string vpnType = asmVirtualNetwork.Gateway.GatewayType;
+                        if (vpnType == "StaticRouting")
                         {
-                            virtualnetwork.dependsOn.Add(routetable_ref.id);
+                            vpnType = "PolicyBased";
                         }
-                    }
-                }
-
-            }
-
-
-            VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
-            virtualnetwork_properties.addressSpace = addressspace;
-            virtualnetwork_properties.subnets = subnets;
-            virtualnetwork_properties.dhcpOptions = dhcpoptions;
-
-            virtualnetwork.properties = virtualnetwork_properties;
-
-            this.AddResource(virtualnetwork);
-            // todo AddGatewaysToVirtualNetworkARM(resource, virtualnetwork);
-
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
-        }
-
-        private async Task AddGatewaysToVirtualNetwork(Asm.VirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork)
-        {
-            // Process Virtual Network Gateway, if exists
-            if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
-            {
-                // Gateway Public IP Address
-                PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-                publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
-
-                PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-                publicipaddress.name = asmVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
-                publicipaddress.location = virtualnetwork.location;
-                publicipaddress.properties = publicipaddress_properties;
-
-                this.AddResource(publicipaddress);
-
-                // Virtual Network Gateway
-                Reference subnet_ref = new Reference();
-                subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetwork.name + "/subnets/" + ArmConst.GatewaySubnetName + "')]";
-
-                Reference publicipaddress_ref = new Reference();
-                publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
-
-                var dependson = new List<string>();
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetwork.name + "')]");
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]");
-
-                IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
-                ipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
-                ipconfiguration_properties.subnet = subnet_ref;
-                ipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-
-                IpConfiguration virtualnetworkgateway_ipconfiguration = new IpConfiguration();
-                virtualnetworkgateway_ipconfiguration.name = "GatewayIPConfig";
-                virtualnetworkgateway_ipconfiguration.properties = ipconfiguration_properties;
-
-                VirtualNetworkGateway_Sku virtualnetworkgateway_sku = new VirtualNetworkGateway_Sku();
-                virtualnetworkgateway_sku.name = "Basic";
-                virtualnetworkgateway_sku.tier = "Basic";
-
-                List<IpConfiguration> virtualnetworkgateway_ipconfigurations = new List<IpConfiguration>();
-                virtualnetworkgateway_ipconfigurations.Add(virtualnetworkgateway_ipconfiguration);
-
-                VirtualNetworkGateway_Properties virtualnetworkgateway_properties = new VirtualNetworkGateway_Properties();
-                virtualnetworkgateway_properties.ipConfigurations = virtualnetworkgateway_ipconfigurations;
-                virtualnetworkgateway_properties.sku = virtualnetworkgateway_sku;
-
-                // If there is VPN Client configuration
-                if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
-                {
-                    AddressSpace vpnclientaddresspool = new AddressSpace();
-                    vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
-
-                    VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
-                    vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
-
-                    //Process vpnClientRootCertificates
-                    List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
-                    foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
-                    {
-                        VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
-                        vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
-
-                        VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
-                        vpnclientcertificate.name = certificate.TargetSubject;
-                        vpnclientcertificate.properties = vpnclientcertificate_properties;
-
-                        vpnclientrootcertificates.Add(vpnclientcertificate);
+                        else if (vpnType == "DynamicRouting")
+                        {
+                            vpnType = "RouteBased";
+                        }
+                        virtualnetworkgateway_properties.vpnType = vpnType;
                     }
 
-                    vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
+                    VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
+                    virtualnetworkgateway.location = templateVirtualNetwork.location;
+                    virtualnetworkgateway.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix;
+                    virtualnetworkgateway.properties = virtualnetworkgateway_properties;
+                    virtualnetworkgateway.dependsOn = dependson;
 
-                    virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
+                    this.AddResource(virtualnetworkgateway);
+
+                    if (!asmVirtualNetwork.HasGatewaySubnet)
+                        this.AddAlert(AlertType.Error, "The Virtual Network '" + targetVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
+
+                    await AddLocalSiteToGateway(asmVirtualNetwork, templateVirtualNetwork, virtualnetworkgateway);
                 }
-
-                if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
-                {
-                    virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
-                    virtualnetworkgateway_properties.enableBgp = null;
-                    virtualnetworkgateway_properties.vpnType = null;
-                }
-                else
-                {
-                    virtualnetworkgateway_properties.gatewayType = "Vpn";
-                    string vpnType = asmVirtualNetwork.Gateway.GatewayType;
-                    if (vpnType == "StaticRouting")
-                    {
-                        vpnType = "PolicyBased";
-                    }
-                    else if (vpnType == "DynamicRouting")
-                    {
-                        vpnType = "RouteBased";
-                    }
-                    virtualnetworkgateway_properties.vpnType = vpnType;
-                }
-
-                VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
-                virtualnetworkgateway.location = virtualnetwork.location;
-                virtualnetworkgateway.name = asmVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix;
-                virtualnetworkgateway.properties = virtualnetworkgateway_properties;
-                virtualnetworkgateway.dependsOn = dependson;
-
-                this.AddResource(virtualnetworkgateway);
-
-                if (!asmVirtualNetwork.HasGatewaySubnet)
-                    this.AddAlert(AlertType.Error, "The Virtual Network '" + asmVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
-
-                await AddLocalSiteToGateway(asmVirtualNetwork, virtualnetwork, virtualnetworkgateway);
             }
         }
 
@@ -1051,19 +946,20 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
         }
 
-        private async Task<NetworkSecurityGroup> BuildNetworkSecurityGroup(Asm.NetworkSecurityGroup asmNetworkSecurityGroup)
+        private async Task<NetworkSecurityGroup> BuildNetworkSecurityGroup(MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup)
         {
             LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start");
 
             NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
-            networksecuritygroup.name = asmNetworkSecurityGroup.GetFinalTargetName();
-            networksecuritygroup.location = asmNetworkSecurityGroup.Location;
+            networksecuritygroup.name = targetNetworkSecurityGroup.GetFinalTargetName();
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                networksecuritygroup.location = this.TargetResourceGroup.TargetLocation.Name;
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             // for each rule
-            foreach (Asm.NetworkSecurityGroupRule asmNetworkSecurityGroupRule in asmNetworkSecurityGroup.Rules)
+            foreach (MigrationTarget.NetworkSecurityGroupRule asmNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
             {
                 // if not system rule
                 if (!asmNetworkSecurityGroupRule.IsSystemRule)
@@ -1139,12 +1035,12 @@ namespace MigAz.Azure.Generator.AsmToArm
             return networksecuritygroup;
         }
 
-        private async Task<RouteTable> BuildRouteTable(Asm.RouteTable asmRouteTable)
+        private async Task<RouteTable> BuildRouteTable(MigrationTarget.RouteTable routeTable)
         {
             LogProvider.WriteLog("BuildRouteTable", "Start");
 
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
-            routetable.name = asmRouteTable.Name;
+            routetable.name = routeTable.GetFinalTargetName();
             if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
                 routetable.location = this.TargetResourceGroup.TargetLocation.Name;
 
@@ -1152,14 +1048,14 @@ namespace MigAz.Azure.Generator.AsmToArm
             routetable_properties.routes = new List<Route>();
 
             // for each route
-            foreach (Asm.Route asmRoute in asmRouteTable.Routes)
+            foreach (MigrationTarget.Route migrationRoute in routeTable.Routes)
             {
                 //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
                 Route_Properties route_properties = new Route_Properties();
-                route_properties.addressPrefix = asmRoute.AddressPrefix;
+                route_properties.addressPrefix = migrationRoute.AddressPrefix;
 
                 // convert next hop type string
-                switch (asmRoute.NextHopType)
+                switch (migrationRoute.NextHopType)
                 {
                     case "VirtualAppliance":
                         route_properties.nextHopType = "VirtualAppliance";
@@ -1178,10 +1074,10 @@ namespace MigAz.Azure.Generator.AsmToArm
                         break;
                 }
                 if (route_properties.nextHopType == "VirtualAppliance")
-                    route_properties.nextHopIpAddress = asmRoute.NextHopIpAddress;
+                    route_properties.nextHopIpAddress = migrationRoute.NextHopIpAddress;
 
                 Route route = new Route();
-                route.name = asmRoute.TargetName;
+                route.name = migrationRoute.GetFinalTargetName();
                 route.properties = route_properties;
 
                 routetable_properties.routes.Add(route);
@@ -2008,3 +1904,110 @@ namespace MigAz.Azure.Generator.AsmToArm
         }
     }
 }
+
+
+
+
+
+
+//private void BuildARMVirtualNetworkObject(Arm.VirtualNetwork armVirtualNetwork)
+//{
+//    LogProvider.WriteLog("BuildVirtualNetworkObject", "Start Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
+
+//    List<string> dependson = new List<string>();
+
+//    List<string> addressprefixes = armVirtualNetwork.AddressPrefixes;
+
+//    AddressSpace addressspace = new AddressSpace();
+//    addressspace.addressPrefixes = addressprefixes;
+
+//    List<string> dnsservers = armVirtualNetwork.DnsServers;
+
+//    VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
+//    dhcpoptions.dnsServers = dnsservers;
+
+//    Core.ArmTemplate.VirtualNetwork virtualnetwork = new Core.ArmTemplate.VirtualNetwork(this.ExecutionGuid);
+
+//    virtualnetwork.name = armVirtualNetwork.Name;
+//    if (_TargetResourceGroup != null && _TargetResourceGroup.TargetLocation != null)
+//        virtualnetwork.location = _TargetResourceGroup.TargetLocation.Name;
+
+//    virtualnetwork.dependsOn = dependson;
+//    List<Core.ArmTemplate.Subnet> subnets = new List<Core.ArmTemplate.Subnet>();
+
+//    if (!armVirtualNetwork.HasNonGatewaySubnet)
+//    {
+//        Subnet_Properties properties = new Subnet_Properties();
+//        properties.addressPrefix = addressprefixes[0];
+
+//        Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
+//        subnet.name = "Subnet1";
+//        subnet.properties = properties;
+
+//        subnets.Add(subnet);
+//        this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", armVirtualNetwork);
+//    }
+//    else
+//    {
+//        foreach (Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+//        {
+//            Subnet_Properties properties = new Subnet_Properties();
+//            properties.addressPrefix = armSubnet.AddressPrefix;
+
+//            Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
+//            subnet.name = armSubnet.Name;
+//            subnet.properties = properties;
+//            subnets.Add(subnet);
+
+//            //NSG Setup - Single NSG per subnet
+//            if (armSubnet.NetworkSecurityGroup != null)
+//            {
+//                Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
+
+//                // Add NSG reference to the subnet
+//                Reference networksecuritygroup_ref = new Reference();
+//                networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
+
+//                properties.networkSecurityGroup = networksecuritygroup_ref;
+
+//                // Add NSG dependsOn to the Virtual Network object
+//                if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+//                {
+//                    virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+//                }
+//            }
+
+//            // add Route Table if exists
+//            if (armSubnet.RouteTable != null)
+//            {
+//                Core.ArmTemplate.RouteTable routetable = BuildARMRouteTable(armSubnet.RouteTable);
+
+//                // Add Route Table reference to the subnet
+//                Reference routetable_ref = new Reference();
+//                routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
+
+//                properties.routeTable = routetable_ref;
+
+//                // Add Route Table dependsOn to the Virtual Network object
+//                if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
+//                {
+//                    virtualnetwork.dependsOn.Add(routetable_ref.id);
+//                }
+//            }
+//        }
+
+//    }
+
+
+//    VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
+//    virtualnetwork_properties.addressSpace = addressspace;
+//    virtualnetwork_properties.subnets = subnets;
+//    virtualnetwork_properties.dhcpOptions = dhcpoptions;
+
+//    virtualnetwork.properties = virtualnetwork_properties;
+
+//    this.AddResource(virtualnetwork);
+//    // todo AddGatewaysToVirtualNetworkARM(resource, virtualnetwork);
+
+//    LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + armVirtualNetwork.GetFinalTargetName());
+//}

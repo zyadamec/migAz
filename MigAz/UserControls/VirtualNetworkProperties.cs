@@ -27,44 +27,31 @@ namespace MigAz.UserControls
         {
             _ARMVirtualNetowrkNode = armVirtualNetworkNode;
 
-            TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
-            {
-                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)asmVirtualNetworkNode.Tag;
+            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
 
-                lblVNetName.Text = asmVirtualNetwork.Name.ToString();
-                txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
-                dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
-            }
-            else if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+            if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
-                Azure.Arm.VirtualNetwork asmVirtualNetwork = (Azure.Arm.VirtualNetwork)asmVirtualNetworkNode.Tag;
-
-                lblVNetName.Text = asmVirtualNetwork.Name.ToString();
-                txtVirtualNetworkName.Text = asmVirtualNetwork.TargetName;
-                dgvAddressSpaces.DataSource = asmVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.Source;
+                lblVNetName.Text = asmVirtualNetwork.Name;
             }
+            else if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Arm.VirtualNetwork))
+            {
+                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.Source;
+                lblVNetName.Text = armVirtualNetwork.Name;
+            }
+
+            txtVirtualNetworkName.Text = targetVirtualNetwork.TargetName;
+            dgvAddressSpaces.DataSource = targetVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
         }
 
         private void txtVirtualNetworkName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
-            TreeNode asmVirtualNetworkNode = (TreeNode)_ARMVirtualNetowrkNode.Tag;
-            if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
-            {
-                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)asmVirtualNetworkNode.Tag;
+            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
 
-                asmVirtualNetwork.TargetName = txtSender.Text.Trim();
-                _ARMVirtualNetowrkNode.Text = asmVirtualNetwork.GetFinalTargetName();
-            }
-            else if (asmVirtualNetworkNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
-            {
-                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)asmVirtualNetworkNode.Tag;
-
-                armVirtualNetwork.TargetName = txtSender.Text.Trim();
-                _ARMVirtualNetowrkNode.Text = armVirtualNetwork.GetFinalTargetName();
-            }
+            targetVirtualNetwork.TargetName = txtSender.Text.Trim();
+            _ARMVirtualNetowrkNode.Text = targetVirtualNetwork.GetFinalTargetName();
 
             PropertyChanged();
         }

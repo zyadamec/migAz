@@ -8,23 +8,23 @@ namespace MigAz.Azure
     {
         public ExportArtifacts()
         {
-            NetworkSecurityGroups = new List<INetworkSecurityGroup>();
+            NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             StorageAccounts = new List<StorageAccount>();
-            VirtualNetworks = new List<IVirtualNetwork>();
+            VirtualNetworks = new List<VirtualNetwork>();
             VirtualMachines = new List<VirtualMachine>();
         }
 
-        public List<INetworkSecurityGroup> NetworkSecurityGroups { get; }
+        public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
         public List<StorageAccount> StorageAccounts { get; }
-        public List<IVirtualNetwork> VirtualNetworks { get; }
+        public List<VirtualNetwork> VirtualNetworks { get; }
         public List<VirtualMachine> VirtualMachines { get; }
 
-        public INetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
+        public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {
-            foreach (INetworkSecurityGroup asmNetworkSecurityGroup in NetworkSecurityGroups)
+            foreach (NetworkSecurityGroup networkSecurityGroup in NetworkSecurityGroups)
             {
-                if (asmNetworkSecurityGroup.Name == sourceName)
-                    return asmNetworkSecurityGroup;
+                if (networkSecurityGroup.GetFinalTargetName() == sourceName)
+                    return networkSecurityGroup;
             }
 
             return null;

@@ -52,11 +52,6 @@ namespace MigAz.Azure.Asm
             get { return this.Name; }
         }
 
-        public string TargetId
-        {
-            get {  return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.Parent.TargetName + "/subnets/" + this.TargetName + "')]"; }
-        }
-
         public string AddressPrefix
         {
             get { return _XmlNode.SelectSingleNode("AddressPrefix").InnerText; }

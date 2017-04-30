@@ -36,10 +36,5 @@ namespace MigAz.Azure.Asm
         {
             get { return this.State != "NotProvisioned"; }
         }
-
-        public string GetFinalTargetname()
-        {
-            return this._AsmVirtualNetwork.TargetName + this._AzureContext.SettingsProvider.VirtualNetworkGatewaySuffix;
-        }
     }
 }

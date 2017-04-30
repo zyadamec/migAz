@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualNetwork : Core.ArmTemplate.VirtualNetwork, IVirtualNetwork
+    public class VirtualNetwork : IVirtualNetwork
     {
         private JToken _VirtualNetwork;
         private List<ISubnet> _Subnets = new List<ISubnet>();
@@ -15,12 +15,11 @@ namespace MigAz.Azure.Arm
         private List<string> _AddressPrefixes = new List<string>();
         private List<string> _DnsPrefixes = new List<string>();
 
-        private VirtualNetwork() : base(Guid.Empty) { }
+        private VirtualNetwork() { }
 
-        public VirtualNetwork(JToken virtualNetwork) : base(Guid.Empty)
+        public VirtualNetwork(JToken virtualNetwork) 
         {
             _VirtualNetwork = virtualNetwork;
-            this.TargetName = this.Name;
 
             var subnets = from vnet in _VirtualNetwork["properties"]["subnets"]
                           select vnet;
@@ -51,7 +50,6 @@ namespace MigAz.Azure.Arm
         public string Name => (string)_VirtualNetwork["name"];
         public string Id => (string)_VirtualNetwork["id"];
         public string Location => (string)_VirtualNetwork["location"];
-        public string TargetId => this.Id;
         public string Type => (string)_VirtualNetwork["type"];
         public List<ISubnet> Subnets => _Subnets;
         public List<string> DnsServers => _DnsServers;
@@ -73,13 +71,6 @@ namespace MigAz.Azure.Arm
 
                 return true;
             }
-        }
-
-        public string TargetName { get; set; }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName;
         }
 
         public static bool operator ==(VirtualNetwork lhs, VirtualNetwork rhs)

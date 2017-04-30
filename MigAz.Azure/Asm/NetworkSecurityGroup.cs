@@ -16,8 +16,6 @@ namespace MigAz.Azure.Asm
         private XmlNode _XmlNode = null;
         private List<NetworkSecurityGroupRule> _Rules;
 
-        private string _TargetName = String.Empty;
-
         #endregion
 
         #region Constructors
@@ -28,8 +26,6 @@ namespace MigAz.Azure.Asm
         {
             _AzureContext = azureContext;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
 
             _Rules = new List<NetworkSecurityGroupRule>();
             foreach (XmlNode rule in _XmlNode.SelectNodes("//Rules/Rule"))
@@ -58,16 +54,7 @@ namespace MigAz.Azure.Asm
             get { return _Rules; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName + _AzureContext.SettingsProvider.NetworkSecurityGroupSuffix;
-        }
+     
         #endregion
     }
 }

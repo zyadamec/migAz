@@ -540,26 +540,17 @@ namespace MigAz.UserControls.Migrators
             {
                 Type tagType = selectedNode.Tag.GetType();
 
-                if (tagType == typeof(TreeNode))
+                if (tagType == typeof(Azure.MigrationTarget.VirtualNetwork))
                 {
-                    TreeNode originatingNode = (TreeNode)selectedNode.Tag;
-
-                    if (originatingNode.Tag != null)
-                    {
-                        Type subNodeTagType = originatingNode.Tag.GetType();
-                        if (subNodeTagType == typeof(Azure.Asm.VirtualNetwork) || subNodeTagType == typeof(Azure.Arm.VirtualNetwork))
-                        {
-                            exportArtifacts.VirtualNetworks.Add((IVirtualNetwork)originatingNode.Tag);
-                        }
-                        else if (subNodeTagType == typeof(Azure.Asm.NetworkSecurityGroup) || subNodeTagType == typeof(Azure.Arm.NetworkSecurityGroup))
-                        {
-                            exportArtifacts.NetworkSecurityGroups.Add((INetworkSecurityGroup)originatingNode.Tag);
-                        }
-                    }
+                    exportArtifacts.VirtualNetworks.Add((Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
                 {
                     exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                {
+                    exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
@@ -805,15 +796,22 @@ namespace MigAz.UserControls.Migrators
                         childNode.ImageKey = "StorageAccount";
                         childNode.SelectedImageKey = "StorageAccount";
                     }
+                    else if (tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+                    {
+                        childNode.ImageKey = "AvailabilitySet";
+                        childNode.SelectedImageKey = "AvailabilitySet";
+                    }
                     else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                     {
                         childNode.ImageKey = "VirtualMachine";
                         childNode.SelectedImageKey = "VirtualMachine";
                     }
-                    else
+                    else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
                     {
-                        //childNode.ImageKey = "StorageAccount";
+                        childNode.ImageKey = "VirtualNetwork";
+                        childNode.SelectedImageKey = "VirtualNetwork";
                     }
+
                     nodeCollection.Add(childNode);
                     childNode.ExpandAll();
                     return childNode;
@@ -832,8 +830,8 @@ namespace MigAz.UserControls.Migrators
             if (tagType == typeof(Azure.Asm.VirtualNetwork))
             {
                 Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)parentNode.Tag;
-                TreeNode virtualNetworksNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Virtual Networks", "Virtual Networks", "Virtual Networks", true);
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(virtualNetworksNode.Nodes, parentNode.Name, asmVirtualNetwork.GetFinalTargetName(), parentNode, true);
+                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.GetFinalTargetName(), targetVirtualNetwork, true);
 
                 foreach (Azure.Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
                 {
@@ -925,8 +923,8 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Arm.VirtualNetwork))
             {
                 Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)parentNode.Tag;
-                TreeNode virtualNetworksNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Virtual Networks", "Virtual Networks", "Virtual Networks", true);
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(virtualNetworksNode.Nodes, parentNode.Name, armVirtualNetwork.GetFinalTargetName(), parentNode, true);
+                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, parentNode.Name, targetVirtualNetwork.GetFinalTargetName(), targetVirtualNetwork, true);
 
                 foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
                 {
