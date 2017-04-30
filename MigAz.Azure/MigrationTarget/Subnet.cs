@@ -57,5 +57,6 @@ namespace MigAz.Azure.MigrationTarget
         public RouteTable RouteTable { get; set;  }
         public NetworkSecurityGroup NetworkSecurityGroup { get; set; }
 
+
     }
 }

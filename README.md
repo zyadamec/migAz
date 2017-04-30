@@ -34,6 +34,9 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.2.0.0
+- Consolidated stand alone MigAz ARM to ARM version into new MigAz v2.2.0.0 release.  Discontinued stand alone version. 
+
 ### v2.1.0.0
 - Added retry logic with back off timer to Azure REST API calls on 500 HTTP Error response
 - Fixed ARM Disk Target Storage Account drop down binding continually defaulting to first ARM Storage Account

@@ -653,7 +653,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private async Task BuildVirtualNetworkObject(Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork)
         {
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "Start");
+            LogProvider.WriteLog("BuildVirtualNetworkObject", "Start Microsoft.Network/virtualNetworks/" + targetVirtualNetwork.ToString());
 
             List<string> dependson = new List<string>();
 
@@ -698,6 +698,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (targetSubnet.NetworkSecurityGroup != null)
                     {
+                        // todo now russell??                Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
                         MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (MigrationTarget.NetworkSecurityGroup) _ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.ToString());
 
                         if (targetNetworkSecurityGroup == null)
@@ -721,7 +722,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
 
                     // add Route Table if exists
-//                    if (subnetnode.SelectNodes("RouteTableName").Count > 0)
                     if (targetSubnet.RouteTable != null)
                     {
                         RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
@@ -751,11 +751,9 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(virtualnetwork);
 
             // todo now russell await AddGatewaysToVirtualNetwork(targetVirtualNetwork, virtualnetwork);
-
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "End");
+            
+            LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + targetVirtualNetwork.ToString());
         }
-
-
 
         private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
         {
@@ -1134,178 +1132,178 @@ namespace MigAz.Azure.Generator.AsmToArm
         private async Task BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface networkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start");
-            // todo now russell
-            //Reference subnet_ref = new Reference();
 
-            //if (networkInterface.TargetSubnet != null)
-            //    subnet_ref.id = networkInterface.TargetSubnet.TargetId;
+            Reference subnet_ref = new Reference();
 
-            //string privateIPAllocationMethod = "Dynamic";
-            //string privateIPAddress = null;
-            //if (networkInterface.TargetStaticIpAddress != String.Empty)
-            //{
-            //    privateIPAllocationMethod = "Static";
-            //    privateIPAddress = networkInterface.TargetStaticIpAddress;
-            //}
+            if (networkInterface.TargetSubnet != String.Empty)
+                subnet_ref.id = networkInterface.TargetId;
 
-            //List<string> dependson = new List<string>();
-            //if (networkInterface.TargetVirtualNetwork != null && networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
-            //    dependson.Add(networkInterface.TargetVirtualNetwork.TargetId);
+            string privateIPAllocationMethod = "Dynamic";
+            string privateIPAddress = null;
+            if (networkInterface.TargetStaticIpAddress != String.Empty)
+            {
+                privateIPAllocationMethod = "Static";
+                privateIPAddress = networkInterface.TargetStaticIpAddress;
+            }
 
-            //// If there is at least one endpoint add the reference to the LB backend pool
-            //List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-            //if (networkInterface.LoadBalancerRules.Count > 0)
-            //{
-            //    Reference loadBalancerBackendAddressPool = new Reference();
-            //    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/backendAddressPools/default')]";
+            List<string> dependson = new List<string>();
+            if (networkInterface.TargetVirtualNetwork != null && networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+                dependson.Add(networkInterface.TargetVirtualNetwork.TargetId);
 
-            //    loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
+            // If there is at least one endpoint add the reference to the LB backend pool
+            List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
+            if (networkInterface.LoadBalancerRules.Count > 0)
+            {
+                Reference loadBalancerBackendAddressPool = new Reference();
+                loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/backendAddressPools/default')]";
 
-            //    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "')]");
-            //}
+                loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-            //// Adds the references to the inboud nat rules
-            //List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-            //foreach (Asm.LoadBalancerRule asmLoadBalancerRule in networkInterface.LoadBalancerRules)
-            //{
-            //    if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-            //    {
-            //        string inboundnatrulename = networkInterface.ToString() + "-" + asmLoadBalancerRule.Name;
-            //        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "')]");
+            }
 
-            //        Reference loadBalancerInboundNatRule = new Reference();
-            //        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
+            // Adds the references to the inboud nat rules
+            List<Reference> loadBalancerInboundNatRules = new List<Reference>();
+            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in networkInterface.LoadBalancerRules)
+            {
+                if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
+                {
+                    string inboundnatrulename = networkInterface.ToString() + "-" + asmLoadBalancerRule.Name;
+                    inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
 
-            //        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-            //    }
-            //}
+                    Reference loadBalancerInboundNatRule = new Reference();
+                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
 
-            //IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
-            //ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-            //ipconfiguration_properties.privateIPAddress = privateIPAddress;
-            //ipconfiguration_properties.subnet = subnet_ref;
-            //ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+                }
+            }
 
-            //string ipconfiguration_name = "ipconfig1";
-            //IpConfiguration ipconfiguration = new IpConfiguration();
-            //ipconfiguration.name = ipconfiguration_name;
-            //ipconfiguration.properties = ipconfiguration_properties;
+            IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
+            ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
+            ipconfiguration_properties.privateIPAddress = privateIPAddress;
+            ipconfiguration_properties.subnet = subnet_ref;
+            ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
 
-            //List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
-            //ipConfigurations.Add(ipconfiguration);
+            string ipconfiguration_name = "ipconfig1";
+            IpConfiguration ipconfiguration = new IpConfiguration();
+            ipconfiguration.name = ipconfiguration_name;
+            ipconfiguration.properties = ipconfiguration_properties;
 
-            //foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
-            //{
-            //    NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
-            //    networkinterface_properties.ipConfigurations = ipConfigurations;
-            //    networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
+            List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
+            ipConfigurations.Add(ipconfiguration);
 
-            //    NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
-            //    networkInterface.name = targetNetworkInterface.ToString();
-            //    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-            //        networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-            //    networkInterface.properties = networkinterface_properties;
-            //    networkInterface.dependsOn = dependson;
+            foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
+            {
+                NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
+                networkinterface_properties.ipConfigurations = ipConfigurations;
+                networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
 
-            //    NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-            //    networkinterface_ref_properties.primary = true;
+                NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
+                networkInterface.name = targetNetworkInterface.ToString();
+                if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                    networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+                networkInterface.properties = networkinterface_properties;
+                networkInterface.dependsOn = dependson;
 
-            //    NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-            //    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
-            //    networkinterface_ref.properties = networkinterface_ref_properties;
-            //}
+                NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+                networkinterface_ref_properties.primary = true;
 
-            //if (virtualMachine.NetworkSecurityGroup != null)
-            //{
-            //    Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(virtualMachine.NetworkSecurityGroup.Name);
+                NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
+                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
+                networkinterface_ref.properties = networkinterface_ref_properties;
 
-            //    if (asmNetworkSecurityGroup == null)
-            //    {
-            //        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + virtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
-            //    }
-            //    else
-            //    {
-            //        // Add NSG reference to the network interface
-            //        Reference networksecuritygroup_ref = new Reference();
-            //        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.ToString() + "')]";
+                if (virtualMachine.NetworkSecurityGroup != null)
+                {
+                    Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(virtualMachine.NetworkSecurityGroup.Name);
 
-            //        networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
-            //        primaryNetworkInterface.properties = networkinterface_properties;
+                    if (asmNetworkSecurityGroup == null)
+                    {
+                        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + virtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
+                    }
+                    else
+                    {
+                        // Add NSG reference to the network interface
+                        Reference networksecuritygroup_ref = new Reference();
+                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.ToString() + "')]";
 
-            //        // Add NSG dependsOn to the Network Interface object
-            //        if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
-            //        {
-            //            primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
-            //        }
-            //    }
+                        networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
+                        primaryNetworkInterface.properties = networkinterface_properties;
 
-            //}
+                        // Add NSG dependsOn to the Network Interface object
+                        if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
+                        {
+                            primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
+                        }
+                    }
+                }
 
-            //if (virtualMachine.HasPublicIPs)
-            //{
-            //    BuildPublicIPAddressObject(ref primaryNetworkInterface);
-            //}
+                if (virtualMachine.HasPublicIPs)
+                {
+                    BuildPublicIPAddressObject(ref primaryNetworkInterface);
+                }
 
-            //networkinterfaces.Add(networkinterface_ref);
+                networkinterfaces.Add(networkinterface_ref);
 
-            //this.AddResource(primaryNetworkInterface);
+                this.AddResource(primaryNetworkInterface);
 
-            //foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
-            //{
-            //    subnet_ref = new Reference();
-            //    subnet_ref.id = targetNetworkInterface.TargetSubnet.TargetId;
+                foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
+                {
+                    subnet_ref = new Reference();
+                    subnet_ref.id = targetNetworkInterface.TargetSubnet.TargetId;
 
-            //    privateIPAllocationMethod = "Dynamic";
-            //    privateIPAddress = null;
-            //    if (targetNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
-            //    {
-            //        privateIPAllocationMethod = "Static";
-            //        privateIPAddress = targetNetworkInterface.StaticVirtualNetworkIPAddress;
-            //    }
+                    privateIPAllocationMethod = "Dynamic";
+                    privateIPAddress = null;
+                    if (targetNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
+                    {
+                        privateIPAllocationMethod = "Static";
+                        privateIPAddress = targetNetworkInterface.StaticVirtualNetworkIPAddress;
+                    }
 
-            //    ipconfiguration_properties = new IpConfiguration_Properties();
-            //    ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-            //    ipconfiguration_properties.privateIPAddress = privateIPAddress;
-            //    ipconfiguration_properties.subnet = subnet_ref;
+                    ipconfiguration_properties = new IpConfiguration_Properties();
+                    ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
+                    ipconfiguration_properties.privateIPAddress = privateIPAddress;
+                    ipconfiguration_properties.subnet = subnet_ref;
 
-            //    ipconfiguration_name = "ipconfig1";
-            //    ipconfiguration = new IpConfiguration();
-            //    ipconfiguration.name = ipconfiguration_name;
-            //    ipconfiguration.properties = ipconfiguration_properties;
+                    ipconfiguration_name = "ipconfig1";
+                    ipconfiguration = new IpConfiguration();
+                    ipconfiguration.name = ipconfiguration_name;
+                    ipconfiguration.properties = ipconfiguration_properties;
 
-            //    ipConfigurations = new List<IpConfiguration>();
-            //    ipConfigurations.Add(ipconfiguration);
+                    ipConfigurations = new List<IpConfiguration>();
+                    ipConfigurations.Add(ipconfiguration);
 
-            //    networkinterface_properties = new NetworkInterface_Properties();
-            //    networkinterface_properties.ipConfigurations = ipConfigurations;
-            //    if (targetNetworkInterface.EnableIPForwarding)
-            //    {
-            //        networkinterface_properties.enableIPForwarding = true;
-            //    }
+                    networkinterface_properties = new NetworkInterface_Properties();
+                    networkinterface_properties.ipConfigurations = ipConfigurations;
+                    if (targetNetworkInterface.EnableIPForwarding)
+                    {
+                        networkinterface_properties.enableIPForwarding = true;
+                    }
 
-            //    dependson = new List<string>();
-            //    dependson.Add(targetNetworkInterface.TargetVirtualNetwork.TargetId);
+                    dependson = new List<string>();
+                    dependson.Add(targetNetworkInterface.TargetVirtualNetwork.TargetId);
 
-            //    NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
-            //    additionalNetworkInterface.name = targetNetworkInterface.ToString();
-            //    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-            //        additionalNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-            //    additionalNetworkInterface.properties = networkinterface_properties;
-            //    additionalNetworkInterface.dependsOn = dependson;
+                    NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
+                    additionalNetworkInterface.name = targetNetworkInterface.ToString();
+                    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                        additionalNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+                    additionalNetworkInterface.properties = networkinterface_properties;
+                    additionalNetworkInterface.dependsOn = dependson;
 
-            //    networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-            //    networkinterface_ref_properties.primary = false;
+                    networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+                    networkinterface_ref_properties.primary = false;
 
-            //    networkinterface_ref = new NetworkProfile_NetworkInterface();
-            //    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + additionalNetworkInterface.name + "')]";
-            //    networkinterface_ref.properties = networkinterface_ref_properties;
+                    networkinterface_ref = new NetworkProfile_NetworkInterface();
+                    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + additionalNetworkInterface.name + "')]";
+                    networkinterface_ref.properties = networkinterface_ref_properties;
 
-            //    networkinterfaces.Add(networkinterface_ref);
+                    networkinterfaces.Add(networkinterface_ref);
 
-            //    this.AddResource(additionalNetworkInterface);
-            //}
+                    this.AddResource(additionalNetworkInterface);
+                }
+            }
 
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "End");
+
         }
 
         private async Task BuildVirtualMachineObject(Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet, Azure.MigrationTarget.VirtualMachine virtualMachine)
@@ -1904,110 +1902,3 @@ namespace MigAz.Azure.Generator.AsmToArm
         }
     }
 }
-
-
-
-
-
-
-//private void BuildARMVirtualNetworkObject(Arm.VirtualNetwork armVirtualNetwork)
-//{
-//    LogProvider.WriteLog("BuildVirtualNetworkObject", "Start Microsoft.Network/virtualNetworks/" + armVirtualNetwork.ToString());
-
-//    List<string> dependson = new List<string>();
-
-//    List<string> addressprefixes = armVirtualNetwork.AddressPrefixes;
-
-//    AddressSpace addressspace = new AddressSpace();
-//    addressspace.addressPrefixes = addressprefixes;
-
-//    List<string> dnsservers = armVirtualNetwork.DnsServers;
-
-//    VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
-//    dhcpoptions.dnsServers = dnsservers;
-
-//    Core.ArmTemplate.VirtualNetwork virtualnetwork = new Core.ArmTemplate.VirtualNetwork(this.ExecutionGuid);
-
-//    virtualnetwork.name = armVirtualNetwork.Name;
-//    if (_TargetResourceGroup != null && _TargetResourceGroup.TargetLocation != null)
-//        virtualnetwork.location = _TargetResourceGroup.TargetLocation.Name;
-
-//    virtualnetwork.dependsOn = dependson;
-//    List<Core.ArmTemplate.Subnet> subnets = new List<Core.ArmTemplate.Subnet>();
-
-//    if (!armVirtualNetwork.HasNonGatewaySubnet)
-//    {
-//        Subnet_Properties properties = new Subnet_Properties();
-//        properties.addressPrefix = addressprefixes[0];
-
-//        Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
-//        subnet.name = "Subnet1";
-//        subnet.properties = properties;
-
-//        subnets.Add(subnet);
-//        this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", armVirtualNetwork);
-//    }
-//    else
-//    {
-//        foreach (Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
-//        {
-//            Subnet_Properties properties = new Subnet_Properties();
-//            properties.addressPrefix = armSubnet.AddressPrefix;
-
-//            Core.ArmTemplate.Subnet subnet = new Core.ArmTemplate.Subnet();
-//            subnet.name = armSubnet.Name;
-//            subnet.properties = properties;
-//            subnets.Add(subnet);
-
-//            //NSG Setup - Single NSG per subnet
-//            if (armSubnet.NetworkSecurityGroup != null)
-//            {
-//                Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
-
-//                // Add NSG reference to the subnet
-//                Reference networksecuritygroup_ref = new Reference();
-//                networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
-
-//                properties.networkSecurityGroup = networksecuritygroup_ref;
-
-//                // Add NSG dependsOn to the Virtual Network object
-//                if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
-//                {
-//                    virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
-//                }
-//            }
-
-//            // add Route Table if exists
-//            if (armSubnet.RouteTable != null)
-//            {
-//                Core.ArmTemplate.RouteTable routetable = BuildARMRouteTable(armSubnet.RouteTable);
-
-//                // Add Route Table reference to the subnet
-//                Reference routetable_ref = new Reference();
-//                routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
-
-//                properties.routeTable = routetable_ref;
-
-//                // Add Route Table dependsOn to the Virtual Network object
-//                if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
-//                {
-//                    virtualnetwork.dependsOn.Add(routetable_ref.id);
-//                }
-//            }
-//        }
-
-//    }
-
-
-//    VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
-//    virtualnetwork_properties.addressSpace = addressspace;
-//    virtualnetwork_properties.subnets = subnets;
-//    virtualnetwork_properties.dhcpOptions = dhcpoptions;
-
-//    virtualnetwork.properties = virtualnetwork_properties;
-
-//    this.AddResource(virtualnetwork);
-//    // todo AddGatewaysToVirtualNetworkARM(resource, virtualnetwork);
-
-//    LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + armVirtualNetwork.ToString());
-//}
