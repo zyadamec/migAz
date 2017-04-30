@@ -177,7 +177,7 @@ namespace MigAz.Tests
             var artifacts = new ExportArtifacts();
             // todo artifacts.VirtualNetworks.Add(await azureContextUSCommercialRetriever.GetAzureAsmVirtualNetwork("asmnet"));
 
-            templateGenerator.UpdateArtifacts(artifacts);
+            await templateGenerator.UpdateArtifacts(artifacts);
 
             JObject templateJson = templateGenerator.GetTemplate();
 

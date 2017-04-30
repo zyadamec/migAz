@@ -51,18 +51,18 @@ namespace MigAz.UserControls
             _VirtualMachineNode = armVirtualMachineNode;
             _AsmToArmForm = asmToArmForm;
 
-            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
+            txtARMVMName.Text = targetVirtualMachine.TargetName;
 
-            if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+            if (targetVirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
             {
-                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
+                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
 
                 lblRoleSize.Text = asmVirtualMachine.RoleSize;
                 lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
                 lblVirtualNetworkName.Text = asmVirtualMachine.VirtualNetworkName;
                 lblSubnetName.Text = asmVirtualMachine.SubnetName;
                 lblStaticIpAddress.Text = asmVirtualMachine.StaticVirtualNetworkIPAddress;
-                // todo now russell txtARMVMName.Text = asmVirtualMachine.TargetName;
 
                 this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
 
@@ -89,9 +89,9 @@ namespace MigAz.UserControls
                 //    rbExistingARMVNet.Checked = true;
                 //}
             }
-            else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+            else if (targetVirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
             {
-                Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
+                Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)targetVirtualMachine.Source;
 
                 lblRoleSize.Text = armVirtualMachine.VmSize;
                 // todo russell lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
@@ -99,7 +99,6 @@ namespace MigAz.UserControls
                     lblVirtualNetworkName.Text = armVirtualMachine.VirtualNetwork.Name;
                 // todo russell lblSubnetName.Text = armVirtualMachine.SubnetName;
                 // todo russell lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
-                txtARMVMName.Text = armVirtualMachine.TargetName;
 
                 this.diskProperties1.Bind(asmToArmForm, armVirtualMachine.OSVirtualHardDisk);
             }
@@ -348,23 +347,11 @@ namespace MigAz.UserControls
 
         private void txtARMVMName_TextChanged(object sender, EventArgs e)
         {
-            TreeNode asmTreeNode = (TreeNode)_VirtualMachineNode.Tag;
+            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
 
-            // todo now russell
-            //if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
-            //{
-            //    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)asmTreeNode.Tag;
+            targetVirtualMachine.TargetName = txtARMVMName.Text;
+            _VirtualMachineNode.Text = targetVirtualMachine.GetFinalTargetName();
 
-            //    asmVirtualMachine.TargetName = txtARMVMName.Text;
-            //    _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
-            //}
-            //else if (asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-            //{
-            //    Azure.Arm.VirtualMachine asmVirtualMachine = (Azure.Arm.VirtualMachine)asmTreeNode.Tag;
-
-            //    asmVirtualMachine.TargetName = txtARMVMName.Text;
-            //    _VirtualMachineNode.Text = asmVirtualMachine.TargetName;
-            //}
 
             PropertyChanged();
         }

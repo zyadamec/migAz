@@ -589,46 +589,38 @@ namespace MigAz.UserControls.Migrators
             _PropertyPanel.ResourceText = String.Empty;
             if (e.Node.Tag != null)
             {
-                if (e.Node.Tag.GetType() == typeof(TreeNode))
+                _PropertyPanel.ResourceText = e.Node.Text;
+
+                if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
-                    TreeNode asmTreeNode = (TreeNode)e.Node.Tag;
+                    this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
 
-                    if (asmTreeNode.Tag != null)
-                    {
-                        _PropertyPanel.ResourceText = e.Node.Text;
-
-                        if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                        {
-                            this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
-
-                            VirtualNetworkProperties properties = new VirtualNetworkProperties();
-                            properties.PropertyChanged += Properties_PropertyChanged;
-                            properties.Bind(e.Node);
-                            _PropertyPanel.PropertyDetailControl = properties;
-                        }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
-                        {
-                            this._PropertyPanel.ResourceImage = imageList1.Images["VirtualMachine"];
-
-                            VirtualMachineProperties properties = new VirtualMachineProperties();
-                            properties.LogProvider = LogProvider;
-                            properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
-                            properties.PropertyChanged += Properties_PropertyChanged;
-                            await properties.Bind(e.Node, this);
-                            _PropertyPanel.PropertyDetailControl = properties;
-                        }
-                        else if (asmTreeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup) || asmTreeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
-                        {
-                            this._PropertyPanel.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
-
-                            NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
-                            properties.PropertyChanged += Properties_PropertyChanged;
-                            properties.Bind(e.Node, this);
-                            _PropertyPanel.PropertyDetailControl = properties;
-                        }
-                    }
+                    VirtualMachineProperties properties = new VirtualMachineProperties();
+                    properties.LogProvider = LogProvider;
+                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(e.Node, this);
+                    _PropertyPanel.PropertyDetailControl = properties;
                 }
-                if (e.Node.Tag.GetType() == typeof(Azure.Asm.Subnet) || e.Node.Tag.GetType() == typeof(Azure.Arm.Subnet))
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
+
+                    NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(e.Node, this);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
+
+                    VirtualNetworkProperties properties = new VirtualNetworkProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["VirtualNetwork"];
 
@@ -811,6 +803,11 @@ namespace MigAz.UserControls.Migrators
                         childNode.ImageKey = "VirtualNetwork";
                         childNode.SelectedImageKey = "VirtualNetwork";
                     }
+                    else if (tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                    {
+                        childNode.ImageKey = "VirtualNetwork";
+                        childNode.SelectedImageKey = "VirtualNetwork";
+                    }
 
                     nodeCollection.Add(childNode);
                     childNode.ExpandAll();
@@ -835,11 +832,10 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (Azure.Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
                 {
-                    // Property dialog not made available for Gateway Subnet
-                    if (!asmSubnet.IsGatewaySubnet)
-                    {
-                        TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, asmSubnet.Name, asmSubnet.Name, asmSubnet, true);
-                    }
+                    Azure.MigrationTarget.Subnet targetSubnet = new Azure.MigrationTarget.Subnet(this.AzureContextTargetARM, targetVirtualNetwork, asmSubnet);
+                    targetVirtualNetwork.TargetSubnets.Add(targetSubnet);
+
+                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, asmSubnet.Name, targetSubnet.GetFinalTargetName(), targetSubnet, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -928,11 +924,10 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
                 {
-                    // Property dialog not made available for Gateway Subnet
-                    if (!armSubnet.IsGatewaySubnet)
-                    {
-                        TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, armSubnet.Name, armSubnet.Name, armSubnet, true);
-                    }
+                    Azure.MigrationTarget.Subnet targetSubnet = new Azure.MigrationTarget.Subnet(this.AzureContextTargetARM, targetVirtualNetwork, armSubnet);
+                    targetVirtualNetwork.TargetSubnets.Add(targetSubnet);
+
+                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, armSubnet.Name, targetSubnet.GetFinalTargetName(), targetSubnet, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
