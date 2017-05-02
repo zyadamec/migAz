@@ -63,16 +63,6 @@ namespace MigAz.Azure.Arm
         {
             get; private set;
         }
-        public AvailabilitySet TargetAvailabilitySet
-        {
-            get; set;
-        }
-        public Subnet TargetSubnet
-        {
-            get; set;
-        }
-        public string TargetName { get; set; }
-
         internal async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);

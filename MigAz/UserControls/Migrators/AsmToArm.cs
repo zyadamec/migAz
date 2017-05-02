@@ -145,7 +145,7 @@ namespace MigAz.UserControls.Migrators
                     {
                         if (asmVirtualNetwork.HasNonGatewaySubnet)
                         {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
                             TreeNode tnVirtualNetwork = new TreeNode(asmVirtualNetwork.Name);
                             tnVirtualNetwork.Name = asmVirtualNetwork.Name;
                             tnVirtualNetwork.Tag = asmVirtualNetwork;
@@ -156,7 +156,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
+                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
                         TreeNode tnStorageAccount = new TreeNode(asmStorageAccount.Name);
                         tnStorageAccount.Name = tnStorageAccount.Text;
                         tnStorageAccount.Tag = asmStorageAccount;
@@ -169,7 +169,7 @@ namespace MigAz.UserControls.Migrators
                     {
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                         {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
                             TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
                             TreeNode cloudServiceNode = null;
                             if (cloudServiceNodeSearch.Count() == 1)
@@ -196,7 +196,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
                         TreeNode tnStorageAccount = new TreeNode(asmNetworkSecurityGroup.Name);
                         tnStorageAccount.Name = tnStorageAccount.Text;
                         tnStorageAccount.Tag = asmNetworkSecurityGroup;
@@ -225,7 +225,7 @@ namespace MigAz.UserControls.Migrators
 
                             if (armVirtualNetwork.ResourceGroup != null)
                             {
-                                TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup.ToString(), armVirtualNetwork.ResourceGroup);
+                                TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup);
                                 tnResourceGroup.ImageKey = "ResourceGroup";
                                 tnResourceGroup.SelectedImageKey = "ResourceGroup";
                                 virtualNetworkParentNode = tnResourceGroup;
@@ -247,7 +247,7 @@ namespace MigAz.UserControls.Migrators
 
                         if (armStorageAccount.ResourceGroup != null)
                         {
-                            TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armStorageAccount.ResourceGroup.ToString(), armStorageAccount.ResourceGroup);
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armStorageAccount.ResourceGroup);
                             tnResourceGroup.ImageKey = "ResourceGroup";
                             tnResourceGroup.SelectedImageKey = "ResourceGroup";
                             storageAccountParentNode = tnResourceGroup;
@@ -268,10 +268,18 @@ namespace MigAz.UserControls.Migrators
 
                         if (armVirtualMachine.ResourceGroup != null)
                         {
-                            TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup.ToString(), armVirtualMachine.ResourceGroup);
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
                             tnResourceGroup.ImageKey = "ResourceGroup";
                             tnResourceGroup.SelectedImageKey = "ResourceGroup";
                             virtualMachineParentNode = tnResourceGroup;
+                        }
+
+                        if (armVirtualMachine.AvailabilitySet != null)
+                        {
+                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(subscriptionNodeARM, armVirtualMachine.AvailabilitySet);
+                            tnAvailabilitySet.ImageKey = "AvailabilitySet";
+                            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+                            virtualMachineParentNode = tnAvailabilitySet;
                         }
 
                         TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
@@ -527,14 +535,14 @@ namespace MigAz.UserControls.Migrators
             {
                 if (e.Node.Checked)
                 {
-                    await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
-                    MigAzTreeView.FillUpIfFullDown(e.Node);
+                    await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    FillUpIfFullDown(e.Node);
                     treeSourceASM.SelectedNode = e.Node;
                 }
                 else
                 {
-                    await MigAzTreeView.RecursiveCheckToggleUp(e.Node, e.Node.Checked);
-                    await MigAzTreeView.RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    await RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
                 }
 
                 _SelectedNodes = this.GetSelectedNodes(treeSourceASM);
@@ -877,6 +885,170 @@ namespace MigAz.UserControls.Migrators
             return null;
         }
 
+        private TreeNode GetResourceGroupTreeNode(TreeNode subscriptionNode, ResourceGroup resourceGroup)
+        {
+            foreach (TreeNode treeNode in subscriptionNode.Nodes)
+            {
+                if (treeNode.Tag != null)
+                {
+                    if (treeNode.Tag.GetType() == resourceGroup.GetType() && treeNode.Text == resourceGroup.ToString())
+                        return treeNode;
+                }
+            }
+
+            TreeNode tnResourceGroup = new TreeNode(resourceGroup.ToString());
+            tnResourceGroup.Text = resourceGroup.ToString();
+            tnResourceGroup.Tag = resourceGroup;
+            tnResourceGroup.ImageKey = "ResourceGroup";
+            tnResourceGroup.SelectedImageKey = "ResourceGroup";
+
+            subscriptionNode.Nodes.Add(tnResourceGroup);
+            tnResourceGroup.Expand();
+            return tnResourceGroup;
+        }
+
+        private TreeNode GetAvailabilitySetTreeNode(TreeNode subscriptionNode, AvailabilitySet availabilitySet)
+        {
+            foreach (TreeNode treeNode in subscriptionNode.Nodes)
+            {
+                if (treeNode.Tag != null)
+                {
+                    if (treeNode.Tag.GetType() == availabilitySet.GetType() && treeNode.Text == availabilitySet.Name)
+                        return treeNode;
+                }
+            }
+
+            TreeNode tnAvailabilitySet = new TreeNode(availabilitySet.Name);
+            tnAvailabilitySet.Text = availabilitySet.Name;
+            tnAvailabilitySet.Tag = availabilitySet;
+            tnAvailabilitySet.ImageKey = "AvailabilitySet";
+            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+
+            subscriptionNode.Nodes.Add(tnAvailabilitySet);
+            tnAvailabilitySet.Expand();
+            return tnAvailabilitySet;
+        }
+
+        private TreeNode GetAvailabilitySetNode(TreeNode subscriptionNode, AvailabilitySet availabilitySet)
+        {
+            foreach (TreeNode treeNode in subscriptionNode.Nodes)
+            {
+                if (treeNode.Tag != null)
+                {
+                    if (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && treeNode.Text == availabilitySet.Name)
+                        return treeNode;
+                }
+            }
+
+            TreeNode tnAvailabilitySet = new TreeNode(availabilitySet.Name);
+            tnAvailabilitySet.Text = availabilitySet.Name;
+            tnAvailabilitySet.Tag = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, availabilitySet);
+            tnAvailabilitySet.ImageKey = "AvailabilitySet";
+            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+
+            subscriptionNode.Nodes.Add(tnAvailabilitySet);
+            tnAvailabilitySet.Expand();
+            return tnAvailabilitySet;
+        }
+
+        private TreeNode GetDataCenterTreeViewNode(TreeNode subscriptionNode, string dataCenter, string containerName)
+        {
+            TreeNode dataCenterNode = null;
+
+            foreach (TreeNode treeNode in subscriptionNode.Nodes)
+            {
+                if (treeNode.Text == dataCenter && treeNode.Tag.ToString() == "DataCenter")
+                {
+                    dataCenterNode = treeNode;
+
+                    foreach (TreeNode dataCenterContainerNode in treeNode.Nodes)
+                    {
+                        if (dataCenterContainerNode.Text == containerName)
+                            return dataCenterContainerNode;
+                    }
+                }
+            }
+
+            if (dataCenterNode == null)
+            {
+                dataCenterNode = new TreeNode(dataCenter);
+                dataCenterNode.Tag = "DataCenter";
+                subscriptionNode.Nodes.Add(dataCenterNode);
+                dataCenterNode.Expand();
+            }
+
+            TreeNode containerNode = new TreeNode(containerName);
+            dataCenterNode.Nodes.Add(containerNode);
+            containerNode.Expand();
+
+            return containerNode;
+        }
+
+        private void FillUpIfFullDown(TreeNode node)
+        {
+            if (IsSelectedFullDown(node) && (node.Parent != null))
+            {
+                node = node.Parent;
+
+                while (node != null)
+                {
+                    if (AllChildrenChecked(node))
+                    {
+                        node.Checked = true;
+                        node = node.Parent;
+                    }
+                    else
+                        node = null;
+                }
+            }
+        }
+
+        private bool AllChildrenChecked(TreeNode node)
+        {
+            foreach (TreeNode childNode in node.Nodes)
+                if (!childNode.Checked)
+                    return false;
+
+            return true;
+        }
+
+        private bool IsSelectedFullDown(TreeNode node)
+        {
+            if (!node.Checked)
+                return false;
+
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                if (!IsSelectedFullDown(childNode))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private async Task RecursiveCheckToggleDown(TreeNode node, bool isChecked)
+        {
+            if (node.Checked != isChecked)
+            {
+                node.Checked = isChecked;
+            }
+
+            foreach (TreeNode subNode in node.Nodes)
+            {
+                await RecursiveCheckToggleDown(subNode, isChecked);
+            }
+        }
+        private async Task RecursiveCheckToggleUp(TreeNode node, bool isChecked)
+        {
+            if (node.Checked != isChecked)
+            {
+                node.Checked = isChecked;
+            }
+
+            if (node.Parent != null)
+                await RecursiveCheckToggleUp(node.Parent, isChecked);
+        }
+
         private async Task<TreeNode> AddASMNodeToARMTree(TreeNode parentNode)
         {
             TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.TargetName, _TargetResourceGroup.TargetName, _TargetResourceGroup, true);
@@ -1008,11 +1180,10 @@ namespace MigAz.UserControls.Migrators
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
                 TreeNode virtualMachineNode = null;
-                if (armVirtualMachine.TargetAvailabilitySet != null)
+                if (armVirtualMachine.AvailabilitySet != null)
                 {
-                    Azure.MigrationTarget.AvailabilitySet asdf = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM); // todo now russell
-                    asdf.TargetName = "TODO";
-                    virtualMachineParentNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.ToString(), asdf, true);
+                    TreeNode targetAvailabilitySetNode = GetAvailabilitySetNode(targetResourceGroupNode, armVirtualMachine.AvailabilitySet);
+                    virtualMachineParentNode = targetAvailabilitySetNode;
                 }
 
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine);

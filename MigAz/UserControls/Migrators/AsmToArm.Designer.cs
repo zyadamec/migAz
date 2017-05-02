@@ -56,10 +56,10 @@
             this.imageList1.Images.SetKeyName(4, "PublicIPAddress.png");
             this.imageList1.Images.SetKeyName(5, "StorageAccount");
             this.imageList1.Images.SetKeyName(6, "VirtualMachine");
-            this.imageList1.Images.SetKeyName(7, "AvailabilitySet");
-            this.imageList1.Images.SetKeyName(8, "VirtualNetwork");
-            this.imageList1.Images.SetKeyName(9, "Subscription");
-            this.imageList1.Images.SetKeyName(10, "ResourceGroup");
+            this.imageList1.Images.SetKeyName(7, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(8, "Subscription");
+            this.imageList1.Images.SetKeyName(9, "ResourceGroup");
+            this.imageList1.Images.SetKeyName(10, "AvailabilitySet");
             // 
             // azureLoginContextViewerARM
             // 

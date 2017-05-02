@@ -284,6 +284,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AvailabilitySet.png" />
     <Content Include="Resources\Disks.png" />
     <Content Include="Resources\LoadBalancer.png" />
     <Content Include="Resources\NetworkInterface.png" />
