@@ -147,8 +147,11 @@
             // treeSourceARM
             // 
             this.treeSourceARM.CheckBoxes = true;
+            this.treeSourceARM.ImageIndex = 0;
+            this.treeSourceARM.ImageList = this.imageList1;
             this.treeSourceARM.Location = new System.Drawing.Point(0, 0);
             this.treeSourceARM.Name = "treeSourceARM";
+            this.treeSourceARM.SelectedImageIndex = 0;
             this.treeSourceARM.Size = new System.Drawing.Size(842, 500);
             this.treeSourceARM.TabIndex = 57;
             this.treeSourceARM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);

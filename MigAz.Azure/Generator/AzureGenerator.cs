@@ -194,7 +194,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     {
                         if (dataDisk.TargetStorageAccount == null)
                         {
-                            this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.name + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
+                            this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
                         }
                         else
                         {

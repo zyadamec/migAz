@@ -214,16 +214,6 @@ namespace MigAz.UserControls.Migrators
                     treeSourceARM.Nodes.Add(subscriptionNodeARM);
                     subscriptionNodeARM.Expand();
 
-                    foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
-                    {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armAvailabilitySet.Location, "Availability Sets");
-                        TreeNode tnResourceGroup = new TreeNode(armAvailabilitySet.Name);
-                        tnResourceGroup.Name = armAvailabilitySet.Name;
-                        tnResourceGroup.Tag = armAvailabilitySet;
-                        parentNode.Nodes.Add(tnResourceGroup);
-                        parentNode.Expand();
-                    }
-
                     List<Azure.Arm.VirtualNetwork> armVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks();
                     foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
                     {
@@ -240,6 +230,8 @@ namespace MigAz.UserControls.Migrators
                             TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
                             tnVirtualNetwork.Name = armVirtualNetwork.Name;
                             tnVirtualNetwork.Tag = armVirtualNetwork;
+                            tnVirtualNetwork.ImageKey = "VirtualNetwork";
+                            tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                             virtualNetworkParentNode.Expand();
                         }
@@ -258,18 +250,29 @@ namespace MigAz.UserControls.Migrators
                         TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
                         tnStorageAccount.Name = armStorageAccount.Name;
                         tnStorageAccount.Tag = armStorageAccount;
+                        tnStorageAccount.ImageKey = "StorageAccount";
+                        tnStorageAccount.SelectedImageKey = "StorageAccount";
                         storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         storageAccountParentNode.Expand();
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.Location, "Virtual Machines");
+                        TreeNode virtualMachineParentNode = subscriptionNodeARM;
+
+                        if (armVirtualMachine.ResourceGroup != null)
+                        {
+                            TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup.Location, armVirtualMachine.ResourceGroup.ToString());
+                            virtualMachineParentNode = tnResourceGroup;
+                        }
+
                         TreeNode tnVirtualMachine = new TreeNode(armVirtualMachine.Name);
-                        tnVirtualMachine.Name = tnVirtualMachine.Text;
+                        tnVirtualMachine.Name = armVirtualMachine.Name;
                         tnVirtualMachine.Tag = armVirtualMachine;
-                        parentNode.Nodes.Add(tnVirtualMachine);
-                        parentNode.Expand();
+                        tnVirtualMachine.ImageKey = "VirtualMachine";
+                        tnVirtualMachine.SelectedImageKey = "VirtualMachine";
+                        virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
+                        virtualMachineParentNode.Expand();
                     }
 
                     subscriptionNodeARM.ExpandAll();

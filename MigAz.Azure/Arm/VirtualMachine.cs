@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualMachine : Core.ArmTemplate.VirtualMachine, IVirtualMachine
+    public class VirtualMachine : IVirtualMachine
     {
         private JToken _VirtualMachine;
         private List<Disk> _DataDisks = new List<Disk>();
-        private ResourceGroup _ResourceGroup;
         private NetworkSecurityGroup _NetworkSecurityGroup;
         private Disk _OSVirtualHardDisk;
         private VirtualNetwork _VirtualNetwork;
         private List<NetworkInterfaceCard> _NetworkInterfaceCards = new List<NetworkInterfaceCard>();
 
-        private VirtualMachine() : base(Guid.Empty) { }
+        private VirtualMachine() { }
 
-        public VirtualMachine(JToken virtualMachine) : base(Guid.Empty)
+        public VirtualMachine(JToken virtualMachine)
         {
             _VirtualMachine = virtualMachine;
 
@@ -55,7 +54,7 @@ namespace MigAz.Azure.Arm
 
         public List<Disk> DataDisks => _DataDisks;
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
-        public ResourceGroup ResourceGroup => _ResourceGroup;
+        public ResourceGroup ResourceGroup { get; set; }
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
         public VirtualNetwork VirtualNetwork => _VirtualNetwork;
         public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
@@ -79,6 +78,8 @@ namespace MigAz.Azure.Arm
             this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
+
+            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
 
             return;
         }
