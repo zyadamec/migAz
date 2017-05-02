@@ -211,6 +211,8 @@ namespace MigAz.UserControls.Migrators
                     #region Bind Source ARM Objects
 
                     TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
+                    subscriptionNodeARM.ImageKey = "Subscription";
+                    subscriptionNodeARM.SelectedImageKey = "Subscription";
                     treeSourceARM.Nodes.Add(subscriptionNodeARM);
                     subscriptionNodeARM.Expand();
 
@@ -223,7 +225,9 @@ namespace MigAz.UserControls.Migrators
 
                             if (armVirtualNetwork.ResourceGroup != null)
                             {
-                                TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup.Location, armVirtualNetwork.ResourceGroup.ToString());
+                                TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup.ToString(), armVirtualNetwork.ResourceGroup);
+                                tnResourceGroup.ImageKey = "ResourceGroup";
+                                tnResourceGroup.SelectedImageKey = "ResourceGroup";
                                 virtualNetworkParentNode = tnResourceGroup;
                             }
 
@@ -243,7 +247,9 @@ namespace MigAz.UserControls.Migrators
 
                         if (armStorageAccount.ResourceGroup != null)
                         {
-                            TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.ResourceGroup.Location, armStorageAccount.ResourceGroup.ToString());
+                            TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armStorageAccount.ResourceGroup.ToString(), armStorageAccount.ResourceGroup);
+                            tnResourceGroup.ImageKey = "ResourceGroup";
+                            tnResourceGroup.SelectedImageKey = "ResourceGroup";
                             storageAccountParentNode = tnResourceGroup;
                         }
 
@@ -262,7 +268,9 @@ namespace MigAz.UserControls.Migrators
 
                         if (armVirtualMachine.ResourceGroup != null)
                         {
-                            TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup.Location, armVirtualMachine.ResourceGroup.ToString());
+                            TreeNode tnResourceGroup = MigAzTreeView.GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup.ToString(), armVirtualMachine.ResourceGroup);
+                            tnResourceGroup.ImageKey = "ResourceGroup";
+                            tnResourceGroup.SelectedImageKey = "ResourceGroup";
                             virtualMachineParentNode = tnResourceGroup;
                         }
 
@@ -810,58 +818,63 @@ namespace MigAz.UserControls.Migrators
         internal TreeNode SeekARMChildTreeNode(TreeNodeCollection nodeCollection, string name, string text, object tag, bool allowCreated = false)
         {
             TreeNode[] childNodeMatch = nodeCollection.Find(name, false);
-            TreeNode childNode = null;
-            if (childNodeMatch.Count() == 0)
-            {
-                if (allowCreated)
-                {
-                    childNode = new TreeNode(text);
-                    childNode.Name = name;
-                    childNode.Tag = tag;
-                    if (tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
-                    {
-                        childNode.ImageKey = "ResourceGroup";
-                        childNode.SelectedImageKey = "ResourceGroup";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                    {
-                        childNode.ImageKey = "StorageAccount";
-                        childNode.SelectedImageKey = "StorageAccount";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                    {
-                        childNode.ImageKey = "AvailabilitySet";
-                        childNode.SelectedImageKey = "AvailabilitySet";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    {
-                        childNode.ImageKey = "VirtualMachine";
-                        childNode.SelectedImageKey = "VirtualMachine";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                    {
-                        childNode.ImageKey = "VirtualNetwork";
-                        childNode.SelectedImageKey = "VirtualNetwork";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                    {
-                        childNode.ImageKey = "VirtualNetwork";
-                        childNode.SelectedImageKey = "VirtualNetwork";
-                    }
-                    else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    {
-                        childNode.ImageKey = "NetworkSecurityGroup";
-                        childNode.SelectedImageKey = "NetworkSecurityGroup";
-                    }
 
-                    nodeCollection.Add(childNode);
-                    childNode.ExpandAll();
-                    return childNode;
+            foreach (TreeNode matchedNode in childNodeMatch)
+            {
+                if (matchedNode.Tag != null)
+                {
+                    if (matchedNode.Tag.GetType() == tag.GetType() && matchedNode.Text == text && matchedNode.Name == name)
+                        return matchedNode;
                 }
-                return null;
             }
-            else
-                return childNodeMatch[0];
+
+            TreeNode childNode = null;
+            if (allowCreated)
+            {
+                childNode = new TreeNode(text);
+                childNode.Name = name;
+                childNode.Tag = tag;
+                if (tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                {
+                    childNode.ImageKey = "ResourceGroup";
+                    childNode.SelectedImageKey = "ResourceGroup";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    childNode.ImageKey = "StorageAccount";
+                    childNode.SelectedImageKey = "StorageAccount";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+                {
+                    childNode.ImageKey = "AvailabilitySet";
+                    childNode.SelectedImageKey = "AvailabilitySet";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                {
+                    childNode.ImageKey = "VirtualMachine";
+                    childNode.SelectedImageKey = "VirtualMachine";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                {
+                    childNode.ImageKey = "VirtualNetwork";
+                    childNode.SelectedImageKey = "VirtualNetwork";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                {
+                    childNode.ImageKey = "VirtualNetwork";
+                    childNode.SelectedImageKey = "VirtualNetwork";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                {
+                    childNode.ImageKey = "NetworkSecurityGroup";
+                    childNode.SelectedImageKey = "NetworkSecurityGroup";
+                }
+
+                nodeCollection.Add(childNode);
+                childNode.ExpandAll();
+                return childNode;
+            }
+            return null;
         }
 
         private async Task<TreeNode> AddASMNodeToARMTree(TreeNode parentNode)

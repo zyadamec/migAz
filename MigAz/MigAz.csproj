@@ -290,11 +290,12 @@
     <Content Include="Resources\NetworkSecurityGroup.png" />
     <Content Include="Resources\PublicIPAddress.png" />
     <Content Include="Resources\Storage.png" />
+    <Content Include="Resources\Subscription.png" />
     <Content Include="Resources\VirtualMachine.png" />
     <Content Include="Resources\VirtualMachineScaleSet.png" />
     <Content Include="Resources\VNet.png" />
     <Content Include="Images\Azure SDK.ico" />
-    <None Include="Resources\Resource group.png" />
+    <None Include="Resources\ResourceGroup.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Amazon\MigAz.AWS.csproj">

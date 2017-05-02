@@ -10,6 +10,25 @@ namespace MigAz.Core
     public class MigAzTreeView
     {
 
+        public static TreeNode GetResourceGroupTreeNode(TreeNode subscriptionNode, string name, object tag)
+        {
+            foreach (TreeNode treeNode in subscriptionNode.Nodes)
+            {
+                if (treeNode.Text == name)
+                    return treeNode;
+            }
+
+            TreeNode tnResourceGroup = new TreeNode(name);
+            tnResourceGroup.Text = name;
+            tnResourceGroup.Tag = tag;
+            tnResourceGroup.ImageKey = "ResourceGroup";
+            tnResourceGroup.SelectedImageKey = "ResourceGroup";
+
+            subscriptionNode.Nodes.Add(tnResourceGroup);
+            tnResourceGroup.Expand();
+            return tnResourceGroup;
+        }
+
         public static TreeNode GetDataCenterTreeViewNode(TreeNode subscriptionNode, string dataCenter, string containerName)
         {
             TreeNode dataCenterNode = null;
