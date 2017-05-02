@@ -56,6 +56,8 @@ namespace MigAz.Azure.Arm
         public List<string> AddressPrefixes => _AddressPrefixes;
         public List<string> DnsPrefixes => _DnsPrefixes;
 
+        public ResourceGroup ResourceGroup { get; set; }
+
         public override string ToString()
         {
             return this.Name;

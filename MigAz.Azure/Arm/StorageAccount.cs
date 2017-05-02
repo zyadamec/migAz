@@ -121,10 +121,7 @@ namespace MigAz.Azure.Arm
             get { return (string)_StorageAccount["sku"]["tier"]; }
         }
 
-        public object ResourceGroup
-        {
-            get { return this.Id.Split('/')[4]; }
-        }
+        public ResourceGroup ResourceGroup { get; set; }
 
         public string BlobStorageNamespace
         {

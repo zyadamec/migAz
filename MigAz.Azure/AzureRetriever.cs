@@ -1030,6 +1030,22 @@ namespace MigAz.Azure
             return _ArmResourceGroups;
         }
 
+        public async Task<ResourceGroup> GetAzureARMResourceGroup(string id)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResourceGroup", "Start");
+
+            string[] idSplit = id.Split('/');
+            string seekResourceGroupId = "/" + idSplit[1] + "/" + idSplit[2] + "/" + idSplit[3] + "/" + idSplit[4];
+
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                if (String.Equals(resourceGroup.Id, seekResourceGroupId, StringComparison.OrdinalIgnoreCase))
+                    return resourceGroup;
+            }
+
+            return null;
+        }
+
         public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
@@ -1060,6 +1076,7 @@ namespace MigAz.Azure
             foreach (var virtualNetwork in virtualNetworks)
             {
                 Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
+                armVirtualNetwork.ResourceGroup = await this.GetAzureARMResourceGroup(armVirtualNetwork.Id);
                 _ArmVirtualNetworks.Add(armVirtualNetwork);
             }
 
@@ -1105,6 +1122,7 @@ namespace MigAz.Azure
             foreach (var storageAccount in storageAccounts)
             {
                 Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(_AzureContext, storageAccount);
+                armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
                 _ArmStorageAccounts.Add(armStorageAccount);
@@ -1168,7 +1186,7 @@ namespace MigAz.Azure
             _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccountKeys", "Start");
 
             Hashtable storageAccountKeyInfo = new Hashtable();
-            storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup);
+            storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup.Name);
             storageAccountKeyInfo.Add("StorageAccountName", armStorageAccount.Name);
 
             JObject storageAccountKeysJson = await this.GetAzureARMResources("StorageAccountKeys", storageAccountKeyInfo);

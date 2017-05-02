@@ -214,16 +214,6 @@ namespace MigAz.UserControls.Migrators
                     treeSourceARM.Nodes.Add(subscriptionNodeARM);
                     subscriptionNodeARM.Expand();
 
-                    foreach (ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
-                    {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armResourceGroup.Location, "Resource Groups");
-                        TreeNode tnResourceGroup = new TreeNode(armResourceGroup.Name);
-                        tnResourceGroup.Name = armResourceGroup.Name;
-                        tnResourceGroup.Tag = armResourceGroup;
-                        parentNode.Nodes.Add(tnResourceGroup);
-                        parentNode.Expand();
-                    }
-
                     foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets())
                     {
                         TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armAvailabilitySet.Location, "Availability Sets");
@@ -239,23 +229,37 @@ namespace MigAz.UserControls.Migrators
                     {
                         if (armVirtualNetwork.HasNonGatewaySubnet)
                         {
-                            TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.Location, "Virtual Networks");
+                            TreeNode virtualNetworkParentNode = subscriptionNodeARM;
+
+                            if (armVirtualNetwork.ResourceGroup != null)
+                            {
+                                TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup.Location, armVirtualNetwork.ResourceGroup.ToString());
+                                virtualNetworkParentNode = tnResourceGroup;
+                            }
+
                             TreeNode tnVirtualNetwork = new TreeNode(armVirtualNetwork.Name);
                             tnVirtualNetwork.Name = armVirtualNetwork.Name;
                             tnVirtualNetwork.Tag = armVirtualNetwork;
-                            parentNode.Nodes.Add(tnVirtualNetwork);
-                            parentNode.Expand();
+                            virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
+                            virtualNetworkParentNode.Expand();
                         }
                     }
 
                     foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts())
                     {
-                        TreeNode parentNode = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.PrimaryLocation, "Storage Accounts");
+                        TreeNode storageAccountParentNode = subscriptionNodeARM;
+
+                        if (armStorageAccount.ResourceGroup != null)
+                        {
+                            TreeNode tnResourceGroup = MigAzTreeView.GetDataCenterTreeViewNode(subscriptionNodeARM, armStorageAccount.ResourceGroup.Location, armStorageAccount.ResourceGroup.ToString());
+                            storageAccountParentNode = tnResourceGroup;
+                        }
+
                         TreeNode tnStorageAccount = new TreeNode(armStorageAccount.Name);
-                        tnStorageAccount.Name = tnStorageAccount.Text;
+                        tnStorageAccount.Name = armStorageAccount.Name;
                         tnStorageAccount.Tag = armStorageAccount;
-                        parentNode.Nodes.Add(tnStorageAccount);
-                        parentNode.Expand();
+                        storageAccountParentNode.Nodes.Add(tnStorageAccount);
+                        storageAccountParentNode.Expand();
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())

@@ -22,5 +22,10 @@ namespace MigAz.Azure.Arm
         public string Name => (string)_ResourceGroupJson["name"];
         public string Location => (string)_ResourceGroupJson["location"];
         public string Id => (string)_ResourceGroupJson["id"];
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
