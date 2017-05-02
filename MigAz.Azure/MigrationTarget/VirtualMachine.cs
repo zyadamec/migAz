@@ -24,6 +24,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
             this._TargetSize = virtualMachine.RoleSize;
+            this.OSVirtualHardDisk = new Disk();
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
         }
 
@@ -34,6 +35,7 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = virtualMachine.Name;
             // this._TargetStaticIpAddress = virtualMachine.; // TODO now russell, Needed
             this._TargetSize = virtualMachine.VmSize;
+            this.OSVirtualHardDisk = new Disk();
             //this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDisk.????; // todo now russell
         }
 

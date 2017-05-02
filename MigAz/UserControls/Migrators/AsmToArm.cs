@@ -732,6 +732,39 @@ namespace MigAz.UserControls.Migrators
                             await RemoveTreeNodeCascadeUp(matchingNode);
                         }
                     }
+                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                    {
+                        if (sourceNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                        else if (sourceNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                    {
+                        if (sourceNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                        else if (sourceNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                    {
+                        if (sourceNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                        else if (sourceNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
                     else if (matchingNode.Tag.GetType() == typeof(TreeNode))
                     {
                         TreeNode childTreeNode = (TreeNode)matchingNode.Tag;
@@ -807,6 +840,11 @@ namespace MigAz.UserControls.Migrators
                     {
                         childNode.ImageKey = "VirtualNetwork";
                         childNode.SelectedImageKey = "VirtualNetwork";
+                    }
+                    else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                    {
+                        childNode.ImageKey = "NetworkSecurityGroup";
+                        childNode.SelectedImageKey = "NetworkSecurityGroup";
                     }
 
                     nodeCollection.Add(childNode);
@@ -910,8 +948,9 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Asm.NetworkSecurityGroup))
             {
                 Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)parentNode.Tag;
-                TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
-                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, asmNetworkSecurityGroup.Name, asmNetworkSecurityGroup.Name, parentNode, true);
+
+                Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asmNetworkSecurityGroup.Name, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
@@ -947,19 +986,17 @@ namespace MigAz.UserControls.Migrators
             {
                 Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)parentNode.Tag;
 
+                TreeNode virtualMachineParentNode = targetResourceGroupNode;
                 TreeNode virtualMachineNode = null;
                 if (armVirtualMachine.TargetAvailabilitySet != null)
                 {
                     Azure.MigrationTarget.AvailabilitySet asdf = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM); // todo now russell
                     asdf.TargetName = "TODO";
-                    TreeNode availabilitySet = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.ToString(), asdf, true);
-                    virtualMachineNode = SeekARMChildTreeNode(availabilitySet.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, armVirtualMachine, true);
+                    virtualMachineParentNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, asdf.TargetName, asdf.ToString(), asdf, true);
                 }
-                else
-                {
-                    virtualMachineNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, armVirtualMachine.Name, armVirtualMachine.Name, armVirtualMachine, true);
 
-                }
+                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine);
+                virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, armVirtualMachine.Name, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
                 foreach (Azure.Arm.Disk armDataDisk in armVirtualMachine.DataDisks)
                 {
@@ -977,8 +1014,8 @@ namespace MigAz.UserControls.Migrators
             else if (tagType == typeof(Azure.Arm.NetworkSecurityGroup))
             {
                 Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)parentNode.Tag;
-                TreeNode networkSecurityGroups = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Network Security Groups", "Network Security Groups", "Network Security Groups", true);
-                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(networkSecurityGroups.Nodes, armNetworkSecurityGroup.Name, armNetworkSecurityGroup.Name, parentNode, true);
+                Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, armNetworkSecurityGroup.Name, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
