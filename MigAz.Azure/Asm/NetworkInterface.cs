@@ -11,7 +11,6 @@ namespace MigAz.Azure.Asm
         private AzureContext _AzureContext;
         private VirtualMachine _AsmVirtualMachine;
         private XmlNode _XmlNode;
-        private String _TargetName;
 
         #endregion
 
@@ -24,8 +23,6 @@ namespace MigAz.Azure.Asm
             _AzureContext = azureContext;
             _AsmVirtualMachine = asmVirtualMachine;
             _XmlNode = xmlNode;
-
-            this.TargetName = _AsmVirtualMachine.RoleName;
         }
 
         #endregion
@@ -37,11 +34,6 @@ namespace MigAz.Azure.Asm
             get { return _AsmVirtualMachine; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
-        }
         public string SubnetName
         {
             get { return _XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText; }
@@ -68,10 +60,12 @@ namespace MigAz.Azure.Asm
             get { return _XmlNode.SelectNodes("IPForwarding").Count > 0; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
-            return this.TargetName + this._AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
+            return this.Name;
         }
+
+
         #endregion
     }
 }

@@ -249,70 +249,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
 
-                // process availability set
-                if (virtualMachine.ParentAvailabilitySet != null)
-                    BuildAvailabilitySetObject(virtualMachine.ParentAvailabilitySet);
-
-
-                if (virtualMachine.GetType() == typeof(Azure.Asm.VirtualMachine))
-                {
-                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)virtualMachine.Source;
-
-
-                    BuildPublicIPAddressObject(asmVirtualMachine);
-                    BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
-
-                    // process virtual machine
-                    //await BuildVirtualMachineObject(asmVirtualMachine);
-                }
-                else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
-                {
-                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine.Source;
-
-                    //LoadBalancer Processing
-                    foreach (Arm.NetworkInterfaceCard nicint in armVirtualMachine.NetworkInterfaces)
-                    {
-                        // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
-                        //{
-                        // todo
-                        //string[] stringSeparators = new string[] { "/backendAddressPools/" };
-
-                        //string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
-                        //string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
-                        //NWInfo.Add("LBId", Loadbalancerid);
-
-                        ////Get LBDetails
-                        //var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", NWInfo, null);
-                        //var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
-
-                        //string PubIPName = null;
-
-                        ////Process the Public IP for the Loadbalancer
-                        //if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
-                        //{
-                        //    //Get PublicIP details
-                        //    string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
-                        //    PubId = PubId.Replace("/subscriptions", "subscriptions");
-
-                        //    NWInfo.Add("publicipId", PubId);
-                        //    var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", NWInfo, null);
-                        //    var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
-
-                        //    PubIPName = LBPubIpResults.name;
-
-                        //    //Build the Public IP for the Loadbalancer
-                        //    BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
-
-                        //}
-
-                        //Build the Loadbalancer
-                        // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
-                        //}
-                    }
-
-                    // process virtual machine
-                    BuildARMVirtualMachineObject(armVirtualMachine);
-                }
+                // process virtual machine
+                await BuildVirtualMachineObject(virtualMachine);
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Cloud Services / Virtual Machines");
 
@@ -1129,50 +1067,55 @@ namespace MigAz.Azure.Generator.AsmToArm
             return routetable;
         }
 
-        private async Task BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface networkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private async Task BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
-            LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start");
+            LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
+
+            NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
+            networkInterface.name = targetNetworkInterface.ToString();
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
 
             Reference subnet_ref = new Reference();
 
-            if (networkInterface.TargetSubnet != String.Empty)
-                subnet_ref.id = networkInterface.TargetId;
+            if (targetNetworkInterface.TargetSubnet != null)
+                subnet_ref.id = targetNetworkInterface.TargetSubnet.Id;
 
             string privateIPAllocationMethod = "Dynamic";
             string privateIPAddress = null;
-            if (networkInterface.TargetStaticIpAddress != String.Empty)
+            if (targetNetworkInterface.TargetStaticIpAddress != String.Empty)
             {
                 privateIPAllocationMethod = "Static";
-                privateIPAddress = networkInterface.TargetStaticIpAddress;
+                privateIPAddress = targetNetworkInterface.TargetStaticIpAddress;
             }
 
             List<string> dependson = new List<string>();
-            if (networkInterface.TargetVirtualNetwork != null && networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
-                dependson.Add(networkInterface.TargetVirtualNetwork.TargetId);
+            if (targetNetworkInterface.TargetVirtualNetwork != null && targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork)) // todo, gettype is old code, now what?
+                dependson.Add(targetNetworkInterface.TargetVirtualNetwork.Id);
 
             // If there is at least one endpoint add the reference to the LB backend pool
             List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-            if (networkInterface.LoadBalancerRules.Count > 0)
+            if (targetNetworkInterface.LoadBalancerRules.Count > 0)
             {
                 Reference loadBalancerBackendAddressPool = new Reference();
-                loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/backendAddressPools/default')]";
+                loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/backendAddressPools/default')]";
 
                 loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "')]");
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "')]");
             }
 
             // Adds the references to the inboud nat rules
             List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in networkInterface.LoadBalancerRules)
+            foreach (MigrationTarget.LoadBalancerRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
             {
-                if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
+                if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
                 {
-                    string inboundnatrulename = networkInterface.ToString() + "-" + asmLoadBalancerRule.Name;
+                    string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.Name;
                     inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
 
                     Reference loadBalancerInboundNatRule = new Reference();
-                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + networkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
+                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
 
                     loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
                 }
@@ -1192,150 +1135,144 @@ namespace MigAz.Azure.Generator.AsmToArm
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             ipConfigurations.Add(ipconfiguration);
 
-            foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
+            NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
+            networkinterface_properties.ipConfigurations = ipConfigurations;
+            networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
+
+            networkInterface.properties = networkinterface_properties;
+            networkInterface.dependsOn = dependson;
+
+            NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+
+            // todo now russell , this is the difference in code, should not always be primary -- need to move to a variable vs. always true
+            networkinterface_ref_properties.primary = true;
+
+            NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
+            networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
+            networkinterface_ref.properties = networkinterface_ref_properties;
+
+            if (targetNetworkInterface.NetworkSecurityGroup != null)
             {
-                NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
-                networkinterface_properties.ipConfigurations = ipConfigurations;
-                networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
+                INetworkSecurityGroup networkSecurityGroupInMigration = (INetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(targetNetworkInterface.NetworkSecurityGroup.Name);
 
-                NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
-                networkInterface.name = targetNetworkInterface.ToString();
-                if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                    networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-                networkInterface.properties = networkinterface_properties;
-                networkInterface.dependsOn = dependson;
-
-                NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-                networkinterface_ref_properties.primary = true;
-
-                NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
-                networkinterface_ref.properties = networkinterface_ref_properties;
-
-                if (virtualMachine.NetworkSecurityGroup != null)
+                if (networkSecurityGroupInMigration == null)
                 {
-                    Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Asm.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(virtualMachine.NetworkSecurityGroup.Name);
-
-                    if (asmNetworkSecurityGroup == null)
-                    {
-                        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + primaryNetworkInterface.name + "' utilized ASM Network Security Group (NSG) '" + virtualMachine.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", asmNetworkSecurityGroup);
-                    }
-                    else
-                    {
-                        // Add NSG reference to the network interface
-                        Reference networksecuritygroup_ref = new Reference();
-                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + asmNetworkSecurityGroup.ToString() + "')]";
-
-                        networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
-                        primaryNetworkInterface.properties = networkinterface_properties;
-
-                        // Add NSG dependsOn to the Network Interface object
-                        if (!primaryNetworkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
-                        {
-                            primaryNetworkInterface.dependsOn.Add(networksecuritygroup_ref.id);
-                        }
-                    }
+                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.name + "' utilized ASM Network Security Group (NSG) '" + targetNetworkInterface.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", networkSecurityGroupInMigration);
                 }
-
-                if (virtualMachine.HasPublicIPs)
+                else
                 {
-                    BuildPublicIPAddressObject(ref primaryNetworkInterface);
-                }
+                    // Add NSG reference to the network interface
+                    Reference networksecuritygroup_ref = new Reference();
+                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networkSecurityGroupInMigration.ToString() + "')]";
 
-                networkinterfaces.Add(networkinterface_ref);
+                    networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
+                    networkInterface.properties = networkinterface_properties;
 
-                this.AddResource(primaryNetworkInterface);
-
-                foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
-                {
-                    subnet_ref = new Reference();
-                    subnet_ref.id = targetNetworkInterface.TargetSubnet.TargetId;
-
-                    privateIPAllocationMethod = "Dynamic";
-                    privateIPAddress = null;
-                    if (targetNetworkInterface.StaticVirtualNetworkIPAddress != string.Empty)
+                    // Add NSG dependsOn to the Network Interface object
+                    if (!networkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
                     {
-                        privateIPAllocationMethod = "Static";
-                        privateIPAddress = targetNetworkInterface.StaticVirtualNetworkIPAddress;
+                        networkInterface.dependsOn.Add(networksecuritygroup_ref.id);
                     }
-
-                    ipconfiguration_properties = new IpConfiguration_Properties();
-                    ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-                    ipconfiguration_properties.privateIPAddress = privateIPAddress;
-                    ipconfiguration_properties.subnet = subnet_ref;
-
-                    ipconfiguration_name = "ipconfig1";
-                    ipconfiguration = new IpConfiguration();
-                    ipconfiguration.name = ipconfiguration_name;
-                    ipconfiguration.properties = ipconfiguration_properties;
-
-                    ipConfigurations = new List<IpConfiguration>();
-                    ipConfigurations.Add(ipconfiguration);
-
-                    networkinterface_properties = new NetworkInterface_Properties();
-                    networkinterface_properties.ipConfigurations = ipConfigurations;
-                    if (targetNetworkInterface.EnableIPForwarding)
-                    {
-                        networkinterface_properties.enableIPForwarding = true;
-                    }
-
-                    dependson = new List<string>();
-                    dependson.Add(targetNetworkInterface.TargetVirtualNetwork.TargetId);
-
-                    NetworkInterface additionalNetworkInterface = new NetworkInterface(this.ExecutionGuid);
-                    additionalNetworkInterface.name = targetNetworkInterface.ToString();
-                    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                        additionalNetworkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
-                    additionalNetworkInterface.properties = networkinterface_properties;
-                    additionalNetworkInterface.dependsOn = dependson;
-
-                    networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-                    networkinterface_ref_properties.primary = false;
-
-                    networkinterface_ref = new NetworkProfile_NetworkInterface();
-                    networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + additionalNetworkInterface.name + "')]";
-                    networkinterface_ref.properties = networkinterface_ref_properties;
-
-                    networkinterfaces.Add(networkinterface_ref);
-
-                    this.AddResource(additionalNetworkInterface);
                 }
             }
 
-            LogProvider.WriteLog("BuildNetworkInterfaceObject", "End");
+            if (targetNetworkInterface.HasPublicIPs)
+            {
+                BuildPublicIPAddressObject(ref networkInterface);
+            }
 
+            dependson.Add(targetNetworkInterface.TargetVirtualNetwork.Id);
+
+            networkinterfaces.Add(networkinterface_ref);
+
+            this.AddResource(networkInterface);
+
+            LogProvider.WriteLog("BuildNetworkInterfaceObject", "End " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
         }
 
-        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet, Azure.MigrationTarget.VirtualMachine virtualMachine)
+        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine virtualMachine)
         {
-            LogProvider.WriteLog("BuildVirtualMachineObject", "Start");
+            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + virtualMachine.ToString());
+
+            VirtualMachine virtualmachine = new VirtualMachine(this.ExecutionGuid);
+            virtualmachine.name = virtualMachine.ToString();
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                virtualmachine.location = this.TargetResourceGroup.TargetLocation.Name;
 
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
-            string virtualmachinename = virtualMachine.ToString();
+            List<string> dependson = new List<string>();
 
-            Asm.VirtualMachine asmVirtualMachine = (Asm.VirtualMachine) virtualMachine.Source;
-            string ostype = asmVirtualMachine.OSVirtualHardDiskOS;
+            // todo now russell, placement?  options?  valid in context always??
+            //BuildPublicIPAddressObject(asmVirtualMachine);
+            //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
+
+
+
             string newdiskurl = String.Empty;
             string osDiskTargetStorageAccountName = String.Empty;
-            if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+            if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
             {
-                if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                 {
-                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                     osDiskTargetStorageAccountName = targetStorageAccount.ToString();
                 }
                 
 
-                newdiskurl = asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
-                storageaccountdependencies.Add(asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
+                newdiskurl = virtualMachine.OSVirtualHardDisk.TargetMediaLink;
+                storageaccountdependencies.Add(virtualMachine.OSVirtualHardDisk.TargetStorageAccount);
             }
 
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
-            //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
+
+            foreach (MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
+            {
+                // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
+                //{
+                // todo
+                //string[] stringSeparators = new string[] { "/backendAddressPools/" };
+
+                //string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
+                //string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
+                //NWInfo.Add("LBId", Loadbalancerid);
+
+                ////Get LBDetails
+                //var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", NWInfo, null);
+                //var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
+
+                //string PubIPName = null;
+
+                ////Process the Public IP for the Loadbalancer
+                //if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
+                //{
+                //    //Get PublicIP details
+                //    string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
+                //    PubId = PubId.Replace("/subscriptions", "subscriptions");
+
+                //    NWInfo.Add("publicipId", PubId);
+                //    var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", NWInfo, null);
+                //    var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
+
+                //    PubIPName = LBPubIpResults.name;
+
+                //    //Build the Public IP for the Loadbalancer
+                //    BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
+
+                //}
+
+                //Build the Loadbalancer
+                // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
+                //}
+
+                // todo now russell this moved into for loop
+                //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
+
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.ToString() + "')]");
+            }
 
             HardwareProfile hardwareprofile = new HardwareProfile();
-            hardwareprofile.vmSize = GetVMSize(asmVirtualMachine.RoleSize);
+            hardwareprofile.vmSize = GetVMSize(virtualMachine.TargetSize);
 
             NetworkProfile networkprofile = new NetworkProfile();
             networkprofile.networkInterfaces = networkinterfaces;
@@ -1344,9 +1281,9 @@ namespace MigAz.Azure.Generator.AsmToArm
             vhd.uri = newdiskurl;
 
             OsDisk osdisk = new OsDisk();
-            osdisk.name = asmVirtualMachine.OSVirtualHardDisk.DiskName;
+            osdisk.name = virtualMachine.OSVirtualHardDisk.Name;
             osdisk.vhd = vhd;
-            osdisk.caching = asmVirtualMachine.OSVirtualHardDisk.HostCaching;
+            osdisk.caching = virtualMachine.OSVirtualHardDisk.HostCaching;
 
             ImageReference imagereference = new ImageReference();
             OsProfile osprofile = new OsProfile();
@@ -1356,7 +1293,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 osdisk.createOption = "FromImage";
 
-                osprofile.computerName = virtualmachinename;
+                osprofile.computerName = virtualMachine.ToString();
                 osprofile.adminUsername = "[parameters('adminUsername')]";
                 osprofile.adminPassword = "[parameters('adminPassword')]";
 
@@ -1374,14 +1311,14 @@ namespace MigAz.Azure.Generator.AsmToArm
                     this.Parameters.Add("adminPassword", parameter);
                 }
 
-                if (ostype == "Windows")
+                if (virtualMachine.OSVirtualHardDiskOS == "Windows")
                 {
                     imagereference.publisher = "MicrosoftWindowsServer";
                     imagereference.offer = "WindowsServer";
                     imagereference.sku = "2016-Datacenter";
                     imagereference.version = "latest";
                 }
-                else if (ostype == "Linux")
+                else if (virtualMachine.OSVirtualHardDiskOS == "Linux")
                 {
                     imagereference.publisher = "Canonical";
                     imagereference.offer = "UbuntuServer";
@@ -1400,36 +1337,36 @@ namespace MigAz.Azure.Generator.AsmToArm
             else
             {
                 osdisk.createOption = "Attach";
-                osdisk.osType = ostype;
+                osdisk.osType = virtualMachine.OSVirtualHardDiskOS;
 
                 // Block of code to help copying the blobs to the new storage accounts
                 CopyBlobDetail copyblobdetail = new CopyBlobDetail();
                 if (this.SourceSubscription != null)
                     copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                copyblobdetail.SourceSA = asmVirtualMachine.OSVirtualHardDisk.StorageAccountName;
-                copyblobdetail.SourceContainer = asmVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                copyblobdetail.SourceBlob = asmVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-                copyblobdetail.SourceKey = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount.Keys.Primary;
+                copyblobdetail.SourceSA = virtualMachine.OSVirtualHardDisk.StorageAccountName;
+                copyblobdetail.SourceContainer = virtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+                copyblobdetail.SourceBlob = virtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                copyblobdetail.SourceKey = virtualMachine.OSVirtualHardDisk.SourceStorageKey;
                 copyblobdetail.DestinationSA = osDiskTargetStorageAccountName;
-                copyblobdetail.DestinationContainer = asmVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                copyblobdetail.DestinationBlob = asmVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                copyblobdetail.DestinationContainer = virtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+                copyblobdetail.DestinationBlob = virtualMachine.OSVirtualHardDisk.StorageAccountBlob;
                 this._CopyBlobDetails.Add(copyblobdetail);
                 // end of block of code to help copying the blobs to the new storage accounts
             }
 
             // process data disks
             List<DataDisk> datadisks = new List<DataDisk>();
-            foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
+            foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
             {
                 if (dataDisk.TargetStorageAccount == null)
                 {
-                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.TargetName + "'.", dataDisk);
+                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.Name + "'.", dataDisk);
                 }
                 else
                 {
                     string dataDiskTargetStorageAccountName = dataDisk.TargetStorageAccount.ToString();
                     DataDisk datadisk = new DataDisk();
-                    datadisk.name = dataDisk.DiskName;
+                    datadisk.name = dataDisk.Name;
                     datadisk.caching = dataDisk.HostCaching;
                     datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
                     if (dataDisk.Lun.HasValue)
@@ -1454,7 +1391,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                         copyblobdetail.SourceSA = dataDisk.StorageAccountName;
                         copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
                         copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;
-                        copyblobdetail.SourceKey = dataDisk.SourceStorageAccount.Keys.Primary;
+                        copyblobdetail.SourceKey = dataDisk.SourceStorageKey;
                         copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
                         copyblobdetail.DestinationContainer = dataDisk.StorageAccountContainer;
                         copyblobdetail.DestinationBlob = dataDisk.StorageAccountBlob;
@@ -1466,8 +1403,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                     vhd.uri = newdiskurl;
                     datadisk.vhd = vhd;
 
-                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
-                        storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
+                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccountName))
+                        storageaccountdependencies.Add(dataDisk.TargetStorageAccountName);
 
                     datadisks.Add(datadisk);
                 }
@@ -1484,328 +1421,207 @@ namespace MigAz.Azure.Generator.AsmToArm
             virtualmachine_properties.networkProfile = networkprofile;
             virtualmachine_properties.storageProfile = storageprofile;
 
-            List<string> dependson = new List<string>();
-            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + asmVirtualMachine.PrimaryNetworkInterface.ToString() + "')]");
 
-            // Diagnostics Extension
-            Extension extension_iaasdiagnostics = null;
 
-            //XmlNodeList resourceextensionreferences = resource.SelectNodes("//ResourceExtensionReferences/ResourceExtensionReference");
-            //foreach (XmlNode resourceextensionreference in resourceextensionreferences)
-            //{
-            //    if (resourceextensionreference.SelectSingleNode("Name").InnerText == "IaaSDiagnostics")
+
+
+
+
+
+
+
+            //    Hashtable storageaccountdependencies = new Hashtable();
+
+            //    Vhd vhd = new Vhd();
+
+            //    OsDisk osdisk = new OsDisk();
+            //    osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
+            //    osdisk.vhd = vhd;
+            //    osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
+
+            //    HardwareProfile hardwareprofile = new HardwareProfile();
+            //    hardwareprofile.vmSize = armVirtualMachine.VmSize;
+
+            //    NetworkProfile networkprofile = new NetworkProfile();
+            //    // todo networkprofile.networkInterfaces = networkinterfaces;
+
+            //    ImageReference imagereference = new ImageReference();
+            //    OsProfile osprofile = new OsProfile();
+
+            //    // if the tool is configured to create new VMs with empty data disks
+            //    if (_settingsProvider.BuildEmpty)
             //    {
-            //        string json = Base64Decode(resourceextensionreference.SelectSingleNode("ResourceExtensionParameterValues/ResourceExtensionParameterValue/Value").InnerText);
-            //        var resourceextensionparametervalue = JsonConvert.DeserializeObject<dynamic>(json);
-            //        string diagnosticsstorageaccount = resourceextensionparametervalue.storageAccount.Value + _settingsProvider.UniquenessSuffix;
-            //        string xmlcfgvalue = Base64Decode(resourceextensionparametervalue.xmlCfg.Value);
-            //        xmlcfgvalue = xmlcfgvalue.Replace("\n", String.Empty);
-            //        xmlcfgvalue = xmlcfgvalue.Replace("\r", String.Empty);
+            //        osdisk.createOption = "FromImage";
 
-            //        XmlDocument xmlcfg = new XmlDocument();
-            //        xmlcfg.LoadXml(xmlcfgvalue);
+            //        osprofile.computerName = armVirtualMachine.Name;
+            //        osprofile.adminUsername = "[parameters('adminUsername')]";
+            //        osprofile.adminPassword = "[parameters('adminPassword')]";
 
-            //        XmlNodeList mynodelist = xmlcfg.SelectNodes("/wadCfg/DiagnosticMonitorConfiguration/Metrics");
+            //        if (!Parameters.ContainsKey("adminUsername"))
+            //        {
+            //            Parameter parameter = new Parameter();
+            //            parameter.type = "string";
+            //            Parameters.Add("adminUsername", parameter);
+            //        }
 
-            //        extension_iaasdiagnostics = new Extension();
-            //        extension_iaasdiagnostics.name = "Microsoft.Insights.VMDiagnosticsSettings";
-            //        extension_iaasdiagnostics.type = "extensions";
-            //        extension_iaasdiagnostics.location = virtualmachineinfo["location"].ToString();
-            //        extension_iaasdiagnostics.dependsOn = new List<string>();
-            //        extension_iaasdiagnostics.dependsOn.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualMachines + virtualmachinename + "')]");
-            //        extension_iaasdiagnostics.dependsOn.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + diagnosticsstorageaccount + "')]");
+            //        if (!Parameters.ContainsKey("adminPassword"))
+            //        {
+            //            Parameter parameter = new Parameter();
+            //            parameter.type = "securestring";
+            //            Parameters.Add("adminPassword", parameter);
+            //        }
 
-            //        Extension_Properties extension_iaasdiagnostics_properties = new Extension_Properties();
-            //        extension_iaasdiagnostics_properties.publisher = "Microsoft.Azure.Diagnostics";
-            //        extension_iaasdiagnostics_properties.type = "IaaSDiagnostics";
-            //        extension_iaasdiagnostics_properties.typeHandlerVersion = "1.5";
-            //        extension_iaasdiagnostics_properties.autoUpgradeMinorVersion = true;
-            //        extension_iaasdiagnostics_properties.settings = new Dictionary<string, string>();
-            //        extension_iaasdiagnostics_properties.settings.Add("xmlCfg", "[base64('" + xmlcfgvalue + "')]");
-            //        extension_iaasdiagnostics_properties.settings.Add("storageAccount", diagnosticsstorageaccount);
-            //        extension_iaasdiagnostics.properties = new Extension_Properties();
-            //        extension_iaasdiagnostics.properties = extension_iaasdiagnostics_properties;
+            //        //todo
+            //        //imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
+            //        //imagereference.offer = resource.properties.storageProfile.imageReference.offer;
+            //        //imagereference.sku = resource.properties.storageProfile.imageReference.sku;
+            //        //imagereference.version = resource.properties.storageProfile.imageReference.version;
             //    }
-            //}
+            //    // if the tool is configured to attach copied disks
+            //    else
+            //    {
+            //        osdisk.createOption = "Attach";
+            //        // todoosdisk.osType = ostype;
 
-            // Availability Set
-            if (targetAvailabilitySet != null)
+            //        if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
+            //        {
+            //            // todo storageaccountdependencies.Add(newstorageaccountname, "");
+
+            //            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+            //            if (this.SourceSubscription != null)
+            //                copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+            //            copyblobdetail.SourceSA = armVirtualMachine.OSVirtualHardDisk.StorageAccountName;
+            //            copyblobdetail.SourceContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+            //            copyblobdetail.SourceBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+            //            // todo copyblobdetail.SourceKey = armVirtualMachine.OSVirtualHardDisk.SourceStorageAccount.Keys.Primary;
+            //            if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+            //            {
+            //                if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+            //                {
+            //                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+            //                    copyblobdetail.DestinationSA = targetStorageAccount.ToString();
+            //                }
+            //            }
+            //            copyblobdetail.DestinationContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
+            //            copyblobdetail.DestinationBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+            //            _CopyBlobDetails.Add(copyblobdetail);
+            //        }
+
+            //        // end of block of code to help copying the blobs to the new storage accounts
+            //    }
+
+            //    // process data disks
+            //    List<DataDisk> datadisks = new List<DataDisk>();
+            //    foreach (Arm.DataDisk sourceDataDisk in armVirtualMachine.DataDisks)
+            //    {
+            //        DataDisk datadisk = new DataDisk();
+            //        datadisk.name = sourceDataDisk.Name;
+            //        datadisk.caching = sourceDataDisk.Caching;
+            //        datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
+            //        datadisk.lun = sourceDataDisk.Lun;
+
+            //        // if the tool is configured to create new VMs with empty data disks
+            //        vhd = new Vhd();
+            //        if (_settingsProvider.BuildEmpty)
+            //        {
+            //            datadisk.createOption = "Empty";
+            //        }
+            //        // if the tool is configured to attach copied disks
+            //        else
+            //        {
+            //            datadisk.createOption = "Attach";
+
+            //            if (sourceDataDisk.VhdUri != String.Empty)
+            //            {
+            //                // todo try { storageaccountdependencies.Add(newstorageaccountname, ""); }
+            //                // catch { }
+
+            //                CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+            //                if (this.SourceSubscription != null)
+            //                    copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+            //                copyblobdetail.SourceSA = sourceDataDisk.StorageAccountName;
+            //                copyblobdetail.SourceContainer = sourceDataDisk.StorageAccountContainer;
+            //                copyblobdetail.SourceBlob = sourceDataDisk.StorageAccountBlob;
+            //                // todo copyblobdetail.SourceKey = sourceDataDisk.SourceStorageAccount.Keys.Primary;
+            //                if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+            //                {
+            //                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+            //                    {
+            //                        Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+            //                        copyblobdetail.DestinationSA = targetStorageAccount.ToString();
+            //                    }
+            //                }
+            //                copyblobdetail.DestinationContainer = sourceDataDisk.StorageAccountContainer;
+            //                copyblobdetail.DestinationBlob = sourceDataDisk.StorageAccountBlob;
+            //                _CopyBlobDetails.Add(copyblobdetail);
+            //                // end of block of code to help copying the blobs to the new storage accounts
+            //            }
+            //        }
+
+            //        datadisk.vhd = vhd;
+
+            //        datadisks.Add(datadisk);
+            //    }
+
+            //    StorageProfile storageprofile = new StorageProfile();
+            //    if (_settingsProvider.BuildEmpty) { storageprofile.imageReference = imagereference; }
+            //    storageprofile.osDisk = osdisk;
+            //    storageprofile.dataDisks = datadisks;
+
+            //    VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
+            //    virtualmachine_properties.hardwareProfile = hardwareprofile;
+            //    if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
+            //    virtualmachine_properties.networkProfile = networkprofile;
+            //    virtualmachine_properties.storageProfile = storageprofile;
+
+            //    List<string> dependson = new List<string>();
+
+            //    //foreach (var nic in networkinterfaces)
+            //    //{
+            //    //    dependson.Add(nic.id.ToString());
+            //    //}
+
+            //    // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
+
+            // process availability set
+            if (virtualMachine.ParentAvailabilitySet != null)
             {
-                Reference availabilityset = new Reference();
-                virtualmachine_properties.availabilitySet = availabilityset;
-                availabilityset.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]";
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]");
+                BuildAvailabilitySetObject(virtualMachine.ParentAvailabilitySet);
+
+                // Availability Set
+                // todo now russell
+                //if (targetAvailabilitySet != null)
+                //{
+                //    Reference availabilityset = new Reference();
+                //    virtualmachine_properties.availabilitySet = availabilityset;
+                //    availabilityset.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]";
+                //    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]");
+                //}
             }
+            //    //}
+            //    //else
+            //    //{
+            //    //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
+            //    //}
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
+                // todo russell validate        if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
                 if (storageaccountdependency.GetType() == typeof(Asm.StorageAccount))
                     dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
-            VirtualMachine virtualmachine = new VirtualMachine(this.ExecutionGuid);
-            virtualmachine.name = virtualmachinename;
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                virtualmachine.location = this.TargetResourceGroup.TargetLocation.Name;
             virtualmachine.properties = virtualmachine_properties;
             virtualmachine.dependsOn = dependson;
             virtualmachine.resources = new List<ArmResource>();
-            if (extension_iaasdiagnostics != null) { virtualmachine.resources.Add(extension_iaasdiagnostics); }
-
-            this.AddResource(virtualmachine);
-
-            LogProvider.WriteLog("BuildVirtualMachineObject", "End");
-        }
-
-        private void BuildARMVirtualMachineObject(Arm.VirtualMachine armVirtualMachine)
-        {
-            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + armVirtualMachine.name);
-
-            Hashtable storageaccountdependencies = new Hashtable();
-            // todo string ostype = armVirtualMachine.properties.storageProfile.osDisk.osType;
-
-            Vhd vhd = new Vhd();
-
-            OsDisk osdisk = new OsDisk();
-            osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
-            osdisk.vhd = vhd;
-            osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
-
-            HardwareProfile hardwareprofile = new HardwareProfile();
-            hardwareprofile.vmSize = armVirtualMachine.VmSize;
-
-            NetworkProfile networkprofile = new NetworkProfile();
-            // todo networkprofile.networkInterfaces = networkinterfaces;
-
-            ImageReference imagereference = new ImageReference();
-            OsProfile osprofile = new OsProfile();
-
-            // if the tool is configured to create new VMs with empty data disks
-            if (_settingsProvider.BuildEmpty)
-            {
-                osdisk.createOption = "FromImage";
-
-                osprofile.computerName = armVirtualMachine.Name;
-                osprofile.adminUsername = "[parameters('adminUsername')]";
-                osprofile.adminPassword = "[parameters('adminPassword')]";
-
-                if (!Parameters.ContainsKey("adminUsername"))
-                {
-                    Parameter parameter = new Parameter();
-                    parameter.type = "string";
-                    Parameters.Add("adminUsername", parameter);
-                }
-
-                if (!Parameters.ContainsKey("adminPassword"))
-                {
-                    Parameter parameter = new Parameter();
-                    parameter.type = "securestring";
-                    Parameters.Add("adminPassword", parameter);
-                }
-
-                //todo
-                //imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
-                //imagereference.offer = resource.properties.storageProfile.imageReference.offer;
-                //imagereference.sku = resource.properties.storageProfile.imageReference.sku;
-                //imagereference.version = resource.properties.storageProfile.imageReference.version;
-            }
-            // if the tool is configured to attach copied disks
-            else
-            {
-                osdisk.createOption = "Attach";
-                // todoosdisk.osType = ostype;
-
-                if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
-                {
-                    // todo storageaccountdependencies.Add(newstorageaccountname, "");
-
-                    CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                    if (this.SourceSubscription != null)
-                        copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                    copyblobdetail.SourceSA = armVirtualMachine.OSVirtualHardDisk.StorageAccountName;
-                    copyblobdetail.SourceContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                    copyblobdetail.SourceBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-                    // todo copyblobdetail.SourceKey = armVirtualMachine.OSVirtualHardDisk.SourceStorageAccount.Keys.Primary;
-                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-                    {
-                        if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        {
-                            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                            copyblobdetail.DestinationSA = targetStorageAccount.ToString();
-                        }
-                    }
-                    copyblobdetail.DestinationContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                    copyblobdetail.DestinationBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-                    _CopyBlobDetails.Add(copyblobdetail);
-                }
-
-                // end of block of code to help copying the blobs to the new storage accounts
-            }
-
-            // process data disks
-            List<DataDisk> datadisks = new List<DataDisk>();
-            foreach (Arm.DataDisk sourceDataDisk in armVirtualMachine.DataDisks)
-            {
-                DataDisk datadisk = new DataDisk();
-                datadisk.name = sourceDataDisk.Name;
-                datadisk.caching = sourceDataDisk.Caching;
-                datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
-                datadisk.lun = sourceDataDisk.Lun;
-
-                // if the tool is configured to create new VMs with empty data disks
-                vhd = new Vhd();
-                if (_settingsProvider.BuildEmpty)
-                {
-                    datadisk.createOption = "Empty";
-                }
-                // if the tool is configured to attach copied disks
-                else
-                {
-                    datadisk.createOption = "Attach";
-
-                    if (sourceDataDisk.VhdUri != String.Empty)
-                    {
-                        // todo try { storageaccountdependencies.Add(newstorageaccountname, ""); }
-                        // catch { }
-
-                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                        if (this.SourceSubscription != null)
-                            copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                        copyblobdetail.SourceSA = sourceDataDisk.StorageAccountName;
-                        copyblobdetail.SourceContainer = sourceDataDisk.StorageAccountContainer;
-                        copyblobdetail.SourceBlob = sourceDataDisk.StorageAccountBlob;
-                        // todo copyblobdetail.SourceKey = sourceDataDisk.SourceStorageAccount.Keys.Primary;
-                        if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-                        {
-                            if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                            {
-                                Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                                copyblobdetail.DestinationSA = targetStorageAccount.ToString();
-                            }
-                        }
-                        copyblobdetail.DestinationContainer = sourceDataDisk.StorageAccountContainer;
-                        copyblobdetail.DestinationBlob = sourceDataDisk.StorageAccountBlob;
-                        _CopyBlobDetails.Add(copyblobdetail);
-                        // end of block of code to help copying the blobs to the new storage accounts
-                    }
-                }
-
-                datadisk.vhd = vhd;
-
-                datadisks.Add(datadisk);
-            }
-
-            StorageProfile storageprofile = new StorageProfile();
-            if (_settingsProvider.BuildEmpty) { storageprofile.imageReference = imagereference; }
-            storageprofile.osDisk = osdisk;
-            storageprofile.dataDisks = datadisks;
-
-            VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
-            virtualmachine_properties.hardwareProfile = hardwareprofile;
-            if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
-            virtualmachine_properties.networkProfile = networkprofile;
-            virtualmachine_properties.storageProfile = storageprofile;
-
-            List<string> dependson = new List<string>();
-                
-            //foreach (var nic in networkinterfaces)
-            //{
-            //    dependson.Add(nic.id.ToString());
-            //}
-
-            // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
 
             // Diagnostics Extension
             Extension extension_iaasdiagnostics = null;
-
-            //XmlNodeList resourceextensionreferences = resource.SelectNodes("//ResourceExtensionReferences/ResourceExtensionReference");
-            //foreach (XmlNode resourceextensionreference in resourceextensionreferences)
-            //{
-            //    if (resourceextensionreference.SelectSingleNode("Name").InnerText == "IaaSDiagnostics")
-            //    {
-            //        string json = Base64Decode(resourceextensionreference.SelectSingleNode("ResourceExtensionParameterValues/ResourceExtensionParameterValue/Value").InnerText);
-            //        var resourceextensionparametervalue = JsonConvert.DeserializeObject<dynamic>(json);
-            //        string diagnosticsstorageaccount = resourceextensionparametervalue.storageAccount.Value + _settingsProvider.UniquenessSuffix;
-            //        string xmlcfgvalue = Base64Decode(resourceextensionparametervalue.xmlCfg.Value);
-            //        xmlcfgvalue = xmlcfgvalue.Replace("\n", "");
-            //        xmlcfgvalue = xmlcfgvalue.Replace("\r", "");
-
-            //        XmlDocument xmlcfg = new XmlDocument();
-            //        xmlcfg.LoadXml(xmlcfgvalue);
-
-            //        XmlNodeList mynodelist = xmlcfg.SelectNodes("/wadCfg/DiagnosticMonitorConfiguration/Metrics");
-
-
-
-
-            //        extension_iaasdiagnostics = new Extension();
-            //        extension_iaasdiagnostics.name = "Microsoft.Insights.VMDiagnosticsSettings";
-            //        extension_iaasdiagnostics.type = "extensions";
-            //        extension_iaasdiagnostics.location = virtualmachineinfo["location"].ToString();
-            //        extension_iaasdiagnostics.dependsOn = new List<string>();
-            //        extension_iaasdiagnostics.dependsOn.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/virtualMachines/" + virtualmachinename + "')]");
-            //        extension_iaasdiagnostics.dependsOn.Add("[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/" + diagnosticsstorageaccount + "')]");
-
-            //        Extension_Properties extension_iaasdiagnostics_properties = new Extension_Properties();
-            //        extension_iaasdiagnostics_properties.publisher = "Microsoft.Azure.Diagnostics";
-            //        extension_iaasdiagnostics_properties.type = "IaaSDiagnostics";
-            //        extension_iaasdiagnostics_properties.typeHandlerVersion = "1.5";
-            //        extension_iaasdiagnostics_properties.autoUpgradeMinorVersion = true;
-            //        extension_iaasdiagnostics_properties.settings = new Dictionary<string, string>();
-            //        extension_iaasdiagnostics_properties.settings.Add("xmlCfg", "[base64('" + xmlcfgvalue + "')]");
-            //        extension_iaasdiagnostics_properties.settings.Add("storageAccount", diagnosticsstorageaccount);
-            //        extension_iaasdiagnostics.properties = new Extension_Properties();
-            //        extension_iaasdiagnostics.properties = extension_iaasdiagnostics_properties;
-            //    }
-            //}
-
-            // Availability Set
-            // string availabilitysetname = virtualmachineinfo["cloudservicename"] + "-defaultAS";
-            string availabilitysetname = null;
-            //if (resource.properties.availabilitySet != null)
-            //{
-            //    Hashtable availabilitySetinfo = new Hashtable();
-            //    string AVId = resource.properties.availabilitySet.id;
-            //    AVId = AVId.Replace("/subscriptions", "subscriptions");
-            //    availabilitySetinfo.Add("AvailId", AVId);
-
-            //    //var AvailList = null; // todo _asmRetriever.GetAzureARMResources("AvailabilitySet", availabilitySetinfo, null);
-            //    //var Availresults = JsonConvert.DeserializeObject<dynamic>(AvailList);
-
-            //    availabilitysetname = "TODO"; // Availresults.name;
-
-            //    Reference availabilityset = new Reference();
-            //    availabilityset.id = "[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]";
-            //    virtualmachine_properties.availabilitySet = availabilityset;
-
-            //    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Compute/availabilitySets/" + availabilitysetname + "')]");
-
-            //}
-            //else
-            //{
-            //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
-            //}
-
-            foreach (DictionaryEntry storageaccountdependency in storageaccountdependencies)
-            {
-                if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
-                {
-                    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Storage/storageAccounts/" + storageaccountdependency.Key + "')]");
-                }
-            }
-
-            Core.ArmTemplate.VirtualMachine virtualmachine = new Core.ArmTemplate.VirtualMachine(this.ExecutionGuid);
-            virtualmachine.name = armVirtualMachine.TargetName;
-            if (_TargetResourceGroup != null && _TargetResourceGroup.TargetLocation != null)
-                virtualmachine.location = _TargetResourceGroup.TargetLocation.Name;
-            virtualmachine.properties = virtualmachine_properties;
-            virtualmachine.dependsOn = dependson;
-            virtualmachine.resources = new List<ArmResource>();
             if (extension_iaasdiagnostics != null) { virtualmachine.resources.Add(extension_iaasdiagnostics); }
 
             this.AddResource(virtualmachine);
 
-            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + armVirtualMachine.name);
+            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + virtualMachine.ToString());
         }
 
         private void BuildStorageAccountObject(MigrationTarget.StorageAccount targetStorageAccount)

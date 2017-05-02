@@ -91,6 +91,9 @@
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
+    <Compile Include="MigrationTarget\Disk.cs" />
+    <Compile Include="MigrationTarget\LoadBalancer.cs" />
+    <Compile Include="MigrationTarget\LoadBalancerRule.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroupRule.cs" />

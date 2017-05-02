@@ -14,6 +14,7 @@ namespace MigAz.Azure.MigrationTarget
         private ISubnet _TargetSubnet;
         private String _TargetStaticIpAddress = String.Empty;
         private bool _EnableIPForwarding = false;
+        private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
 
         private NetworkInterface() { }
 
@@ -59,6 +60,24 @@ namespace MigAz.Azure.MigrationTarget
         {
             get;set;
         }
+        public bool HasPublicIPs
+        {
+            get { return false; } // todo now russell
+        }
 
+        public INetworkSecurityGroup NetworkSecurityGroup
+        {
+            get; set; // todo now russell
+        }
+
+        public string LoadBalancerName
+        {
+            get;set;
+        }
+
+        public List<LoadBalancerRule> LoadBalancerRules
+        {
+            get { return _LoadBalancerRules; } // todo now russell
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext;
         private String _TargetSize = String.Empty;
         private List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
+        private List<Disk> _DataDisks = new List<Disk>();
 
         private VirtualMachine() { }
 
@@ -23,6 +24,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
             this._TargetSize = virtualMachine.RoleSize;
+            this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
         }
 
         public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine)
@@ -32,11 +34,22 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = virtualMachine.Name;
             // this._TargetStaticIpAddress = virtualMachine.; // TODO now russell, Needed
             this._TargetSize = virtualMachine.VmSize;
+            //this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDisk.????; // todo now russell
         }
 
         public AvailabilitySet ParentAvailabilitySet // todo now russell
         {
             get;set;
+        }
+
+        public Disk OSVirtualHardDisk // todo now russell
+        {
+            get; set;
+        }
+
+        public List<Disk> DataDisks // todo now russell
+        {
+            get { return _DataDisks; }
         }
 
         public IVirtualMachine Source
@@ -59,6 +72,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _TargetName; }
             set { _TargetName = value; }
+        }
+
+        public string OSVirtualHardDiskOS
+        {
+            get; set;
         }
 
         public override string ToString()
