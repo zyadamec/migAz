@@ -86,39 +86,24 @@ namespace MigAz.UserControls
                 rbManagedDisk.Checked = true;
             else
             {
-                // todo now russell
-                //if (_AsmDataDisk != null)
-                //{
-                //    if (_AsmDataDisk.TargetStorageAccount != null && _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                //        rbStorageAccountInMigration.Checked = true;
-                //    else
-                //        rbExistingARMStorageAccount.Checked = true;
-                //}
-                //else if (_ArmDataDisk != null)
-                //{
-                //    if (_ArmDataDisk.TargetStorageAccount != null && _ArmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                //        rbStorageAccountInMigration.Checked = true;
-                //    else
-                //        rbExistingARMStorageAccount.Checked = true;
-                //}
+                if (_TargetDisk != null)
+                {
+                    if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                        rbStorageAccountInMigration.Checked = true;
+                    else if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        rbExistingARMStorageAccount.Checked = true;
+                }
             }
 
             if (_TargetDisk != null)
             {
+                // todo now Russell, two fields are now using the .Name property, don't believe this is correct
                 lblAsmStorageAccount.Text = _TargetDisk.StorageAccountName;
                 lblDiskName.Text = _TargetDisk.Name;
                 lblHostCaching.Text = _TargetDisk.HostCaching;
                 lblLUN.Text = _TargetDisk.Lun.ToString();
-                // txtTargetDiskName.Text = _AsmDataDisk.TargetName;
+                txtTargetDiskName.Text = _TargetDisk.Name;
             }
-            //else if (_ArmDataDisk != null)
-            //{
-            //    lblAsmStorageAccount.Text = _ArmDataDisk.StorageAccountName;
-            //    lblDiskName.Text = _ArmDataDisk.Name;
-            //    lblHostCaching.Text = _ArmDataDisk.Caching;
-            //    lblLUN.Text = _ArmDataDisk.Lun.ToString();
-            //    txtTargetDiskName.Text = _ArmDataDisk.TargetName;
-            //}
         }
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
@@ -238,26 +223,8 @@ namespace MigAz.UserControls
                     _TargetDisk.TargetStorageAccount = targetStorageAccount;
             }
 
-            UpdateParentNode();
             PropertyChanged();
             this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
-        }
-
-        private void UpdateParentNode()
-        {
-            if (_DiskTreeNode != null)
-            {
-                //TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
-                //Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
-                //foreach (Azure.Asm.Disk parentDisk in parentVirtualMachine.DataDisks)
-                //{
-                //    if (parentDisk.DiskName == _AsmDataDisk.DiskName)
-                //    {
-                //        parentDisk.TargetStorageAccount = _AsmDataDisk.TargetStorageAccount;
-                //        parentDisk.TargetName = _AsmDataDisk.Name;
-                //    }
-                //}
-            }
         }
 
         private void txtTargetDiskName_TextChanged(object sender, EventArgs e)
@@ -266,11 +233,9 @@ namespace MigAz.UserControls
 
             _TargetDisk.Name = txtSender.Text.Trim();
             _DiskTreeNode.Text = _TargetDisk.Name;
-            UpdateParentNode();
 
             PropertyChanged();
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
-
-
     }
 }

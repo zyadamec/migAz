@@ -1177,14 +1177,14 @@ namespace MigAz.UserControls.Migrators
 
                 if (targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                 {
-                    // todo now russell targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(targetVirtualMachine.TargetName);// todo now Russell, this .Name is not the correct param
+                    targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount((Azure.Asm.StorageAccount)targetVirtualMachine.OSVirtualHardDisk.SourceStorageAccount);
                 }
 
                 foreach (Azure.MigrationTarget.Disk migrationDataDisk in targetVirtualMachine.DataDisks)
                 {
                     if (migrationDataDisk.TargetStorageAccount == null)
                     {
-                        // todo now russell migrationDataDisk.TargetStorageAccount = await AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccount(migrationDataDisk.Name); // todo now Russell, this .Name is not the correct param
+                        migrationDataDisk.TargetStorageAccount = SeekTargetStorageAccount((Azure.Asm.StorageAccount)migrationDataDisk.SourceStorageAccount);
                     }
                 }
 
@@ -1242,6 +1242,27 @@ namespace MigAz.UserControls.Migrators
             else
                 throw new Exception("Unhandled Node Type in AddASMNodeToARMTree: " + tagType);
 
+        }
+
+        private Azure.MigrationTarget.StorageAccount SeekTargetStorageAccount(Azure.Asm.StorageAccount sourceStorageAccount)
+        {
+            TreeNode resourceGroupTreeNode = SeekResourceGroupTreeNode();
+
+            foreach (TreeNode treeNode in resourceGroupTreeNode.Nodes)
+            {
+                if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
+                    if (targetStorageAccount.SourceAccount != null && targetStorageAccount.SourceAccount.GetType() == sourceStorageAccount.GetType())
+                    {
+                        Azure.Asm.StorageAccount sourceAsmStorageAccount = (Azure.Asm.StorageAccount)targetStorageAccount.SourceAccount;
+                        if (sourceStorageAccount.Name == sourceAsmStorageAccount.Name)
+                            return targetStorageAccount;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private Azure.MigrationTarget.VirtualNetwork SeekTargetVirtualNetwork(Azure.Asm.VirtualNetwork asmVirtualNetwork)

@@ -1371,7 +1371,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                     DataDisk datadisk = new DataDisk();
                     datadisk.name = dataDisk.Name;
                     datadisk.caching = dataDisk.HostCaching;
-                    datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
+                    if (dataDisk.DiskSizeInGB != null)
+                        datadisk.diskSizeGB = dataDisk.DiskSizeInGB.Value;
                     if (dataDisk.Lun.HasValue)
                         datadisk.lun = dataDisk.Lun.Value;
 
