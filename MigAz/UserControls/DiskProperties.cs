@@ -148,14 +148,13 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.TargetName, _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
-                TreeNode storageAccountsNode = _AsmToArmForm.SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", false);
+                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
 
-                if (storageAccountsNode != null)
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                 {
-                    foreach (TreeNode armStorageAccountNode in storageAccountsNode.Nodes)
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                     {
-                        Azure.MigrationTarget.StorageAccount storageAccountTarget = (Azure.MigrationTarget.StorageAccount)armStorageAccountNode.Tag;
+                        Azure.MigrationTarget.StorageAccount storageAccountTarget = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
                         cmbTargetStorage.Items.Add(storageAccountTarget);
                     }
                 }

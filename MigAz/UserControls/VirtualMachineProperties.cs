@@ -97,7 +97,7 @@ namespace MigAz.UserControls
                 // todo russell lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 if (armVirtualMachine.VirtualNetwork != null)
                     lblVirtualNetworkName.Text = armVirtualMachine.VirtualNetwork.Name;
-                // todo russell lblSubnetName.Text = armVirtualMachine.SubnetName;
+                // todo now russell lblSubnetName.Text = armVirtualMachine.PrimaryNetworkInterface.SubnetName;
                 // todo russell lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
 
                 this.diskProperties1.Bind(asmToArmForm, armVirtualMachine.OSVirtualHardDisk);

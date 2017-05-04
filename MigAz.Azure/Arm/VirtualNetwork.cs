@@ -38,6 +38,7 @@ namespace MigAz.Azure.Arm
                 _AddressPrefixes.Add(addressPrefix.ToString());
             }
 
+            // todo now russell 
             //var dnsPrefixes = from vnet in _VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"]
             //                      select vnet;
 

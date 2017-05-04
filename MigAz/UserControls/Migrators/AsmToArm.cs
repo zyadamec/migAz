@@ -1051,7 +1051,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task<TreeNode> AddASMNodeToARMTree(TreeNode parentNode)
         {
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.TargetName, _TargetResourceGroup.TargetName, _TargetResourceGroup, true);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.ToString(), _TargetResourceGroup.ToString(), _TargetResourceGroup, true);
 
             Type tagType = parentNode.Tag.GetType();
             if (tagType == typeof(Azure.Asm.VirtualNetwork))

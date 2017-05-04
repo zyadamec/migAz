@@ -68,7 +68,7 @@ namespace MigAz.UserControls
 
             armResourceGroup.TargetName = txtSender.Text;
             _ResourceGroupNode.Text = armResourceGroup.ToString();
-            _ResourceGroupNode.Name = armResourceGroup.TargetName;
+            _ResourceGroupNode.Name = armResourceGroup.ToString();
 
             PropertyChanged();
         }
