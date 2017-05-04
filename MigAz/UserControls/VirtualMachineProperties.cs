@@ -64,7 +64,7 @@ namespace MigAz.UserControls
                 lblSubnetName.Text = asmVirtualMachine.SubnetName;
                 lblStaticIpAddress.Text = asmVirtualMachine.StaticVirtualNetworkIPAddress;
 
-                this.diskProperties1.Bind(asmToArmForm, asmVirtualMachine.OSVirtualHardDisk);
+                this.diskProperties1.Bind(asmToArmForm, targetVirtualMachine.OSVirtualHardDisk);
 
                 try
                 {
@@ -99,7 +99,7 @@ namespace MigAz.UserControls
                 // todo now russell lblSubnetName.Text = armVirtualMachine.PrimaryNetworkInterface.SubnetName;
                 // todo russell lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
 
-                this.diskProperties1.Bind(asmToArmForm, armVirtualMachine.OSVirtualHardDisk);
+                this.diskProperties1.Bind(asmToArmForm, targetVirtualMachine.OSVirtualHardDisk);
             }
         }
 

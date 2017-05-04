@@ -171,7 +171,7 @@ namespace MigAz.Tests
             //artifacts.VirtualMachines.Add(asmVirtualMachine);
 
             Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.MediaLink, "https://mystorage.blob.core.windows.net/vhds/mydisk.vhd");
-            Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink, "https://targetstoragev2.blob.core.usgovcloudapi.net/vhds/mydisk.vhd");
+            //Assert.AreEqual(asmVirtualMachine.OSVirtualHardDisk.TargetMediaLink, "https://targetstoragev2.blob.core.usgovcloudapi.net/vhds/mydisk.vhd");
         }
     }
 }

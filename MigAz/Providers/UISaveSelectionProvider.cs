@@ -102,16 +102,16 @@ namespace MigAz.Providers
                                 //if (virtualMachine.TargetSubnet != null)
                                 //    saveSelectionVirtualMachine.TargetSubnet = virtualMachine.TargetSubnet.Id;
 
-                                //Add OS Disk Target Storage Account
-                                if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-                                    saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString());
+                                ////Add OS Disk Target Storage Account
+                                //if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                                //    saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmVirtualMachine.OSVirtualHardDisk.DiskName, asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString());
 
-                                // Add OS Disk Target Storage Account
-                                foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
-                                {
-                                    if (asmDataDisk.TargetStorageAccount != null)
-                                        saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.ToString());
-                                }
+                                //// Add OS Disk Target Storage Account
+                                //foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
+                                //{
+                                //    if (asmDataDisk.TargetStorageAccount != null)
+                                //        saveSelectionVirtualMachine.TargetDiskStorageAccounts.Add(asmDataDisk.DiskName, asmDataDisk.TargetStorageAccount.ToString());
+                                //}
 
                                 saveSelection.VirtualMachines.Add(saveSelectionVirtualMachine);
                             }

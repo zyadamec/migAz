@@ -38,29 +38,6 @@ namespace MigAz.Azure.Asm
             get { return _DataDiskNode.SelectSingleNode("MediaLink").InnerText; }
         }
 
-        public string TargetMediaLink
-        {
-            get
-            {
-                string targetMediaLink = this.MediaLink;
-
-                if (this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
-                {
-                    Azure.Arm.StorageAccount targetStorageAccount = (Azure.Arm.StorageAccount)this.TargetStorageAccount;
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.Name + "." + targetStorageAccount.BlobStorageNamespace);
-                }
-                else if(this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.ToString() + "." + targetStorageAccount.BlobStorageNamespace);
-                }
-
-                targetMediaLink = targetMediaLink.Replace(this.DiskName, this.TargetName);
-
-                return targetMediaLink;
-            }
-        }
-
         public string DiskName
         {
             get { return _DataDiskNode.SelectSingleNode("DiskName").InnerText; }
@@ -120,12 +97,6 @@ namespace MigAz.Azure.Asm
         public StorageAccount SourceStorageAccount
         {
             get { return _SourceStorageAccount; }
-        }
-
-        public IStorageTarget TargetStorageAccount
-        {
-            get { return _TargetStorageAccount; }
-            set { _TargetStorageAccount = value; }
         }
 
         #endregion

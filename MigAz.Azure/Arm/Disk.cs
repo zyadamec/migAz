@@ -17,7 +17,6 @@ namespace MigAz.Azure.Arm
         public Disk(JToken jToken)
         {
             this.jToken = jToken;
-            this.TargetName = this.Name;
         }
 
         public string Name => (string)this.jToken["name"];
@@ -29,7 +28,6 @@ namespace MigAz.Azure.Arm
             get { return 0; }
         }
 
-        public string TargetName { get; set; }
         public string VhdUri
         {
             get
@@ -74,10 +72,5 @@ namespace MigAz.Azure.Arm
             get { return _SourceStorageAccount; }
         }
 
-        public IStorageTarget TargetStorageAccount
-        {
-            get { return _TargetStorageAccount; }
-            set { _TargetStorageAccount = value; }
-        }
     }
 }

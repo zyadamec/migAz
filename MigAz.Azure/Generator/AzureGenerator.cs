@@ -112,111 +112,114 @@ namespace MigAz.Azure.Generator.AsmToArm
                         if (networkInterface.TargetSubnet == null)
                             this.AddAlert(AlertType.Error, "Target Subnet for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' must be specified.", asmVirtualMachine);
                     }
-                    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                        this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
-                    else
-                    {
-                        if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        {
-                            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                            bool targetAsmStorageExists = false;
 
-                            foreach (Azure.MigrationTarget.StorageAccount asmStorageAccount in _ExportArtifacts.StorageAccounts)
-                            {
-                                if (asmStorageAccount.SourceAccount.ToString() == targetStorageAccount.ToString())
-                                {
-                                    targetAsmStorageExists = true;
-                                    break;
-                                }
-                            }
+                    // todo now rusesell
+                    //if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                    //    this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk must be specified.", asmVirtualMachine);
+                    //else
+                    //{
+                    //    if (asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                    //    {
+                    //        Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    //        bool targetAsmStorageExists = false;
 
-                            if (!targetAsmStorageExists)
-                                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk is invalid, as it is not included in the migration / template.", asmVirtualMachine);
-                        }
-                    }
+                    //        foreach (Azure.MigrationTarget.StorageAccount asmStorageAccount in _ExportArtifacts.StorageAccounts)
+                    //        {
+                    //            if (asmStorageAccount.SourceAccount.ToString() == targetStorageAccount.ToString())
+                    //            {
+                    //                targetAsmStorageExists = true;
+                    //                break;
+                    //            }
+                    //        }
 
-                    foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
-                    {
-                        if (dataDisk.TargetStorageAccount == null)
-                        {
-                            this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
-                        }
-                        else
-                        {
-                            if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                            {
-                                Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
-                                bool targetStorageExists = false;
+                    //        if (!targetAsmStorageExists)
+                    //            this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' OS Disk is invalid, as it is not included in the migration / template.", asmVirtualMachine);
+                    //    }
+                    //}
 
-                                foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                                {
-                                    if (storageAccount.ToString() == targetStorageAccount.ToString())
-                                    {
-                                        targetStorageExists = true;
-                                        break;
-                                    }
-                                }
+                    //foreach (Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
+                    //{
+                    //    if (dataDisk.TargetStorageAccount == null)
+                    //    {
+                    //        this.AddAlert(AlertType.Error, "Target Storage Account for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' must be specified.", dataDisk);
+                    //    }
+                    //    else
+                    //    {
+                    //        if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                    //        {
+                    //            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
+                    //            bool targetStorageExists = false;
 
-                                if (!targetStorageExists)
-                                    this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", dataDisk);
-                            }
-                        }
-                    }
+                    //            foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                    //            {
+                    //                if (storageAccount.ToString() == targetStorageAccount.ToString())
+                    //                {
+                    //                    targetStorageExists = true;
+                    //                    break;
+                    //                }
+                    //            }
+
+                    //            if (!targetStorageExists)
+                    //                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + asmVirtualMachine.RoleName + "' Data Disk '" + dataDisk.DiskName + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                    //        }
+                    //    }
+                    //}
                 }
                 else if (virtualMachine.GetType() == typeof(Azure.Arm.VirtualMachine))
                 {
                     Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)virtualMachine.Source;
 
-                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                        this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk must be specified.", armVirtualMachine);
-                    else
-                    {
-                        if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        {
-                            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                            bool targetArmStorageExists = false;
+                    // todo now russell
+                    //if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                    //    this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk must be specified.", armVirtualMachine);
+                    //else
+                    //{
+                    //    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                    //    {
+                    //        Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    //        bool targetArmStorageExists = false;
 
-                            foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                            {
-                                if (storageAccount.ToString() == targetStorageAccount.ToString())
-                                {
-                                    targetArmStorageExists = true;
-                                    break;
-                                }
-                            }
+                    //        foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                    //        {
+                    //            if (storageAccount.ToString() == targetStorageAccount.ToString())
+                    //            {
+                    //                targetArmStorageExists = true;
+                    //                break;
+                    //            }
+                    //        }
 
-                            if (!targetArmStorageExists)
-                                this.AddAlert(AlertType.Error, "Target ARM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk is invalid, as it is not included in the migration / template.", armVirtualMachine);
-                        }
-                    }
+                    //        if (!targetArmStorageExists)
+                    //            this.AddAlert(AlertType.Error, "Target ARM Storage Account '" + targetStorageAccount.ToString() + "' for ASM Virtual Machine '" + armVirtualMachine.Name + "' OS Disk is invalid, as it is not included in the migration / template.", armVirtualMachine);
+                    //    }
+                    //}
 
-                    foreach (Arm.Disk dataDisk in armVirtualMachine.DataDisks)
-                    {
-                        if (dataDisk.TargetStorageAccount == null)
-                        {
-                            this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
-                        }
-                        else
-                        {
-                            if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
-                            {
-                                Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
-                                bool targetArmStorageExists = false;
+                    //foreach (Arm.Disk dataDisk in armVirtualMachine.DataDisks)
+                    //{
+                    //    if (dataDisk.TargetStorageAccount == null)
+                    //    {
+                    //        this.AddAlert(AlertType.Error, "Target Storage Account for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
+                    //    }
+                    //    else
+                    //    {
+                    //        if (dataDisk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                    //        {
+                    //            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
+                    //            bool targetArmStorageExists = false;
 
-                                foreach (IStorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                                {
-                                    if (storageAccount.ToString() == targetStorageAccount.ToString())
-                                    {
-                                        targetArmStorageExists = true;
-                                        break;
-                                    }
-                                }
+                    //            foreach (IStorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                    //            {
+                    //                if (storageAccount.ToString() == targetStorageAccount.ToString())
+                    //                {
+                    //                    targetArmStorageExists = true;
+                    //                    break;
+                    //                }
+                    //            }
 
-                                if (!targetArmStorageExists)
-                                    this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' is invalid, as it is not included in the migration / template.", dataDisk);
-                            }
-                        }
-                    }
+                    //            if (!targetArmStorageExists)
+                    //                this.AddAlert(AlertType.Error, "Target ASM Storage Account '" + targetStorageAccount.ToString() + "' for ARM Virtual Machine '" + armVirtualMachine.Name + "' Data Disk '" + dataDisk.Name + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                    //        }
+                    //    }
+                    //}
                 }
             }
 

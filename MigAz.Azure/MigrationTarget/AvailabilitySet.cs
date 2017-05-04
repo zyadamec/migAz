@@ -18,6 +18,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             _AzureContext = azureContext;
         }
+        public AvailabilitySet(AzureContext azureContext, String targetName)
+        {
+            _AzureContext = azureContext;
+            this.TargetName = targetName;
+        }
         public AvailabilitySet(AzureContext azureContext, Asm.VirtualMachine asmVirtualMachine)
         {
             _AzureContext = azureContext;

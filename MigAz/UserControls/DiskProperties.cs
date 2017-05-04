@@ -17,9 +17,8 @@ namespace MigAz.UserControls
     public partial class DiskProperties : UserControl
     {
         private AsmToArm _AsmToArmForm;
-        private TreeNode _ARMDataDiskNode;
-        private Azure.Asm.Disk _AsmDataDisk;
-        private Azure.Arm.Disk _ArmDataDisk;
+        private TreeNode _DiskTreeNode;
+        private Azure.MigrationTarget.Disk _TargetDisk;
         private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
@@ -64,18 +63,10 @@ namespace MigAz.UserControls
             }
         }
 
-        internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)
+        internal void Bind(AsmToArm asmToArmForm, Azure.MigrationTarget.Disk targetDisk)
         {
             _AsmToArmForm = asmToArmForm;
-            _AsmDataDisk = asmDisk;
-
-            BindCommon();
-        }
-
-        internal void Bind(AsmToArm asmToArmForm, Azure.Arm.Disk armDisk)
-        {
-            _AsmToArmForm = asmToArmForm;
-            _ArmDataDisk = armDisk;
+            _TargetDisk = targetDisk;
 
             BindCommon();
         }
@@ -83,8 +74,8 @@ namespace MigAz.UserControls
         internal void Bind(AsmToArm asmToArmForm, TreeNode armDataDiskNode)
         {
             _AsmToArmForm = asmToArmForm;
-            _ARMDataDiskNode = armDataDiskNode;
-            _AsmDataDisk = (Azure.Asm.Disk)_ARMDataDiskNode.Tag;
+            _DiskTreeNode = armDataDiskNode;
+            _TargetDisk = (Azure.MigrationTarget.Disk)_DiskTreeNode.Tag;
 
             BindCommon();
         }
@@ -95,38 +86,39 @@ namespace MigAz.UserControls
                 rbManagedDisk.Checked = true;
             else
             {
-                if (_AsmDataDisk != null)
-                {
-                    if (_AsmDataDisk.TargetStorageAccount != null && _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        rbStorageAccountInMigration.Checked = true;
-                    else
-                        rbExistingARMStorageAccount.Checked = true;
-                }
-                else if (_ArmDataDisk != null)
-                {
-                    if (_ArmDataDisk.TargetStorageAccount != null && _ArmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        rbStorageAccountInMigration.Checked = true;
-                    else
-                        rbExistingARMStorageAccount.Checked = true;
-                }
+                // todo now russell
+                //if (_AsmDataDisk != null)
+                //{
+                //    if (_AsmDataDisk.TargetStorageAccount != null && _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                //        rbStorageAccountInMigration.Checked = true;
+                //    else
+                //        rbExistingARMStorageAccount.Checked = true;
+                //}
+                //else if (_ArmDataDisk != null)
+                //{
+                //    if (_ArmDataDisk.TargetStorageAccount != null && _ArmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                //        rbStorageAccountInMigration.Checked = true;
+                //    else
+                //        rbExistingARMStorageAccount.Checked = true;
+                //}
             }
 
-            if (_AsmDataDisk != null)
+            if (_TargetDisk != null)
             {
-                lblAsmStorageAccount.Text = _AsmDataDisk.StorageAccountName;
-                lblDiskName.Text = _AsmDataDisk.DiskName;
-                lblHostCaching.Text = _AsmDataDisk.HostCaching;
-                lblLUN.Text = _AsmDataDisk.Lun.ToString();
-                txtTargetDiskName.Text = _AsmDataDisk.TargetName;
+                lblAsmStorageAccount.Text = _TargetDisk.StorageAccountName;
+                lblDiskName.Text = _TargetDisk.Name;
+                lblHostCaching.Text = _TargetDisk.HostCaching;
+                lblLUN.Text = _TargetDisk.Lun.ToString();
+                // txtTargetDiskName.Text = _AsmDataDisk.TargetName;
             }
-            else if (_ArmDataDisk != null)
-            {
-                lblAsmStorageAccount.Text = _ArmDataDisk.StorageAccountName;
-                lblDiskName.Text = _ArmDataDisk.Name;
-                lblHostCaching.Text = _ArmDataDisk.Caching;
-                lblLUN.Text = _ArmDataDisk.Lun.ToString();
-                txtTargetDiskName.Text = _ArmDataDisk.TargetName;
-            }
+            //else if (_ArmDataDisk != null)
+            //{
+            //    lblAsmStorageAccount.Text = _ArmDataDisk.StorageAccountName;
+            //    lblDiskName.Text = _ArmDataDisk.Name;
+            //    lblHostCaching.Text = _ArmDataDisk.Caching;
+            //    lblLUN.Text = _ArmDataDisk.Lun.ToString();
+            //    txtTargetDiskName.Text = _ArmDataDisk.TargetName;
+            //}
         }
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
@@ -159,14 +151,14 @@ namespace MigAz.UserControls
                     }
                 }
 
-                if (_AsmDataDisk != null)
+                if (_TargetDisk != null)
                 {
-                    if (_AsmDataDisk.TargetStorageAccount != null)
+                    if (_TargetDisk.TargetStorageAccount != null)
                     {
                         for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                         {
                             Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
-                            if (cmbStorageAccount.ToString() == _AsmDataDisk.TargetStorageAccount.ToString())
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
                             {
                                 cmbTargetStorage.SelectedIndex = i;
                                 break;
@@ -201,9 +193,9 @@ namespace MigAz.UserControls
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
 
-                if (_AsmDataDisk != null)
+                if (_TargetDisk != null)
                 {
-                    if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
+                    if ((_TargetDisk.TargetStorageAccount == null) || (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
                     {
 
                     }
@@ -212,7 +204,7 @@ namespace MigAz.UserControls
                         for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                         {
                             Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
-                            if (cmbStorageAccount.ToString() == _AsmDataDisk.TargetStorageAccount.ToString())
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
                             {
                                 cmbTargetStorage.SelectedIndex = i;
                                 break;
@@ -236,18 +228,14 @@ namespace MigAz.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            if (_AsmDataDisk != null)
-                _AsmDataDisk.TargetStorageAccount = null;
-            if (_ArmDataDisk != null)
-                _ArmDataDisk.TargetStorageAccount = null;
+            if (_TargetDisk != null)
+                _TargetDisk.TargetStorageAccount = null;
 
             if (cmbSender.SelectedItem != null)
             {
                 IStorageTarget targetStorageAccount = (IStorageTarget)cmbSender.SelectedItem;
-                if (_AsmDataDisk != null)
-                    _AsmDataDisk.TargetStorageAccount = targetStorageAccount;
-                if (_ArmDataDisk != null)
-                    _ArmDataDisk.TargetStorageAccount = targetStorageAccount;
+                if (_TargetDisk != null)
+                    _TargetDisk.TargetStorageAccount = targetStorageAccount;
             }
 
             UpdateParentNode();
@@ -257,18 +245,18 @@ namespace MigAz.UserControls
 
         private void UpdateParentNode()
         {
-            if (_ARMDataDiskNode != null)
+            if (_DiskTreeNode != null)
             {
-                TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
-                Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
-                foreach (Azure.Asm.Disk parentDisk in parentVirtualMachine.DataDisks)
-                {
-                    if (parentDisk.DiskName == _AsmDataDisk.DiskName)
-                    {
-                        parentDisk.TargetStorageAccount = _AsmDataDisk.TargetStorageAccount;
-                        parentDisk.TargetName = _AsmDataDisk.TargetName;
-                    }
-                }
+                //TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
+                //Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
+                //foreach (Azure.Asm.Disk parentDisk in parentVirtualMachine.DataDisks)
+                //{
+                //    if (parentDisk.DiskName == _AsmDataDisk.DiskName)
+                //    {
+                //        parentDisk.TargetStorageAccount = _AsmDataDisk.TargetStorageAccount;
+                //        parentDisk.TargetName = _AsmDataDisk.Name;
+                //    }
+                //}
             }
         }
 
@@ -276,26 +264,9 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            if (_AsmDataDisk != null)
-            {
-                _AsmDataDisk.TargetName = txtSender.Text.Trim();
-
-                if (_ARMDataDiskNode != null)
-                {
-                    _ARMDataDiskNode.Text = _AsmDataDisk.TargetName;
-                    UpdateParentNode();
-                }
-            }
-            else if (_ArmDataDisk != null)
-            {
-                _ArmDataDisk.TargetName = txtSender.Text.Trim();
-
-                if (_ARMDataDiskNode != null)
-                {
-                    _ARMDataDiskNode.Text = _ArmDataDisk.TargetName;
-                    UpdateParentNode();
-                }
-            }
+            _TargetDisk.Name = txtSender.Text.Trim();
+            _DiskTreeNode.Text = _TargetDisk.Name;
+            UpdateParentNode();
 
             PropertyChanged();
         }
