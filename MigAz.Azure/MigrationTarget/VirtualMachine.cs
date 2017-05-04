@@ -93,5 +93,8 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetAvailabilitySet; }
             set { _TargetAvailabilitySet = value; }
         }
+
+        public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
+        public IMigrationSubnet TargetSubnet { get; set; }
     }
 }

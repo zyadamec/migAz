@@ -49,7 +49,9 @@
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IExportArtifacts.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Interface\IMigrationSubnet.cs" />
     <Compile Include="Interface\IMigrationTarget.cs" />
+    <Compile Include="Interface\IMigrationVirtualNetwork.cs" />
     <Compile Include="Interface\IMigratorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

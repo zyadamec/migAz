@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualNetwork : IVirtualNetwork
+    public class VirtualNetwork : IVirtualNetwork, IMigrationVirtualNetwork
     {
         private JToken _VirtualNetwork;
         private List<ISubnet> _Subnets = new List<ISubnet>();

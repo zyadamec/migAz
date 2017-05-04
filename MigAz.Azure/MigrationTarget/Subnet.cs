@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class Subnet : IMigrationTarget
+    public class Subnet : IMigrationTarget, IMigrationSubnet
     {
         private AzureContext _AzureContext = null;
         private ISubnet _Source;
@@ -69,6 +69,9 @@ namespace MigAz.Azure.MigrationTarget
         public RouteTable RouteTable { get; set;  }
         public NetworkSecurityGroup NetworkSecurityGroup { get; set; }
 
-
+        public bool IsGatewaySubnet
+        {
+            get { return this.TargetName == ArmConst.GatewaySubnetName; }
+        }
     }
 }

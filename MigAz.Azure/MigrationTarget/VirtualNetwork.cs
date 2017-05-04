@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class VirtualNetwork : IMigrationTarget
+    public class VirtualNetwork : IMigrationTarget, IMigrationVirtualNetwork
     {
         private AzureContext _AzureContext;
         private string _TargetName = String.Empty;

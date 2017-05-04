@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MigAz.Azure.Arm
 {
-    public class Subnet : ISubnet
+    public class Subnet : ISubnet, IMigrationSubnet
     {
         private JToken _Subnet;
         private VirtualNetwork _Parent;
