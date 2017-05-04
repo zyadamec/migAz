@@ -1156,6 +1156,7 @@ namespace MigAz.UserControls.Migrators
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine);
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, asmVirtualMachine.RoleName, asmVirtualMachine.RoleName, targetVirtualMachine, true);
 
+                // If Null, default Target Virtual Network and Subnet to be that of the original VNet/Subnet (if found in Migration)
                 if (targetVirtualMachine.TargetVirtualNetwork == null)
                 {
                     Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = SeekTargetVirtualNetwork(asmVirtualMachine.SourceVirtualNetwork);
@@ -1215,16 +1216,37 @@ namespace MigAz.UserControls.Migrators
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine);
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, armVirtualMachine.Name, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
-                // todo now russell should this have any VNET/Subnet/Storage initialization calls, similar to ASM
+                // If Null, default Target Virtual Network and Subnet to be that of the original VNet/Subnet (if found in Migration)
+                if (targetVirtualMachine.TargetVirtualNetwork == null)
+                {
+                    Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = SeekTargetVirtualNetwork(armVirtualMachine.PrimaryNetworkInterface.VirtualNetwork);
+                    targetVirtualMachine.TargetVirtualNetwork = targetVirtualNetwork;
 
+                    if (targetVirtualNetwork != null)
+                    {
+                        foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+                        {
+                            if (targetSubnet.Source != null && targetSubnet.Source.GetType() == typeof(Azure.Arm.Subnet))
+                            {
+                                Azure.Arm.Subnet sourceSubnet = (Azure.Arm.Subnet)targetSubnet.Source;
+                                if (sourceSubnet.Name == armVirtualMachine.PrimaryNetworkInterface.Subnet.Name)
+                                    targetVirtualMachine.TargetSubnet = targetSubnet;
+                            }
+                        }
+                    }
+                }
+                
                 foreach (Azure.Arm.Disk armDataDisk in armVirtualMachine.DataDisks)
                 {
                     TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, armDataDisk.Name, armDataDisk.Name, armDataDisk, true);
                 }
 
-                foreach (Azure.Arm.NetworkInterfaceCard asmNetworkInterface in armVirtualMachine.NetworkInterfaces)
+                foreach (Azure.Arm.NetworkInterfaceCard armNetworkInterface in armVirtualMachine.NetworkInterfaces)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmNetworkInterface.Name, asmNetworkInterface.Name, asmNetworkInterface, true);
+                    if (!armNetworkInterface.IsPrimary)
+                    {
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, armNetworkInterface.Id, armNetworkInterface.Id, armNetworkInterface, true);
+                    }
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -1265,7 +1287,7 @@ namespace MigAz.UserControls.Migrators
             return null;
         }
 
-        private Azure.MigrationTarget.VirtualNetwork SeekTargetVirtualNetwork(Azure.Asm.VirtualNetwork asmVirtualNetwork)
+        private Azure.MigrationTarget.VirtualNetwork SeekTargetVirtualNetwork(IVirtualNetwork virtualNetwork)
         {
             TreeNode resourceGroupTreeNode = SeekResourceGroupTreeNode();
 
@@ -1274,11 +1296,22 @@ namespace MigAz.UserControls.Migrators
                 if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
                 {
                     Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
-                    if (targetVirtualNetwork.Source.GetType() == asmVirtualNetwork.GetType())
+                    if (targetVirtualNetwork.Source.GetType() == virtualNetwork.GetType())
                     {
-                        Azure.Asm.VirtualNetwork sourceAsmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.Source;
-                        if (asmVirtualNetwork.Name == sourceAsmVirtualNetwork.Name)
-                            return targetVirtualNetwork;
+                        if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Asm.VirtualNetwork))
+                        {
+                            Azure.Asm.VirtualNetwork sourceAsmVirtualNetwork = (Azure.Asm.VirtualNetwork)virtualNetwork;
+                            Azure.Asm.VirtualNetwork targetAsmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.Source;
+                            if (targetAsmVirtualNetwork.Name == sourceAsmVirtualNetwork.Name)
+                                return targetVirtualNetwork;
+                        }
+                        else if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                        {
+                            Azure.Arm.VirtualNetwork sourceArmVirtualNetwork = (Azure.Arm.VirtualNetwork)virtualNetwork;
+                            Azure.Arm.VirtualNetwork targetArmVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.Source;
+                            if (targetArmVirtualNetwork.Name == sourceArmVirtualNetwork.Name)
+                                return targetVirtualNetwork;
+                        }
                     }
                 }
             }

@@ -12,9 +12,8 @@ namespace MigAz.Azure.Arm
     {
         private JToken _VirtualMachine;
         private List<Disk> _DataDisks = new List<Disk>();
-        private NetworkSecurityGroup _NetworkSecurityGroup;
         private Disk _OSVirtualHardDisk;
-        private VirtualNetwork _VirtualNetwork;
+        private NetworkSecurityGroup _NetworkSecurityGroup;
         private List<NetworkInterfaceCard> _NetworkInterfaceCards = new List<NetworkInterfaceCard>();
 
         private VirtualMachine() { }
@@ -27,6 +26,11 @@ namespace MigAz.Azure.Arm
             foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
             {
                 _DataDisks.Add(new DataDisk(dataDiskToken));
+            }
+
+            foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
+            {
+                _NetworkInterfaceCards.Add(new NetworkInterfaceCard(networkInterfaceToken));
             }
         }
 
@@ -57,12 +61,24 @@ namespace MigAz.Azure.Arm
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
         public ResourceGroup ResourceGroup { get; set; }
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
-        public VirtualNetwork VirtualNetwork => _VirtualNetwork;
         public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
 
         public AvailabilitySet AvailabilitySet
         {
             get; private set;
+        }
+        public NetworkInterfaceCard PrimaryNetworkInterface
+        {
+            get
+            {
+                foreach (NetworkInterfaceCard networkInterface in this.NetworkInterfaces)
+                {
+                    if (networkInterface.IsPrimary)
+                        return networkInterface;
+                }
+
+                return null;
+            }
         }
         internal async Task InitializeChildrenAsync(AzureContext azureContext)
         {

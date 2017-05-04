@@ -232,7 +232,8 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _TargetDisk.Name = txtSender.Text.Trim();
-            _DiskTreeNode.Text = _TargetDisk.Name;
+            if (_DiskTreeNode != null)
+                _DiskTreeNode.Text = _TargetDisk.Name;
 
             PropertyChanged();
             this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
