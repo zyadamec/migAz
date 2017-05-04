@@ -736,7 +736,7 @@ namespace MigAz.UserControls.Migrators
         private async Task RemoveASMNodeFromARMTree(TreeNode sourceNode)
         {
 
-            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.TargetName, _TargetResourceGroup.TargetName, _TargetResourceGroup);
+            TreeNode targetResourceGroupNode = SeekARMChildTreeNode(treeTargetARM.Nodes, _TargetResourceGroup.ToString(), _TargetResourceGroup.ToString(), _TargetResourceGroup);
             if (targetResourceGroupNode != null)
             {
                 TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(sourceNode.Name, true);
