@@ -36,6 +36,7 @@ namespace MigAz.Azure.Arm
         public string Id => (string)_VirtualMachine["id"];
         public Guid VmId => new Guid((string)_VirtualMachine["properties"]["vmId"]);
         public string VmSize => (string)_VirtualMachine["properties"]["hardwareProfile"]["vmSize"];
+        public string OSVirtualHardDiskOS => (string)_VirtualMachine["properties"]["storageProfile"]["osDisk"]["osType"];
 
         internal string AvailabilitySetId
         {

@@ -93,7 +93,7 @@ namespace MigAz.UserControls
                 Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)targetVirtualMachine.Source;
 
                 lblRoleSize.Text = armVirtualMachine.VmSize;
-                // todo russell lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
+                lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 if (armVirtualMachine.VirtualNetwork != null)
                     lblVirtualNetworkName.Text = armVirtualMachine.VirtualNetwork.Name;
                 // todo now russell lblSubnetName.Text = armVirtualMachine.PrimaryNetworkInterface.SubnetName;

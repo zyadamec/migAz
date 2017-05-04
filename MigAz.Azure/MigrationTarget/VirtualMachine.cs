@@ -36,7 +36,7 @@ namespace MigAz.Azure.MigrationTarget
             // this._TargetStaticIpAddress = virtualMachine.; // TODO now russell, Needed
             this._TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDisk = new Disk();
-            //this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDisk.????; // todo now russell
+            this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
         }
 
         public AvailabilitySet ParentAvailabilitySet // todo now russell
