@@ -14,19 +14,23 @@ namespace MigAz.Azure.MigrationTarget
 
         public Disk(Asm.Disk sourceDisk)
         {
+            this.SourceDisk = sourceDisk;
             this.Name = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeInGB;
+            this.StorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
         public Disk(Arm.Disk sourceDisk)
         {
+            this.SourceDisk = sourceDisk;
             this.Name = sourceDisk.Name;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.Caching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
+            this.StorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
@@ -38,6 +42,8 @@ namespace MigAz.Azure.MigrationTarget
         {
             get;set;
         }
+
+        public IDisk SourceDisk { get; set; }
 
         public IStorageTarget TargetStorageAccount
         {

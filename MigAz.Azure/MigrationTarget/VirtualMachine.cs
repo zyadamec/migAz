@@ -33,7 +33,6 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.Name;
-            // this._TargetStaticIpAddress = virtualMachine.; // TODO now russell, Needed
             this._TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;

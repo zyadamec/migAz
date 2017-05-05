@@ -46,6 +46,8 @@
             this.txtTargetDiskName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.rbManagedDisk = new System.Windows.Forms.RadioButton();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtBlobName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -114,7 +116,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 313);
+            this.label5.Location = new System.Drawing.Point(15, 349);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(121, 25);
             this.label5.TabIndex = 17;
@@ -123,7 +125,7 @@
             // rbExistingARMStorageAccount
             // 
             this.rbExistingARMStorageAccount.AutoSize = true;
-            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 395);
+            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(200, 431);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
             this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(344, 29);
             this.rbExistingARMStorageAccount.TabIndex = 2;
@@ -134,7 +136,7 @@
             // rbStorageAccountInMigration
             // 
             this.rbStorageAccountInMigration.AutoSize = true;
-            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 353);
+            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(200, 389);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
             this.rbStorageAccountInMigration.Size = new System.Drawing.Size(302, 29);
             this.rbStorageAccountInMigration.TabIndex = 1;
@@ -145,7 +147,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(15, 441);
+            this.label7.Location = new System.Drawing.Point(15, 477);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(161, 25);
             this.label7.TabIndex = 19;
@@ -156,7 +158,7 @@
             this.cmbTargetStorage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTargetStorage.Enabled = false;
             this.cmbTargetStorage.FormattingEnabled = true;
-            this.cmbTargetStorage.Location = new System.Drawing.Point(200, 438);
+            this.cmbTargetStorage.Location = new System.Drawing.Point(200, 474);
             this.cmbTargetStorage.Name = "cmbTargetStorage";
             this.cmbTargetStorage.Size = new System.Drawing.Size(392, 33);
             this.cmbTargetStorage.TabIndex = 3;
@@ -204,15 +206,15 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(15, 264);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(142, 25);
+            this.label9.Size = new System.Drawing.Size(122, 25);
             this.label9.TabIndex = 24;
-            this.label9.Text = "Target Name:";
+            this.label9.Text = "Disk Name:";
             // 
             // rbManagedDisk
             // 
             this.rbManagedDisk.AutoSize = true;
             this.rbManagedDisk.Enabled = false;
-            this.rbManagedDisk.Location = new System.Drawing.Point(200, 311);
+            this.rbManagedDisk.Location = new System.Drawing.Point(200, 347);
             this.rbManagedDisk.Name = "rbManagedDisk";
             this.rbManagedDisk.Size = new System.Drawing.Size(383, 29);
             this.rbManagedDisk.TabIndex = 25;
@@ -220,10 +222,28 @@
             this.rbManagedDisk.UseVisualStyleBackColor = true;
             this.rbManagedDisk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(15, 307);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(123, 25);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "Blob Name:";
+            // 
+            // txtBlobName
+            // 
+            this.txtBlobName.Location = new System.Drawing.Point(200, 304);
+            this.txtBlobName.Name = "txtBlobName";
+            this.txtBlobName.Size = new System.Drawing.Size(387, 31);
+            this.txtBlobName.TabIndex = 26;
+            // 
             // DiskProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.txtBlobName);
             this.Controls.Add(this.rbManagedDisk);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.txtTargetDiskName);
@@ -243,7 +263,7 @@
             this.Controls.Add(this.lblDiskName);
             this.Controls.Add(this.label1);
             this.Name = "DiskProperties";
-            this.Size = new System.Drawing.Size(640, 480);
+            this.Size = new System.Drawing.Size(640, 533);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -269,5 +289,7 @@
         private System.Windows.Forms.TextBox txtTargetDiskName;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.RadioButton rbManagedDisk;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox txtBlobName;
     }
 }

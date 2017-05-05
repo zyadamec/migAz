@@ -97,12 +97,12 @@ namespace MigAz.UserControls
 
             if (_TargetDisk != null)
             {
-                // todo now Russell, two fields are now using the .Name property, don't believe this is correct
                 lblAsmStorageAccount.Text = _TargetDisk.StorageAccountName;
                 lblDiskName.Text = _TargetDisk.Name;
                 lblHostCaching.Text = _TargetDisk.HostCaching;
                 lblLUN.Text = _TargetDisk.Lun.ToString();
                 txtTargetDiskName.Text = _TargetDisk.Name;
+                txtBlobName.Text = _TargetDisk.StorageAccountBlob;
             }
         }
 

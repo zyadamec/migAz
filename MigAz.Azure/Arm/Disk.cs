@@ -8,7 +8,7 @@ using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class Disk
+    public class Disk : IDisk
     {
         private JToken jToken;
         private StorageAccount _SourceStorageAccount;

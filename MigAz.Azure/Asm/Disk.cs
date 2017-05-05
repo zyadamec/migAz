@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class Disk
+    public class Disk : IDisk
     {
         private XmlNode _DataDiskNode;
         private AzureContext _AzureContext;
