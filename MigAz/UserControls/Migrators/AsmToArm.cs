@@ -476,6 +476,97 @@ namespace MigAz.UserControls.Migrators
                         }
                     }
                 }
+                else if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)selectedNode.Tag;
+
+                    #region process virtual network
+
+                    foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                    {
+                        foreach (NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                        {
+                            if (ipConfiguration.VirtualNetwork != null) // todo now russell, need to get this value and verify autoselection
+                            {
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region OS Disk Storage Account
+
+                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                    {
+                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                        {
+                            if (!treeNode.Checked)
+                                treeNode.Checked = true;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Data Disk(s) Storage Account(s)
+
+                    foreach (Azure.Arm.Disk dataDisk in armVirtualMachine.DataDisks)
+                    {
+                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(dataDisk.StorageAccountName, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    #region Network Security Group
+
+                    if (armVirtualMachine.NetworkSecurityGroup != null) // todo now russell, has not been tested
+                    {
+                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.NetworkSecurityGroup.Name, true))
+                        {
+                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
+                            {
+                                if (!treeNode.Checked)
+                                    treeNode.Checked = true;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                }
+                else if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                {
+                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)selectedNode.Tag;
+
+                    foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
+                    {
+                        if (armSubnet.NetworkSecurityGroup != null)
+                        {
+                            foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armSubnet.NetworkSecurityGroup.Name, true))
+                            {
+                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup)))
+                                {
+                                    if (!treeNode.Checked)
+                                        treeNode.Checked = true;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 StatusProvider.UpdateStatus("Ready");
             }
