@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class NetworkInterface
+    public class NetworkInterface : INetworkInterface
     {
         #region Variables
 

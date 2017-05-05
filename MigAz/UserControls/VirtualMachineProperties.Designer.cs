@@ -86,9 +86,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 303);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(97, 25);
+            this.label3.Size = new System.Drawing.Size(110, 25);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Static IP:";
+            this.label3.Text = "Private IP:";
             // 
             // lblRoleSize
             // 

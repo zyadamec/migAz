@@ -94,11 +94,11 @@ namespace MigAz.UserControls
 
                 lblRoleSize.Text = armVirtualMachine.VmSize;
                 lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
-                if (armVirtualMachine.PrimaryNetworkInterface.VirtualNetwork != null)
+                if (armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.VirtualNetwork != null)
                 {
-                    lblVirtualNetworkName.Text = armVirtualMachine.PrimaryNetworkInterface.VirtualNetwork.Name;
-                    lblSubnetName.Text = armVirtualMachine.PrimaryNetworkInterface.Subnet.Name;
-                    // todo russell lblStaticIpAddress.Text = armVirtualMachine.StaticVirtualNetworkIPAddress;
+                    lblVirtualNetworkName.Text = armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.VirtualNetwork.Name;
+                    lblSubnetName.Text = armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.Subnet.Name;
+                    lblStaticIpAddress.Text = armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.PrivateIpAddress;
                 }
 
                 this.diskProperties1.Bind(asmToArmForm, targetVirtualMachine.OSVirtualHardDisk);

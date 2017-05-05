@@ -22,11 +22,9 @@ namespace MigAz.Azure.Arm
         public string Name => (string)this.jToken["name"];
         public string CreateOption => (string)this.jToken["createOption"];
         public string Caching => (string)this.jToken["caching"];
+        public int DiskSizeGb => Convert.ToInt32((string)this.jToken["diskSizeGB"]);
 
-        public Int32 Lun
-        {
-            get { return 0; }
-        }
+        public int Lun => Convert.ToInt32((string)jToken["lun"]);
 
         public string VhdUri
         {

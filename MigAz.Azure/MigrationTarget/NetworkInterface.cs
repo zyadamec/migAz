@@ -10,6 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     public class NetworkInterface : IMigrationTarget
     {
         private AzureContext _AzureContext;
+        private INetworkInterface _SourceNetworkInterface;
         private IVirtualNetwork _TargetVirtualNetwork;
         private ISubnet _TargetSubnet;
         private String _TargetStaticIpAddress = String.Empty;
@@ -18,9 +19,18 @@ namespace MigAz.Azure.MigrationTarget
 
         private NetworkInterface() { }
 
-        public NetworkInterface(AzureContext azureContext)
+        public NetworkInterface(AzureContext azureContext, Asm.NetworkInterface networkInterface)
         {
             _AzureContext = azureContext;
+            _SourceNetworkInterface = networkInterface;
+            this.TargetName = networkInterface.Name;
+        }
+
+        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface)
+        {
+            _AzureContext = azureContext;
+            _SourceNetworkInterface = networkInterface;
+            this.TargetName = networkInterface.Name;
         }
 
         public ISubnet TargetSubnet
@@ -53,7 +63,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
+            return this.TargetName + _AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
         }
 
         public String StaticVirtualNetworkIPAddress
@@ -78,6 +88,11 @@ namespace MigAz.Azure.MigrationTarget
         public List<LoadBalancerRule> LoadBalancerRules
         {
             get { return _LoadBalancerRules; } // todo now russell
+        }
+
+        public INetworkInterface SourceNetworkInterface
+        {
+            get { return _SourceNetworkInterface; }
         }
     }
 }

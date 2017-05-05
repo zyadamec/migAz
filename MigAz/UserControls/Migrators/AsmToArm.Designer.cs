@@ -51,7 +51,7 @@
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "Disk");
             this.imageList1.Images.SetKeyName(1, "LoadBalancer");
-            this.imageList1.Images.SetKeyName(2, "NetworkInterface.png");
+            this.imageList1.Images.SetKeyName(2, "NetworkInterface");
             this.imageList1.Images.SetKeyName(3, "NetworkSecurityGroup");
             this.imageList1.Images.SetKeyName(4, "PublicIPAddress.png");
             this.imageList1.Images.SetKeyName(5, "StorageAccount");

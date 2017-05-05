@@ -44,7 +44,8 @@ namespace MigAz.Azure
         private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
         private List<Arm.ManagedDisk> _ArmManagedDisks;
-
+        private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
+        
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
         private AzureRetriever() { }
@@ -798,6 +799,11 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
+                case "NetworkInterfaces":
+                    // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
                 case "StorageAccounts":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_List
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
@@ -1240,6 +1246,43 @@ namespace MigAz.Azure
             return null;
         }
 
+        public async Task<List<Arm.NetworkInterface>> GetAzureARMNetworkInterfaces()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterfaces", "Start");
+
+            if (_ArmNetworkInterfaces != null)
+                return _ArmNetworkInterfaces;
+
+            JObject networkInterfacesJson = await this.GetAzureARMResources("NetworkInterfaces", null);
+
+            var networkInterfaces = from networkInterface in networkInterfacesJson["value"]
+                                   select networkInterface;
+
+            _ArmNetworkInterfaces = new List<Arm.NetworkInterface>();
+
+            foreach (var networkInterface in networkInterfaces)
+            {
+                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
+                _ArmNetworkInterfaces.Add(armNetworkInterface);
+            }
+
+            return _ArmNetworkInterfaces;
+        }
+
+        public async Task<Arm.NetworkInterface> GetAzureARMNetworkInterface(string id)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterface", "Start");
+
+            foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces())
+            {
+                if (networkInterface.Id == id)
+                    return networkInterface;
+            }
+
+            return null;
+        }
+
+        
         #endregion
 
     }

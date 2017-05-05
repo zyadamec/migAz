@@ -14,7 +14,7 @@ namespace MigAz.Azure.Arm
         private List<Disk> _DataDisks = new List<Disk>();
         private Disk _OSVirtualHardDisk;
         private NetworkSecurityGroup _NetworkSecurityGroup;
-        private List<NetworkInterfaceCard> _NetworkInterfaceCards = new List<NetworkInterfaceCard>();
+        private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
 
         private VirtualMachine() { }
 
@@ -25,12 +25,7 @@ namespace MigAz.Azure.Arm
             _OSVirtualHardDisk = new Disk(_VirtualMachine["properties"]["storageProfile"]["osDisk"]);
             foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new DataDisk(dataDiskToken));
-            }
-
-            foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
-            {
-                _NetworkInterfaceCards.Add(new NetworkInterfaceCard(networkInterfaceToken));
+                _DataDisks.Add(new Disk(dataDiskToken));
             }
         }
 
@@ -61,17 +56,17 @@ namespace MigAz.Azure.Arm
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
         public ResourceGroup ResourceGroup { get; set; }
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
-        public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
+        public List<NetworkInterface> NetworkInterfaces => _NetworkInterfaceCards;
 
         public AvailabilitySet AvailabilitySet
         {
             get; private set;
         }
-        public NetworkInterfaceCard PrimaryNetworkInterface
+        public NetworkInterface PrimaryNetworkInterface
         {
             get
             {
-                foreach (NetworkInterfaceCard networkInterface in this.NetworkInterfaces)
+                foreach (NetworkInterface networkInterface in this.NetworkInterfaces)
                 {
                     if (networkInterface.IsPrimary)
                         return networkInterface;
@@ -87,6 +82,13 @@ namespace MigAz.Azure.Arm
                 this.AvailabilitySet.VirtualMachines.Add(this);
 
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+
+            foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
+            {
+                NetworkInterface networkInterface = await azureContext.AzureRetriever.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
+                networkInterface.VirtualMachine = this;
+                _NetworkInterfaceCards.Add(networkInterface);
+            }
 
             return;
         }

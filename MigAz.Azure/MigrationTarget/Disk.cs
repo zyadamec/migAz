@@ -26,7 +26,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Name = sourceDisk.Name;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.Caching;
-            this.DiskSizeInGB = 0; // todo now russell sourceDisk.;
+            this.DiskSizeInGB = sourceDisk.DiskSizeGb;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 

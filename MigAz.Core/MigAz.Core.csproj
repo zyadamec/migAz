@@ -55,6 +55,7 @@
     <Compile Include="Interface\IMigratorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Interface\INetworkInterface.cs" />
     <Compile Include="Interface\INetworkSecurityGroup.cs" />
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />

@@ -877,6 +877,16 @@ namespace MigAz.UserControls.Migrators
                     childNode.ImageKey = "NetworkSecurityGroup";
                     childNode.SelectedImageKey = "NetworkSecurityGroup";
                 }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.Disk))
+                {
+                    childNode.ImageKey = "Disk";
+                    childNode.SelectedImageKey = "Disk";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+                {
+                    childNode.ImageKey = "NetworkInterface";
+                    childNode.SelectedImageKey = "NetworkInterface";
+                }
 
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
@@ -1191,12 +1201,14 @@ namespace MigAz.UserControls.Migrators
 
                 foreach (Azure.Asm.Disk asmDataDisk in asmVirtualMachine.DataDisks)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmDataDisk.DiskName, asmDataDisk.DiskName, asmDataDisk, true);
+                    Azure.MigrationTarget.Disk migrationDisk = new Azure.MigrationTarget.Disk(asmDataDisk);
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, migrationDisk.ToString(), migrationDisk.ToString(), migrationDisk, true);
                 }
 
                 foreach (Azure.Asm.NetworkInterface asmNetworkInterface in asmVirtualMachine.NetworkInterfaces)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, asmNetworkInterface.Name, asmNetworkInterface.Name, asmNetworkInterface, true);
+                    Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(this.AzureContextTargetARM, asmNetworkInterface);
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, migrationNetworkInterface.ToString(), migrationNetworkInterface.ToString(), migrationNetworkInterface, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -1219,7 +1231,7 @@ namespace MigAz.UserControls.Migrators
                 // If Null, default Target Virtual Network and Subnet to be that of the original VNet/Subnet (if found in Migration)
                 if (targetVirtualMachine.TargetVirtualNetwork == null)
                 {
-                    Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = SeekTargetVirtualNetwork(armVirtualMachine.PrimaryNetworkInterface.VirtualNetwork);
+                    Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = SeekTargetVirtualNetwork(armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.VirtualNetwork);
                     targetVirtualMachine.TargetVirtualNetwork = targetVirtualNetwork;
 
                     if (targetVirtualNetwork != null)
@@ -1229,7 +1241,7 @@ namespace MigAz.UserControls.Migrators
                             if (targetSubnet.Source != null && targetSubnet.Source.GetType() == typeof(Azure.Arm.Subnet))
                             {
                                 Azure.Arm.Subnet sourceSubnet = (Azure.Arm.Subnet)targetSubnet.Source;
-                                if (sourceSubnet.Name == armVirtualMachine.PrimaryNetworkInterface.Subnet.Name)
+                                if (sourceSubnet.Name == armVirtualMachine.PrimaryNetworkInterface.PrimaryIpConfiguration.Subnet.Name)
                                     targetVirtualMachine.TargetSubnet = targetSubnet;
                             }
                         }
@@ -1238,14 +1250,16 @@ namespace MigAz.UserControls.Migrators
                 
                 foreach (Azure.Arm.Disk armDataDisk in armVirtualMachine.DataDisks)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, armDataDisk.Name, armDataDisk.Name, armDataDisk, true);
+                    Azure.MigrationTarget.Disk migrationDisk = new Azure.MigrationTarget.Disk(armDataDisk);
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, migrationDisk.ToString(), migrationDisk.ToString(), migrationDisk, true);
                 }
 
-                foreach (Azure.Arm.NetworkInterfaceCard armNetworkInterface in armVirtualMachine.NetworkInterfaces)
+                foreach (Azure.Arm.NetworkInterface armNetworkInterface in armVirtualMachine.NetworkInterfaces)
                 {
                     if (!armNetworkInterface.IsPrimary)
                     {
-                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, armNetworkInterface.Id, armNetworkInterface.Id, armNetworkInterface, true);
+                        Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(this.AzureContextTargetARM, armNetworkInterface);
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, migrationNetworkInterface.ToString(), migrationNetworkInterface.ToString(), migrationNetworkInterface, true);
                     }
                 }
 
