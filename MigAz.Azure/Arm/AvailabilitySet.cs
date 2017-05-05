@@ -29,6 +29,11 @@ namespace MigAz.Azure.Arm
             get { return _VirtualMachines; }
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
 
     }
 }

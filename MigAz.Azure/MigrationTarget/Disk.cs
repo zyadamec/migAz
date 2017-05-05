@@ -113,5 +113,10 @@ namespace MigAz.Azure.MigrationTarget
                 //return targetMediaLink;
             }
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

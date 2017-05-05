@@ -266,19 +266,12 @@ namespace MigAz.UserControls.Migrators
                     {
                         TreeNode virtualMachineParentNode = subscriptionNodeARM;
 
-                        if (armVirtualMachine.ResourceGroup != null)
-                        {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
-                            tnResourceGroup.ImageKey = "ResourceGroup";
-                            tnResourceGroup.SelectedImageKey = "ResourceGroup";
-                            virtualMachineParentNode = tnResourceGroup;
-                        }
+                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
+                        virtualMachineParentNode = tnResourceGroup;
 
                         if (armVirtualMachine.AvailabilitySet != null)
                         {
-                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(subscriptionNodeARM, armVirtualMachine.AvailabilitySet);
-                            tnAvailabilitySet.ImageKey = "AvailabilitySet";
-                            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, armVirtualMachine.AvailabilitySet);
                             virtualMachineParentNode = tnAvailabilitySet;
                         }
 
@@ -752,9 +745,9 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(this._AzureContextTargetARM, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
-                else if (e.Node.Tag.GetType() == typeof(Azure.Asm.Disk) || e.Node.Tag.GetType() == typeof(Azure.Arm.Disk))
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
                 {
-                    Azure.Asm.Disk asmDisk = (Azure.Asm.Disk)e.Node.Tag;
+                    Azure.MigrationTarget.Disk migrationDisk = (Azure.MigrationTarget.Disk)e.Node.Tag;
 
                     this._PropertyPanel.ResourceImage = imageList1.Images["Disk"];
 
@@ -812,7 +805,7 @@ namespace MigAz.UserControls.Migrators
                 {
                     if (asmTreeNode.Checked)
                     {
-                        return await AddASMNodeToARMTree(asmTreeNode);
+                        return await AddSourceTreeNodeToTargetTree(asmTreeNode);
                     }
                     else
                     {
@@ -1030,20 +1023,23 @@ namespace MigAz.UserControls.Migrators
             return tnAvailabilitySet;
         }
 
-        private TreeNode GetAvailabilitySetNode(TreeNode subscriptionNode, AvailabilitySet availabilitySet)
+        private TreeNode GetTargetAvailabilitySetNode(TreeNode subscriptionNode, AvailabilitySet availabilitySet)
         {
+            // todo now russell, this should be pre-constructed from the source AvailabilitySet rather than constructing a new one each time??
+            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, availabilitySet);
+
             foreach (TreeNode treeNode in subscriptionNode.Nodes)
             {
                 if (treeNode.Tag != null)
                 {
-                    if (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && treeNode.Text == availabilitySet.Name)
+                    if (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && treeNode.Text == targetAvailabilitySet.ToString())
                         return treeNode;
                 }
             }
 
-            TreeNode tnAvailabilitySet = new TreeNode(availabilitySet.Name);
-            tnAvailabilitySet.Text = availabilitySet.Name;
-            tnAvailabilitySet.Tag = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, availabilitySet);
+            TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.ToString());
+            tnAvailabilitySet.Text = targetAvailabilitySet.ToString();
+            tnAvailabilitySet.Tag = targetAvailabilitySet;
             tnAvailabilitySet.ImageKey = "AvailabilitySet";
             tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
 
@@ -1178,7 +1174,7 @@ namespace MigAz.UserControls.Migrators
                 await RecursiveCheckToggleUp(node.Parent, isChecked);
         }
 
-        private async Task<TreeNode> AddASMNodeToARMTree(TreeNode parentNode)
+        private async Task<TreeNode> AddSourceTreeNodeToTargetTree(TreeNode parentNode)
         {
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
 
@@ -1279,11 +1275,10 @@ namespace MigAz.UserControls.Migrators
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
                 TreeNode targetAvailabilitySetNode = null;
 
-                // todo now Russell, Create new TargetAvailabilitySet by default
-                //    //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
+                // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability
                 if (armVirtualMachine.AvailabilitySet != null)
                 {
-                    targetAvailabilitySetNode = GetAvailabilitySetNode(targetResourceGroupNode, armVirtualMachine.AvailabilitySet);
+                    targetAvailabilitySetNode = GetTargetAvailabilitySetNode(targetResourceGroupNode, armVirtualMachine.AvailabilitySet);
                     virtualMachineParentNode = targetAvailabilitySetNode;
                 }
 
