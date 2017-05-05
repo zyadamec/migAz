@@ -238,5 +238,15 @@ namespace MigAz.UserControls
             PropertyChanged();
             this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
+
+        private void txtBlobName_TextChanged(object sender, EventArgs e)
+        {
+            TextBox txtSender = (TextBox)sender;
+
+            _TargetDisk.StorageAccountBlob = txtSender.Text.Trim();
+
+            PropertyChanged();
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
+        }
     }
 }

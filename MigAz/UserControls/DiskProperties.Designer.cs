@@ -237,6 +237,7 @@
             this.txtBlobName.Name = "txtBlobName";
             this.txtBlobName.Size = new System.Drawing.Size(387, 31);
             this.txtBlobName.TabIndex = 26;
+            this.txtBlobName.TextChanged += new System.EventHandler(this.txtBlobName_TextChanged);
             // 
             // DiskProperties
             // 
