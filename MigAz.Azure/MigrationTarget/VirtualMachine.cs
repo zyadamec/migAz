@@ -26,6 +26,17 @@ namespace MigAz.Azure.MigrationTarget
             this._TargetSize = virtualMachine.RoleSize;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
+
+            foreach (Asm.Disk disk in virtualMachine.DataDisks)
+            {
+                this.DataDisks.Add(new Disk(disk));
+            }
+
+            foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
+            {
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, asmNetworkInterface);
+                this.NetworkInterfaces.Add(migrationNetworkInterface);
+            }
         }
 
         public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine)
@@ -36,19 +47,25 @@ namespace MigAz.Azure.MigrationTarget
             this._TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
+
+            foreach (Arm.Disk disk in virtualMachine.DataDisks)
+            {
+                this.DataDisks.Add(new Disk(disk));
+            }
+
+            foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
+            {
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface);
+                this.NetworkInterfaces.Add(migrationNetworkInterface);
+            }
         }
 
-        public AvailabilitySet ParentAvailabilitySet // todo now russell
-        {
-            get;set;
-        }
-
-        public Disk OSVirtualHardDisk // todo now russell
+        public Disk OSVirtualHardDisk
         {
             get; set;
         }
 
-        public List<Disk> DataDisks // todo now russell
+        public List<Disk> DataDisks
         {
             get { return _DataDisks; }
         }
@@ -61,6 +78,19 @@ namespace MigAz.Azure.MigrationTarget
             get { return _NetworkInterfaces; }
         }
 
+        public NetworkInterface PrimaryNetworkInterface
+        {
+            get
+            {
+                foreach (NetworkInterface networkInterface in this.NetworkInterfaces)
+                {
+                    if (networkInterface.IsPrimary)
+                        return networkInterface;
+                }
+
+                return null;
+            }
+        }
 
         public String TargetSize
         {
@@ -85,15 +115,10 @@ namespace MigAz.Azure.MigrationTarget
             return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
         }
 
-
-
         public AvailabilitySet TargetAvailabilitySet
         {
             get { return _TargetAvailabilitySet; }
             set { _TargetAvailabilitySet = value; }
         }
-
-        public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
-        public IMigrationSubnet TargetSubnet { get; set; }
     }
 }

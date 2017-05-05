@@ -421,7 +421,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
         }
 
-        private void BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet availabilitySet)
+        private AvailabilitySet BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet availabilitySet)
         {
             LogProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
@@ -434,6 +434,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(availabilityset);
 
             LogProvider.WriteLog("BuildAvailabilitySetObject", "End");
+
+            return availabilityset;
         }
 
         private void BuildLoadBalancerObject(Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, ExportArtifacts artifacts)
@@ -1146,9 +1148,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             networkInterface.dependsOn = dependson;
 
             NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-
-            // todo now russell , this is the difference in code, should not always be primary -- need to move to a variable vs. always true
-            networkinterface_ref_properties.primary = true;
+            networkinterface_ref_properties.primary = targetNetworkInterface.IsPrimary;
 
             NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
             networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
@@ -1588,25 +1588,19 @@ namespace MigAz.Azure.Generator.AsmToArm
             //    // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
 
             // process availability set
-            if (virtualMachine.ParentAvailabilitySet != null)
+            if (virtualMachine.TargetAvailabilitySet != null)
             {
-                BuildAvailabilitySetObject(virtualMachine.ParentAvailabilitySet);
+                AvailabilitySet availabilitySet = BuildAvailabilitySetObject(virtualMachine.TargetAvailabilitySet);
 
                 // Availability Set
-                // todo now russell
-                //if (targetAvailabilitySet != null)
-                //{
-                //    Reference availabilityset = new Reference();
-                //    virtualmachine_properties.availabilitySet = availabilityset;
-                //    availabilityset.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]";
-                //    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetAvailabilitySet.ToString() + "')]");
-                //}
+                if (availabilitySet != null)
+                {
+                    Reference availabilitySetReference = new Reference();
+                    virtualmachine_properties.availabilitySet = availabilitySetReference;
+                    availabilitySetReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + availabilitySet.name + "')]";
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + availabilitySet.name + "')]");
+                }
             }
-            //    //}
-            //    //else
-            //    //{
-            //    //    // _messages.Add($"VM '{virtualmachinename}' is not in an availability set. Putting it in a new availability set '{availabilitysetname}'.");
-            //    //}
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {

@@ -23,6 +23,14 @@ namespace MigAz.Azure.Asm
             _AzureContext = azureContext;
             _AsmVirtualMachine = asmVirtualMachine;
             _XmlNode = xmlNode;
+            this.IsPrimary = true; // todo now russell, can this be set from the XML?
+        }
+
+        public NetworkInterface(AzureContext azureContext, VirtualMachine asmVirtualMachine, ISettingsProvider settingsProvider)
+        {
+            _AzureContext = azureContext;
+            _AsmVirtualMachine = asmVirtualMachine;
+            this.IsPrimary = true;
         }
 
         #endregion
@@ -38,6 +46,8 @@ namespace MigAz.Azure.Asm
         {
             get { return _XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText; }
         }
+
+        public bool IsPrimary { get; set; }
 
         public string StaticVirtualNetworkIPAddress
         {

@@ -24,6 +24,7 @@ namespace MigAz.Azure.MigrationTarget
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
+            this.IsPrimary = networkInterface.IsPrimary;
         }
 
         public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface)
@@ -31,6 +32,7 @@ namespace MigAz.Azure.MigrationTarget
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
+            this.IsPrimary = networkInterface.IsPrimary;
         }
 
         public ISubnet TargetSubnet
@@ -74,6 +76,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return false; } // todo now russell
         }
+        public bool IsPrimary { get; set; }
 
         public INetworkSecurityGroup NetworkSecurityGroup
         {

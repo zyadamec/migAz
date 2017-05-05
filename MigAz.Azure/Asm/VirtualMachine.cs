@@ -38,7 +38,9 @@ namespace MigAz.Azure.Asm
             this._AzureContext = azureContext;
             this._XmlNode = virtualMachineXml;
             this._VmDetails = vmDetails;
-            this._PrimaryNetworkInterface = new NetworkInterface(azureContext, this, settingsProvider, null);
+
+            // todo now Russell, review how this is used / where does it get it's values from??
+            this._PrimaryNetworkInterface = new NetworkInterface(azureContext, this, settingsProvider);
 
             _OSVirtualHardDisk = new Disk(azureContext, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
 
