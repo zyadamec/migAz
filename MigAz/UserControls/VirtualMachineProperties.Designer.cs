@@ -239,7 +239,7 @@
             this.diskProperties1.Location = new System.Drawing.Point(0, 630);
             this.diskProperties1.LogProvider = null;
             this.diskProperties1.Name = "diskProperties1";
-            this.diskProperties1.Size = new System.Drawing.Size(640, 487);
+            this.diskProperties1.Size = new System.Drawing.Size(640, 528);
             this.diskProperties1.TabIndex = 19;
             // 
             // label12
@@ -306,7 +306,7 @@
             this.Controls.Add(this.lblSubnetName);
             this.Controls.Add(this.label1);
             this.Name = "VirtualMachineProperties";
-            this.Size = new System.Drawing.Size(625, 1117);
+            this.Size = new System.Drawing.Size(625, 1161);
             this.ResumeLayout(false);
             this.PerformLayout();
 

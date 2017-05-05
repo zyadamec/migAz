@@ -1282,6 +1282,9 @@ namespace MigAz.UserControls.Migrators
 
         private Azure.MigrationTarget.StorageAccount SeekTargetStorageAccount(Azure.Asm.StorageAccount sourceStorageAccount)
         {
+            if (sourceStorageAccount == null)
+                return null;
+
             TreeNode resourceGroupTreeNode = SeekResourceGroupTreeNode();
 
             foreach (TreeNode treeNode in resourceGroupTreeNode.Nodes)
@@ -1303,6 +1306,9 @@ namespace MigAz.UserControls.Migrators
 
         private Azure.MigrationTarget.VirtualNetwork SeekTargetVirtualNetwork(IVirtualNetwork virtualNetwork)
         {
+            if (virtualNetwork == null)
+                return null;
+
             TreeNode resourceGroupTreeNode = SeekResourceGroupTreeNode();
 
             foreach (TreeNode treeNode in resourceGroupTreeNode.Nodes)

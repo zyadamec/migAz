@@ -46,7 +46,7 @@
             this.groupBox1.Size = new System.Drawing.Size(723, 473);
             this.groupBox1.TabIndex = 59;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Target ARM Properties";
+            this.groupBox1.Text = "Target Properties";
             this.groupBox1.Resize += new System.EventHandler(this.groupBox1_Resize);
             // 
             // pnlProperties
