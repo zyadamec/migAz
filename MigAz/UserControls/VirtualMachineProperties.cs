@@ -77,17 +77,18 @@ namespace MigAz.UserControls
                     rbExistingARMVNet.Enabled = false;
                 }
 
-                // todo now russell
-                //if ((targetVirtualMachine.TargetSubnet == null) ||
-                //        (targetVirtualMachine.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)) ||
-                //        (rbExistingARMVNet.Enabled == false))
-                //{
-                //    rbVNetInMigration.Checked = true;
-                //}
-                //else
-                //{
-                //    rbExistingARMVNet.Checked = true;
-                //}
+                if (rbExistingARMVNet.Enabled == false ||
+                    targetVirtualMachine.PrimaryNetworkInterface == null ||
+                    targetVirtualMachine.PrimaryNetworkInterface.TargetSubnet == null ||
+                    targetVirtualMachine.PrimaryNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                    )
+                {
+                    rbVNetInMigration.Checked = true;
+                }
+                else
+                {
+                    rbExistingARMVNet.Checked = true;
+                }
             }
             else if (targetVirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
             {

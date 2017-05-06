@@ -38,14 +38,22 @@ namespace MigAz.Azure.Arm
                 _AddressPrefixes.Add(addressPrefix.ToString());
             }
 
-            // todo now russell 
-            //var dnsPrefixes = from vnet in _VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"]
-            //                      select vnet;
+            if (_VirtualNetwork["properties"] != null)
+            {
+                if (_VirtualNetwork["properties"]["dhcpOptions"] != null)
+                {
+                    if (_VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"] != null)
+                    {
+                        var dnsPrefixes = from vnet in _VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"]
+                                          select vnet;
 
-            //foreach (var dnsPrefix in dnsPrefixes)
-            //{
-            //    _DnsPrefixes.Add(dnsPrefix.ToString());
-            //}
+                        foreach (var dnsPrefix in dnsPrefixes)
+                        {
+                            _DnsPrefixes.Add(dnsPrefix.ToString());
+                        }
+                    }
+                }
+            }
         }
 
         public string Name => (string)_VirtualNetwork["name"];

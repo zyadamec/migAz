@@ -24,7 +24,6 @@ namespace MigAz.Azure.Asm
         private VirtualNetwork _SourceVirtualNetwork;
         private Subnet _SourceSubnet;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
-        private NetworkInterface _PrimaryNetworkInterface = null;
 
         #endregion
 
@@ -38,9 +37,6 @@ namespace MigAz.Azure.Asm
             this._AzureContext = azureContext;
             this._XmlNode = virtualMachineXml;
             this._VmDetails = vmDetails;
-
-            // todo now Russell, review how this is used / where does it get it's values from??
-            this._PrimaryNetworkInterface = new NetworkInterface(azureContext, this, settingsProvider);
 
             _OSVirtualHardDisk = new Disk(azureContext, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
 
@@ -57,6 +53,7 @@ namespace MigAz.Azure.Asm
                 _LoadBalancerRules.Add(new LoadBalancerRule(_AzureContext, loadBalancerRuleNode));
             }
 
+            // todo now russell, to include where is the Primary Network Interface obtained??
             _NetworkInterfaces = new List<NetworkInterface>();
             foreach (XmlNode networkInterfaceNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
             {
@@ -111,11 +108,6 @@ namespace MigAz.Azure.Asm
             get { return _AsmCloudService; }
         }
 
-        public NetworkInterface PrimaryNetworkInterface
-        {
-            get { return _PrimaryNetworkInterface; }
-        }
-
         public List<Disk> DataDisks
         {
             get { return _DataDisks; }
@@ -129,6 +121,20 @@ namespace MigAz.Azure.Asm
         public List<NetworkInterface> NetworkInterfaces
         {
             get { return _NetworkInterfaces; }
+        }
+
+        public NetworkInterface PrimaryNetworkInterface
+        {
+            get
+            {
+                foreach (NetworkInterface networkInterface in _NetworkInterfaces)
+                {
+                    if (networkInterface.IsPrimary)
+                        return networkInterface;
+                }
+
+                return null;
+            }
         }
 
         public string AvailabilitySetName

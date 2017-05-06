@@ -379,7 +379,6 @@ namespace MigAz.UserControls.Migrators
 
         #region ASM TreeView Methods
 
-
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
             if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))

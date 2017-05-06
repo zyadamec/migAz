@@ -26,13 +26,6 @@ namespace MigAz.Azure.Asm
             this.IsPrimary = true; // todo now russell, can this be set from the XML?
         }
 
-        public NetworkInterface(AzureContext azureContext, VirtualMachine asmVirtualMachine, ISettingsProvider settingsProvider)
-        {
-            _AzureContext = azureContext;
-            _AsmVirtualMachine = asmVirtualMachine;
-            this.IsPrimary = true;
-        }
-
         #endregion
 
         #region Properties
