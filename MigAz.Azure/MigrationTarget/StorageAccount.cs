@@ -24,7 +24,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public string TargetName { get; set; }
         public string AccountType { get; set; }
-        public string BlobStorageNamespace { get; } // todo has no value assigned
+        public string BlobStorageNamespace { get; } // todo now russell has no value assigned
         public IStorageAccount SourceAccount
         {
             get { return _Source; }

@@ -58,6 +58,8 @@
     </Compile>
     <Compile Include="Interface\INetworkInterface.cs" />
     <Compile Include="Interface\INetworkSecurityGroup.cs" />
+    <Compile Include="Interface\IRoute.cs" />
+    <Compile Include="Interface\IRouteTable.cs" />
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />

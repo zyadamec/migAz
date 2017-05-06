@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using MigAz.Core.Interface;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class RouteTable
+    public class RouteTable : IRouteTable
     {
         private List<Route> _Routes;
         private AzureContext _AzureContext;

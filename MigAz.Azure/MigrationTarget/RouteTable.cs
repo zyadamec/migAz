@@ -10,6 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     public class RouteTable : IMigrationTarget
     {
         private AzureContext _AzureContext;
+        private IRouteTable _SourceRouteTable;
         private String _TargetName = String.Empty;
         private List<Route> _Routes = new List<Route>();
 
@@ -18,6 +19,12 @@ namespace MigAz.Azure.MigrationTarget
         public RouteTable(AzureContext azureContext)
         {
             this._AzureContext = azureContext;
+        }
+        public RouteTable(AzureContext azureContext, IRouteTable source)
+        {
+            _AzureContext = azureContext;
+            _SourceRouteTable = source;
+            this.TargetName = source.Name;
         }
 
         public String TargetName

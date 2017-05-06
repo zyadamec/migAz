@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class RouteTable
+    public class RouteTable : IRouteTable
     {
         private List<Route> _Routes = new List<Route>();
 

@@ -23,15 +23,36 @@ namespace MigAz.Azure.MigrationTarget
             _ParentVirtualNetwork = parentVirtualNetwork;
             _SourceSubnet = source;
 
-            //todo now russell, construct NSG and RouteTable
             if (source.GetType() == typeof(Asm.Subnet))
             {
                 Asm.Subnet asmSubnet = (Asm.Subnet)source;
+
+                if (asmSubnet.NetworkSecurityGroup != null)
+                {
+                    this.NetworkSecurityGroup = new NetworkSecurityGroup(azureContext, asmSubnet.NetworkSecurityGroup);
+                }
+
+                if (asmSubnet.RouteTable != null)
+                {
+                    this.RouteTable = new RouteTable(azureContext, asmSubnet.RouteTable);
+                }
+
                 this.AddressPrefix = asmSubnet.AddressPrefix;
             }
             else if (source.GetType() == typeof(Arm.Subnet))
             {
                 Arm.Subnet armSubnet = (Arm.Subnet)source;
+
+                if (armSubnet.NetworkSecurityGroup != null)
+                {
+                    this.NetworkSecurityGroup = new NetworkSecurityGroup(azureContext, armSubnet.NetworkSecurityGroup);
+                }
+
+                if (armSubnet.RouteTable != null)
+                {
+                    this.RouteTable = new RouteTable(azureContext, armSubnet.RouteTable);
+                }
+
                 this.AddressPrefix = armSubnet.AddressPrefix;
             }
 
