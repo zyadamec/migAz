@@ -8,5 +8,6 @@ namespace MigAz.Core.Interface
 {
     public interface IMigrationTarget
     {
+        string SourceName { get; }
     }
 }

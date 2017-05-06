@@ -9,6 +9,12 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class LoadBalancer : IMigrationTarget
     {
-
+        public String SourceName
+        {
+            get
+            {
+                return String.Empty;
+            }
+        }
     }
 }

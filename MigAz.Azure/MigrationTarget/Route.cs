@@ -46,6 +46,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Trim(); }
         }
 
+        public String SourceName
+        {
+            get { return String.Empty; }
+        }
+
         public override string ToString()
         {
             return this.TargetName;

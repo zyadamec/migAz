@@ -29,14 +29,14 @@ namespace MigAz.UserControls
 
             Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
 
-            if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Asm.VirtualNetwork))
+            if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
-                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.Source;
+                Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
                 lblVNetName.Text = asmVirtualNetwork.Name;
             }
-            else if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Arm.VirtualNetwork))
+            else if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
             {
-                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.Source;
+                Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
                 lblVNetName.Text = armVirtualNetwork.Name;
             }
 

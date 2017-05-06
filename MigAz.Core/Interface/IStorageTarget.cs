@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Core.Interface
 {
-    public interface IStorageTarget : IMigrationTarget
+    public interface IStorageTarget
     {
 
     }

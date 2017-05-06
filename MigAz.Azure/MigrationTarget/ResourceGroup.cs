@@ -22,6 +22,11 @@ namespace MigAz.Azure.MigrationTarget
             _TargetName = "New Resource Group";
         }
 
+        public String SourceName
+        {
+            get { return String.Empty; }
+        }
+
         public String TargetName
         {
             get { return _TargetName; }

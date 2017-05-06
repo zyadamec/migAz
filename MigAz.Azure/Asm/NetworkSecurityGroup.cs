@@ -54,7 +54,11 @@ namespace MigAz.Azure.Asm
             get { return _Rules; }
         }
 
-     
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
         #endregion
     }
 }

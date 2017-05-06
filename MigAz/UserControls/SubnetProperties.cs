@@ -30,16 +30,16 @@ namespace MigAz.UserControls
             Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
             txtTargetName.Text = targetSubnet.TargetName;
 
-            if (targetSubnet.Source.GetType() == typeof(Azure.Asm.Subnet))
+            if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
             {
-                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.Source;
+                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.SourceSubnet;
 
                 lblSourceName.Text = asmSubnet.Name;
                 lblAddressSpace.Text = asmSubnet.AddressPrefix;
             }
-            else if (targetSubnet.Source.GetType() == typeof(Azure.Arm.Subnet))
+            else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
             {
-                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.Source;
+                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.SourceSubnet;
 
                 lblSourceName.Text = armSubnet.Name;
                 lblAddressSpace.Text = armSubnet.AddressPrefix;

@@ -36,6 +36,21 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = _SourceAvailabilitySet.Name;
         }
 
+        public Arm.AvailabilitySet SourceAvailabilitySet
+        {
+            get { return _SourceAvailabilitySet; }
+        }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceAvailabilitySet == null)
+                    return String.Empty;
+                else
+                    return this.SourceAvailabilitySet.ToString();
+            }
+        }
         public string TargetName
         {
             get; set;

@@ -105,6 +105,17 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value; }
         }
 
+        public string SourceName
+        {
+            get
+            {
+                if (this.Source == null)
+                    return String.Empty;
+                else
+                    return this.Source.ToString();
+            }
+        }
+
         public string OSVirtualHardDiskOS
         {
             get; set;

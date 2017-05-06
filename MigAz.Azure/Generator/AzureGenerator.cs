@@ -639,9 +639,9 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
         {
-            if (targetVirtualNetwork.Source.GetType() == typeof(Azure.Asm.VirtualNetwork))
+            if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
-                Asm.VirtualNetwork asmVirtualNetwork = (Asm.VirtualNetwork)targetVirtualNetwork.Source;
+                Asm.VirtualNetwork asmVirtualNetwork = (Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
 
                 // Process Virtual Network Gateway, if exists
                 if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))

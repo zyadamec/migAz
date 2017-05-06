@@ -14,5 +14,13 @@ namespace MigAz.Azure.MigrationTarget
 
         public string LoadBalancedEndpointSetName
         { get; set; }
+
+        public String SourceName
+        {
+            get
+            {
+                return String.Empty;
+            }
+        }
     }
 }

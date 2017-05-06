@@ -246,6 +246,10 @@ namespace MigAz.Azure.Asm
             get { return _SourceVirtualNetwork; }
         }
 
+        public override string ToString()
+        {
+            return this.RoleName;
+        }
 
         #endregion
     }

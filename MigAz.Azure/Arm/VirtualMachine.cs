@@ -93,5 +93,9 @@ namespace MigAz.Azure.Arm
             return;
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

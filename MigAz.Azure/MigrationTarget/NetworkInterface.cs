@@ -97,5 +97,16 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _SourceNetworkInterface; }
         }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceNetworkInterface == null)
+                    return String.Empty;
+                else
+                    return this.SourceNetworkInterface.ToString();
+            }
+        }
     }
 }

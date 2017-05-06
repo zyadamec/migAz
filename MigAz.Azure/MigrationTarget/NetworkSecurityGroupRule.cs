@@ -59,6 +59,14 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
+        public String SourceName
+        {
+            get
+            {
+                return String.Empty;
+            }
+        }
+
         public override string ToString()
         {
             return this.Name;

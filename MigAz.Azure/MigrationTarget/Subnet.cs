@@ -11,7 +11,7 @@ namespace MigAz.Azure.MigrationTarget
     public class Subnet : IMigrationTarget, IMigrationSubnet
     {
         private AzureContext _AzureContext = null;
-        private ISubnet _Source;
+        private ISubnet _SourceSubnet;
         private String _TargetName = String.Empty;
         private MigrationTarget.VirtualNetwork _ParentVirtualNetwork;
 
@@ -21,7 +21,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             _AzureContext = azureContext;
             _ParentVirtualNetwork = parentVirtualNetwork;
-            _Source = source;
+            _SourceSubnet = source;
 
             //todo now russell, construct NSG and RouteTable
             if (source.GetType() == typeof(Asm.Subnet))
@@ -46,9 +46,20 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Replace(" ", String.Empty).Trim(); }
         }
 
-        public ISubnet Source
+        public ISubnet SourceSubnet
         {
-            get { return _Source; }
+            get { return _SourceSubnet; }
+        }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceSubnet == null)
+                    return String.Empty;
+                else
+                    return this.SourceSubnet.ToString();
+            }
         }
 
         public MigrationTarget.VirtualNetwork ParentVirtualNetwork

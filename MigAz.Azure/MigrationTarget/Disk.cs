@@ -45,6 +45,17 @@ namespace MigAz.Azure.MigrationTarget
 
         public IDisk SourceDisk { get; set; }
 
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return String.Empty;
+                else
+                    return this.SourceDisk.ToString();
+            }
+        }
+
         public IStorageTarget TargetStorageAccount
         {
             get;set;

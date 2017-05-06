@@ -10,7 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     public class NetworkSecurityGroup : IMigrationTarget
     {
         private AzureContext _AzureContext = null;
-        private INetworkSecurityGroup _Source;
+        private INetworkSecurityGroup _SourceNetworkSecurityGroup;
         private string _TargetName = String.Empty;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
@@ -20,7 +20,7 @@ namespace MigAz.Azure.MigrationTarget
         public NetworkSecurityGroup(AzureContext azureContext, INetworkSecurityGroup source)
         {
             _AzureContext = azureContext;
-            _Source = source;
+            _SourceNetworkSecurityGroup = source;
             this.TargetName = source.Name;
         }
 
@@ -29,9 +29,20 @@ namespace MigAz.Azure.MigrationTarget
             get { return _Rules; }
         }
         
-        public INetworkSecurityGroup Source
+        public INetworkSecurityGroup SourceNetworkSecurityGroup
         {
-            get { return _Source; }
+            get { return _SourceNetworkSecurityGroup; }
+        }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceNetworkSecurityGroup == null)
+                    return String.Empty;
+                else
+                    return this.SourceNetworkSecurityGroup.ToString();
+            }
         }
 
         public string TargetName

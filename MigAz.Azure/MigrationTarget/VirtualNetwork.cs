@@ -21,13 +21,19 @@ namespace MigAz.Azure.MigrationTarget
         public VirtualNetwork(AzureContext azureContext, Asm.VirtualNetwork virtualNetwork)
         {
             this._AzureContext = azureContext;
-            this.Source = virtualNetwork;
+            this.SourceVirtualNetwork = virtualNetwork;
             this.TargetName = virtualNetwork.Name;
+
+            foreach (Asm.Subnet subnet in virtualNetwork.Subnets)
+            {
+                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet));
+            }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
             {
                 this.AddressPrefixes.Add(addressPrefix);
             }
+
             foreach (String dnsServer in virtualNetwork.DnsServers)
             {
                 this.DnsServers.Add(dnsServer);
@@ -37,20 +43,37 @@ namespace MigAz.Azure.MigrationTarget
         public VirtualNetwork(AzureContext azureContext, Arm.VirtualNetwork virtualNetwork)
         {
             this._AzureContext = azureContext;
-            this.Source = virtualNetwork;
+            this.SourceVirtualNetwork = virtualNetwork;
             this.TargetName = virtualNetwork.Name;
+
+            foreach (Arm.Subnet subnet in virtualNetwork.Subnets)
+            {
+                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet));
+            }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
             {
                 this.AddressPrefixes.Add(addressPrefix);
             }
+
             foreach (String dnsServer in virtualNetwork.DnsServers)
             {
                 this.DnsServers.Add(dnsServer);
             }
         }
 
-        public IVirtualNetwork Source { get; }
+        public IVirtualNetwork SourceVirtualNetwork { get; }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceVirtualNetwork == null)
+                    return String.Empty;
+                else
+                    return this.SourceVirtualNetwork.ToString();
+            }
+        }
 
         public string TargetName
         {

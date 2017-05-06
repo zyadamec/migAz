@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class StorageAccount : IStorageTarget
+    public class StorageAccount : IStorageTarget, IMigrationTarget
     {
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
@@ -28,6 +28,17 @@ namespace MigAz.Azure.MigrationTarget
         public IStorageAccount SourceAccount
         {
             get { return _Source; }
+        }
+
+        public String SourceName
+        {
+            get
+            {
+                if (this.SourceAccount == null)
+                    return String.Empty;
+                else
+                    return this.SourceAccount.ToString();
+            }
         }
 
         public override string ToString()

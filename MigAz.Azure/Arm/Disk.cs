@@ -70,5 +70,9 @@ namespace MigAz.Azure.Arm
             get { return _SourceStorageAccount; }
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

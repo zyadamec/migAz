@@ -17,8 +17,6 @@ namespace MigAz.Azure.Asm
         {
             this._AzureContext = azureContext;
             this._DataDiskNode = dataDiskNode;
-
-            this.TargetName = this.DiskName;
         }
 
         public async Task InitializeChildren()
@@ -43,11 +41,6 @@ namespace MigAz.Azure.Asm
             get { return _DataDiskNode.SelectSingleNode("DiskName").InnerText; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value; }
-        }
 
         public Int64? Lun
         {
@@ -106,5 +99,10 @@ namespace MigAz.Azure.Asm
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return this.DiskName;
+        }
     }
 }

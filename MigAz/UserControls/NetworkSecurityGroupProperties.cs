@@ -23,14 +23,14 @@ namespace MigAz.UserControls
             _NetworkSecurityGroupNode = networkSecurityGroupNode;
 
             NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
-            if (targetNetworkSecurityGroup.Source.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+            if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
             {
-                Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)targetNetworkSecurityGroup.Source;
+                Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
                 lblSourceName.Text = asmNetworkSecurityGroup.Name;
             }
-            else if (targetNetworkSecurityGroup.Source.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
+            else if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
             {
-                Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.Source;
+                Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
                 lblSourceName.Text = armNetworkSecurityGroup.Name;
             }
 

@@ -14,5 +14,10 @@ namespace MigAz.Azure.Arm
         public string Name => "TODO";
 
         public List<NetworkSecurityGroupRule> Rules => _Rules;
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
