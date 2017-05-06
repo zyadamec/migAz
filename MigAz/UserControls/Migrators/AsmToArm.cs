@@ -1175,9 +1175,19 @@ namespace MigAz.UserControls.Migrators
 
         private async Task<TreeNode> AddSourceTreeNodeToTargetTree(TreeNode parentNode)
         {
-            TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+            if (parentNode == null)
+                throw new ArgumentNullException("Parent TreeNode cannot be null.");
+
+            if (parentNode.Tag == null)
+                throw new ArgumentNullException("Parent TreeNode Tag cannot be null.");
 
             Type tagType = parentNode.Tag.GetType();
+
+            if (tagType != typeof(MigAz.Core.Interface.IMigrationTarget))
+                throw new ArgumentException("Source TreeNode tag must by of type IMigrationTarget.");
+
+            TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+
             if (tagType == typeof(Azure.Asm.VirtualNetwork))
             {
                 Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)parentNode.Tag;

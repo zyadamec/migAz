@@ -11,8 +11,8 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private INetworkInterface _SourceNetworkInterface;
-        private IVirtualNetwork _TargetVirtualNetwork;
-        private ISubnet _TargetSubnet;
+        private IMigrationVirtualNetwork _TargetVirtualNetwork;
+        private IMigrationSubnet _TargetSubnet;
         private String _TargetStaticIpAddress = String.Empty;
         private bool _EnableIPForwarding = false;
         private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
@@ -35,12 +35,12 @@ namespace MigAz.Azure.MigrationTarget
             this.IsPrimary = networkInterface.IsPrimary;
         }
 
-        public ISubnet TargetSubnet
+        public IMigrationSubnet TargetSubnet
         {
             get { return _TargetSubnet; }
             set { _TargetSubnet = value; }
         }
-        public IVirtualNetwork TargetVirtualNetwork
+        public IMigrationVirtualNetwork TargetVirtualNetwork
         {
             get { return _TargetVirtualNetwork; }
             set { _TargetVirtualNetwork = value; }

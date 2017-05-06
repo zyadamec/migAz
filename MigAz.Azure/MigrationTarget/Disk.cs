@@ -93,24 +93,22 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return string.Empty;
-                //todo now russell
-                //string targetMediaLink = this.TargetMediaLink;
+                string targetMediaLink = String.Empty;// this.SourceMediaLink;
 
-                //if (this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
-                //{
-                //    Azure.Arm.StorageAccount targetStorageAccount = (Azure.Arm.StorageAccount)this.TargetStorageAccount;
-                //    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.Name + "." + targetStorageAccount.BlobStorageNamespace);
-                //}
-                //else if (this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                //{
-                //    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
-                //    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.ToString() + "." + targetStorageAccount.BlobStorageNamespace);
-                //}
+                if (this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                {
+                    Azure.Arm.StorageAccount targetStorageAccount = (Azure.Arm.StorageAccount)this.TargetStorageAccount;
+                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.Name + "." + targetStorageAccount.BlobStorageNamespace);
+                }
+                else if (this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
+                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.ToString() + "." + targetStorageAccount.BlobStorageNamespace);
+                }
 
-                //targetMediaLink = targetMediaLink.Replace(this.DiskName, this.TargetName);
+                // todo now russell targetMediaLink = targetMediaLink.Replace(this.DiskName, this.d);
 
-                //return targetMediaLink;
+                return targetMediaLink;
             }
         }
 

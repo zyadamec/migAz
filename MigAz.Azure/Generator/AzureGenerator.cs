@@ -1023,7 +1023,18 @@ namespace MigAz.Azure.Generator.AsmToArm
             Reference subnet_ref = new Reference();
 
             if (targetNetworkInterface.TargetSubnet != null)
-                subnet_ref.id = targetNetworkInterface.TargetSubnet.Id;
+            {
+                if (targetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                {
+                    Azure.MigrationTarget.Subnet migrationSubnet = (Azure.MigrationTarget.Subnet)targetNetworkInterface.TargetSubnet;
+                    subnet_ref.id = migrationSubnet.TargetId;
+                }
+                else if (targetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                {
+                    Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetNetworkInterface.TargetSubnet;
+                    subnet_ref.id = armSubnet.TargetId;
+                }
+            }
 
             string privateIPAllocationMethod = "Dynamic";
             string privateIPAddress = null;
@@ -1034,8 +1045,19 @@ namespace MigAz.Azure.Generator.AsmToArm
             }
 
             List<string> dependson = new List<string>();
-            if (targetNetworkInterface.TargetVirtualNetwork != null && targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork)) // todo, gettype is old code, now what?
-                dependson.Add(targetNetworkInterface.TargetVirtualNetwork.Id);
+            if (targetNetworkInterface.TargetVirtualNetwork != null)
+            {
+                if (targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
+                {
+                    MigrationTarget.VirtualNetwork targetVirtualNetwork = (MigrationTarget.VirtualNetwork)targetNetworkInterface.TargetVirtualNetwork;
+                    dependson.Add(targetVirtualNetwork.TargetId);
+                }
+                else if (targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
+                {
+                    Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)targetNetworkInterface.TargetVirtualNetwork;
+                    dependson.Add(armVirtualNetwork.Id);
+                }
+            }
 
             // If there is at least one endpoint add the reference to the LB backend pool
             List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
@@ -1122,8 +1144,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 BuildPublicIPAddressObject(ref networkInterface);
             }
-
-            dependson.Add(targetNetworkInterface.TargetVirtualNetwork.Id);
 
             networkinterfaces.Add(networkinterface_ref);
 
