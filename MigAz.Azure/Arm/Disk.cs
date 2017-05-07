@@ -12,7 +12,6 @@ namespace MigAz.Azure.Arm
     {
         private JToken jToken;
         private StorageAccount _SourceStorageAccount;
-        private IStorageTarget _TargetStorageAccount;
 
         public Disk(JToken jToken)
         {
@@ -26,7 +25,7 @@ namespace MigAz.Azure.Arm
 
         public int Lun => Convert.ToInt32((string)jToken["lun"]);
 
-        public string VhdUri
+        public string MediaLink
         {
             get
             {
@@ -45,7 +44,7 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                return VhdUri.Split(new char[] { '/' })[2].Split(new char[] { '.' })[0];
+                return MediaLink.Split(new char[] { '/' })[2].Split(new char[] { '.' })[0];
             }
         }
 
@@ -53,7 +52,7 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                return VhdUri.Split(new char[] { '/' })[3];
+                return MediaLink.Split(new char[] { '/' })[3];
             }
         }
 
@@ -61,7 +60,7 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                return VhdUri.Split(new char[] { '/' })[4];
+                return MediaLink.Split(new char[] { '/' })[4];
             }
         }
 

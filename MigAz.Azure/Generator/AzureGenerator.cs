@@ -78,8 +78,16 @@ namespace MigAz.Azure.Generator.AsmToArm
                     this.AddAlert(AlertType.Error, "Target Name for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
 
                 if (virtualMachine.TargetAvailabilitySet == null)
-                    this.AddAlert(AlertType.Error, "Target Availability Set for ASM Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
+                {
+                    if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null && virtualMachine.OSVirtualHardDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
+                        this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
 
+                    foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
+                    {
+                        if (dataDisk.TargetStorageAccount != null && dataDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
+                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.Name + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                    }
+                }
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
@@ -1366,8 +1374,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                     vhd.uri = newdiskurl;
                     datadisk.vhd = vhd;
 
-                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccountName))
-                        storageaccountdependencies.Add(dataDisk.TargetStorageAccountName);
+                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
+                        storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
 
                     datadisks.Add(datadisk);
                 }

@@ -77,6 +77,7 @@
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
     <Compile Include="AzureRestResponse.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>

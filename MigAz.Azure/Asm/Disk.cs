@@ -10,7 +10,6 @@ namespace MigAz.Azure.Asm
         private XmlNode _DataDiskNode;
         private AzureContext _AzureContext;
         private StorageAccount _SourceStorageAccount;
-        private IStorageTarget _TargetStorageAccount;
         private String _TargetName = String.Empty;
 
         public Disk(AzureContext azureContext, XmlNode dataDiskNode)

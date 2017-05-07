@@ -131,6 +131,11 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public StorageAccountType StorageAccountType
+        {
+            get { return StorageAccountType.Standard; } // todo now russell
+        }
+
         public override string ToString()
         {
             return this.Name;

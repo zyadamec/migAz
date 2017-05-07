@@ -9,7 +9,6 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class Disk : IMigrationTarget
     {
-
         private Disk() { }
 
         public Disk(Asm.Disk sourceDisk)
@@ -45,6 +44,17 @@ namespace MigAz.Azure.MigrationTarget
 
         public IDisk SourceDisk { get; set; }
 
+        public String SourceMediaLink
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return String.Empty;
+
+                return this.SourceDisk.MediaLink;
+            }
+        }
+
         public String SourceName
         {
             get
@@ -54,11 +64,6 @@ namespace MigAz.Azure.MigrationTarget
                 else
                     return this.SourceDisk.ToString();
             }
-        }
-
-        public IStorageTarget TargetStorageAccount
-        {
-            get;set;
         }
 
         public Int64? Lun
@@ -95,31 +100,21 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public IStorageTarget TargetStorageAccountName
+        public IStorageTarget TargetStorageAccount
         {
             get;set;
+        }
+
+        public StorageAccountType StorageAccountType // todo, this needs to reflect the storage account type from the actual storage account
+        {
+            get { return StorageAccountType.Standard; }
         }
 
         public string TargetMediaLink
         {
             get
             {
-                string targetMediaLink = String.Empty;// this.SourceMediaLink;
-
-                if (this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
-                {
-                    Azure.Arm.StorageAccount targetStorageAccount = (Azure.Arm.StorageAccount)this.TargetStorageAccount;
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.Name + "." + targetStorageAccount.BlobStorageNamespace);
-                }
-                else if (this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)this.TargetStorageAccount;
-                    targetMediaLink = targetMediaLink.Replace(this.SourceStorageAccount.Name + "." + this.SourceStorageAccount.BlobStorageNamespace, targetStorageAccount.ToString() + "." + targetStorageAccount.BlobStorageNamespace);
-                }
-
-                // todo now russell targetMediaLink = targetMediaLink.Replace(this.DiskName, this.d);
-
-                return targetMediaLink;
+                return "https://" + TargetStorageAccount.ToString() + "." + TargetStorageAccount.BlobStorageNamespace + "/vhds/" + this.StorageAccountBlob;
             }
         }
 

@@ -4,10 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Core.Interface
+namespace MigAz.Azure
 {
-    public interface IDisk
-    {
-        String MediaLink { get; }
-    }
+
 }

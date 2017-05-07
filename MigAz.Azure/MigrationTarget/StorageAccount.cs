@@ -41,6 +41,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public StorageAccountType StorageAccountType
+        {
+            get { return StorageAccountType.Standard; } // todo now russell
+        }
+
         public override string ToString()
         {
             if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
