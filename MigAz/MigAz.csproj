@@ -153,6 +153,12 @@
     <Compile Include="UserControls\DiskProperties.Designer.cs">
       <DependentUpon>DiskProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\NetworkInterfaceProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\NetworkInterfaceProperties.Designer.cs">
+      <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\NetworkSecurityGroupProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -228,6 +234,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\NetworkInterfaceProperties.resx">
+      <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>

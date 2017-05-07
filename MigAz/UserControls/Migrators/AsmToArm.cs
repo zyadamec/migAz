@@ -795,6 +795,15 @@ namespace MigAz.UserControls.Migrators
                     properties.Bind(e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["NetworkInterface"];
+
+                    NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(this, e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
                 else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
                 {
                     this._PropertyPanel.ResourceImage = imageList1.Images["ResourceGroup"];
