@@ -170,7 +170,15 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
             }
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
+            // todo now russell - Add test for NSGs being present in Migration
+            //MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (MigrationTarget.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.ToString());
+            //if (targetNetworkSecurityGroup == null)
+            //{
+            //    this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.ToString() + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", targetNetworkSecurityGroup);
+            //}
+
+
+                LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
@@ -588,26 +596,17 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (targetSubnet.NetworkSecurityGroup != null)
                     {
-                        // todo now russell??                Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(armSubnet.NetworkSecurityGroup);
-                        MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (MigrationTarget.NetworkSecurityGroup) _ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.ToString());
+                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
+                        // Add NSG reference to the subnet
+                        Reference networksecuritygroup_ref = new Reference();
+                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
 
-                        if (targetNetworkSecurityGroup == null)
+                        properties.networkSecurityGroup = networksecuritygroup_ref;
+
+                        // Add NSG dependsOn to the Virtual Network object
+                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
                         {
-                            this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.ToString() + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", targetNetworkSecurityGroup);
-                        }
-                        else
-                        {
-                            // Add NSG reference to the subnet
-                            Reference networksecuritygroup_ref = new Reference();
-                            networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + targetNetworkSecurityGroup.ToString() + "')]";
-
-                            properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                            // Add NSG dependsOn to the Virtual Network object
-                            if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
-                            {
-                                virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
-                            }
+                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
                         }
                     }
 
@@ -640,7 +639,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             this.AddResource(virtualnetwork);
 
-            // todo now russell await AddGatewaysToVirtualNetwork(targetVirtualNetwork, virtualnetwork);
+            await AddGatewaysToVirtualNetwork(targetVirtualNetwork, virtualnetwork);
             
             LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + targetVirtualNetwork.ToString());
         }
@@ -880,19 +879,19 @@ namespace MigAz.Azure.Generator.AsmToArm
             return networksecuritygroup;
         }
 
-        private Core.ArmTemplate.NetworkSecurityGroup BuildARMNetworkSecurityGroup(Arm.NetworkSecurityGroup networkSecurityGroup)
+        private Core.ArmTemplate.NetworkSecurityGroup BuildARMNetworkSecurityGroup(MigrationTarget.NetworkSecurityGroup networkSecurityGroup)
         {
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.Name);
+            LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
 
             Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = new Core.ArmTemplate.NetworkSecurityGroup(this.ExecutionGuid);
-            networksecuritygroup.name = networkSecurityGroup.Name;
+            networksecuritygroup.name = networkSecurityGroup.ToString();
             networksecuritygroup.location = _TargetResourceGroup.TargetLocation.Name;
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             //foreach rule without System Rule
-            foreach (Arm.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
+            foreach (MigrationTarget.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
             {
                 SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
                 securityrule_properties.description = rule.Name;
@@ -918,7 +917,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             this.AddResource(networksecuritygroup);
 
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "End Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.Name);
+            LogProvider.WriteLog("BuildNetworkSecurityGroup", "End Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
 
             return networksecuritygroup;
         }
@@ -1172,12 +1171,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
             List<string> dependson = new List<string>();
 
-            // todo now russell, placement?  options?  valid in context always??
-            //BuildPublicIPAddressObject(asmVirtualMachine);
-            //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
-
-
-
             string newdiskurl = String.Empty;
             string osDiskTargetStorageAccountName = String.Empty;
             if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
@@ -1187,7 +1180,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                     Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                     osDiskTargetStorageAccountName = targetStorageAccount.ToString();
                 }
-                
 
                 newdiskurl = virtualMachine.OSVirtualHardDisk.TargetMediaLink;
                 storageaccountdependencies.Add(virtualMachine.OSVirtualHardDisk.TargetStorageAccount);
@@ -1237,6 +1229,9 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 // todo now russell this moved into for loop
                 //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
+
+                //BuildPublicIPAddressObject(ref virtualmachine);
+                //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
 
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.ToString() + "')]");
             }

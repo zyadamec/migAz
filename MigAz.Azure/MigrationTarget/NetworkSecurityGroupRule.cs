@@ -9,12 +9,22 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class NetworkSecurityGroupRule : IMigrationTarget
     {
+        // todo now russell, constructors from ASM/ARM
+
         public string Name
         {
             get; set;
         }
 
         public string Type
+        {
+            get; set;
+        }
+        public string Direction
+        {
+            get; set;
+        }
+        public string Access
         {
             get; set;
         }
