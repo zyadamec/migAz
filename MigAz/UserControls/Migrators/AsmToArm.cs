@@ -293,6 +293,24 @@ namespace MigAz.UserControls.Migrators
                         virtualMachineParentNode.Expand();
                     }
 
+                    foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups())
+                    {
+                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
+
+                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armNetworkSecurityGroup.ResourceGroup);
+                        networkSecurityGroupParentNode = tnResourceGroup;
+
+                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+
+                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
+                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
+                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
+                        tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
+                        tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
+                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                        networkSecurityGroupParentNode.Expand();
+                    }
+
                     subscriptionNodeARM.ExpandAll();
 
                     #endregion

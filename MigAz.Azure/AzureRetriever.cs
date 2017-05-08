@@ -45,7 +45,9 @@ namespace MigAz.Azure
         private List<Arm.VirtualMachine> _ArmVirtualMachines;
         private List<Arm.ManagedDisk> _ArmManagedDisks;
         private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
-        
+        private List<Arm.NetworkSecurityGroup> _ArmNetworkSecurityGroups;
+
+
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
         private AzureRetriever() { }
@@ -65,6 +67,8 @@ namespace MigAz.Azure
             _ArmVirtualNetworks = null;
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
+            _ArmNetworkInterfaces = null;
+            _ArmNetworkSecurityGroups = null;
             _MigrationAvailabilitySets = null;
             _ArmManagedDisks = null;
             _VirtualNetworks = null;
@@ -799,6 +803,11 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
+                case "NetworkSecurityGroups":
+                    // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderNetworkSecurityGroups + "?api-version=2017-03-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network SecurityGroups for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
                 case "NetworkInterfaces":
                     // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
@@ -1281,6 +1290,32 @@ namespace MigAz.Azure
 
             return null;
         }
+
+        public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start");
+
+            if (_ArmNetworkSecurityGroups != null)
+                return _ArmNetworkSecurityGroups;
+
+            JObject networkSecurityGroupsJson = await this.GetAzureARMResources("NetworkSecurityGroups", null);
+
+            var networkSecurityGroups = from networkSecurityGroup in networkSecurityGroupsJson["value"]
+                                    select networkSecurityGroup;
+
+            _ArmNetworkSecurityGroups = new List<Arm.NetworkSecurityGroup>();
+
+            foreach (var networkSecurityGroup in networkSecurityGroups)
+            {
+                Arm.NetworkSecurityGroup armNetworkSecurityGroup = new Arm.NetworkSecurityGroup(networkSecurityGroup);
+                await armNetworkSecurityGroup.InitializeChildrenAsync(this._AzureContext);
+                _ArmNetworkSecurityGroups.Add(armNetworkSecurityGroup);
+            }
+
+            return _ArmNetworkSecurityGroups;
+        }
+
+        
 
         
         #endregion

@@ -178,7 +178,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             //}
 
 
-                LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
+            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
