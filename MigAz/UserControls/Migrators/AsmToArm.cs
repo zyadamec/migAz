@@ -1190,7 +1190,7 @@ namespace MigAz.UserControls.Migrators
             if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
             {
                 Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)parentNode;
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.ToString(), targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.SourceName, targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
 
                 foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
                 {
@@ -1204,7 +1204,7 @@ namespace MigAz.UserControls.Migrators
             {
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)parentNode;
 
-                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.ToString(), targetStorageAccount.ToString(), targetStorageAccount, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.SourceName, targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -1212,7 +1212,7 @@ namespace MigAz.UserControls.Migrators
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
             {
                 Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (Azure.MigrationTarget.NetworkSecurityGroup)parentNode;
-                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.SourceName, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
@@ -1231,7 +1231,7 @@ namespace MigAz.UserControls.Migrators
                     virtualMachineParentNode = targetAvailabilitySetNode;
                 }
 
-                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.SourceName, targetVirtualMachine, true);
+                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
