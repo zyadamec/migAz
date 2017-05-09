@@ -9,18 +9,22 @@ namespace MigAz.Azure
     public class AzureRestResponse
     {
 
+        private AzureRestRequest _AzureRestRequest;
+
         public Guid RequestGuid { get; private set; }
         public String Url { get; private set; }
-        public String AuthenticationToken { get; private set; }
+        public String AccessToken { get; private set; }
         public String Response { get; private set; }
 
         private AzureRestResponse() { }
 
-        public AzureRestResponse(Guid requestGuid, string url, string authenticationToken, string response)
+        public AzureRestResponse(AzureRestRequest azureRestRequest, string response)
         {
-            this.RequestGuid = requestGuid;
-            this.Url = url;
-            this.AuthenticationToken = authenticationToken;
+            this._AzureRestRequest = azureRestRequest;
+
+            this.RequestGuid = _AzureRestRequest.RequestGuid;
+            this.Url = _AzureRestRequest.Url;
+            this.AccessToken = _AzureRestRequest.AccessToken;
             this.Response = response;
         }
 

@@ -76,6 +76,7 @@
     <Compile Include="Arm\Subnet.cs" />
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
+    <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
