@@ -914,7 +914,7 @@ namespace MigAz.Azure
 
             foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces())
             {
-                if (networkInterface.Id == id)
+                if (String.Compare(networkInterface.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
                     return networkInterface;
             }
 

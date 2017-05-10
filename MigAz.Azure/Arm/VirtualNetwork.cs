@@ -11,9 +11,8 @@ namespace MigAz.Azure.Arm
     {
         private JToken _VirtualNetwork;
         private List<ISubnet> _Subnets = new List<ISubnet>();
-        private List<string> _DnsServers = new List<string>();
         private List<string> _AddressPrefixes = new List<string>();
-        private List<string> _DnsPrefixes = new List<string>();
+        private List<string> _DnsServers = new List<string>();
 
         private VirtualNetwork() { }
 
@@ -49,7 +48,7 @@ namespace MigAz.Azure.Arm
 
                         foreach (var dnsPrefix in dnsPrefixes)
                         {
-                            _DnsPrefixes.Add(dnsPrefix.ToString());
+                            _DnsServers.Add(dnsPrefix.ToString());
                         }
                     }
                 }
@@ -61,9 +60,8 @@ namespace MigAz.Azure.Arm
         public string Location => (string)_VirtualNetwork["location"];
         public string Type => (string)_VirtualNetwork["type"];
         public List<ISubnet> Subnets => _Subnets;
-        public List<string> DnsServers => _DnsServers;
         public List<string> AddressPrefixes => _AddressPrefixes;
-        public List<string> DnsPrefixes => _DnsPrefixes;
+        public List<string> DnsServers => _DnsServers;
 
         public ResourceGroup ResourceGroup { get; set; }
 
