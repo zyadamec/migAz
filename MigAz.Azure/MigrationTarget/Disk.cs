@@ -9,12 +9,15 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class Disk : IMigrationTarget
     {
+        private string _TargetName = String.Empty;
+
+
         private Disk() { }
 
         public Disk(Asm.Disk sourceDisk)
         {
             this.SourceDisk = sourceDisk;
-            this.Name = sourceDisk.DiskName;
+            this.TargetName = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeInGB;
@@ -25,7 +28,7 @@ namespace MigAz.Azure.MigrationTarget
         public Disk(Arm.Disk sourceDisk)
         {
             this.SourceDisk = sourceDisk;
-            this.Name = sourceDisk.Name;
+            this.TargetName = sourceDisk.Name;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.Caching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
@@ -33,10 +36,13 @@ namespace MigAz.Azure.MigrationTarget
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
-        public string Name
+
+        public string TargetName
         {
-            get;set;
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
+
         public string HostCaching
         {
             get;set;
@@ -120,7 +126,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.Name;
+            return this.TargetName;
         }
     }
 }

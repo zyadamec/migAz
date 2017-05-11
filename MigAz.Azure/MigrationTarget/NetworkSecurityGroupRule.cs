@@ -10,11 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     public class NetworkSecurityGroupRule : IMigrationTarget
     {
         // todo now russell, constructors from ASM/ARM
-
-        public string Name
-        {
-            get; set;
-        }
+        private string _TargetName = String.Empty;
 
         public string Type
         {
@@ -77,9 +73,15 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public string TargetName
+        {
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
         public override string ToString()
         {
-            return this.Name;
+            return this.TargetName;
         }
     }
 }

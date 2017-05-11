@@ -40,10 +40,10 @@ namespace MigAz.Azure.MigrationTarget
             set { _NextHopIpAddress = value.Trim(); }
         }
 
-        public String TargetName
+        public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public String SourceName

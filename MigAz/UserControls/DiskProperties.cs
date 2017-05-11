@@ -98,10 +98,10 @@ namespace MigAz.UserControls
             if (_TargetDisk != null)
             {
                 lblAsmStorageAccount.Text = _TargetDisk.StorageAccountName;
-                lblDiskName.Text = _TargetDisk.Name;
+                lblDiskName.Text = _TargetDisk.TargetName;
                 lblHostCaching.Text = _TargetDisk.HostCaching;
                 lblLUN.Text = _TargetDisk.Lun.ToString();
-                txtTargetDiskName.Text = _TargetDisk.Name;
+                txtTargetDiskName.Text = _TargetDisk.TargetName;
                 txtBlobName.Text = _TargetDisk.StorageAccountBlob;
             }
         }
@@ -231,9 +231,9 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _TargetDisk.Name = txtSender.Text.Trim();
+            _TargetDisk.TargetName = txtSender.Text.Trim();
             if (_DiskTreeNode != null)
-                _DiskTreeNode.Text = _TargetDisk.Name;
+                _DiskTreeNode.Text = _TargetDisk.ToString();
 
             PropertyChanged();
             this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");

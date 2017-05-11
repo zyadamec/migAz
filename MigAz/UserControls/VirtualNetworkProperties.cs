@@ -44,7 +44,7 @@ namespace MigAz.UserControls
             dgvAddressSpaces.DataSource = targetVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
         }
 
-        private void txtVirtualNetworkName_TextChanged(object sender, EventArgs e)
+        private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
@@ -56,7 +56,7 @@ namespace MigAz.UserControls
             PropertyChanged();
         }
 
-        private void txtVirtualNetworkName_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (char.IsWhiteSpace(e.KeyChar))
             {

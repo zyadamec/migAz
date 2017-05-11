@@ -32,6 +32,8 @@ namespace MigAz.UserControls
         {
             _AsmToArmForm = asmToArmForm;
             _TargetNetworkInterface = targetNetworkInterface;
+            lblSourceName.Text = _TargetNetworkInterface.SourceName;
+            txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
             if (_TargetNetworkInterface.SourceNetworkInterface != null)
             {
@@ -70,6 +72,8 @@ namespace MigAz.UserControls
             _AsmToArmForm = asmToArmForm;
             _NetworkInterfaceNode = networkInterfaceNode;
             _TargetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)_NetworkInterfaceNode.Tag;
+            lblSourceName.Text = _TargetNetworkInterface.SourceName;
+            txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
             if (rbExistingARMVNet.Enabled == false ||
                 _TargetNetworkInterface.TargetSubnet == null ||
@@ -260,6 +264,24 @@ namespace MigAz.UserControls
             PropertyChanged();
         }
 
+        private void txtTargetName_TextChanged(object sender, EventArgs e)
+        {
+            TextBox txtSender = (TextBox)sender;
 
+            _TargetNetworkInterface.TargetName = txtSender.Text.Trim();
+
+            if (_NetworkInterfaceNode != null)
+                _NetworkInterfaceNode.Text = _TargetNetworkInterface.ToString();
+
+            PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

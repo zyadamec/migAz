@@ -11,6 +11,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
+        private string _TargetName = String.Empty;
 
         private StorageAccount() { }
 
@@ -22,7 +23,12 @@ namespace MigAz.Azure.MigrationTarget
             this.AccountType = source.AccountType;
         }
 
-        public string TargetName { get; set; }
+        public string TargetName
+        {
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
         public string AccountType { get; set; }
         public string BlobStorageNamespace { get; } // todo now russell has no value assigned
         public IStorageAccount SourceAccount

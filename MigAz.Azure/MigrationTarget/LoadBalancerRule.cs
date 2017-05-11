@@ -9,9 +9,10 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class LoadBalancerRule : IMigrationTarget
     {
-        public string Name
-        { get; set; }
 
+
+        private string _TargetName = String.Empty;
+        
         public string LoadBalancedEndpointSetName
         { get; set; }
 
@@ -21,6 +22,17 @@ namespace MigAz.Azure.MigrationTarget
             {
                 return String.Empty;
             }
+        }
+
+        public string TargetName
+        {
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
+        public override string ToString()
+        {
+            return this.TargetName;
         }
     }
 }

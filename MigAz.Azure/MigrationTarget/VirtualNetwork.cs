@@ -92,7 +92,7 @@ namespace MigAz.Azure.MigrationTarget
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Replace(" ", String.Empty).Trim(); }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public List<VirtualNetworkGateway> TargetVirtualNetworkGateways

@@ -16,6 +16,7 @@ namespace MigAz.Azure.MigrationTarget
         private String _TargetStaticIpAddress = String.Empty;
         private bool _EnableIPForwarding = false;
         private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
+        private string _TargetName = String.Empty;
 
         private NetworkInterface() { }
 
@@ -58,9 +59,10 @@ namespace MigAz.Azure.MigrationTarget
             set { _EnableIPForwarding = value; }
         }
 
-        public String TargetName
+        public string TargetName
         {
-            get;set;
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public override string ToString()

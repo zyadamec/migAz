@@ -24,7 +24,6 @@ namespace MigAz.UserControls
         public VirtualMachineProperties()
         {
             InitializeComponent();
-            this.networkInterfaceProperties1.PropertyChanged += Properties1_PropertyChanged;
             this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
         }
 
@@ -60,11 +59,6 @@ namespace MigAz.UserControls
                 lblRoleSize.Text = armVirtualMachine.VmSize;
                 lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
             }
-
-            if (targetVirtualMachine.PrimaryNetworkInterface != null)
-                await this.networkInterfaceProperties1.Bind(asmToArmForm, targetVirtualMachine.PrimaryNetworkInterface);
-            else
-                this.networkInterfaceProperties1.Visible = false;
 
             if (targetVirtualMachine.OSVirtualHardDisk != null)
                 this.diskProperties1.Bind(asmToArmForm, targetVirtualMachine.OSVirtualHardDisk);

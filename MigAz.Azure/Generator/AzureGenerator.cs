@@ -85,7 +85,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
                         if (dataDisk.TargetStorageAccount != null && dataDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
-                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.Name + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
                     }
                 }
 
@@ -145,7 +145,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     if (dataDisk.TargetStorageAccount == null)
                     {
-                        this.AddAlert(AlertType.Error, "Target Storage Account for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.Name + "' must be specified.", dataDisk);
+                        this.AddAlert(AlertType.Error, "Target Storage Account for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' must be specified.", dataDisk);
                     }
                     else
                     {
@@ -164,7 +164,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                             }
 
                             if (!targetStorageExists)
-                                this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.Name + "' is invalid, as it is not included in the migration / template.", dataDisk);
+                                this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid, as it is not included in the migration / template.", dataDisk);
                         }
                     }
                 }
@@ -852,7 +852,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 if (!asmNetworkSecurityGroupRule.IsSystemRule)
                 {
                     SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                    securityrule_properties.description = asmNetworkSecurityGroupRule.Name;
+                    securityrule_properties.description = asmNetworkSecurityGroupRule.ToString();
                     securityrule_properties.direction = asmNetworkSecurityGroupRule.Type;
                     securityrule_properties.priority = asmNetworkSecurityGroupRule.Priority;
                     securityrule_properties.access = asmNetworkSecurityGroupRule.Action;
@@ -863,7 +863,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     securityrule_properties.protocol = asmNetworkSecurityGroupRule.Protocol;
 
                     SecurityRule securityrule = new SecurityRule();
-                    securityrule.name = asmNetworkSecurityGroupRule.Name;
+                    securityrule.name = asmNetworkSecurityGroupRule.ToString();
                     securityrule.properties = securityrule_properties;
 
                     networksecuritygroup_properties.securityRules.Add(securityrule);
@@ -894,7 +894,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             foreach (MigrationTarget.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
             {
                 SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                securityrule_properties.description = rule.Name;
+                securityrule_properties.description = rule.ToString();
                 securityrule_properties.direction = rule.Direction;
                 securityrule_properties.priority = rule.Priority;
                 securityrule_properties.access = rule.Access;
@@ -907,7 +907,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 securityrule_properties.protocol = rule.Protocol;
 
                 SecurityRule securityrule = new SecurityRule();
-                securityrule.name = rule.Name;
+                securityrule.name = rule.ToString();
                 securityrule.properties = securityrule_properties;
 
                 networksecuritygroup_properties.securityRules.Add(securityrule);
@@ -1084,7 +1084,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
                 {
-                    string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.Name;
+                    string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
                     inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
 
                     Reference loadBalancerInboundNatRule = new Reference();
@@ -1246,7 +1246,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             vhd.uri = newdiskurl;
 
             OsDisk osdisk = new OsDisk();
-            osdisk.name = virtualMachine.OSVirtualHardDisk.Name;
+            osdisk.name = virtualMachine.OSVirtualHardDisk.ToString();
             osdisk.vhd = vhd;
             osdisk.caching = virtualMachine.OSVirtualHardDisk.HostCaching;
 
@@ -1325,13 +1325,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 if (dataDisk.TargetStorageAccount == null)
                 {
-                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.Name + "'.", dataDisk);
+                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.ToString() + "'.", dataDisk);
                 }
                 else
                 {
                     string dataDiskTargetStorageAccountName = dataDisk.TargetStorageAccount.ToString();
                     DataDisk datadisk = new DataDisk();
-                    datadisk.name = dataDisk.Name;
+                    datadisk.name = dataDisk.ToString();
                     datadisk.caching = dataDisk.HostCaching;
                     if (dataDisk.DiskSizeInGB != null)
                         datadisk.diskSizeGB = dataDisk.DiskSizeInGB.Value;

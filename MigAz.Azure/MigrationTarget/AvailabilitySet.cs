@@ -11,6 +11,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private Arm.AvailabilitySet _SourceAvailabilitySet;
+        private string _TargetName = String.Empty;
 
         private AvailabilitySet() { }
 
@@ -53,7 +54,8 @@ namespace MigAz.Azure.MigrationTarget
         }
         public string TargetName
         {
-            get; set;
+            get { return _TargetName; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public override string ToString()

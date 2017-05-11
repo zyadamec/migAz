@@ -40,12 +40,20 @@ namespace MigAz.UserControls
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-            NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
+            NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
 
-            asmNetworkSecurityGroup.TargetName = txtSender.Text;
-            _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.ToString();
+            targetNetworkSecurityGroup.TargetName = txtSender.Text;
+            _NetworkSecurityGroupNode.Text = targetNetworkSecurityGroup.ToString();
 
             PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

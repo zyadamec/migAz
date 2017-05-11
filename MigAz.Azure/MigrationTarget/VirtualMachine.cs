@@ -98,11 +98,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetSize = value.Trim(); }
         }
 
-    
+
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value; }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public string SourceName

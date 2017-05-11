@@ -70,8 +70,8 @@
             this.txtVirtualNetworkName.Name = "txtVirtualNetworkName";
             this.txtVirtualNetworkName.Size = new System.Drawing.Size(352, 31);
             this.txtVirtualNetworkName.TabIndex = 10;
-            this.txtVirtualNetworkName.TextChanged += new System.EventHandler(this.txtVirtualNetworkName_TextChanged);
-            this.txtVirtualNetworkName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtVirtualNetworkName_KeyPress);
+            this.txtVirtualNetworkName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtVirtualNetworkName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
             // lblARMVirtualNetworkName
             // 

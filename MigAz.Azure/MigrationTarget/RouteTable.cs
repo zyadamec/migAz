@@ -27,10 +27,10 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = source.Name;
         }
 
-        public String TargetName
+        public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public String SourceName

@@ -41,12 +41,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblSubnetName = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.lblARMVirtualNetworkName = new System.Windows.Forms.Label();
+            this.txtTargetName = new System.Windows.Forms.TextBox();
+            this.lblSourceName = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 294);
+            this.label8.Location = new System.Drawing.Point(9, 437);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(154, 25);
             this.label8.TabIndex = 29;
@@ -55,7 +59,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 239);
+            this.label7.Location = new System.Drawing.Point(9, 382);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(133, 25);
             this.label7.TabIndex = 28;
@@ -64,7 +68,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 140);
+            this.label2.Location = new System.Drawing.Point(9, 283);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(121, 25);
             this.label2.TabIndex = 27;
@@ -73,7 +77,7 @@
             // rbExistingARMVNet
             // 
             this.rbExistingARMVNet.AutoSize = true;
-            this.rbExistingARMVNet.Location = new System.Drawing.Point(178, 184);
+            this.rbExistingARMVNet.Location = new System.Drawing.Point(178, 327);
             this.rbExistingARMVNet.Name = "rbExistingARMVNet";
             this.rbExistingARMVNet.Size = new System.Drawing.Size(316, 29);
             this.rbExistingARMVNet.TabIndex = 19;
@@ -84,7 +88,7 @@
             // rbVNetInMigration
             // 
             this.rbVNetInMigration.AutoSize = true;
-            this.rbVNetInMigration.Location = new System.Drawing.Point(178, 140);
+            this.rbVNetInMigration.Location = new System.Drawing.Point(178, 283);
             this.rbVNetInMigration.Name = "rbVNetInMigration";
             this.rbVNetInMigration.Size = new System.Drawing.Size(274, 29);
             this.rbVNetInMigration.TabIndex = 17;
@@ -96,7 +100,7 @@
             // 
             this.cmbExistingArmSubnet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbExistingArmSubnet.FormattingEnabled = true;
-            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(178, 286);
+            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(178, 429);
             this.cmbExistingArmSubnet.Name = "cmbExistingArmSubnet";
             this.cmbExistingArmSubnet.Size = new System.Drawing.Size(429, 33);
             this.cmbExistingArmSubnet.TabIndex = 23;
@@ -106,7 +110,7 @@
             // 
             this.cmbExistingArmVNets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbExistingArmVNets.FormattingEnabled = true;
-            this.cmbExistingArmVNets.Location = new System.Drawing.Point(178, 236);
+            this.cmbExistingArmVNets.Location = new System.Drawing.Point(178, 379);
             this.cmbExistingArmVNets.Name = "cmbExistingArmVNets";
             this.cmbExistingArmVNets.Size = new System.Drawing.Size(429, 33);
             this.cmbExistingArmVNets.TabIndex = 21;
@@ -115,7 +119,7 @@
             // lblVirtualNetworkName
             // 
             this.lblVirtualNetworkName.AutoSize = true;
-            this.lblVirtualNetworkName.Location = new System.Drawing.Point(173, 12);
+            this.lblVirtualNetworkName.Location = new System.Drawing.Point(176, 46);
             this.lblVirtualNetworkName.Name = "lblVirtualNetworkName";
             this.lblVirtualNetworkName.Size = new System.Drawing.Size(121, 25);
             this.lblVirtualNetworkName.TabIndex = 26;
@@ -124,16 +128,16 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 12);
+            this.label5.Location = new System.Drawing.Point(12, 46);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(117, 25);
+            this.label5.Size = new System.Drawing.Size(139, 25);
             this.label5.TabIndex = 25;
-            this.label5.Text = "ASM VNet:";
+            this.label5.Text = "Source VNet:";
             // 
             // lblStaticIpAddress
             // 
             this.lblStaticIpAddress.AutoSize = true;
-            this.lblStaticIpAddress.Location = new System.Drawing.Point(173, 101);
+            this.lblStaticIpAddress.Location = new System.Drawing.Point(176, 135);
             this.lblStaticIpAddress.Name = "lblStaticIpAddress";
             this.lblStaticIpAddress.Size = new System.Drawing.Size(78, 25);
             this.lblStaticIpAddress.TabIndex = 24;
@@ -142,7 +146,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 101);
+            this.label3.Location = new System.Drawing.Point(12, 135);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(110, 25);
             this.label3.TabIndex = 22;
@@ -151,7 +155,7 @@
             // lblSubnetName
             // 
             this.lblSubnetName.AutoSize = true;
-            this.lblSubnetName.Location = new System.Drawing.Point(173, 57);
+            this.lblSubnetName.Location = new System.Drawing.Point(176, 91);
             this.lblSubnetName.Name = "lblSubnetName";
             this.lblSubnetName.Size = new System.Drawing.Size(142, 25);
             this.lblSubnetName.TabIndex = 20;
@@ -160,16 +164,56 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 57);
+            this.label4.Location = new System.Drawing.Point(12, 91);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(138, 25);
+            this.label4.Size = new System.Drawing.Size(160, 25);
             this.label4.TabIndex = 18;
-            this.label4.Text = "ASM Subnet:";
+            this.label4.Text = "Source Subnet:";
+            // 
+            // lblARMVirtualNetworkName
+            // 
+            this.lblARMVirtualNetworkName.AutoSize = true;
+            this.lblARMVirtualNetworkName.Location = new System.Drawing.Point(9, 234);
+            this.lblARMVirtualNetworkName.Name = "lblARMVirtualNetworkName";
+            this.lblARMVirtualNetworkName.Size = new System.Drawing.Size(142, 25);
+            this.lblARMVirtualNetworkName.TabIndex = 31;
+            this.lblARMVirtualNetworkName.Text = "Target Name:";
+            // 
+            // txtTargetName
+            // 
+            this.txtTargetName.Location = new System.Drawing.Point(178, 234);
+            this.txtTargetName.Name = "txtTargetName";
+            this.txtTargetName.Size = new System.Drawing.Size(429, 31);
+            this.txtTargetName.TabIndex = 30;
+            this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtTargetName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
+            // 
+            // lblSourceName
+            // 
+            this.lblSourceName.AutoSize = true;
+            this.lblSourceName.Location = new System.Drawing.Point(176, 7);
+            this.lblSourceName.Name = "lblSourceName";
+            this.lblSourceName.Size = new System.Drawing.Size(157, 25);
+            this.lblSourceName.TabIndex = 33;
+            this.lblSourceName.Text = "Interface Name";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 7);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(148, 25);
+            this.label6.TabIndex = 32;
+            this.label6.Text = "Source Name:";
             // 
             // NetworkInterfaceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblSourceName);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lblARMVirtualNetworkName);
+            this.Controls.Add(this.txtTargetName);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label2);
@@ -184,7 +228,7 @@
             this.Controls.Add(this.lblSubnetName);
             this.Controls.Add(this.label4);
             this.Name = "NetworkInterfaceProperties";
-            this.Size = new System.Drawing.Size(621, 351);
+            this.Size = new System.Drawing.Size(621, 557);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -205,5 +249,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblSubnetName;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblARMVirtualNetworkName;
+        private System.Windows.Forms.TextBox txtTargetName;
+        private System.Windows.Forms.Label lblSourceName;
+        private System.Windows.Forms.Label label6;
     }
 }
