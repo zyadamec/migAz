@@ -46,7 +46,7 @@ namespace MigAz.Azure
         private List<Arm.ManagedDisk> _ArmManagedDisks;
         private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
         private List<Arm.NetworkSecurityGroup> _ArmNetworkSecurityGroups;
-
+        private List<Arm.VirtualNetworkGateway> _ArmVirtualNetworkGateways;
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
@@ -720,7 +720,14 @@ namespace MigAz.Azure
 
             foreach (var virtualNetwork in virtualNetworks)
             {
-                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
+                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(_AzureContext, virtualNetwork);
+
+                foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways())
+                {
+
+                }
+
+
                 armVirtualNetwork.ResourceGroup = await this.GetAzureARMResourceGroup(armVirtualNetwork.Id);
                 _ArmVirtualNetworks.Add(armVirtualNetwork);
             }
@@ -921,6 +928,29 @@ namespace MigAz.Azure
             return null;
         }
 
+        public async Task<List<Arm.VirtualNetworkGateway>> GetAzureARMVirtualNetworkGateways()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworkGateways", "Start");
+
+            if (_ArmVirtualNetworkGateways != null)
+                return _ArmVirtualNetworkGateways;
+
+            JObject virtualNetworkGatewaysJson = await this.GetAzureARMResources("VirtualNetworkGateways", null);
+
+            var virtualNetworkGateways = from virtualNetworkGateway in virtualNetworkGatewaysJson["value"]
+                                    select virtualNetworkGateway;
+
+            _ArmVirtualNetworkGateways = new List<Arm.VirtualNetworkGateway>();
+
+            foreach (var virtualNetworkGateway in virtualNetworkGateways)
+            {
+                Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(_AzureContext, virtualNetworkGateway);
+                _ArmVirtualNetworkGateways.Add(armVirtualNetworkGateway);
+            }
+
+            return _ArmVirtualNetworkGateways;
+        }
+
         public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups()
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start");
@@ -1099,6 +1129,11 @@ namespace MigAz.Azure
                     // https://docs.microsoft.com/en-us/rest/api/network/list-virtual-networks-within-a-subscription
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
+                case "VirtualNetworkGateways":
+                    // https://docs.microsoft.com/en-us/rest/api/network/virtualnetworkgateways#VirtualNetworkGateways_List
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetworkGateways + "?api-version=2016-12-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 case "NetworkSecurityGroups":
                     // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll

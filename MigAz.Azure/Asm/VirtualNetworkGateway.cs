@@ -1,8 +1,9 @@
-﻿using System.Xml;
+﻿using MigAz.Core.Interface;
+using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class VirtualNetworkGateway
+    public class VirtualNetworkGateway : IVirtualNetworkGateway
     {
         private AzureContext _AzureContext;
         private XmlNode _GatewayXml;
@@ -35,6 +36,16 @@ namespace MigAz.Azure.Asm
         public bool IsProvisioned
         {
             get { return this.State != "NotProvisioned"; }
+        }
+
+        public string Name
+        {
+            get { return "todo now russell"; }
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }

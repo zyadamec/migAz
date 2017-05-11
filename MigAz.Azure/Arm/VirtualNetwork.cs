@@ -9,15 +9,18 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualNetwork : IVirtualNetwork, IMigrationVirtualNetwork
     {
+        private AzureContext _AzureContext;
         private JToken _VirtualNetwork;
+        private List<VirtualNetworkGateway> _VirtualNetworkGateways = new List<VirtualNetworkGateway>();
         private List<ISubnet> _Subnets = new List<ISubnet>();
         private List<string> _AddressPrefixes = new List<string>();
         private List<string> _DnsServers = new List<string>();
 
         private VirtualNetwork() { }
 
-        public VirtualNetwork(JToken virtualNetwork) 
+        public VirtualNetwork(AzureContext azureContext, JToken virtualNetwork) 
         {
+            _AzureContext = azureContext;
             _VirtualNetwork = virtualNetwork;
 
             var subnets = from vnet in _VirtualNetwork["properties"]["subnets"]
@@ -59,11 +62,29 @@ namespace MigAz.Azure.Arm
         public string Id => (string)_VirtualNetwork["id"];
         public string Location => (string)_VirtualNetwork["location"];
         public string Type => (string)_VirtualNetwork["type"];
+        public ISubnet GatewaySubnet
+        {
+            get
+            {
+                foreach (Subnet subnet in this.Subnets)
+                {
+                    if (subnet.Name == ArmConst.GatewaySubnetName)
+                        return subnet;
+                }
+
+                return null;
+            }
+        }
         public List<ISubnet> Subnets => _Subnets;
         public List<string> AddressPrefixes => _AddressPrefixes;
         public List<string> DnsServers => _DnsServers;
 
         public ResourceGroup ResourceGroup { get; set; }
+
+        public List<VirtualNetworkGateway> VirtualNetworkGateways
+        {
+            get { return _VirtualNetworkGateways; }
+        }
 
         public override string ToString()
         {
@@ -79,6 +100,14 @@ namespace MigAz.Azure.Arm
                     return false;
 
                 return true;
+            }
+        }
+
+        public bool HasGatewaySubnet
+        {
+            get
+            {
+                return this.GatewaySubnet != null;
             }
         }
 

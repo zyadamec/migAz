@@ -212,42 +212,42 @@ namespace MigAz.Providers
             }
         }
 
-        private IVirtualNetwork SeekVirtualNetwork(string id, List<Azure.Asm.VirtualNetwork> asmVirtualNetworks, List<Azure.Arm.VirtualNetwork> armVirtualNetworks)
-        {
-            if (asmVirtualNetworks != null)
-            {
-                foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
-                {
-                    if (asmVirtualNetwork.Id == id)
-                        return asmVirtualNetwork;
-                }
-            }
+        //private IVirtualNetwork SeekVirtualNetwork(string id, List<Azure.Asm.VirtualNetwork> asmVirtualNetworks, List<Azure.Arm.VirtualNetwork> armVirtualNetworks)
+        //{
+        //    if (asmVirtualNetworks != null)
+        //    {
+        //        foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
+        //        {
+        //            if (asmVirtualNetwork.Id == id)
+        //                return asmVirtualNetwork;
+        //        }
+        //    }
 
-            if (armVirtualNetworks != null)
-            {
-                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
-                {
-                    if (armVirtualNetwork.Id == id)
-                        return armVirtualNetwork;
-                }
-            }
+        //    if (armVirtualNetworks != null)
+        //    {
+        //        foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworks)
+        //        {
+        //            if (armVirtualNetwork.Id == id)
+        //                return armVirtualNetwork;
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        private ISubnet SeekSubnet(string id, IVirtualNetwork virtualNetwork)
-        {
-            if (virtualNetwork != null)
-            {
-                foreach (ISubnet subnet in virtualNetwork.Subnets)
-                {
-                    if (subnet.Id == id)
-                        return subnet;
-                }
-            }
+        //private ISubnet SeekSubnet(string id, IVirtualNetwork virtualNetwork)
+        //{
+        //    if (virtualNetwork != null)
+        //    {
+        //        foreach (ISubnet subnet in virtualNetwork.Subnets)
+        //        {
+        //            if (subnet.Id == id)
+        //                return subnet;
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private IStorageTarget SeekStorageAccount(string id, List<Azure.Asm.StorageAccount> asmStorageAccounts, List<Azure.Arm.StorageAccount> armStorageAccounts)
         {

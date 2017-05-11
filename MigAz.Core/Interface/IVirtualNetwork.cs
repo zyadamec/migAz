@@ -6,5 +6,6 @@ namespace MigAz.Core.Interface
     {
         string Id { get; }
         List<ISubnet> Subnets { get; }
+        ISubnet GatewaySubnet { get; }
     }
 }

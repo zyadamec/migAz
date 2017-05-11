@@ -76,6 +76,7 @@
     <Compile Include="Arm\Subnet.cs" />
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
+    <Compile Include="Arm\VirtualNetworkGateway.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="Enums.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="MigrationTarget\Subnet.cs" />
     <Compile Include="MigrationTarget\VirtualMachine.cs" />
     <Compile Include="MigrationTarget\VirtualNetwork.cs" />
+    <Compile Include="MigrationTarget\VirtualNetworkGateway.cs" />
     <Compile Include="Models\ArmToArmTelemetryRecord.cs" />
     <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>

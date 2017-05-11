@@ -16,7 +16,7 @@ namespace MigAz.Azure.Asm
         private AzureContext _AzureContext = null;
         private XmlNode _XmlNode = null;
         private AffinityGroup _AsmAffinityGroup = null;
-        private List<ISubnet> _AsmSubnets = null;
+        private List<ISubnet> _AsmSubnets = new List<ISubnet>();
         private VirtualNetworkGateway _AsmVirtualNetworkGateway = null;
         private List<VirtualNetworkGateway> _AsmVirtualNetworkGateways2 = null;
         private List<LocalNetworkSite> _AsmLocalNetworkSites = null;
@@ -39,7 +39,6 @@ namespace MigAz.Azure.Asm
             if (_XmlNode.SelectSingleNode("AffinityGroup") != null)
                 _AsmAffinityGroup = await _AzureContext.AzureRetriever.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
 
-            _AsmSubnets = new List<ISubnet>();
             foreach (XmlNode subnetNode in _XmlNode.SelectNodes("Subnets/Subnet"))
             {
                 Subnet asmSubnet = new Subnet(_AzureContext, this, subnetNode);
@@ -129,6 +128,20 @@ namespace MigAz.Azure.Asm
             }
         }
 
+        public ISubnet GatewaySubnet
+        {
+            get
+            {
+                foreach (Subnet subnet in this.Subnets)
+                {
+                    if (subnet.Name == ArmConst.GatewaySubnetName)
+                        return subnet;
+                }
+
+                return null;
+            }
+        }
+
         public VirtualNetworkGateway Gateway
         {
             get { return _AsmVirtualNetworkGateway; }
@@ -156,12 +169,7 @@ namespace MigAz.Azure.Asm
         {
             get
             {
-                foreach (Subnet asmSubnet in this.Subnets)
-                {
-                    if (asmSubnet.Name == ArmConst.GatewaySubnetName)
-                        return true;
-                }
-                return false;
+                return this.GatewaySubnet != null;
             }
         }
 

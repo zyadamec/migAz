@@ -12,6 +12,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private string _TargetName = String.Empty;
+        private List<VirtualNetworkGateway> _TargetVirtualNetworkGateways = new List<VirtualNetworkGateway>();
         private List<Subnet> _TargetSubnets = new List<Subnet>();
         List<string> _AddressPrefixes = new List<string>();
         List<string> _DnsServers = new List<string>();
@@ -23,6 +24,14 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.SourceVirtualNetwork = virtualNetwork;
             this.TargetName = virtualNetwork.Name;
+
+            if (virtualNetwork.Gateways2 != null)
+            {
+                foreach (Asm.VirtualNetworkGateway virtualNetworkGateway in virtualNetwork.Gateways2)
+                {
+                    TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(_AzureContext, virtualNetworkGateway));
+                }
+            }
 
             foreach (Asm.Subnet subnet in virtualNetwork.Subnets)
             {
@@ -45,6 +54,11 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.SourceVirtualNetwork = virtualNetwork;
             this.TargetName = virtualNetwork.Name;
+
+            foreach (Arm.VirtualNetworkGateway virtualNetworkGateway in virtualNetwork.VirtualNetworkGateways)
+            {
+                TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(_AzureContext, virtualNetworkGateway));
+            }
 
             foreach (Arm.Subnet subnet in virtualNetwork.Subnets)
             {
@@ -80,6 +94,12 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetName; }
             set { _TargetName = value.Replace(" ", String.Empty).Trim(); }
         }
+
+        public List<VirtualNetworkGateway> TargetVirtualNetworkGateways
+        {
+            get { return _TargetVirtualNetworkGateways; }
+        }
+
         public List<Subnet> TargetSubnets
         {
             get { return _TargetSubnets; }
