@@ -113,7 +113,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType // todo, this needs to reflect the storage account type from the actual storage account
         {
-            get { return StorageAccountType.Standard; }
+            get { return this.TargetStorageAccount.StorageAccountType; }
         }
 
         public string TargetMediaLink

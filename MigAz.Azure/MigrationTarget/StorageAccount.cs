@@ -49,7 +49,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType
         {
-            get { return StorageAccountType.Standard; } // todo now russell
+            get { return MigrationTarget.StorageAccount.GetStorageAccountType(this.AccountType); }
         }
 
         public override string ToString()
@@ -58,6 +58,16 @@ namespace MigAz.Azure.MigrationTarget
                 return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;
             else
                 return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;
+        }
+
+        public static StorageAccountType GetStorageAccountType(string storageAccountType)
+        {
+            // https://msdn.microsoft.com/en-us/library/azure/hh264518.aspx
+
+            if (String.Compare("Premium_LRS", storageAccountType, true) == 0)
+                return StorageAccountType.Premium;
+
+            return StorageAccountType.Standard;
         }
     }
 }

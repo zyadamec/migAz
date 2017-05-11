@@ -133,7 +133,7 @@ namespace MigAz.Azure.Arm
 
         public StorageAccountType StorageAccountType
         {
-            get { return StorageAccountType.Standard; } // todo now russell
+            get { return MigrationTarget.StorageAccount.GetStorageAccountType(this.AccountType); }
         }
 
         public override string ToString()

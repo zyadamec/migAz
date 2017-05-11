@@ -616,16 +616,11 @@ namespace MigAz.UserControls.Migrators
 
         private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
         {
-            // todo now russell, this won't work
             if (parentNode.Checked && parentNode.Tag != null && 
-                (parentNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup) || 
-                parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork) || 
-                parentNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount) ||
-                parentNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine) ||
-                parentNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup) ||
-                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork) ||
-                parentNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount) ||
-                parentNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine)
+                (parentNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup) || 
+                parentNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork) || 
+                parentNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
+                parentNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine)
                 ))
                 selectedNodes.Add(parentNode);
 
