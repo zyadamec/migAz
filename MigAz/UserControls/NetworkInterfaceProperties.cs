@@ -71,6 +71,17 @@ namespace MigAz.UserControls
             _NetworkInterfaceNode = networkInterfaceNode;
             _TargetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)_NetworkInterfaceNode.Tag;
 
+            if (rbExistingARMVNet.Enabled == false ||
+                _TargetNetworkInterface.TargetSubnet == null ||
+                _TargetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                )
+            {
+                rbVNetInMigration.Checked = true;
+            }
+            else
+            {
+                rbExistingARMVNet.Checked = true;
+            }
         }
 
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)

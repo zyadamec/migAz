@@ -37,7 +37,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.lblASMVMName = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.txtARMVMName = new System.Windows.Forms.TextBox();
+            this.txtTargetName = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.networkInterfaceProperties1 = new MigAz.UserControls.NetworkInterfaceProperties();
             this.SuspendLayout();
@@ -124,13 +124,14 @@
             this.label14.TabIndex = 20;
             this.label14.Text = "Source Name:";
             // 
-            // txtARMVMName
+            // txtTargetName
             // 
-            this.txtARMVMName.Location = new System.Drawing.Point(181, 29);
-            this.txtARMVMName.Name = "txtARMVMName";
-            this.txtARMVMName.Size = new System.Drawing.Size(403, 31);
-            this.txtARMVMName.TabIndex = 23;
-            this.txtARMVMName.TextChanged += new System.EventHandler(this.txtARMVMName_TextChanged);
+            this.txtTargetName.Location = new System.Drawing.Point(181, 29);
+            this.txtTargetName.Name = "txtTargetName";
+            this.txtTargetName.Size = new System.Drawing.Size(403, 31);
+            this.txtTargetName.TabIndex = 23;
+            this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtTargetName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
             // label9
             // 
@@ -154,7 +155,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.networkInterfaceProperties1);
-            this.Controls.Add(this.txtARMVMName);
+            this.Controls.Add(this.txtTargetName);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.lblASMVMName);
             this.Controls.Add(this.label14);
@@ -182,7 +183,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label lblASMVMName;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox txtARMVMName;
+        private System.Windows.Forms.TextBox txtTargetName;
         private System.Windows.Forms.Label label9;
         private NetworkInterfaceProperties networkInterfaceProperties1;
     }

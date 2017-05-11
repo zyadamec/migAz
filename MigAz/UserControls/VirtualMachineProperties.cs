@@ -44,7 +44,7 @@ namespace MigAz.UserControls
             _AsmToArmForm = asmToArmForm;
 
             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
-            txtARMVMName.Text = targetVirtualMachine.TargetName;
+            txtTargetName.Text = targetVirtualMachine.TargetName;
 
             if (targetVirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
             {
@@ -77,15 +77,22 @@ namespace MigAz.UserControls
             await PropertyChanged();
         }
 
-        private void txtARMVMName_TextChanged(object sender, EventArgs e)
+        private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
 
-            targetVirtualMachine.TargetName = txtARMVMName.Text;
+            targetVirtualMachine.TargetName = txtTargetName.Text;
             _VirtualMachineNode.Text = targetVirtualMachine.ToString();
 
-
             PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }
