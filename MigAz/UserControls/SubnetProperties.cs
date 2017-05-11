@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.UserControls
 {
@@ -43,6 +44,12 @@ namespace MigAz.UserControls
 
                 lblSourceName.Text = armSubnet.Name;
                 lblAddressSpace.Text = armSubnet.AddressPrefix;
+            }
+
+            if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+            {
+                // if gateway subnet, the name can't be changed
+                txtTargetName.Enabled = false;
             }
         }
 

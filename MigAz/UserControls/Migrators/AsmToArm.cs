@@ -1428,34 +1428,10 @@ namespace MigAz.UserControls.Migrators
                     {
                         if (sourceObject.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
                             treeTargetARM.SelectedNode = treeNode;
-                        else if (sourceObject.GetType() == typeof(Azure.Arm.VirtualMachine))
-                        {
-                            Azure.Arm.VirtualMachine sourceMachine = (Azure.Arm.VirtualMachine)sourceObject;
-                            Azure.Arm.VirtualMachine nodeMachine = (Azure.Arm.VirtualMachine)nodeObject;
-                            if (sourceMachine.Name == nodeMachine.Name)
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
-                        else if (sourceObject.GetType() == typeof(Azure.Asm.VirtualMachine))
-                        {
-                            Azure.Asm.VirtualMachine sourceMachine = (Azure.Asm.VirtualMachine)sourceObject;
-                            Azure.Asm.VirtualMachine nodeMachine = (Azure.Asm.VirtualMachine)nodeObject;
-                            if (sourceMachine.RoleName == nodeMachine.RoleName)
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
-                        else if (sourceObject.GetType() == typeof(Azure.Asm.Disk))
-                        {
-                            Azure.Asm.Disk sourceDisk = (Azure.Asm.Disk)sourceObject;
-                            Azure.Asm.Disk nodeDisk = (Azure.Asm.Disk)nodeObject;
-                            if (sourceDisk.DiskName == nodeDisk.DiskName)
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
-                        else if (sourceObject.GetType() == typeof(Azure.Arm.Disk))
-                        {
-                            Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk)sourceObject;
-                            Azure.Arm.Disk nodeDisk = (Azure.Arm.Disk)nodeObject;
-                            if (sourceDisk.Name == nodeDisk.Name)
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
+                        else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.VirtualMachine) && sourceObject.ToString() == nodeObject.ToString())
+                            treeTargetARM.SelectedNode = treeNode;
+                        else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.Disk) && sourceObject.ToString() == nodeObject.ToString())
+                            treeTargetARM.SelectedNode = treeNode;
                     }
                 }
                 SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);
