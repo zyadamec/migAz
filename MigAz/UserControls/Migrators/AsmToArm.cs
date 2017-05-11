@@ -410,106 +410,167 @@ namespace MigAz.UserControls.Migrators
         {
             if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
-                if (selectedNode.Tag.GetType() == typeof(Azure.Asm.VirtualMachine))
+                if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
-                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)selectedNode.Tag;
+                    Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)selectedNode.Tag;
 
-                    #region process virtual network
-                    if (asmVirtualMachine.VirtualNetworkName != string.Empty)
+                    if (targetVirtualMachine.Source != null)
                     {
-                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
+                        if (targetVirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
                         {
-                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork)))
+                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+
+                            #region process virtual network
+                            if (asmVirtualMachine.VirtualNetworkName != string.Empty)
                             {
-                                if (!treeNode.Checked)
-                                    treeNode.Checked = true;
+                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
                             }
-                        }
-                    }
 
-                    #endregion
+                            #endregion
 
-                    #region OS Disk Storage Account
+                            #region OS Disk Storage Account
 
-                    foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
-                    {
-                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount)))
-                        {
-                            if (!treeNode.Checked)
-                                treeNode.Checked = true;
-                        }
-                    }
-
-                    #endregion
-
-                    #region Data Disk(s) Storage Account(s)
-
-                    foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
-                    {
-                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(dataDisk.StorageAccountName, true))
-                        {
-                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount)))
+                            foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
                             {
-                                if (!treeNode.Checked)
-                                    treeNode.Checked = true;
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Network Security Group
-
-                    if (asmVirtualMachine.NetworkSecurityGroup != null)
-                    {
-                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
-                        {
-                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
-                            {
-                                if (!treeNode.Checked)
-                                    treeNode.Checked = true;
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                }
-
-                else if (selectedNode.Tag.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                {
-                    Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)selectedNode.Tag;
-
-                    foreach (Azure.Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
-                    {
-                        if (asmSubnet.NetworkSecurityGroup != null)
-                        {
-                            foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmSubnet.NetworkSecurityGroup.Name, true))
-                            {
-                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
+                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
                                 {
                                     if (!treeNode.Checked)
                                         treeNode.Checked = true;
                                 }
                             }
+
+                            #endregion
+
+                            #region Data Disk(s) Storage Account(s)
+
+                            foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
+                            {
+                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(dataDisk.StorageAccountName, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region Network Security Group
+
+                            if (asmVirtualMachine.NetworkSecurityGroup != null)
+                            {
+                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                        }
+
+                        else if (targetVirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
+                        {
+                            Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)targetVirtualMachine.Source;
+
+                            #region process virtual network
+
+                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                            {
+                                foreach (NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                {
+                                    if (ipConfiguration.VirtualNetwork != null) // todo now russell, need to get this value and verify autoselection
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region OS Disk Storage Account
+
+                            foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                            {
+                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                {
+                                    if (!treeNode.Checked)
+                                        treeNode.Checked = true;
+                                }
+                            }
+
+                            #endregion
+
+                            #region Data Disk(s) Storage Account(s)
+
+                            foreach (Azure.Arm.Disk dataDisk in armVirtualMachine.DataDisks)
+                            {
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(dataDisk.StorageAccountName, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region Network Security Group
+
+                            if (armVirtualMachine.NetworkSecurityGroup != null) // todo now russell, has not been tested
+                            {
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.NetworkSecurityGroup.Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            #endregion
+
                         }
                     }
                 }
-                else if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualMachine))
+                else if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
                 {
-                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)selectedNode.Tag;
+                    Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag;
 
-                    #region process virtual network
-
-                    foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                    if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
                     {
-                        foreach (NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                        Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+
+                        foreach (Azure.Asm.Subnet asmSubnet in asmVirtualNetwork.Subnets)
                         {
-                            if (ipConfiguration.VirtualNetwork != null) // todo now russell, need to get this value and verify autoselection
+                            if (asmSubnet.NetworkSecurityGroup != null)
                             {
-                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmSubnet.NetworkSecurityGroup.Name, true))
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork)))
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
                                     {
                                         if (!treeNode.Checked)
                                             treeNode.Checked = true;
@@ -518,75 +579,27 @@ namespace MigAz.UserControls.Migrators
                             }
                         }
                     }
-
-                    #endregion
-
-                    #region OS Disk Storage Account
-
-                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                    else if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
                     {
-                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                        Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+
+                        foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
                         {
-                            if (!treeNode.Checked)
-                                treeNode.Checked = true;
-                        }
-                    }
-
-                    #endregion
-
-                    #region Data Disk(s) Storage Account(s)
-
-                    foreach (Azure.Arm.Disk dataDisk in armVirtualMachine.DataDisks)
-                    {
-                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(dataDisk.StorageAccountName, true))
-                        {
-                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount)))
+                            if (armSubnet.NetworkSecurityGroup != null)
                             {
-                                if (!treeNode.Checked)
-                                    treeNode.Checked = true;
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Network Security Group
-
-                    if (armVirtualMachine.NetworkSecurityGroup != null) // todo now russell, has not been tested
-                    {
-                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.NetworkSecurityGroup.Name, true))
-                        {
-                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
-                            {
-                                if (!treeNode.Checked)
-                                    treeNode.Checked = true;
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                }
-                else if (selectedNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                {
-                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)selectedNode.Tag;
-
-                    foreach (Azure.Arm.Subnet armSubnet in armVirtualNetwork.Subnets)
-                    {
-                        if (armSubnet.NetworkSecurityGroup != null)
-                        {
-                            foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armSubnet.NetworkSecurityGroup.Name, true))
-                            {
-                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup)))
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armSubnet.NetworkSecurityGroup.Name, true))
                                 {
-                                    if (!treeNode.Checked)
-                                        treeNode.Checked = true;
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.NetworkSecurityGroup)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
+                
                 StatusProvider.UpdateStatus("Ready");
             }
         }
