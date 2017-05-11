@@ -59,7 +59,7 @@
             // lblAccountType
             // 
             this.lblAccountType.AutoSize = true;
-            this.lblAccountType.Location = new System.Drawing.Point(230, 10);
+            this.lblAccountType.Location = new System.Drawing.Point(230, 16);
             this.lblAccountType.Name = "lblAccountType";
             this.lblAccountType.Size = new System.Drawing.Size(70, 25);
             this.lblAccountType.TabIndex = 5;
@@ -68,7 +68,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 11);
+            this.label1.Location = new System.Drawing.Point(5, 17);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(150, 25);
             this.label1.TabIndex = 4;

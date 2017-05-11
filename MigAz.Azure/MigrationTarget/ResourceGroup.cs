@@ -19,7 +19,7 @@ namespace MigAz.Azure.MigrationTarget
         public ResourceGroup(AzureContext azureContext)
         {
             this._AzureContext = azureContext;
-            _TargetName = "New Resource Group";
+            _TargetName = "NewResourceGroup";
         }
 
         public String SourceName

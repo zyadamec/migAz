@@ -27,7 +27,7 @@ namespace MigAz.UserControls
 
             Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
 
-            txtName.Text = armResourceGroup.TargetName;
+            txtTargetName.Text = armResourceGroup.TargetName;
 
             try
             {
@@ -60,7 +60,7 @@ namespace MigAz.UserControls
             }
         }
 
-        private void txtName_TextChanged(object sender, EventArgs e)
+        private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
@@ -71,6 +71,14 @@ namespace MigAz.UserControls
             _ResourceGroupNode.Name = armResourceGroup.ToString();
 
             PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         private void cboTargetLocation_SelectedIndexChanged(object sender, EventArgs e)

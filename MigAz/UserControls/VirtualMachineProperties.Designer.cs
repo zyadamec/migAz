@@ -102,9 +102,9 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(12, 35);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(165, 25);
+            this.label12.Size = new System.Drawing.Size(142, 25);
             this.label12.TabIndex = 22;
-            this.label12.Text = "ARM VM Name:";
+            this.label12.Text = "Target Name:";
             // 
             // lblASMVMName
             // 
@@ -120,9 +120,9 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(12, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(164, 25);
+            this.label14.Size = new System.Drawing.Size(148, 25);
             this.label14.TabIndex = 20;
-            this.label14.Text = "ASM VM Name:";
+            this.label14.Text = "Source Name:";
             // 
             // txtARMVMName
             // 
