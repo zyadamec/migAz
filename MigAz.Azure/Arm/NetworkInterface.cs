@@ -11,19 +11,30 @@ namespace MigAz.Azure.Arm
 
     public class NetworkInterface : INetworkInterface
     {
+        private AzureContext _AzureContext;
         private JToken _NetworkInterface;
         private VirtualMachine _VirtualMachine;
         private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
 
         private NetworkInterface() { }
 
-        public NetworkInterface(JToken networkInterfaceToken)
+        public NetworkInterface(AzureContext azureContext, JToken networkInterfaceToken)
         {
+            _AzureContext = azureContext;
             _NetworkInterface = networkInterfaceToken;
 
             foreach (JToken networkInterfaceIpConfigurationToken in _NetworkInterface["properties"]["ipConfigurations"])
             {
-                _NetworkInterfaceIpConfigurations.Add(new NetworkInterfaceIpConfiguration(networkInterfaceIpConfigurationToken));
+                NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext, networkInterfaceIpConfigurationToken);
+                _NetworkInterfaceIpConfigurations.Add(networkInterfaceIpConfiguration);
+            }
+        }
+
+        public async Task InitializeChildrenAsync()
+        {
+            foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in this.NetworkInterfaceIpConfigurations)
+            {
+                await networkInterfaceIpConfiguration.InitializeChildrenAsync();
             }
         }
 

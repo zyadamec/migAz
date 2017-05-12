@@ -904,7 +904,8 @@ namespace MigAz.Azure
 
             foreach (var networkInterface in networkInterfaces)
             {
-                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
+                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(_AzureContext, networkInterface);
+                await armNetworkInterface.InitializeChildrenAsync();
                 _ArmNetworkInterfaces.Add(armNetworkInterface);
             }
 

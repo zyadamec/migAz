@@ -498,11 +498,11 @@ namespace MigAz.UserControls.Migrators
                             {
                                 foreach (NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
                                 {
-                                    if (ipConfiguration.VirtualNetwork != null) // todo now russell, need to get this value and verify autoselection
+                                    if (ipConfiguration.VirtualNetwork != null)
                                     {
                                         foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
                                         {
-                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Arm.VirtualNetwork)))
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
                                             {
                                                 if (!treeNode.Checked)
                                                     treeNode.Checked = true;
