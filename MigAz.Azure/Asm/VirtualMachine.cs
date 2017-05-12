@@ -53,7 +53,7 @@ namespace MigAz.Azure.Asm
                 _LoadBalancerRules.Add(new LoadBalancerRule(_AzureContext, loadBalancerRuleNode));
             }
 
-            // todo now russell, to include where is the Primary Network Interface obtained??
+            // todo now asap, to include where is the Primary Network Interface obtained??
             _NetworkInterfaces = new List<NetworkInterface>();
 
             //NetworkInterface primaryNetworkInterface = new NetworkInterface();

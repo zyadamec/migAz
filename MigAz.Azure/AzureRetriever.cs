@@ -1275,7 +1275,6 @@ namespace MigAz.Azure
 
             request.Method = azureRestRequest.Method;
 
-            // todo now russell, what is this doing??
             if (request.Method == "POST")
                 request.ContentLength = 0;
 

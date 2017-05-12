@@ -37,7 +37,7 @@ namespace MigAz.UserControls
 
             if (_TargetNetworkInterface.SourceNetworkInterface != null)
             {
-                // todo now russell
+                // todo now asap
                 lblVirtualNetworkName.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
                 lblSubnetName.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
                 lblStaticIpAddress.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
@@ -55,8 +55,9 @@ namespace MigAz.UserControls
             }
 
             if (rbExistingARMVNet.Enabled == false ||
-                _TargetNetworkInterface.TargetSubnet == null ||
-                _TargetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() == 0 ||
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet == null ||
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
                 )
             {
                 rbVNetInMigration.Checked = true;
@@ -76,8 +77,9 @@ namespace MigAz.UserControls
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
             if (rbExistingARMVNet.Enabled == false ||
-                _TargetNetworkInterface.TargetSubnet == null ||
-                _TargetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() == 0 ||
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet == null ||
+                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
                 )
             {
                 rbVNetInMigration.Checked = true;
@@ -144,25 +146,25 @@ namespace MigAz.UserControls
 
                 #region Seek Target VNet and Subnet as ComboBox SelectedItems
 
-                if (_TargetNetworkInterface != null)
+                if (_TargetNetworkInterface != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                 {
-                    if (_TargetNetworkInterface.TargetVirtualNetwork != null)
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork != null)
                     {
                         // Attempt to match target to list items
                         foreach (Azure.MigrationTarget.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
                         {
-                            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetVirtualNetwork.ToString())
+                            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork.ToString())
                             {
                                 cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
                                 break;
                             }
                         }
 
-                        if (cmbExistingArmVNets.SelectedItem != null && _TargetNetworkInterface.TargetSubnet != null)
+                        if (cmbExistingArmVNets.SelectedItem != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet != null)
                         {
                             foreach (Azure.MigrationTarget.Subnet listSubnet in cmbExistingArmSubnet.Items)
                             {
-                                if (listSubnet.ToString() == _TargetNetworkInterface.TargetSubnet.ToString())
+                                if (listSubnet.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.ToString())
                                 {
                                     cmbExistingArmSubnet.SelectedItem = listSubnet;
                                     break;
@@ -200,15 +202,15 @@ namespace MigAz.UserControls
 
                 #region Seek Target VNet and Subnet as ComboBox SelectedItems
 
-                if (_TargetNetworkInterface != null)
+                if (_TargetNetworkInterface != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() > 0)
                 {
-                    if (_TargetNetworkInterface.TargetVirtualNetwork != null)
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork != null)
                     {
                         // Attempt to match target to list items
                         for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
                         {
                             Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
-                            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetVirtualNetwork.ToString())
+                            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork.ToString())
                             {
                                 cmbExistingArmVNets.SelectedIndex = i;
                                 break;
@@ -216,13 +218,13 @@ namespace MigAz.UserControls
                         }
                     }
 
-                    if (_TargetNetworkInterface.TargetSubnet != null)
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet != null)
                     {
                         // Attempt to match target to list items
                         for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
                         {
                             Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
-                            if (listSubnet.ToString() == _TargetNetworkInterface.TargetSubnet.ToString())
+                            if (listSubnet.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.ToString())
                             {
                                 cmbExistingArmSubnet.SelectedIndex = i;
                                 break;
@@ -239,24 +241,24 @@ namespace MigAz.UserControls
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_TargetNetworkInterface != null)
+            if (_TargetNetworkInterface != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
             {
                 if (cmbExistingArmSubnet.SelectedItem == null)
                 {
-                    _TargetNetworkInterface.TargetVirtualNetwork = null;
-                    _TargetNetworkInterface.TargetSubnet = null;
+                    _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork = null;
+                    _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet = null;
                 }
                 else
                 {
                     if (cmbExistingArmSubnet.SelectedItem.GetType() == typeof(Azure.MigrationTarget.Subnet))
                     {
-                        _TargetNetworkInterface.TargetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
-                        _TargetNetworkInterface.TargetSubnet = (Azure.MigrationTarget.Subnet)cmbExistingArmSubnet.SelectedItem;
+                        _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
+                        _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet = (Azure.MigrationTarget.Subnet)cmbExistingArmSubnet.SelectedItem;
                     }
                     else if (cmbExistingArmSubnet.SelectedItem.GetType() == typeof(Azure.Arm.Subnet))
                     {
-                        _TargetNetworkInterface.TargetVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
-                        _TargetNetworkInterface.TargetSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.SelectedItem;
+                        _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.SelectedItem;
+                        _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.SelectedItem;
                     }
                 }
             }

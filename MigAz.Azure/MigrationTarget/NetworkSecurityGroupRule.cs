@@ -9,7 +9,7 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class NetworkSecurityGroupRule : IMigrationTarget
     {
-        // todo now russell, constructors from ASM/ARM
+        // todo now asap, constructors from ASM/ARM
         private string _TargetName = String.Empty;
 
         public string Type

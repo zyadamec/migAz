@@ -194,6 +194,28 @@ namespace MigAz.UserControls.Migrators
                             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine);
                             targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
 
+                            foreach (Azure.MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
+                            {
+                                foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
+                                {
+                                    if (ipConfiguration.TargetVirtualNetwork == null)
+                                    {
+                                        // Try to default selection of Target Virtual network to the same Virtual Network that it was previously in (if that VNet is an exported object, including via AutoSelect)
+                                        if (networkInterface.SourceNetworkInterface != null)
+                                        {
+                                            if (networkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterfaceIpConfiguration))
+                                            {
+                                                Azure.Arm.NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = (Azure.Arm.NetworkInterfaceIpConfiguration)networkInterface.SourceNetworkInterface;
+                                                ipConfiguration.TargetVirtualNetwork = SeekTargetVirtualNetwork(networkInterfaceIpConfiguration.VirtualNetwork);
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                // todo now asap subnets bookmark
+                            }
+
                             TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
                             virtualMachineNode.Name = targetVirtualMachine.SourceName;
                             virtualMachineNode.Tag = targetVirtualMachine;
@@ -399,7 +421,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.1.9.9";
+            string currentVersion = "2.2.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://asmtoarmtoolapi.azurewebsites.net/api/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -545,11 +567,11 @@ namespace MigAz.UserControls.Migrators
 
                             #region Network Security Group
 
-                            if (armVirtualMachine.NetworkSecurityGroup != null) // todo now russell, has not been tested
+                            if (armVirtualMachine.NetworkSecurityGroup != null)
                             {
                                 foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.NetworkSecurityGroup.Name, true))
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.Asm.NetworkSecurityGroup)))
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                                     {
                                         if (!treeNode.Checked)
                                             treeNode.Checked = true;

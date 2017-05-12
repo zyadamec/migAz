@@ -94,7 +94,7 @@ namespace MigAz.Providers
                                 saveSelectionVirtualMachine.CloudService = asmVirtualMachine.CloudServiceName;
                                 saveSelectionVirtualMachine.VirtualMachine = asmVirtualMachine.RoleName;
 
-                                // todo now russell
+                                // todo now asap
 
                                 //if (virtualMachine.TargetVirtualNetwork != null)
                                 //    saveSelectionVirtualMachine.TargetVirtualNetwork = virtualMachine.TargetVirtualNetwork.Id;
@@ -190,7 +190,7 @@ namespace MigAz.Providers
 
                                 if (asmVirtualMachine.CloudServiceName == saveSelectionVirtualMachine.CloudService && asmVirtualMachine.RoleName == saveSelectionVirtualMachine.VirtualMachine)
                                 {
-                                    // todo now russell
+                                    // todo now asap
                                     //asmVirtualMachine.TargetVirtualNetwork = SeekVirtualNetwork(saveSelectionVirtualMachine.TargetVirtualNetwork, await sourceAzureRetreiver.GetAzureAsmVirtualNetworks(), await targetAzureRetreiver.GetAzureARMVirtualNetworks());
                                     //asmVirtualMachine.TargetSubnet = SeekSubnet(saveSelectionVirtualMachine.TargetSubnet, asmVirtualMachine.TargetVirtualNetwork);
 
@@ -256,7 +256,7 @@ namespace MigAz.Providers
                 foreach (Azure.Asm.StorageAccount asmStorageAccount in asmStorageAccounts)
                 {
                     if (asmStorageAccount.Id == id)
-                        return null; // todo russell asmStorageAccount;
+                        return null; // todo asap asmStorageAccount;
                 }
             }
 
@@ -265,7 +265,7 @@ namespace MigAz.Providers
                 foreach (Azure.Arm.StorageAccount armStorageAccount in armStorageAccounts)
                 {
                     if (armStorageAccount.Id == id)
-                        return null; // todo russell armStorageAccount;
+                        return null; // todo asap armStorageAccount;
                 }
             }
 

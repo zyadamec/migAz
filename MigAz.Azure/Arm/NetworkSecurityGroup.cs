@@ -19,7 +19,7 @@ namespace MigAz.Azure.Arm
         {
             _NetworkSecurityGroup = networkSecurityGroupToken;
 
-            // todo now Russell, need to get Network Security Group Rules here
+            // todo now asap, need to get Network Security Group Rules here
             //foreach (JToken networkInterfaceIpConfigurationToken in _NetworkInterface["properties"]["ipConfigurations"])
             //{
             //    _NetworkInterfaceIpConfigurations.Add(new NetworkInterfaceIpConfiguration(networkInterfaceIpConfigurationToken));

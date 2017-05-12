@@ -11,10 +11,8 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private INetworkInterface _SourceNetworkInterface;
-        private IMigrationVirtualNetwork _TargetVirtualNetwork;
-        private IMigrationSubnet _TargetSubnet;
-        private String _TargetStaticIpAddress = String.Empty;
         private bool _EnableIPForwarding = false;
+        private List<MigrationTarget.NetworkInterfaceIpConfiguration> _TargetNetworkInterfaceIpConfigurations = new List<MigrationTarget.NetworkInterfaceIpConfiguration>();
         private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
         private string _TargetName = String.Empty;
 
@@ -34,23 +32,17 @@ namespace MigAz.Azure.MigrationTarget
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+
+            foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+            {
+                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration);
+                this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
+            }
         }
 
-        public IMigrationSubnet TargetSubnet
+        public List<MigrationTarget.NetworkInterfaceIpConfiguration> TargetNetworkInterfaceIpConfigurations
         {
-            get { return _TargetSubnet; }
-            set { _TargetSubnet = value; }
-        }
-        public IMigrationVirtualNetwork TargetVirtualNetwork
-        {
-            get { return _TargetVirtualNetwork; }
-            set { _TargetVirtualNetwork = value; }
-        }
-
-        public String TargetStaticIpAddress
-        {
-            get { return _TargetStaticIpAddress; }
-            set { _TargetStaticIpAddress = value.Trim(); }
+            get { return _TargetNetworkInterfaceIpConfigurations; }
         }
 
         public bool EnableIPForwarding
@@ -70,19 +62,15 @@ namespace MigAz.Azure.MigrationTarget
             return this.TargetName + _AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
         }
 
-        public String StaticVirtualNetworkIPAddress
-        {
-            get;set;
-        }
         public bool HasPublicIPs
         {
-            get { return false; } // todo now russell
+            get { return false; } // todo now asap
         }
         public bool IsPrimary { get; set; }
 
         public INetworkSecurityGroup NetworkSecurityGroup
         {
-            get; set; // todo now russell
+            get; set; // todo now asap
         }
 
         public string LoadBalancerName
@@ -92,7 +80,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public List<LoadBalancerRule> LoadBalancerRules
         {
-            get { return _LoadBalancerRules; } // todo now russell
+            get { return _LoadBalancerRules; } // todo now asap
         }
 
         public INetworkInterface SourceNetworkInterface

@@ -91,31 +91,34 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
-                    if (networkInterface.TargetVirtualNetwork == null)
-                        this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
-                    else
+                    foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
                     {
-                        if (networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+                        if (ipConfiguration.TargetVirtualNetwork == null)
+                            this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                        else
                         {
-                            Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)networkInterface.TargetVirtualNetwork;
-                            bool targetVNetExists = false;
-
-                            foreach (IVirtualNetwork iVirtualNetwork in _ExportArtifacts.VirtualNetworks)
+                            if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
                             {
-                                if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
+                                Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                                bool targetVNetExists = false;
+
+                                foreach (IVirtualNetwork iVirtualNetwork in _ExportArtifacts.VirtualNetworks)
                                 {
-                                    targetVNetExists = true;
-                                    break;
+                                    if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
+                                    {
+                                        targetVNetExists = true;
+                                        break;
+                                    }
                                 }
+
+                                if (!targetVNetExists)
+                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
                             }
-
-                            if (!targetVNetExists)
-                                this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
                         }
-                    }
 
-                    if (networkInterface.TargetSubnet == null)
-                        this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                        if (ipConfiguration.TargetSubnet == null)
+                            this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                    }
                 }
 
                 if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
@@ -170,7 +173,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
             }
 
-            // todo now russell - Add test for NSGs being present in Migration
+            // todo now asap - Add test for NSGs being present in Migration
             //MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (MigrationTarget.NetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.ToString());
             //if (targetNetworkSecurityGroup == null)
             //{
@@ -424,8 +427,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                 // shouldn't this change to a foreach loop?
                 if (asmCloudService.LoadBalancers.Count > 0)
                 {
-                    string virtualnetworkname = String.Empty; // todo now russell asmCloudService.VirtualNetwork.ToString();
-                    string subnetname = String.Empty; // todo now russell asmCloudService.LoadBalancers[0].Subnet.TargetName;
+                    string virtualnetworkname = String.Empty; // todo now asap asmCloudService.VirtualNetwork.ToString();
+                    string subnetname = String.Empty; // todo now asap asmCloudService.LoadBalancers[0].Subnet.TargetName;
 
                     frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
                     if (asmCloudService.StaticVirtualNetworkIPAddress != String.Empty)
@@ -1034,91 +1037,78 @@ namespace MigAz.Azure.Generator.AsmToArm
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
 
+            List<string> dependson = new List<string>();
+
             NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
             networkInterface.name = targetNetworkInterface.ToString();
             if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
                 networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
 
-            Reference subnet_ref = new Reference();
-
-            if (targetNetworkInterface.TargetSubnet != null)
-            {
-                if (targetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                {
-                    Azure.MigrationTarget.Subnet migrationSubnet = (Azure.MigrationTarget.Subnet)targetNetworkInterface.TargetSubnet;
-                    subnet_ref.id = migrationSubnet.TargetId;
-                }
-                else if (targetNetworkInterface.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                {
-                    Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetNetworkInterface.TargetSubnet;
-                    subnet_ref.id = armSubnet.TargetId;
-                }
-            }
-
-            string privateIPAllocationMethod = "Dynamic";
-            string privateIPAddress = null;
-            if (targetNetworkInterface.TargetStaticIpAddress != String.Empty)
-            {
-                privateIPAllocationMethod = "Static";
-                privateIPAddress = targetNetworkInterface.TargetStaticIpAddress;
-            }
-
-            List<string> dependson = new List<string>();
-            if (targetNetworkInterface.TargetVirtualNetwork != null)
-            {
-                if (targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
-                {
-                    MigrationTarget.VirtualNetwork targetVirtualNetwork = (MigrationTarget.VirtualNetwork)targetNetworkInterface.TargetVirtualNetwork;
-                    dependson.Add(targetVirtualNetwork.TargetId);
-                }
-                else if (targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
-                {
-                    Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)targetNetworkInterface.TargetVirtualNetwork;
-                    dependson.Add(armVirtualNetwork.Id);
-                }
-            }
-
-            // If there is at least one endpoint add the reference to the LB backend pool
-            List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-            if (targetNetworkInterface.LoadBalancerRules.Count > 0)
-            {
-                Reference loadBalancerBackendAddressPool = new Reference();
-                loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/backendAddressPools/default')]";
-
-                loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
-
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "')]");
-            }
-
-            // Adds the references to the inboud nat rules
-            List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-            foreach (MigrationTarget.LoadBalancerRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
-            {
-                if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-                {
-                    string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
-                    inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
-
-                    Reference loadBalancerInboundNatRule = new Reference();
-                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
-
-                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-                }
-            }
-
-            IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
-            ipconfiguration_properties.privateIPAllocationMethod = privateIPAllocationMethod;
-            ipconfiguration_properties.privateIPAddress = privateIPAddress;
-            ipconfiguration_properties.subnet = subnet_ref;
-            ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
-
-            string ipconfiguration_name = "ipconfig1";
-            IpConfiguration ipconfiguration = new IpConfiguration();
-            ipconfiguration.name = ipconfiguration_name;
-            ipconfiguration.properties = ipconfiguration_properties;
-
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
-            ipConfigurations.Add(ipconfiguration);
+            foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
+            {
+                IpConfiguration ipconfiguration = new IpConfiguration();
+                ipconfiguration.name = ipConfiguration.ToString(); 
+                IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
+                ipconfiguration.properties = ipconfiguration_properties;
+                Reference subnet_ref = new Reference();
+                ipconfiguration_properties.subnet = subnet_ref;
+
+                if (ipConfiguration.TargetSubnet != null)
+                {
+                    subnet_ref.id = ipConfiguration.TargetSubnet.TargetId;
+                }
+
+                ipconfiguration_properties.privateIPAllocationMethod = ipConfiguration.TargetPrivateIPAllocationMethod;
+                ipconfiguration_properties.privateIPAddress = ipConfiguration.TargetPrivateIpAddress;
+
+                if (ipConfiguration.TargetVirtualNetwork != null)
+                {
+                    if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
+                    {
+                        MigrationTarget.VirtualNetwork targetVirtualNetwork = (MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                        dependson.Add(targetVirtualNetwork.TargetId);
+                    }
+                    else if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
+                    {
+                        Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                        dependson.Add(armVirtualNetwork.Id);
+                    }
+                }
+
+
+                // If there is at least one endpoint add the reference to the LB backend pool
+                List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
+                if (targetNetworkInterface.LoadBalancerRules.Count > 0)
+                {
+                    Reference loadBalancerBackendAddressPool = new Reference();
+                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/backendAddressPools/default')]";
+
+                    loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
+
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "')]");
+                }
+
+                // Adds the references to the inboud nat rules
+                List<Reference> loadBalancerInboundNatRules = new List<Reference>();
+                foreach (MigrationTarget.LoadBalancerRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
+                {
+                    if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
+                    {
+                        string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
+                        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+
+                        Reference loadBalancerInboundNatRule = new Reference();
+                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
+
+                        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+                    }
+                }
+
+                ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+
+                ipConfigurations.Add(ipconfiguration);
+            }
 
             NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
             networkinterface_properties.ipConfigurations = ipConfigurations;
@@ -1234,7 +1224,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
                 //}
 
-                // todo now russell this moved into for loop
+                // todo now asap this moved into for loop
                 //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
 
                 //BuildPublicIPAddressObject(ref virtualmachine);
@@ -1420,7 +1410,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
-                // todo russell validate        if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
+                // todo asap validate        if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
                 if (storageaccountdependency.GetType() == typeof(Asm.StorageAccount))
                     dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }

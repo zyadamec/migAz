@@ -23,7 +23,7 @@ namespace MigAz.Azure.Asm
             _AzureContext = azureContext;
             _AsmVirtualMachine = asmVirtualMachine;
             _XmlNode = xmlNode;
-            this.IsPrimary = true; // todo now russell, can this be set from the XML?
+            this.IsPrimary = true; // todo now asap, can this be set from the XML?
         }
 
         #endregion
