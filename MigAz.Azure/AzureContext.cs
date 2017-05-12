@@ -86,7 +86,7 @@ namespace MigAz.Azure
         public AzureRetriever AzureRetriever
         {
             get { return _AzureRetriever; }
-            set { _AzureRetriever = value; } // This is only allowed because of FakeRetreiver in Unit Tests.  Future Todo, decomission
+            set { _AzureRetriever = value; } // This is only allowed because of FakeRetreiver in Unit Tests.  Future Todo, decomission?
         }
 
         public AzureTokenProvider TokenProvider

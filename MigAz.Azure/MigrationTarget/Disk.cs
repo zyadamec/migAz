@@ -21,7 +21,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeInGB;
-            this.StorageAccountBlob = sourceDisk.StorageAccountBlob;
+            this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
@@ -32,7 +32,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.Caching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
-            this.StorageAccountBlob = sourceDisk.StorageAccountBlob;
+            this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
@@ -82,19 +82,7 @@ namespace MigAz.Azure.MigrationTarget
             get; set;
         }
 
-        public string StorageAccountContainer
-        {
-            get; set;
-        }
-        public string StorageAccountName
-        {
-            get; set;
-        }
 
-        public string StorageAccountBlob
-        {
-            get;set;
-        }
 
         public IStorageAccount SourceStorageAccount
         {
@@ -103,7 +91,45 @@ namespace MigAz.Azure.MigrationTarget
 
         public string SourceStorageKey
         {
-            get;set;
+            get
+            {
+                if (this.SourceDisk == null)
+                    return null;
+
+                return this.SourceDisk.StorageKey;
+            }
+        }
+
+        public string SourceStorageAccountBlob
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return null;
+
+                return this.SourceDisk.StorageAccountBlob;
+            }
+        }
+        public string SourceStorageAccountContainer
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return null;
+
+                return this.SourceDisk.StorageAccountContainer;
+            }
+        }
+
+        public string SourceStorageAccountName
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return null;
+
+                return this.SourceDisk.StorageAccountName;
+            }
         }
 
         public IStorageTarget TargetStorageAccount
@@ -111,7 +137,17 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public StorageAccountType StorageAccountType // todo, this needs to reflect the storage account type from the actual storage account
+        public string TargetStorageAccountContainer
+        {
+            get { return "vhds"; }
+        }
+
+        public string TargetStorageAccountBlob
+        {
+            get; set;
+        }
+
+        public StorageAccountType StorageAccountType
         {
             get { return this.TargetStorageAccount.StorageAccountType; }
         }
@@ -120,7 +156,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return "https://" + TargetStorageAccount.ToString() + "." + TargetStorageAccount.BlobStorageNamespace + "/vhds/" + this.StorageAccountBlob;
+                return "https://" + TargetStorageAccount.ToString() + "." + TargetStorageAccount.BlobStorageNamespace + "/vhds/" + this.TargetStorageAccountBlob;
             }
         }
 

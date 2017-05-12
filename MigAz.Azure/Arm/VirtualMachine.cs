@@ -18,14 +18,14 @@ namespace MigAz.Azure.Arm
 
         private VirtualMachine() { }
 
-        public VirtualMachine(JToken virtualMachine)
+        public VirtualMachine(AzureContext azureContext, JToken virtualMachine)
         {
             _VirtualMachine = virtualMachine;
 
-            _OSVirtualHardDisk = new Disk(_VirtualMachine["properties"]["storageProfile"]["osDisk"]);
+            _OSVirtualHardDisk = new Disk(azureContext, _VirtualMachine["properties"]["storageProfile"]["osDisk"]);
             foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new Disk(dataDiskToken));
+                _DataDisks.Add(new Disk(azureContext, dataDiskToken));
             }
         }
 
@@ -82,6 +82,13 @@ namespace MigAz.Azure.Arm
                 this.AvailabilitySet.VirtualMachines.Add(this);
 
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+
+            await this.OSVirtualHardDisk.InitializeChildrenAsync();
+
+            foreach (Disk dataDisk in this.DataDisks)
+            {
+                await dataDisk.InitializeChildrenAsync();
+            }
 
             foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
             {

@@ -40,7 +40,6 @@ namespace MigAz.Azure.Asm
             get { return _DataDiskNode.SelectSingleNode("DiskName").InnerText; }
         }
 
-
         public Int64? Lun
         {
             get
@@ -95,6 +94,17 @@ namespace MigAz.Azure.Asm
         public StorageAccount SourceStorageAccount
         {
             get { return _SourceStorageAccount; }
+        }
+
+        public String StorageKey
+        {
+            get
+            {
+                if (this.SourceStorageAccount == null || this.SourceStorageAccount.Keys == null)
+                    return String.Empty;
+
+                return this.SourceStorageAccount.Keys.Primary;
+            }
         }
 
         #endregion

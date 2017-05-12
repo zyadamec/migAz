@@ -10,12 +10,19 @@ namespace MigAz.Azure.Arm
 {
     public class Disk : IDisk
     {
+        private AzureContext _AzureContext;
         private JToken jToken;
-        private StorageAccount _SourceStorageAccount;
+        private StorageAccount _SourceStorageAccount = null;
 
-        public Disk(JToken jToken)
+        public Disk(AzureContext azureContext, JToken jToken)
         {
+            this._AzureContext = azureContext;
             this.jToken = jToken;
+        }
+
+        public async Task InitializeChildrenAsync()
+        {
+            _SourceStorageAccount = await _AzureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
         }
 
         public string Name => (string)this.jToken["name"];
@@ -37,8 +44,6 @@ namespace MigAz.Azure.Arm
                 return (string)this.jToken["vhd"]["uri"];
             }
         } 
-
-        //public string StorageAccountName => VhdUri == String.Empty ? String.Empty : VhdUri.Substring(VhdUri.IndexOf("://") + 3, VhdUri.IndexOf(".") - VhdUri.IndexOf("://") - 3);
 
         public string StorageAccountName
         {
@@ -67,6 +72,17 @@ namespace MigAz.Azure.Arm
         public StorageAccount SourceStorageAccount
         {
             get { return _SourceStorageAccount; }
+        }
+
+        public String StorageKey
+        {
+            get
+            {
+                if (this.SourceStorageAccount == null || this.SourceStorageAccount.Keys[0] == null)
+                    return String.Empty;
+
+                return this.SourceStorageAccount.Keys[0].Value;
+            }
         }
 
         public override string ToString()

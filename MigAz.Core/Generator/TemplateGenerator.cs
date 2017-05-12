@@ -191,9 +191,8 @@ namespace MigAz.Core.Generator
             }
         }
 
-        public virtual async Task SerializeStreams()
-        {
+        public virtual async Task SerializeStreams() { }
 
-        }
+        public virtual async Task GenerateStreams() { }
     }
 }

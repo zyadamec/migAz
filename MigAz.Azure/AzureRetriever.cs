@@ -764,6 +764,21 @@ namespace MigAz.Azure
             return _ArmStorageAccounts;
         }
 
+        public async virtual Task<Arm.StorageAccount> GetAzureARMStorageAccount(string name)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccount", "Start");
+
+            if (_ArmStorageAccounts == null)
+                return null;
+
+            foreach (Arm.StorageAccount armStorageAccount in _ArmStorageAccounts)
+            {
+                if (String.Compare(armStorageAccount.Name, name, true) == 0)
+                    return armStorageAccount;
+            }
+
+            return null;
+        }
 
         public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
         {
@@ -806,7 +821,7 @@ namespace MigAz.Azure
 
             foreach (var virtualMachine in virtualMachines)
             {
-                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(_AzureContext, virtualMachine);
                 await armVirtualMachine.InitializeChildrenAsync(this._AzureContext);
                 _ArmVirtualMachines.Add(armVirtualMachine);
             }

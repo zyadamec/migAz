@@ -177,40 +177,9 @@ namespace MigAz.Azure.Generator.AsmToArm
             //    this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.ToString() + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", targetNetworkSecurityGroup);
             //}
 
+            // todo add Warning about availability set with only single VM included
 
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Network Security Groups");
-            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
-                await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
-            }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Network Security Groups");
-
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Virtual Networks");
-            foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
-                await BuildVirtualNetworkObject(virtualNetwork);
-            }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Virtual Networks");
-
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Storage Accounts");
-            foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
-                BuildStorageAccountObject(storageAccount);
-            }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Storage Accounts");
-
-            LogProvider.WriteLog("UpdateArtifacts", "Start processing selected Cloud Services / Virtual Machines");
-            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
-
-                // process virtual machine
-                await BuildVirtualMachineObject(virtualMachine);
-            }
-            LogProvider.WriteLog("UpdateArtifacts", "End processing selected Cloud Services / Virtual Machines");
+            // todo add error if existing target disk storage is not in the same data center / region as vm.
 
             LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
             OnTemplateChanged();
@@ -219,6 +188,49 @@ namespace MigAz.Azure.Generator.AsmToArm
             StatusProvider.UpdateStatus("Ready");
 
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
+        }
+
+        public override async Task GenerateStreams()
+        {
+            LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
+
+            LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+            {
+                StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
+                await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
+            }
+            LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
+
+            LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
+            foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
+            {
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
+                await BuildVirtualNetworkObject(virtualNetwork);
+            }
+            LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Networks");
+
+            LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
+            foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+            {
+                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
+                BuildStorageAccountObject(storageAccount);
+            }
+            LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
+
+            LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
+            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
+            {
+                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
+
+                // process virtual machine
+                await BuildVirtualMachineObject(virtualMachine);
+            }
+            LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
+
+            StatusProvider.UpdateStatus("Ready");
+
+            LogProvider.WriteLog("GenerateStreams", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
         public override async Task SerializeStreams()
@@ -1175,12 +1187,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             string osDiskTargetStorageAccountName = String.Empty;
             if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
             {
-                if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                    osDiskTargetStorageAccountName = targetStorageAccount.ToString();
-                }
-
+                osDiskTargetStorageAccountName = virtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString();
                 newdiskurl = virtualMachine.OSVirtualHardDisk.TargetMediaLink;
                 storageaccountdependencies.Add(virtualMachine.OSVirtualHardDisk.TargetStorageAccount);
             }
@@ -1308,13 +1315,13 @@ namespace MigAz.Azure.Generator.AsmToArm
                 CopyBlobDetail copyblobdetail = new CopyBlobDetail();
                 if (this.SourceSubscription != null)
                     copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                copyblobdetail.SourceSA = virtualMachine.OSVirtualHardDisk.StorageAccountName;
-                copyblobdetail.SourceContainer = virtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                copyblobdetail.SourceBlob = virtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                copyblobdetail.SourceSA = virtualMachine.OSVirtualHardDisk.SourceStorageAccountName;
+                copyblobdetail.SourceContainer = virtualMachine.OSVirtualHardDisk.SourceStorageAccountContainer;
+                copyblobdetail.SourceBlob = virtualMachine.OSVirtualHardDisk.SourceStorageAccountBlob;
                 copyblobdetail.SourceKey = virtualMachine.OSVirtualHardDisk.SourceStorageKey;
                 copyblobdetail.DestinationSA = osDiskTargetStorageAccountName;
-                copyblobdetail.DestinationContainer = virtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-                copyblobdetail.DestinationBlob = virtualMachine.OSVirtualHardDisk.StorageAccountBlob;
+                copyblobdetail.DestinationContainer = virtualMachine.OSVirtualHardDisk.TargetStorageAccountContainer;
+                copyblobdetail.DestinationBlob = virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob;
                 this._CopyBlobDetails.Add(copyblobdetail);
                 // end of block of code to help copying the blobs to the new storage accounts
             }
@@ -1354,13 +1361,13 @@ namespace MigAz.Azure.Generator.AsmToArm
                         CopyBlobDetail copyblobdetail = new CopyBlobDetail();
                         if (this.SourceSubscription != null)
                             copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                        copyblobdetail.SourceSA = dataDisk.StorageAccountName;
-                        copyblobdetail.SourceContainer = dataDisk.StorageAccountContainer;
-                        copyblobdetail.SourceBlob = dataDisk.StorageAccountBlob;
+                        copyblobdetail.SourceSA = dataDisk.SourceStorageAccountName;
+                        copyblobdetail.SourceContainer = dataDisk.SourceStorageAccountContainer;
+                        copyblobdetail.SourceBlob = dataDisk.SourceStorageAccountBlob;
                         copyblobdetail.SourceKey = dataDisk.SourceStorageKey;
                         copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
-                        copyblobdetail.DestinationContainer = dataDisk.StorageAccountContainer;
-                        copyblobdetail.DestinationBlob = dataDisk.StorageAccountBlob;
+                        copyblobdetail.DestinationContainer = dataDisk.TargetStorageAccountContainer;
+                        copyblobdetail.DestinationBlob = dataDisk.TargetStorageAccountBlob;
                         this._CopyBlobDetails.Add(copyblobdetail);
                         // end of block of code to help copying the blobs to the new storage accounts
                     }
@@ -1386,159 +1393,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
             virtualmachine_properties.networkProfile = networkprofile;
             virtualmachine_properties.storageProfile = storageprofile;
-
-
-
-
-
-
-
-
-
-
-            //    Hashtable storageaccountdependencies = new Hashtable();
-
-            //    Vhd vhd = new Vhd();
-
-            //    OsDisk osdisk = new OsDisk();
-            //    osdisk.name = armVirtualMachine.OSVirtualHardDisk.Name;
-            //    osdisk.vhd = vhd;
-            //    osdisk.caching = armVirtualMachine.OSVirtualHardDisk.Caching;
-
-            //    HardwareProfile hardwareprofile = new HardwareProfile();
-            //    hardwareprofile.vmSize = armVirtualMachine.VmSize;
-
-            //    NetworkProfile networkprofile = new NetworkProfile();
-            //    // todo networkprofile.networkInterfaces = networkinterfaces;
-
-            //    ImageReference imagereference = new ImageReference();
-            //    OsProfile osprofile = new OsProfile();
-
-            //    // if the tool is configured to create new VMs with empty data disks
-            //    if (_settingsProvider.BuildEmpty)
-            //    {
-            //        osdisk.createOption = "FromImage";
-
-            //        osprofile.computerName = armVirtualMachine.Name;
-            //        osprofile.adminUsername = "[parameters('adminUsername')]";
-            //        osprofile.adminPassword = "[parameters('adminPassword')]";
-
-            //        if (!Parameters.ContainsKey("adminUsername"))
-            //        {
-            //            Parameter parameter = new Parameter();
-            //            parameter.type = "string";
-            //            Parameters.Add("adminUsername", parameter);
-            //        }
-
-            //        if (!Parameters.ContainsKey("adminPassword"))
-            //        {
-            //            Parameter parameter = new Parameter();
-            //            parameter.type = "securestring";
-            //            Parameters.Add("adminPassword", parameter);
-            //        }
-
-            //        //todo
-            //        //imagereference.publisher = resource.properties.storageProfile.imageReference.publisher;
-            //        //imagereference.offer = resource.properties.storageProfile.imageReference.offer;
-            //        //imagereference.sku = resource.properties.storageProfile.imageReference.sku;
-            //        //imagereference.version = resource.properties.storageProfile.imageReference.version;
-            //    }
-            //    // if the tool is configured to attach copied disks
-            //    else
-            //    {
-            //        osdisk.createOption = "Attach";
-            //        // todoosdisk.osType = ostype;
-
-            //        if (armVirtualMachine.OSVirtualHardDisk.VhdUri != String.Empty)
-            //        {
-            //            // todo storageaccountdependencies.Add(newstorageaccountname, "");
-
-            //            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-            //            if (this.SourceSubscription != null)
-            //                copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-            //            copyblobdetail.SourceSA = armVirtualMachine.OSVirtualHardDisk.StorageAccountName;
-            //            copyblobdetail.SourceContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-            //            copyblobdetail.SourceBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-            //            // todo copyblobdetail.SourceKey = armVirtualMachine.OSVirtualHardDisk.SourceStorageAccount.Keys.Primary;
-            //            if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-            //            {
-            //                if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-            //                {
-            //                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-            //                    copyblobdetail.DestinationSA = targetStorageAccount.ToString();
-            //                }
-            //            }
-            //            copyblobdetail.DestinationContainer = armVirtualMachine.OSVirtualHardDisk.StorageAccountContainer;
-            //            copyblobdetail.DestinationBlob = armVirtualMachine.OSVirtualHardDisk.StorageAccountBlob;
-            //            _CopyBlobDetails.Add(copyblobdetail);
-            //        }
-
-            //        // end of block of code to help copying the blobs to the new storage accounts
-            //    }
-
-            //    // process data disks
-            //    List<DataDisk> datadisks = new List<DataDisk>();
-            //    foreach (Arm.DataDisk sourceDataDisk in armVirtualMachine.DataDisks)
-            //    {
-            //        DataDisk datadisk = new DataDisk();
-            //        datadisk.name = sourceDataDisk.Name;
-            //        datadisk.caching = sourceDataDisk.Caching;
-            //        datadisk.diskSizeGB = sourceDataDisk.DiskSizeGb;
-            //        datadisk.lun = sourceDataDisk.Lun;
-
-            //        // if the tool is configured to create new VMs with empty data disks
-            //        vhd = new Vhd();
-            //        if (_settingsProvider.BuildEmpty)
-            //        {
-            //            datadisk.createOption = "Empty";
-            //        }
-            //        // if the tool is configured to attach copied disks
-            //        else
-            //        {
-            //            datadisk.createOption = "Attach";
-
-            //            if (sourceDataDisk.VhdUri != String.Empty)
-            //            {
-            //                // todo try { storageaccountdependencies.Add(newstorageaccountname, ""); }
-            //                // catch { }
-
-            //                CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-            //                if (this.SourceSubscription != null)
-            //                    copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-            //                copyblobdetail.SourceSA = sourceDataDisk.StorageAccountName;
-            //                copyblobdetail.SourceContainer = sourceDataDisk.StorageAccountContainer;
-            //                copyblobdetail.SourceBlob = sourceDataDisk.StorageAccountBlob;
-            //                // todo copyblobdetail.SourceKey = sourceDataDisk.SourceStorageAccount.Keys.Primary;
-            //                if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-            //                {
-            //                    if (armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-            //                    {
-            //                        Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)armVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-            //                        copyblobdetail.DestinationSA = targetStorageAccount.ToString();
-            //                    }
-            //                }
-            //                copyblobdetail.DestinationContainer = sourceDataDisk.StorageAccountContainer;
-            //                copyblobdetail.DestinationBlob = sourceDataDisk.StorageAccountBlob;
-            //                _CopyBlobDetails.Add(copyblobdetail);
-            //                // end of block of code to help copying the blobs to the new storage accounts
-            //            }
-            //        }
-
-            //        datadisk.vhd = vhd;
-
-            //        datadisks.Add(datadisk);
-            //    }
-
-            //    StorageProfile storageprofile = new StorageProfile();
-            //    if (_settingsProvider.BuildEmpty) { storageprofile.imageReference = imagereference; }
-            //    storageprofile.osDisk = osdisk;
-            //    storageprofile.dataDisks = datadisks;
-
-            //    VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
-            //    virtualmachine_properties.hardwareProfile = hardwareprofile;
-            //    if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
-            //    virtualmachine_properties.networkProfile = networkprofile;
-            //    virtualmachine_properties.storageProfile = storageprofile;
 
             //    List<string> dependson = new List<string>();
 

@@ -276,7 +276,7 @@ namespace MigAz.Forms
                 txtDestinationFolder.Text = folderBrowserDialog1.SelectedPath;
         }
 
-        private void btnRefreshOutput_Click(object sender, EventArgs e)
+        private async void btnRefreshOutput_Click(object sender, EventArgs e)
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
@@ -291,7 +291,8 @@ namespace MigAz.Forms
                     return;
                 }
 
-                migrator.TemplateGenerator.SerializeStreams();
+                await migrator.TemplateGenerator.GenerateStreams();
+                await migrator.TemplateGenerator.SerializeStreams();
 
                 foreach (TabPage tabPage in tabOutputResults.TabPages)
                 {
