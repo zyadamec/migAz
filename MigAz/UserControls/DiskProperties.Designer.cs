@@ -179,9 +179,9 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(3, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(326, 25);
+            this.label6.Size = new System.Drawing.Size(139, 25);
             this.label6.TabIndex = 21;
-            this.label6.Text = "ASM (Source) Disk Properties";
+            this.label6.Text = "Source Disk";
             // 
             // label8
             // 
@@ -189,9 +189,9 @@
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(3, 218);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(321, 25);
+            this.label8.Size = new System.Drawing.Size(133, 25);
             this.label8.TabIndex = 22;
-            this.label8.Text = "ARM (Target) Disk Properties";
+            this.label8.Text = "Target Disk";
             // 
             // txtTargetDiskName
             // 
@@ -200,6 +200,7 @@
             this.txtTargetDiskName.Size = new System.Drawing.Size(387, 31);
             this.txtTargetDiskName.TabIndex = 0;
             this.txtTargetDiskName.TextChanged += new System.EventHandler(this.txtTargetDiskName_TextChanged);
+            this.txtTargetDiskName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetDiskName_KeyPress);
             // 
             // label9
             // 
@@ -238,6 +239,7 @@
             this.txtBlobName.Size = new System.Drawing.Size(387, 31);
             this.txtBlobName.TabIndex = 26;
             this.txtBlobName.TextChanged += new System.EventHandler(this.txtBlobName_TextChanged);
+            this.txtBlobName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetDiskName_KeyPress);
             // 
             // DiskProperties
             // 

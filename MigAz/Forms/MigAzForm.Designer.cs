@@ -55,8 +55,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aRMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aRMToARMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -366,63 +367,71 @@
             // newMigrationToolStripMenuItem
             // 
             this.newMigrationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aSMToARMToolStripMenuItem,
             this.aRMToARMToolStripMenuItem,
             this.aWSToARMToolStripMenuItem});
             this.newMigrationToolStripMenuItem.Name = "newMigrationToolStripMenuItem";
-            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.newMigrationToolStripMenuItem.Text = "&New Migration";
+            // 
+            // aRMToARMToolStripMenuItem
+            // 
+            this.aRMToARMToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aSMToARMToolStripMenuItem,
+            this.aRMToARMToolStripMenuItem1});
+            this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
+            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(320, 38);
+            this.aRMToARMToolStripMenuItem.Text = "Azure to Azure";
             // 
             // aSMToARMToolStripMenuItem
             // 
             this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(255, 38);
             this.aSMToARMToolStripMenuItem.Text = "ASM To ARM";
-            this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
+            this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click_1);
             // 
-            // aRMToARMToolStripMenuItem
+            // aRMToARMToolStripMenuItem1
             // 
-            this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
-            this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
+            this.aRMToARMToolStripMenuItem1.Name = "aRMToARMToolStripMenuItem1";
+            this.aRMToARMToolStripMenuItem1.Size = new System.Drawing.Size(255, 38);
+            this.aRMToARMToolStripMenuItem1.Text = "ARM To ARM";
+            this.aRMToARMToolStripMenuItem1.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem1_Click);
             // 
             // aWSToARMToolStripMenuItem
             // 
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
-            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
+            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(320, 38);
+            this.aWSToARMToolStripMenuItem.Text = "AWS To Azure ARM";
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
             // 
             // closeMigrationToolStripMenuItem
             // 
             this.closeMigrationToolStripMenuItem.Enabled = false;
             this.closeMigrationToolStripMenuItem.Name = "closeMigrationToolStripMenuItem";
-            this.closeMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.closeMigrationToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.closeMigrationToolStripMenuItem.Text = "&Close Migration";
             this.closeMigrationToolStripMenuItem.Click += new System.EventHandler(this.closeMigrationToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(281, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(280, 6);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(281, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(280, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -438,14 +447,14 @@
             // visitMigAzOnGithubToolStripMenuItem
             // 
             this.visitMigAzOnGithubToolStripMenuItem.Name = "visitMigAzOnGithubToolStripMenuItem";
-            this.visitMigAzOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
+            this.visitMigAzOnGithubToolStripMenuItem.Size = new System.Drawing.Size(391, 38);
             this.visitMigAzOnGithubToolStripMenuItem.Text = "Visit MigAz on Github";
             this.visitMigAzOnGithubToolStripMenuItem.Click += new System.EventHandler(this.visitMigAzOnGithubToolStripMenuItem_Click);
             // 
             // reportAnIssueOnGithubToolStripMenuItem
             // 
             this.reportAnIssueOnGithubToolStripMenuItem.Name = "reportAnIssueOnGithubToolStripMenuItem";
-            this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
+            this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(391, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
             // 
@@ -507,7 +516,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newMigrationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aSMToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aRMToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aWSToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -533,6 +541,8 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button btnRefreshOutput;
         private System.Windows.Forms.Label lblLastOutputRefresh;
+        private System.Windows.Forms.ToolStripMenuItem aSMToARMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aRMToARMToolStripMenuItem1;
     }
 }
 

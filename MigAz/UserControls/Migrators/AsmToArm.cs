@@ -276,13 +276,16 @@ namespace MigAz.UserControls.Migrators
                         TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
                         virtualMachineParentNode = tnResourceGroup;
 
+                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine);
+
                         if (armVirtualMachine.AvailabilitySet != null)
                         {
-                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, armVirtualMachine.AvailabilitySet);
+                            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
+                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
+                            targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
                             virtualMachineParentNode = tnAvailabilitySet;
                         }
 
-                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine);
 
                         TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                         tnVirtualMachine.Name = targetVirtualMachine.SourceName;
@@ -1036,19 +1039,19 @@ namespace MigAz.UserControls.Migrators
             return tnResourceGroup;
         }
 
-        private TreeNode GetAvailabilitySetTreeNode(TreeNode subscriptionNode, AvailabilitySet availabilitySet)
+        private TreeNode GetAvailabilitySetTreeNode(TreeNode subscriptionNode, Azure.MigrationTarget.AvailabilitySet availabilitySet)
         {
             foreach (TreeNode treeNode in subscriptionNode.Nodes)
             {
                 if (treeNode.Tag != null)
                 {
-                    if (treeNode.Tag.GetType() == availabilitySet.GetType() && treeNode.Text == availabilitySet.Name)
+                    if (treeNode.Tag.GetType() == availabilitySet.GetType() && treeNode.Text == availabilitySet.ToString())
                         return treeNode;
                 }
             }
 
-            TreeNode tnAvailabilitySet = new TreeNode(availabilitySet.Name);
-            tnAvailabilitySet.Text = availabilitySet.Name;
+            TreeNode tnAvailabilitySet = new TreeNode(availabilitySet.ToString());
+            tnAvailabilitySet.Text = availabilitySet.ToString();
             tnAvailabilitySet.Tag = availabilitySet;
             tnAvailabilitySet.ImageKey = "AvailabilitySet";
             tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
@@ -1426,6 +1429,8 @@ namespace MigAz.UserControls.Migrators
                         else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.VirtualMachine) && sourceObject.ToString() == nodeObject.ToString())
                             treeTargetARM.SelectedNode = treeNode;
                         else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.Disk) && sourceObject.ToString() == nodeObject.ToString())
+                            treeTargetARM.SelectedNode = treeNode;
+                        else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && sourceObject.ToString() == nodeObject.ToString())
                             treeTargetARM.SelectedNode = treeNode;
                     }
                 }

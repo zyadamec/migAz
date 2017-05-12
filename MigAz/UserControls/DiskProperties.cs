@@ -248,5 +248,13 @@ namespace MigAz.UserControls
             PropertyChanged();
             this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
+
+        private void txtTargetDiskName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

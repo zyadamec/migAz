@@ -92,7 +92,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
                     if (networkInterface.TargetVirtualNetwork == null)
-                        this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
+                        this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
                     else
                     {
                         if (networkInterface.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
@@ -110,12 +110,12 @@ namespace MigAz.Azure.Generator.AsmToArm
                             }
 
                             if (!targetVNetExists)
-                                this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' is invalid, as it is not included in the migration / template.", virtualMachine);
+                                this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
                         }
                     }
 
                     if (networkInterface.TargetSubnet == null)
-                        this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
+                        this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
                 }
 
                 if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)

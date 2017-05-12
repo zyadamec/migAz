@@ -146,28 +146,11 @@ namespace MigAz.Forms
             lblLastOutputRefresh.Text = String.Empty;
         }
 
-        private void aRMToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-
-            newMigrationToolStripMenuItem.Enabled = false;
-            closeMigrationToolStripMenuItem.Enabled = true;
-
-            asmToArm.ActivateSourceARMTab();
-
-            this.Refresh();
-            Application.DoEvents();
-            asmToArm.ChangeAzureContext();
-        }
-
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Coming soon to MigAz v2.  Continue to utilize seperate AWS to ARM MigAz Tool until integrated.  https://aka.ms/MigAz");
+            return;
+
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
@@ -375,6 +358,44 @@ namespace MigAz.Forms
                     migrator.PostTelemetryRecord();
                 }
             }
+        }
+
+        private void aRMToARMToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false;
+            closeMigrationToolStripMenuItem.Enabled = true;
+
+            asmToArm.ActivateSourceARMTab();
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
+        }
+
+        private void aSMToARMToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false;
+            closeMigrationToolStripMenuItem.Enabled = true;
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
         }
     }
 }
