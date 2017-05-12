@@ -55,6 +55,10 @@ namespace MigAz.Azure.Asm
 
             // todo now russell, to include where is the Primary Network Interface obtained??
             _NetworkInterfaces = new List<NetworkInterface>();
+
+            //NetworkInterface primaryNetworkInterface = new NetworkInterface();
+            //_NetworkInterfaces.Add(primaryNetworkInterface);
+
             foreach (XmlNode networkInterfaceNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
             {
                 _NetworkInterfaces.Add(new NetworkInterface(_AzureContext, this, settingsProvider, networkInterfaceNode));
