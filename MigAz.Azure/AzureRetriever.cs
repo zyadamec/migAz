@@ -357,7 +357,7 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureAsmVirtualMachine", "Start");
 
-            Hashtable vmDetails = await this.GetVMDetails(asmCloudService.ServiceName, virtualMachineName);
+            Hashtable vmDetails = await this.GetVMDetails(asmCloudService.Name, virtualMachineName);
             XmlDocument virtualMachineXml = await this.GetAzureAsmResources("VirtualMachine", vmDetails);
             Asm.VirtualMachine asmVirtualMachine = new Asm.VirtualMachine(this._AzureContext, asmCloudService, this._AzureContext.SettingsProvider, virtualMachineXml, vmDetails);
             await asmVirtualMachine.InitializeChildren();
@@ -429,7 +429,7 @@ namespace MigAz.Azure
                 CloudService tempCloudService = new CloudService(_AzureContext, cloudServiceXml);
 
                 Hashtable cloudServiceInfo = new Hashtable();
-                cloudServiceInfo.Add("name", tempCloudService.ServiceName);
+                cloudServiceInfo.Add("name", tempCloudService.Name);
                 XmlDocument cloudServiceDetailXml = await this.GetAzureAsmResources("CloudService", cloudServiceInfo);
                 CloudService asmCloudService = new CloudService(_AzureContext, cloudServiceDetailXml);
 
@@ -453,7 +453,7 @@ namespace MigAz.Azure
 
             foreach (CloudService asmCloudService in await this.GetAzureAsmCloudServices())
             {
-                if (asmCloudService.ServiceName == cloudServiceName)
+                if (asmCloudService.Name == cloudServiceName)
                     return asmCloudService;
             }
 
@@ -539,25 +539,6 @@ namespace MigAz.Azure
         #endregion
 
         #region ARM Methods
-
-        internal MigrationTarget.AvailabilitySet GetAzureASMAvailabilitySet(Asm.VirtualMachine asmVirtualMachine)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureASMAvailabilitySet", "Start");
-
-            if (_MigrationAvailabilitySets == null)
-                _MigrationAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
-
-            foreach (MigrationTarget.AvailabilitySet migrationAvailabilitySet in _MigrationAvailabilitySets)
-            {
-                if (migrationAvailabilitySet.TargetName == asmVirtualMachine.GetDefaultAvailabilitySetName())
-                    return migrationAvailabilitySet;
-            }
-
-            MigrationTarget.AvailabilitySet newArmAvailabilitySet = new MigrationTarget.AvailabilitySet(this._AzureContext, asmVirtualMachine);
-            _MigrationAvailabilitySets.Add(newArmAvailabilitySet);
-
-            return newArmAvailabilitySet;
-        }
 
         public async Task<List<AzureTenant>> GetAzureARMTenants()
         {

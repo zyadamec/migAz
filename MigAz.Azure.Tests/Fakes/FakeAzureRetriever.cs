@@ -234,7 +234,7 @@ namespace MigAz.Tests.Fakes
             {
                 foreach (CloudService asmCloudService in _CloudServices)
                 {
-                    if (asmCloudService.ServiceName == cloudServiceName)
+                    if (asmCloudService.Name == cloudServiceName)
                         return asmCloudService;
                 }
             }

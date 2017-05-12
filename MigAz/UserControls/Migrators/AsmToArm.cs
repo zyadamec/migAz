@@ -170,10 +170,12 @@ namespace MigAz.UserControls.Migrators
                     List<CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
                     foreach (CloudService asmCloudService in asmCloudServices)
                     {
+                        Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, asmCloudService);
+
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                         {
                             TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
-                            TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.ServiceName, false);
+                            TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.Name, false);
                             TreeNode cloudServiceNode = null;
                             if (cloudServiceNodeSearch.Count() == 1)
                             {
@@ -182,14 +184,15 @@ namespace MigAz.UserControls.Migrators
 
                             if (cloudServiceNode == null)
                             {
-                                cloudServiceNode = new TreeNode(asmCloudService.ServiceName);
-                                cloudServiceNode.Name = asmCloudService.ServiceName;
-                                cloudServiceNode.Tag = asmCloudService;
+                                cloudServiceNode = new TreeNode(asmCloudService.Name);
+                                cloudServiceNode.Name = asmCloudService.Name;
+                                cloudServiceNode.Tag = targetAvailabilitySet;
                                 parentNode.Nodes.Add(cloudServiceNode);
                                 parentNode.Expand();
                             }
 
                             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine);
+                            targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
 
                             TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
                             virtualMachineNode.Name = targetVirtualMachine.SourceName;

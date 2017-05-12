@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class AvailabilitySet
+    public class AvailabilitySet : IAvailabilitySetSource
     {
         private JToken _AvailabilitySet;
         private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();

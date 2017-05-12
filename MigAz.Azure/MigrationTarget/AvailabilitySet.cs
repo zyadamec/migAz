@@ -10,7 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     public class AvailabilitySet : IMigrationTarget
     {
         private AzureContext _AzureContext;
-        private Arm.AvailabilitySet _SourceAvailabilitySet;
+        private IAvailabilitySetSource _SourceAvailabilitySet;
         private string _TargetName = String.Empty;
 
         private AvailabilitySet() { }
@@ -19,16 +19,20 @@ namespace MigAz.Azure.MigrationTarget
         {
             _AzureContext = azureContext;
         }
+
         public AvailabilitySet(AzureContext azureContext, String targetName)
         {
             _AzureContext = azureContext;
             this.TargetName = targetName;
         }
-        public AvailabilitySet(AzureContext azureContext, Asm.VirtualMachine asmVirtualMachine)
+
+        public AvailabilitySet(AzureContext azureContext, Asm.CloudService asmCloudService)
         {
             _AzureContext = azureContext;
-            this.TargetName = asmVirtualMachine.GetDefaultAvailabilitySetName();
+            _SourceAvailabilitySet = asmCloudService;
+            this.TargetName = _SourceAvailabilitySet.Name;
         }
+
         public AvailabilitySet(AzureContext azureContext, Arm.AvailabilitySet availabilitySet)
         {
             _AzureContext = azureContext;
@@ -37,7 +41,7 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = _SourceAvailabilitySet.Name;
         }
 
-        public Arm.AvailabilitySet SourceAvailabilitySet
+        public IAvailabilitySetSource SourceAvailabilitySet
         {
             get { return _SourceAvailabilitySet; }
         }

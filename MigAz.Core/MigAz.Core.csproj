@@ -47,6 +47,7 @@
     <Compile Include="ArmTemplate\ArmConst.cs" />
     <Compile Include="Generator\MigAzGeneratorAlert.cs" />
     <Compile Include="Generator\TemplateGenerator.cs" />
+    <Compile Include="Interface\IAvailabilitySetSource.cs" />
     <Compile Include="Interface\IDisk.cs" />
     <Compile Include="Interface\IExportArtifacts.cs" />
     <Compile Include="Interface\ILogProvider.cs" />

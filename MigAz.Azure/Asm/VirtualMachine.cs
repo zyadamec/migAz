@@ -92,15 +92,6 @@ namespace MigAz.Azure.Asm
                 _AsmNetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
         }
 
-        internal string GetDefaultAvailabilitySetName()
-        {
-            if (this.AvailabilitySetName != String.Empty)
-                return this.AvailabilitySetName;
-            else
-                return this.CloudServiceName;
-
-        }
-
         #region Properties
 
         public CloudService Parent
