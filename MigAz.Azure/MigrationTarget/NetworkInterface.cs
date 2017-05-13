@@ -70,7 +70,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public bool HasPublicIPs
         {
-            get { return false; } // todo now asap
+            get { return false; }
         }
         public bool IsPrimary { get; set; }
 

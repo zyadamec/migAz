@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
@@ -28,7 +29,7 @@ namespace MigAz.Azure.Arm
 
             foreach (var subnet in subnets)
             {
-                Subnet armSubnet = new Subnet(this, subnet);
+                Subnet armSubnet = new Subnet(_AzureContext, this, subnet);
                 _Subnets.Add(armSubnet);
             }
 
@@ -55,6 +56,16 @@ namespace MigAz.Azure.Arm
                         }
                     }
                 }
+            }
+        }
+
+        public async Task InitializeChildrenAsync()
+        {
+            this.ResourceGroup = await _AzureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+
+            foreach (Subnet subnet in this.Subnets)
+            {
+                await subnet.InitializeChildrenAsync();
             }
         }
 
@@ -128,17 +139,3 @@ namespace MigAz.Azure.Arm
         }
     }
 }
-
-
-            //foreach (var addressprefix in resource.properties.addressSpace.addressPrefixes)
-            //{
-            //    addressprefixes.Add(addressprefix.Value);
-            //}
-
-     //if (resource.properties.dhcpOptions != null)
-     //       {
-     //           foreach (var dnsserver in resource.properties.dhcpOptions.dnsServers)
-     //           {
-     //               dnsservers.Add(dnsserver.Value);
-     //           }
-     //       }

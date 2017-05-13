@@ -36,7 +36,6 @@ namespace MigAz.Tests
             AzureContext azureContext = new AzureContext(logProvider, statusProvider, settingsProvider);
             azureContext.AzureEnvironment = azureEnvironment;
             FakeAzureRetriever fakeAzureRetriever = new FakeAzureRetriever(azureContext);
-            azureContext.AzureRetriever = fakeAzureRetriever;
 
             return azureContext;
         }

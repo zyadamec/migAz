@@ -17,7 +17,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private Subnet() { }
 
-        public Subnet(AzureContext azureContext, MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source)
+        public Subnet(AzureContext azureContext, MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             _AzureContext = azureContext;
             _ParentVirtualNetwork = parentVirtualNetwork;

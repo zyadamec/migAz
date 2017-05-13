@@ -703,13 +703,12 @@ namespace MigAz.Azure
             {
                 Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(_AzureContext, virtualNetwork);
 
+                await armVirtualNetwork.InitializeChildrenAsync();
                 foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways())
                 {
 
                 }
-
-
-                armVirtualNetwork.ResourceGroup = await this.GetAzureARMResourceGroup(armVirtualNetwork.Id);
+                
                 _ArmVirtualNetworks.Add(armVirtualNetwork);
             }
 
@@ -946,6 +945,20 @@ namespace MigAz.Azure
             }
 
             return _ArmVirtualNetworkGateways;
+        }
+
+        
+        public async Task<Arm.NetworkSecurityGroup> GetAzureARMNetworkSecurityGroup(string id)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroup", "Start");
+
+            foreach (Arm.NetworkSecurityGroup networkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups())
+            {
+                if (String.Compare(networkSecurityGroup.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    return networkSecurityGroup;
+            }
+
+            return null;
         }
 
         public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups()

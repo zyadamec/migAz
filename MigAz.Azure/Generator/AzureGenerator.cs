@@ -342,54 +342,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             base.OnTemplateChanged();
         }
 
-        private void BuildPublicIPAddressObject(ref Core.ArmTemplate.NetworkInterface networkinterface)
-        {
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
-            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-            publicipaddress.name = networkinterface.name;
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
-            publicipaddress.properties = new PublicIPAddress_Properties();
-
-            this.AddResource(publicipaddress);
-
-            NetworkInterface_Properties networkinterface_properties = (NetworkInterface_Properties)networkinterface.properties;
-            networkinterface_properties.ipConfigurations[0].properties.publicIPAddress = new Core.ArmTemplate.Reference();
-            networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
-            networkinterface.properties = networkinterface_properties;
-
-            networkinterface.dependsOn.Add(networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id);
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
-        }
-
-        private void BuildPublicIPAddressObject(Asm.VirtualMachine asmVirtualMachine)
-        {
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
-            
-            string publicipaddress_name = asmVirtualMachine.LoadBalancerName;
-
-            string publicipallocationmethod = "Dynamic";
-            if (asmVirtualMachine.Parent.AsmReservedIP != null)
-                publicipallocationmethod = "Static";
-
-            Hashtable dnssettings = new Hashtable();
-            dnssettings.Add("domainNameLabel", (publicipaddress_name + _settingsProvider.StorageAccountSuffix).ToLower());
-
-            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-            publicipaddress_properties.dnsSettings = dnssettings;
-            publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
-
-            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-            publicipaddress.name = publicipaddress_name + _settingsProvider.PublicIPSuffix;
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
-            publicipaddress.properties = publicipaddress_properties;
-
-            this.AddResource(publicipaddress);
-
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
-        }
 
         private AvailabilitySet BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet availabilitySet)
         {
@@ -1076,7 +1029,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
                 }
 
-
                 // If there is at least one endpoint add the reference to the LB backend pool
                 List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
                 if (targetNetworkInterface.LoadBalancerRules.Count > 0)
@@ -1106,6 +1058,22 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
 
                 ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+
+                if (targetNetworkInterface.HasPublicIPs)
+                {
+                    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+                    publicipaddress.name = targetNetworkInterface.ToString();
+                    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+                        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+                    publicipaddress.properties = new PublicIPAddress_Properties();
+
+                    Core.ArmTemplate.Reference publicIPAddress = new Core.ArmTemplate.Reference();
+                    publicIPAddress.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
+                    ipconfiguration_properties.publicIPAddress = publicIPAddress;
+
+                    this.AddResource(publicipaddress);
+                    dependson.Add(publicIPAddress.id);
+                }
 
                 ipConfigurations.Add(ipconfiguration);
             }
@@ -1149,11 +1117,6 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
             }
 
-            if (targetNetworkInterface.HasPublicIPs)
-            {
-                BuildPublicIPAddressObject(ref networkInterface);
-            }
-
             networkinterfaces.Add(networkinterface_ref);
 
             this.AddResource(networkInterface);
@@ -1187,49 +1150,12 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
 
+            //BuildPublicIPAddressObject(ref virtualmachine);
+            //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
+
             foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
-                //{
-                // todo
-                //string[] stringSeparators = new string[] { "/backendAddressPools/" };
-
-                //string NatRuleID = NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools[0].id;
-                //string Loadbalancerid = NatRuleID.Split(stringSeparators, StringSplitOptions.None)[0].Replace("/subscriptions", "subscriptions");
-                //NWInfo.Add("LBId", Loadbalancerid);
-
-                ////Get LBDetails
-                //var LBDetails = _asmRetriever.GetAzureARMResources("Loadbalancer", NWInfo, null);
-                //var LBResults = JsonConvert.DeserializeObject<dynamic>(LBDetails);
-
-                //string PubIPName = null;
-
-                ////Process the Public IP for the Loadbalancer
-                //if (LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress != null)
-                //{
-                //    //Get PublicIP details
-                //    string PubId = LBResults.properties.frontendIPConfigurations[0].properties.publicIPAddress.id;
-                //    PubId = PubId.Replace("/subscriptions", "subscriptions");
-
-                //    NWInfo.Add("publicipId", PubId);
-                //    var LBPubIpDetails = _asmRetriever.GetAzureARMResources("PublicIP", NWInfo, null);
-                //    var LBPubIpResults = JsonConvert.DeserializeObject<dynamic>(LBPubIpDetails);
-
-                //    PubIPName = LBPubIpResults.name;
-
-                //    //Build the Public IP for the Loadbalancer
-                //    BuildARMPublicIPAddressObject(LBResults, LBPubIpResults);
-
-                //}
-
-                //Build the Loadbalancer
-                // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
-                //}
-
                 NetworkInterface networkInterface = BuildNetworkInterfaceObject(targetNetworkInterface, networkinterfaces);
-
-                //BuildPublicIPAddressObject(ref virtualmachine);
-                //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
 
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]");
             }
@@ -1510,10 +1436,39 @@ namespace MigAz.Azure.Generator.AsmToArm
         {
             return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
         }
-
-        public bool OutputFilesExist()
-        {
-            return File.Exists(GetInstructionPath()) || File.Exists(GetTemplatePath()) || File.Exists(GetInstructionPath());
-        }
     }
 }
+
+
+
+
+
+//private void BuildPublicIPAddressObject(Asm.VirtualMachine asmVirtualMachine)
+//{
+//    LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
+
+//    string publicipaddress_name = asmVirtualMachine.LoadBalancerName;
+
+//    string publicipallocationmethod = "Dynamic";
+//    if (asmVirtualMachine.Parent.AsmReservedIP != null)
+//        publicipallocationmethod = "Static";
+
+//    Hashtable dnssettings = new Hashtable();
+//    dnssettings.Add("domainNameLabel", (publicipaddress_name + _settingsProvider.StorageAccountSuffix).ToLower());
+
+//    PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+//    publicipaddress_properties.dnsSettings = dnssettings;
+//    publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
+
+//    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+//    publicipaddress.name = publicipaddress_name + _settingsProvider.PublicIPSuffix;
+//    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
+//        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+//    publicipaddress.properties = publicipaddress_properties;
+
+//    this.AddResource(publicipaddress);
+
+//    LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
+//}
+
+
