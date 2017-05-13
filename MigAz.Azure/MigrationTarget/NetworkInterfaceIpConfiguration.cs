@@ -10,15 +10,28 @@ namespace MigAz.Azure.MigrationTarget
     public class NetworkInterfaceIpConfiguration : IMigrationTarget
     {
         private AzureContext _AzureContext;
-        private Azure.Arm.NetworkInterfaceIpConfiguration _SourceIpConfiguration;
+        private INetworkInterfaceIpConfiguration _SourceIpConfiguration;
         private string _TargetName = String.Empty;
         private IMigrationVirtualNetwork _TargetVirtualNetwork;
         private IMigrationSubnet _TargetSubnet;
+        private String _TargetPrivateIPAllocationMethod = "Dynamic";
         private String _TargetStaticIpAddress = String.Empty;
+        private bool _TargetEnableIPForwarding = false;
 
         public NetworkInterfaceIpConfiguration()
         {
             this.TargetName = "ipconfig1";
+        }
+
+        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration)
+        {
+            _AzureContext = azureContext;
+            _SourceIpConfiguration = ipConfiguration;
+
+            this.TargetName = ipConfiguration.Name;
+            this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
+            this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
+            // todo now asap, this needs to populate other default property values
         }
 
         public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration)
@@ -32,7 +45,7 @@ namespace MigAz.Azure.MigrationTarget
             // todo now asap, this needs to populate other default property values
         }
 
-        public Azure.Arm.NetworkInterfaceIpConfiguration SourceIpConfiguration
+        public INetworkInterfaceIpConfiguration SourceIpConfiguration
         {
             get { return _SourceIpConfiguration; }
         }
@@ -50,7 +63,14 @@ namespace MigAz.Azure.MigrationTarget
 
         public String TargetPrivateIPAllocationMethod
         {
-            get;set; // Should be "Static" or "Dynamic"
+            get { return _TargetPrivateIPAllocationMethod; }
+            set
+            {
+                if (value == "Static" || value == "Dynamic")
+                    _TargetPrivateIPAllocationMethod = value;
+                else
+                    throw new ArgumentException("Must be 'Static' or 'Dynamic'.");
+            }
         }
 
         public String TargetPrivateIpAddress
@@ -58,7 +78,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetStaticIpAddress; }
             set { _TargetStaticIpAddress = value.Trim(); }
         }
-        
+
         public string SourceName
         {
             get

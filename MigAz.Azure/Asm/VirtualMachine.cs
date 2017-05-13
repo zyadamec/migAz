@@ -19,8 +19,8 @@ namespace MigAz.Azure.Asm
         private Hashtable _VmDetails;
         Disk _OSVirtualHardDisk;
         List<Disk> _DataDisks;
-        List<LoadBalancerRule> _LoadBalancerRules;
-        List<NetworkInterface> _NetworkInterfaces;
+        List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
+        List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
         private VirtualNetwork _SourceVirtualNetwork;
         private Subnet _SourceSubnet;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
@@ -47,22 +47,61 @@ namespace MigAz.Azure.Asm
                 _DataDisks.Add(asmDisk);
             }
 
-            _LoadBalancerRules = new List<LoadBalancerRule>();
             foreach (XmlNode loadBalancerRuleNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
             {
                 _LoadBalancerRules.Add(new LoadBalancerRule(_AzureContext, loadBalancerRuleNode));
             }
 
-            // todo now asap, to include where is the Primary Network Interface obtained??
-            _NetworkInterfaces = new List<NetworkInterface>();
+            #region Primary Network Interface
 
-            //NetworkInterface primaryNetworkInterface = new NetworkInterface();
-            //_NetworkInterfaces.Add(primaryNetworkInterface);
+            NetworkInterface primaryNetworkInterface = new NetworkInterface(_AzureContext, this);
+            this.NetworkInterfaces.Add(primaryNetworkInterface);
 
-            foreach (XmlNode networkInterfaceNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
+            primaryNetworkInterface.IsPrimary = true;
+            primaryNetworkInterface.Name = this.RoleName + "-NIC1";
+
+            NetworkInterfaceIpConfiguration primaryNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+            primaryNetworkInterface.NetworkInterfaceIpConfigurations.Add(primaryNetworkInterfaceIpConfiguration);
+
+            // code note, unclear why this is index [1] on the ConfigurationSet ... couldn't it be any a different order?
+            if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress") != null)
             {
-                _NetworkInterfaces.Add(new NetworkInterface(_AzureContext, this, settingsProvider, networkInterfaceNode));
+                primaryNetworkInterfaceIpConfiguration.PrivateIpAllocationMethod = "Static";
+                primaryNetworkInterfaceIpConfiguration.PrivateIpAddress = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress").InnerText;
             }
+
+            #endregion
+
+
+            #region Additional Network Interfaces
+
+            foreach (XmlNode additionalNetworkInterfaceXml in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
+            {
+                NetworkInterface additionalNetworkInterface = new NetworkInterface(_AzureContext, this);
+                this.NetworkInterfaces.Add(additionalNetworkInterface);
+
+                additionalNetworkInterface.Name = this.RoleName + "-" + additionalNetworkInterfaceXml.SelectSingleNode("Name").InnerText;
+
+                if (additionalNetworkInterfaceXml.SelectNodes("IPForwarding").Count > 0)
+                {
+                    additionalNetworkInterface.EnableIpForwarding = true;
+                }
+
+                NetworkInterfaceIpConfiguration ipConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+                additionalNetworkInterface.NetworkInterfaceIpConfigurations.Add(ipConfiguration);
+
+                ipConfiguration.Name = "ipconfig1";
+                ipConfiguration.VirtualNetworkName = "TODO now asap Same As Above";
+                ipConfiguration.SubnetName = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText;
+
+                if (additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress") != null)
+                {
+                    ipConfiguration.PrivateIpAllocationMethod = "Static";
+                    ipConfiguration.PrivateIpAddress = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                }
+            }
+
+            #endregion
         }
 
         #endregion

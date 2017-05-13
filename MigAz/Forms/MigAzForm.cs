@@ -118,26 +118,6 @@ namespace MigAz.Forms
             txtRest.Height = tabMigAzMonitoring.Height - 30;
         }
 
-        #region Menu Items
-
-        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-
-            newMigrationToolStripMenuItem.Enabled = false;
-            closeMigrationToolStripMenuItem.Enabled = true;
-
-            this.Refresh();
-            Application.DoEvents();
-            asmToArm.ChangeAzureContext();
-        }
-
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(Azure.AzureContext sender)
         {
             dgvMigAzMessages.DataSource = null;
@@ -145,6 +125,9 @@ namespace MigAz.Forms
             btnRefreshOutput.Enabled = false;
             lblLastOutputRefresh.Text = String.Empty;
         }
+
+        #region Menu Items
+
 
         private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -361,6 +344,24 @@ namespace MigAz.Forms
             }
         }
 
+        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
+
+            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
+            parent.Controls.Add(asmToArm);
+
+            newMigrationToolStripMenuItem.Enabled = false;
+            closeMigrationToolStripMenuItem.Enabled = true;
+
+            this.Refresh();
+            Application.DoEvents();
+            asmToArm.ChangeAzureContext();
+        }
+
         private void aRMToARMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
@@ -375,24 +376,6 @@ namespace MigAz.Forms
             closeMigrationToolStripMenuItem.Enabled = true;
 
             asmToArm.ActivateSourceARMTab();
-
-            this.Refresh();
-            Application.DoEvents();
-            asmToArm.ChangeAzureContext();
-        }
-
-        private void aSMToARMToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-
-            newMigrationToolStripMenuItem.Enabled = false;
-            closeMigrationToolStripMenuItem.Enabled = true;
 
             this.Refresh();
             Application.DoEvents();

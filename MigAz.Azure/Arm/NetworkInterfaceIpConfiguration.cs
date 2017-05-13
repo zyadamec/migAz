@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class NetworkInterfaceIpConfiguration
+    public class NetworkInterfaceIpConfiguration : INetworkInterfaceIpConfiguration
     {
         private AzureContext _AzureContext;
         private JToken _NetworkInterfaceIpConfiguration;

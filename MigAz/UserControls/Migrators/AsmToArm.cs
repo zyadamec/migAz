@@ -311,7 +311,6 @@ namespace MigAz.UserControls.Migrators
                             virtualMachineParentNode = tnAvailabilitySet;
                         }
 
-
                         TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                         tnVirtualMachine.Name = targetVirtualMachine.SourceName;
                         tnVirtualMachine.Tag = targetVirtualMachine;
@@ -449,14 +448,21 @@ namespace MigAz.UserControls.Migrators
                             Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
 
                             #region process virtual network
-                            if (asmVirtualMachine.VirtualNetworkName != string.Empty)
+
+                            foreach (Azure.Asm.NetworkInterface networkInterface in asmVirtualMachine.NetworkInterfaces)
                             {
-                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.VirtualNetworkName, true))
+                                foreach (Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                                    if (ipConfiguration.VirtualNetwork != null)
                                     {
-                                        if (!treeNode.Checked)
-                                            treeNode.Checked = true;
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -518,7 +524,7 @@ namespace MigAz.UserControls.Migrators
 
                             foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
                             {
-                                foreach (NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
                                 {
                                     if (ipConfiguration.VirtualNetwork != null)
                                     {

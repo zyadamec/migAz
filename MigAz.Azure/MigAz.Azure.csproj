@@ -77,6 +77,7 @@
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
     <Compile Include="Arm\VirtualNetworkGateway.cs" />
+    <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="Enums.cs" />

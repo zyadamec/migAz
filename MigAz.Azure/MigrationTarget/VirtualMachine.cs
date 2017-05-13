@@ -36,6 +36,12 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, asmNetworkInterface);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
+
+                foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in asmNetworkInterface.NetworkInterfaceIpConfigurations)
+                {
+                    Azure.MigrationTarget.NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new Azure.MigrationTarget.NetworkInterfaceIpConfiguration(_AzureContext, asmNetworkInterfaceIpConfiguration);
+                    migrationNetworkInterface.TargetNetworkInterfaceIpConfigurations.Add(migrationNetworkInterfaceIpConfiguration);
+                }
             }
         }
 
