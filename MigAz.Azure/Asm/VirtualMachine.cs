@@ -23,6 +23,7 @@ namespace MigAz.Azure.Asm
         List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
         private VirtualNetwork _SourceVirtualNetwork;
         private Subnet _SourceSubnet;
+        private String _NetworkSecurityGroupName = String.Empty;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
 
         #endregion
@@ -70,6 +71,11 @@ namespace MigAz.Azure.Asm
             {
                 primaryNetworkInterfaceIpConfiguration.PrivateIpAllocationMethod = "Static";
                 primaryNetworkInterfaceIpConfiguration.PrivateIpAddress = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress").InnerText;
+            }
+
+            if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/NetworkSecurityGroup") != null)
+            {
+                _NetworkSecurityGroupName = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/NetworkSecurityGroup").InnerText;
             }
 
             #endregion

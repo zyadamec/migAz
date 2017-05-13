@@ -1,6 +1,7 @@
 ﻿using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace MigAz.Azure.Asm

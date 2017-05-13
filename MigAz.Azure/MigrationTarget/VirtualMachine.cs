@@ -18,7 +18,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts)
+        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -37,12 +37,12 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, asmNetworkInterface, targetVirtualNetworks);
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, virtualMachine, asmNetworkInterface, targetVirtualNetworks, networkSecurityGroups);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
         }
 
-        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts)
+        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -61,7 +61,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface, targetVirtualNetworks);
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface, targetVirtualNetworks, networkSecurityGroups);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
         }

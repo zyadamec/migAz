@@ -42,6 +42,19 @@ namespace MigAz.Azure.MigrationTarget
                 this.Rules.Add(targetRule);
             }
         }
+
+        public static NetworkSecurityGroup SeekNetworkSecurityGroup(List<NetworkSecurityGroup> networkSecurityGroups, string sourceName)
+        {
+            foreach (NetworkSecurityGroup networkSecurityGroup in networkSecurityGroups)
+            {
+                if (networkSecurityGroup.SourceName == sourceName)
+                    return networkSecurityGroup;
+            }
+
+            return null;
+        }
+
+
         public List<NetworkSecurityGroupRule> Rules
         {
             get { return _Rules; }

@@ -1094,11 +1094,11 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (targetNetworkInterface.NetworkSecurityGroup != null)
             {
-                INetworkSecurityGroup networkSecurityGroupInMigration = (INetworkSecurityGroup)_ExportArtifacts.SeekNetworkSecurityGroup(targetNetworkInterface.NetworkSecurityGroup.Name);
+                MigrationTarget.NetworkSecurityGroup networkSecurityGroupInMigration = _ExportArtifacts.SeekNetworkSecurityGroup(targetNetworkInterface.NetworkSecurityGroup.ToString());
 
                 if (networkSecurityGroupInMigration == null)
                 {
-                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.name + "' utilized ASM Network Security Group (NSG) '" + targetNetworkInterface.NetworkSecurityGroup.Name + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", networkSecurityGroupInMigration);
+                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.name + "' utilized ASM Network Security Group (NSG) '" + targetNetworkInterface.NetworkSecurityGroup.ToString() + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", networkSecurityGroupInMigration);
                 }
                 else
                 {

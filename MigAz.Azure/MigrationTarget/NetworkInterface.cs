@@ -18,7 +18,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private NetworkInterface() { }
 
-        public NetworkInterface(AzureContext azureContext, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks)
+        public NetworkInterface(AzureContext azureContext, Asm.VirtualMachine virtualMachine, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
@@ -30,9 +30,14 @@ namespace MigAz.Azure.MigrationTarget
                 Azure.MigrationTarget.NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new Azure.MigrationTarget.NetworkInterfaceIpConfiguration(_AzureContext, asmNetworkInterfaceIpConfiguration, virtualNetworks);
                 this.TargetNetworkInterfaceIpConfigurations.Add(migrationNetworkInterfaceIpConfiguration);
             }
+
+            if (virtualMachine.NetworkSecurityGroup != null)
+            {
+                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(networkSecurityGroups, virtualMachine.NetworkSecurityGroup.ToString());
+            }
         }
 
-        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks)
+        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
@@ -43,6 +48,11 @@ namespace MigAz.Azure.MigrationTarget
             {
                 MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, virtualNetworks);
                 this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
+            }
+
+            if (networkInterface.NetworkSecurityGroup != null)
+            {
+                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(networkSecurityGroups, networkInterface.NetworkSecurityGroup.ToString());
             }
         }
 
@@ -74,9 +84,9 @@ namespace MigAz.Azure.MigrationTarget
         }
         public bool IsPrimary { get; set; }
 
-        public INetworkSecurityGroup NetworkSecurityGroup
+        public NetworkSecurityGroup NetworkSecurityGroup
         {
-            get; set; // todo now asap
+            get; set;
         }
 
         public string LoadBalancerName

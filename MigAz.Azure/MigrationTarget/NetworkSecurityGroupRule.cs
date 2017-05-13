@@ -16,7 +16,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Access = asmRule.Action;
             this.DestinationAddressPrefix = asmRule.DestinationAddressPrefix;
             this.DestinationPortRange = asmRule.DestinationPortRange;
-            //this.Direction = asmRule.direction;
+            this.Direction = asmRule.Type;
             this.IsSystemRule = asmRule.IsSystemRule;
             this.Priority = asmRule.Priority;
             this.Protocol = asmRule.Protocol;

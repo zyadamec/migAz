@@ -142,13 +142,12 @@ namespace MigAz.Azure.Asm
             }
         }
 
-        public VirtualNetworkGateway Gateway
+        public VirtualNetworkGateway Gateway  // todo now asap, see below
         {
             get { return _AsmVirtualNetworkGateway; }
-            set { _AsmVirtualNetworkGateway = value; } // set was only allowed because of unit test, recommend getting rid of in future
         }
          
-        public List<VirtualNetworkGateway> Gateways2
+        public List<VirtualNetworkGateway> Gateways2 // todo now asap, see above
         {
             get { return _AsmVirtualNetworkGateways2; }
         }

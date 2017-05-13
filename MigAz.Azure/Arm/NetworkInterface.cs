@@ -71,6 +71,11 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public NetworkSecurityGroup NetworkSecurityGroup
+        {
+            get;set;
+        }
+
         public override string ToString()
         {
             return this.Name;

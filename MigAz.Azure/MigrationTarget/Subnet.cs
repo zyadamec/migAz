@@ -29,7 +29,7 @@ namespace MigAz.Azure.MigrationTarget
 
                 if (asmSubnet.NetworkSecurityGroup != null)
                 {
-                    this.NetworkSecurityGroup = new NetworkSecurityGroup(azureContext, asmSubnet.NetworkSecurityGroup);
+                    this.NetworkSecurityGroup = SeekNetworkSecurityGroup(networkSecurityGroups, asmSubnet.NetworkSecurityGroup.ToString());
                 }
 
                 if (asmSubnet.RouteTable != null)
@@ -45,7 +45,7 @@ namespace MigAz.Azure.MigrationTarget
 
                 if (armSubnet.NetworkSecurityGroup != null)
                 {
-                    this.NetworkSecurityGroup = new NetworkSecurityGroup(azureContext, armSubnet.NetworkSecurityGroup);
+                    this.NetworkSecurityGroup = SeekNetworkSecurityGroup(networkSecurityGroups, armSubnet.NetworkSecurityGroup.ToString());
                 }
 
                 if (armSubnet.RouteTable != null)
@@ -57,6 +57,20 @@ namespace MigAz.Azure.MigrationTarget
             }
 
             this.TargetName = source.Name;
+        }
+
+        private NetworkSecurityGroup SeekNetworkSecurityGroup(List<NetworkSecurityGroup> networkSecurityGroups, string sourceName)
+        {
+            if (networkSecurityGroups == null || sourceName == null)
+                return null;
+
+            foreach (NetworkSecurityGroup networkSecurityGroup in networkSecurityGroups)
+            {
+                if (networkSecurityGroup.SourceName == sourceName)
+                    return networkSecurityGroup;
+            }
+
+            return null;
         }
 
         public String AddressPrefix { get; set; }

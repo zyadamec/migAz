@@ -25,6 +25,7 @@ namespace MigAz.UserControls.Migrators
         private AppSettingsProvider _appSettingsProvider;
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
+        private List<Azure.MigrationTarget.NetworkSecurityGroup> _AsmTargetNetworkSecurityGroups;
         private List<Azure.MigrationTarget.StorageAccount> _AsmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
@@ -140,6 +141,7 @@ namespace MigAz.UserControls.Migrators
 
                     #region Bind Source ASM Objects
 
+                    _AsmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
                     _AsmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
                     _AsmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
 
@@ -147,12 +149,26 @@ namespace MigAz.UserControls.Migrators
                     treeSourceASM.Nodes.Add(subscriptionNodeASM);
                     subscriptionNodeASM.Expand();
 
+                    foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
+                    {
+                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
+
+                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
+                        _AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+
+                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
+                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
+                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
+                        parentNode.Nodes.Add(tnNetworkSecurityGroup);
+                        parentNode.Expand();
+                    }
+
                     List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
                     foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                     {
                         TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
 
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork, _ArmTargetNetworkSecurityGroups);
+                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork, _AsmTargetNetworkSecurityGroups);
                         _AsmTargetVirtualNetworks.Add(targetVirtualNetwork);
 
                         TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
@@ -201,7 +217,7 @@ namespace MigAz.UserControls.Migrators
                                 parentNode.Expand();
                             }
 
-                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts);
+                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
                             targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
 
                             TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
@@ -210,19 +226,6 @@ namespace MigAz.UserControls.Migrators
                             cloudServiceNode.Nodes.Add(virtualMachineNode);
                             cloudServiceNode.Expand();
                         }
-                    }
-
-                    foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
-                    {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
-
-                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
-
-                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                        parentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        parentNode.Expand();
                     }
 
                     subscriptionNodeASM.ExpandAll();
@@ -317,7 +320,7 @@ namespace MigAz.UserControls.Migrators
                         TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
                         virtualMachineParentNode = tnResourceGroup;
 
-                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts);
+                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
                         _ArmTargetVirtualMachines.Add(targetVirtualMachine);
 
                         if (armVirtualMachine.AvailabilitySet != null)
@@ -468,6 +471,8 @@ namespace MigAz.UserControls.Migrators
 
                             foreach (Azure.MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
                             {
+                                #region Auto Select Virtual Network from each IpConfiguration
+
                                 foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
                                 {
                                     if (ipConfiguration.TargetVirtualNetwork != null && ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
@@ -483,6 +488,23 @@ namespace MigAz.UserControls.Migrators
                                         }
                                     }
                                 }
+
+                                #endregion
+
+                                #region Auto Select Network Security Group
+
+                                if (asmVirtualMachine.NetworkSecurityGroup != null)
+                                {
+                                    foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.NetworkSecurityGroup.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+                                #endregion
                             }
 
                             #endregion

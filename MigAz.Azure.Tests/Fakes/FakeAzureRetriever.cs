@@ -146,7 +146,6 @@ namespace MigAz.Tests.Fakes
                         info.Add("virtualnetworkname", parts[2]);
 
                         _VirtualNetworkGateway = new VirtualNetworkGateway(_AzureContext, _VirtualNetworks[0], doc);
-                        _VirtualNetworks[0].Gateway = _VirtualNetworkGateway;
 
                         break;
                     case "virtualnetworkgatewaysharedkey":
