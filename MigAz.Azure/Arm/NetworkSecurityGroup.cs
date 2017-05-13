@@ -19,11 +19,10 @@ namespace MigAz.Azure.Arm
         {
             _NetworkSecurityGroup = networkSecurityGroupToken;
 
-            // todo now asap, need to get Network Security Group Rules here
-            //foreach (JToken networkInterfaceIpConfigurationToken in _NetworkInterface["properties"]["ipConfigurations"])
-            //{
-            //    _NetworkInterfaceIpConfigurations.Add(new NetworkInterfaceIpConfiguration(networkInterfaceIpConfigurationToken));
-            //}
+            foreach (JToken securityRulesToken in _NetworkSecurityGroup["properties"]["securityRules"])
+            {
+                _Rules.Add(new NetworkSecurityGroupRule(securityRulesToken));
+            }
         }
 
         public string Id => (string)_NetworkSecurityGroup["id"];

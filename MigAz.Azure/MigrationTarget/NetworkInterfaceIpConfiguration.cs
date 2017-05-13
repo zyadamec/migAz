@@ -46,7 +46,6 @@ namespace MigAz.Azure.MigrationTarget
 
             #endregion
 
-            // todo now asap, this needs to populate other default property values
         }
 
         public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks)
@@ -75,7 +74,6 @@ namespace MigAz.Azure.MigrationTarget
 
             #endregion
             
-            // todo now asap, this needs to populate other default property values
         }
 
         private VirtualNetwork SeekVirtualNetwork(List<VirtualNetwork> virtualNetworks, string virtualNetworkName)

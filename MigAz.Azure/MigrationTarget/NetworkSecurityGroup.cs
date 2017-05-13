@@ -17,13 +17,31 @@ namespace MigAz.Azure.MigrationTarget
 
         private NetworkSecurityGroup() { }
 
-        public NetworkSecurityGroup(AzureContext azureContext, INetworkSecurityGroup source)
+        public NetworkSecurityGroup(AzureContext azureContext, Asm.NetworkSecurityGroup source)
         {
             _AzureContext = azureContext;
             _SourceNetworkSecurityGroup = source;
             this.TargetName = source.Name;
+
+            foreach (Asm.NetworkSecurityGroupRule sourceRule in source.Rules)
+            {
+                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(azureContext, sourceRule);
+                this.Rules.Add(targetRule);
+            }
         }
 
+        public NetworkSecurityGroup(AzureContext azureContext, Arm.NetworkSecurityGroup source)
+        {
+            _AzureContext = azureContext;
+            _SourceNetworkSecurityGroup = source;
+            this.TargetName = source.Name;
+
+            foreach (Arm.NetworkSecurityGroupRule sourceRule in source.Rules)
+            {
+                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(azureContext, sourceRule);
+                this.Rules.Add(targetRule);
+            }
+        }
         public List<NetworkSecurityGroupRule> Rules
         {
             get { return _Rules; }

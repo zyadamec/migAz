@@ -1,16 +1,40 @@
 ﻿using MigAz.Core.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
     public class NetworkSecurityGroupRule : IMigrationTarget
     {
-        // todo now asap, constructors from ASM/ARM
+        private AzureContext _AzureContext;
         private string _TargetName = String.Empty;
+        private bool _IsSystemRule = false;
+
+        public NetworkSecurityGroupRule(AzureContext azureContext, Asm.NetworkSecurityGroupRule asmRule)
+        {
+            _AzureContext = azureContext;
+            this.TargetName = asmRule.Name;
+            this.Access = asmRule.Action;
+            this.DestinationAddressPrefix = asmRule.DestinationAddressPrefix;
+            this.DestinationPortRange = asmRule.DestinationPortRange;
+            //this.Direction = asmRule.direction;
+            this.IsSystemRule = asmRule.IsSystemRule;
+            this.Priority = asmRule.Priority;
+            this.Protocol = asmRule.Protocol;
+            this.SourceAddressPrefix = asmRule.SourceAddressPrefix;
+        }
+
+        public NetworkSecurityGroupRule(AzureContext azureContext, Arm.NetworkSecurityGroupRule armRule)
+        {
+            _AzureContext = azureContext;
+            this.TargetName = armRule.Name;
+            this.Access = armRule.Access;
+            this.DestinationAddressPrefix = armRule.DestinationAddressPrefix;
+            this.DestinationPortRange = armRule.DestinationPortRange;
+            this.Direction = armRule.Direction;
+            this.Priority = armRule.Priority;
+            this.Protocol = armRule.Protocol;
+            this.SourceAddressPrefix = armRule.SourceAddressPrefix;
+        }
 
         public string Type
         {
@@ -20,17 +44,13 @@ namespace MigAz.Azure.MigrationTarget
         {
             get; set;
         }
-        public string Access
-        {
-            get; set;
-        }
 
         public long Priority
         {
             get; set;
         }
 
-        public string Action
+        public string Access
         {
             get; set;
         }
@@ -62,7 +82,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public bool IsSystemRule
         {
-            get;set;
+            get { return _IsSystemRule; }
+            set { _IsSystemRule = value; }
         }
 
         public String SourceName

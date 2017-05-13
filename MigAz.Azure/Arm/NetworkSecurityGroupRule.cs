@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,28 +9,25 @@ namespace MigAz.Azure.Arm
 {
     public class NetworkSecurityGroupRule
     {
-        public string Name => "TODO";
-        public long Priority => 0; // TODO
-        public string Direction => "TODO";
-        public string Access => "TODO";
-        public string SourceAddressPrefix => "TODO";
-        public string DestinationAddressPrefix => "TODO";
-        public string SourcePortRange => "TODO";
-        public string DestinationPortRange => "TODO";
-        public string Protocol => "TODO";
+        private JToken _NetworkSecurityGroupRuleToken;
 
+        private NetworkSecurityGroupRule() { }
 
-        //securityrule_properties.description = rule.name.Value;
-        //        securityrule_properties.direction = rule.properties.direction.Value;
-        //        securityrule_properties.priority = rule.properties.priority.Value;
-        //        securityrule_properties.access = rule.properties.access.Value;
-        //        securityrule_properties.sourceAddressPrefix = rule.properties.sourceAddressPrefix.Value;
-        //        securityrule_properties.sourceAddressPrefix.Replace("_", "");
-        //        securityrule_properties.destinationAddressPrefix = rule.properties.destinationAddressPrefix.Value;
-        //        securityrule_properties.destinationAddressPrefix.Replace("_", "");
-        //        securityrule_properties.sourcePortRange = rule.properties.sourcePortRange.Value;
-        //        securityrule_properties.destinationPortRange = rule.properties.destinationPortRange.Value;
-        //        securityrule_properties.protocol = rule.properties.protocol.Value;
+        public NetworkSecurityGroupRule(JToken networkSecurityGroupRuleToken)
+        {
+            _NetworkSecurityGroupRuleToken = networkSecurityGroupRuleToken;
+        }
+
+        public string Id => (string)_NetworkSecurityGroupRuleToken["id"];
+        public string Name => (string)_NetworkSecurityGroupRuleToken["name"];
+        public Int32 Priority => Convert.ToInt32((string)_NetworkSecurityGroupRuleToken["properties"]["priority"]);
+        public string Direction => (string)_NetworkSecurityGroupRuleToken["properties"]["direction"];
+        public string Access => (string)_NetworkSecurityGroupRuleToken["properties"]["access"];
+        public string SourceAddressPrefix => (string)_NetworkSecurityGroupRuleToken["properties"]["sourceAddressPrefix"];
+        public string DestinationAddressPrefix => (string)_NetworkSecurityGroupRuleToken["properties"]["destinationAddressPrefix"];
+        public string SourcePortRange => (string)_NetworkSecurityGroupRuleToken["properties"]["sourcePortRange"];
+        public string DestinationPortRange => (string)_NetworkSecurityGroupRuleToken["properties"]["destinationPortRange"];
+        public string Protocol => (string)_NetworkSecurityGroupRuleToken["properties"]["protocol"];
 
 
     }

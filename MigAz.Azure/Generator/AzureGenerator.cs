@@ -97,14 +97,14 @@ namespace MigAz.Azure.Generator.AsmToArm
                             this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
                         else
                         {
-                            if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
+                            if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
                             {
-                                Asm.VirtualNetwork targetAsmVirtualNetwork = (Asm.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                                MigrationTarget.VirtualNetwork virtualMachineTargetVirtualNetwork = (MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
                                 bool targetVNetExists = false;
 
-                                foreach (IVirtualNetwork iVirtualNetwork in _ExportArtifacts.VirtualNetworks)
+                                foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in _ExportArtifacts.VirtualNetworks)
                                 {
-                                    if (iVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork) && ((Azure.Asm.VirtualNetwork)iVirtualNetwork).Name == targetAsmVirtualNetwork.Name)
+                                    if (virtualMachineTargetVirtualNetwork.TargetName == virtualMachineTargetVirtualNetwork.TargetName)
                                     {
                                         targetVNetExists = true;
                                         break;
@@ -112,7 +112,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                                 }
 
                                 if (!targetVNetExists)
-                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
+                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + virtualMachineTargetVirtualNetwork.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
                             }
                         }
 
@@ -870,7 +870,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     securityrule_properties.description = asmNetworkSecurityGroupRule.ToString();
                     securityrule_properties.direction = asmNetworkSecurityGroupRule.Type;
                     securityrule_properties.priority = asmNetworkSecurityGroupRule.Priority;
-                    securityrule_properties.access = asmNetworkSecurityGroupRule.Action;
+                    securityrule_properties.access = asmNetworkSecurityGroupRule.Access;
                     securityrule_properties.sourceAddressPrefix = asmNetworkSecurityGroupRule.SourceAddressPrefix;
                     securityrule_properties.destinationAddressPrefix = asmNetworkSecurityGroupRule.DestinationAddressPrefix;
                     securityrule_properties.sourcePortRange = asmNetworkSecurityGroupRule.SourcePortRange;
@@ -1321,11 +1321,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             List<DataDisk> datadisks = new List<DataDisk>();
             foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
             {
-                if (dataDisk.TargetStorageAccount == null)
-                {
-                    this.AddAlert(AlertType.Error, "Target Storage Account must be specified for Data Disk '" + dataDisk.ToString() + "'.", dataDisk);
-                }
-                else
+                if (dataDisk.TargetStorageAccount != null)
                 {
                     string dataDiskTargetStorageAccountName = dataDisk.TargetStorageAccount.ToString();
                     DataDisk datadisk = new DataDisk();

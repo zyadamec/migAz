@@ -37,10 +37,22 @@ namespace MigAz.UserControls
 
             if (_TargetNetworkInterface.SourceNetworkInterface != null)
             {
-                // todo now asap
-                lblVirtualNetworkName.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
-                lblSubnetName.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
-                lblStaticIpAddress.Text = _TargetNetworkInterface.SourceNetworkInterface.ToString();
+                if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+                {
+                    Azure.Asm.NetworkInterface asmNetworkInterface = (Azure.Asm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
+
+                    lblVirtualNetworkName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
+                    lblSubnetName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
+                    lblStaticIpAddress.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
+                }
+                else if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterface))
+                {
+                    Azure.Arm.NetworkInterface armNetworkInterface = (Azure.Arm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
+
+                    lblVirtualNetworkName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
+                    lblSubnetName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
+                    lblStaticIpAddress.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
+                }
             }
 
             try

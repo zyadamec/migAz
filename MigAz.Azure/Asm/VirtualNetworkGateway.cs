@@ -40,7 +40,7 @@ namespace MigAz.Azure.Asm
 
         public string Name
         {
-            get { return "todo now asap"; }
+            get { return _GatewayXml.SelectSingleNode("//GatewayId").InnerText; }
         }
 
         public override string ToString()
