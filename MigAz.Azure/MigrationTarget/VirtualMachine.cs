@@ -18,7 +18,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine)
+        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -26,26 +26,23 @@ namespace MigAz.Azure.MigrationTarget
             this._TargetSize = virtualMachine.RoleSize;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
+            this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
-            foreach (Asm.Disk disk in virtualMachine.DataDisks)
+            foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
-                this.DataDisks.Add(new Disk(disk));
+                Disk targetDataDisk = new Disk(asmDataDisk);
+                targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
+                this.DataDisks.Add(targetDataDisk);
             }
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, asmNetworkInterface);
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, asmNetworkInterface, targetVirtualNetworks);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
-
-                foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in asmNetworkInterface.NetworkInterfaceIpConfigurations)
-                {
-                    Azure.MigrationTarget.NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new Azure.MigrationTarget.NetworkInterfaceIpConfiguration(_AzureContext, asmNetworkInterfaceIpConfiguration);
-                    migrationNetworkInterface.TargetNetworkInterfaceIpConfigurations.Add(migrationNetworkInterfaceIpConfiguration);
-                }
             }
         }
 
-        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine)
+        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -53,17 +50,31 @@ namespace MigAz.Azure.MigrationTarget
             this._TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
+            this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
-            foreach (Arm.Disk disk in virtualMachine.DataDisks)
+            foreach (Arm.Disk armDataDisk in virtualMachine.DataDisks)
             {
-                this.DataDisks.Add(new Disk(disk));
+                Disk targetDataDisk = new Disk(armDataDisk);
+                targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDataDisk.StorageAccountName);
+                this.DataDisks.Add(targetDataDisk);
             }
 
             foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface);
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface, targetVirtualNetworks);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
+        }
+
+        private StorageAccount SeekTargetStorageAccount(List<StorageAccount> storageAccounts, string sourceAccountName)
+        {
+            foreach (StorageAccount targetStorageAccount in storageAccounts)
+            {
+                if (targetStorageAccount.SourceName == sourceAccountName)
+                    return targetStorageAccount;
+            }
+
+            return null;
         }
 
         public Disk OSVirtualHardDisk

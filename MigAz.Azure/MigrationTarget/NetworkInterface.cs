@@ -18,15 +18,21 @@ namespace MigAz.Azure.MigrationTarget
 
         private NetworkInterface() { }
 
-        public NetworkInterface(AzureContext azureContext, Asm.NetworkInterface networkInterface)
+        public NetworkInterface(AzureContext azureContext, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks)
         {
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+
+            foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+            {
+                Azure.MigrationTarget.NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new Azure.MigrationTarget.NetworkInterfaceIpConfiguration(_AzureContext, asmNetworkInterfaceIpConfiguration, virtualNetworks);
+                this.TargetNetworkInterfaceIpConfigurations.Add(migrationNetworkInterfaceIpConfiguration);
+            }
         }
 
-        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface)
+        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks)
         {
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
@@ -35,7 +41,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
-                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration);
+                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, virtualNetworks);
                 this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
             }
         }

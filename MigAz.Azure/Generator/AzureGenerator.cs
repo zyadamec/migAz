@@ -94,7 +94,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
                     {
                         if (ipConfiguration.TargetVirtualNetwork == null)
-                            this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                            this.AddAlert(AlertType.Error, "Target Virtual Network for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
                         else
                         {
                             if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Asm.VirtualNetwork))
@@ -112,12 +112,12 @@ namespace MigAz.Azure.Generator.AsmToArm
                                 }
 
                                 if (!targetVNetExists)
-                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
+                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + targetAsmVirtualNetwork.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
                             }
                         }
 
                         if (ipConfiguration.TargetSubnet == null)
-                            this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Netowrk Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                            this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
                     }
                 }
 
@@ -1033,7 +1033,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             return routetable;
         }
 
-        private async Task BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private NetworkInterface BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
 
@@ -1159,6 +1159,8 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(networkInterface);
 
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "End " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
+
+            return networkInterface;
         }
 
         private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine virtualMachine)
@@ -1185,7 +1187,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
 
-            foreach (MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
+            foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
             {
                 // todo if (NicResults.properties.ipConfigurations[0].properties.loadBalancerBackendAddressPools != null)
                 //{
@@ -1224,8 +1226,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 // todo BuildARMLoadBalancerObject(LBResults, PubIPName);
                 //}
 
-                // todo now asap this moved into for loop
-                //await BuildNetworkInterfaceObject(virtualMachine, networkinterfaces);
+                NetworkInterface networkInterface = BuildNetworkInterfaceObject(targetNetworkInterface, networkinterfaces);
 
                 //BuildPublicIPAddressObject(ref virtualmachine);
                 //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);

@@ -13,7 +13,7 @@ namespace MigAz.UserControls
 {
     public partial class VirtualNetworkProperties : UserControl
     {
-        TreeNode _ARMVirtualNetowrkNode;
+        TreeNode _ARMVirtualNetworkNode;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -25,9 +25,9 @@ namespace MigAz.UserControls
 
         public void Bind(TreeNode armVirtualNetworkNode)
         {
-            _ARMVirtualNetowrkNode = armVirtualNetworkNode;
+            _ARMVirtualNetworkNode = armVirtualNetworkNode;
 
-            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
+            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetworkNode.Tag;
 
             if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
             {
@@ -48,10 +48,10 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetowrkNode.Tag;
+            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)_ARMVirtualNetworkNode.Tag;
 
             targetVirtualNetwork.TargetName = txtSender.Text.Trim();
-            _ARMVirtualNetowrkNode.Text = targetVirtualNetwork.ToString();
+            _ARMVirtualNetworkNode.Text = targetVirtualNetwork.ToString();
 
             PropertyChanged();
         }

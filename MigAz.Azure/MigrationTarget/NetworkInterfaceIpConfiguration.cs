@@ -16,14 +16,10 @@ namespace MigAz.Azure.MigrationTarget
         private IMigrationSubnet _TargetSubnet;
         private String _TargetPrivateIPAllocationMethod = "Dynamic";
         private String _TargetStaticIpAddress = String.Empty;
-        private bool _TargetEnableIPForwarding = false;
 
-        public NetworkInterfaceIpConfiguration()
-        {
-            this.TargetName = "ipconfig1";
-        }
+        private NetworkInterfaceIpConfiguration() { }
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration)
+        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks)
         {
             _AzureContext = azureContext;
             _SourceIpConfiguration = ipConfiguration;
@@ -31,18 +27,66 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = ipConfiguration.Name;
             this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
+
+            #region Attempt to default Target Virtual Network and Target Subnet objects from source names
+
+            this.TargetVirtualNetwork = SeekVirtualNetwork(virtualNetworks, ipConfiguration.VirtualNetworkName);
+            if (this.TargetVirtualNetwork != null && this.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)) // Should only be of this type, as we don't default to another existing ARM VNet (which would be of the base interface type also)
+            {
+                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)this.TargetVirtualNetwork;
+                foreach (Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+                {
+                    if (targetSubnet.SourceName == ipConfiguration.SubnetName)
+                    {
+                        this.TargetSubnet = targetSubnet;
+                        break;
+                    }
+                }
+            }
+
+            #endregion
+
             // todo now asap, this needs to populate other default property values
         }
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration)
+        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks)
         {
             _AzureContext = azureContext;
             _SourceIpConfiguration = ipConfiguration;
 
+            #region Attempt to default Target Virtual Network and Target Subnet objects from source names
+
             this.TargetName = ipConfiguration.Name;
             this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
+            this.TargetVirtualNetwork = SeekVirtualNetwork(virtualNetworks, ipConfiguration.VirtualNetworkName);
+            if (this.TargetVirtualNetwork != null && this.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)) // Should only be of this type, as we don't default to another existing ARM VNet (which would be of the base interface type also)
+            {
+                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)this.TargetVirtualNetwork;
+                foreach (Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+                {
+                    if (targetSubnet.SourceName == ipConfiguration.SubnetName)
+                    {
+                        this.TargetSubnet = targetSubnet;
+                        break;
+                    }
+                }
+            }
+
+            #endregion
+            
             // todo now asap, this needs to populate other default property values
+        }
+
+        private VirtualNetwork SeekVirtualNetwork(List<VirtualNetwork> virtualNetworks, string virtualNetworkName)
+        {
+            foreach (VirtualNetwork targetVirtualNetwork in virtualNetworks)
+            {
+                if (targetVirtualNetwork.SourceName == virtualNetworkName)
+                    return targetVirtualNetwork;
+            }
+
+            return null;
         }
 
         public INetworkInterfaceIpConfiguration SourceIpConfiguration
