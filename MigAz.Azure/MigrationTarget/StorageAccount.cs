@@ -12,6 +12,7 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
+        private string _BlobStorageNamespace = String.Empty;
 
         private StorageAccount() { }
 
@@ -21,6 +22,7 @@ namespace MigAz.Azure.MigrationTarget
             _Source = source;
             this.TargetName = source.Name;
             this.AccountType = source.AccountType;
+            this._BlobStorageNamespace = AzureServiceUrls.GetBlobEndpointUrl(azureContext.AzureEnvironment);
         }
 
         public string TargetName
@@ -30,7 +32,7 @@ namespace MigAz.Azure.MigrationTarget
         }
 
         public string AccountType { get; set; }
-        public string BlobStorageNamespace { get; } // todo now asap has no value assigned
+        public string BlobStorageNamespace { get { return _BlobStorageNamespace; } }
         public IStorageAccount SourceAccount
         {
             get { return _Source; }

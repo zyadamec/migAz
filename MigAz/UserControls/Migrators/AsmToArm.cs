@@ -155,6 +155,7 @@ namespace MigAz.UserControls.Migrators
 
                         TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
                         tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
+                        tnVirtualNetwork.Text = targetVirtualNetwork.SourceName;
                         tnVirtualNetwork.Tag = targetVirtualNetwork;
                         parentNode.Nodes.Add(tnVirtualNetwork);
                         parentNode.Expand();
@@ -439,13 +440,14 @@ namespace MigAz.UserControls.Migrators
 
                             #region process virtual network
 
-                            foreach (Azure.Asm.NetworkInterface networkInterface in asmVirtualMachine.NetworkInterfaces)
+                            foreach (Azure.MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
                             {
-                                foreach (Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
                                 {
-                                    if (ipConfiguration.VirtualNetwork != null)
+                                    if (ipConfiguration.TargetVirtualNetwork != null && ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
                                     {
-                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                                        foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(targetVirtualNetwork.SourceName, true))
                                         {
                                             if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
                                             {
@@ -1346,10 +1348,10 @@ namespace MigAz.UserControls.Migrators
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
             tabSourceResources.Height = 265;
-            treeSourceASM.Width = tabSourceResources.Width - 10;
-            treeSourceASM.Height = tabSourceResources.Height - 30;
-            treeSourceARM.Width = tabSourceResources.Width - 10;
-            treeSourceARM.Height = tabSourceResources.Height - 30;
+            treeSourceASM.Width = tabSourceResources.Width - 8;
+            treeSourceASM.Height = tabSourceResources.Height - 26;
+            treeSourceARM.Width = tabSourceResources.Width - 8;
+            treeSourceARM.Height = tabSourceResources.Height - 26;
             treeTargetARM.Height = 250;
         }
 

@@ -1231,7 +1231,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 //BuildPublicIPAddressObject(ref virtualmachine);
                 //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
 
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.ToString() + "')]");
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]");
             }
 
             HardwareProfile hardwareprofile = new HardwareProfile();
@@ -1411,9 +1411,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
-                // todo asap validate        if (ResourceExists(typeof(Core.ArmTemplate.StorageAccount), (string)storageaccountdependency.Key))
-                if (storageaccountdependency.GetType() == typeof(Asm.StorageAccount))
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
             virtualmachine.properties = virtualmachine_properties;
