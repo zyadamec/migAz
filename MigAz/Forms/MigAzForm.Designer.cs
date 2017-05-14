@@ -47,7 +47,7 @@
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabRest = new System.Windows.Forms.TabPage();
             this.txtRest = new System.Windows.Forms.TextBox();
-            this.propertyPanel1 = new MigAz.UserControls.PropertyPanel();
+            this.propertyPanel1 = new MigAz.Azure.UserControls.PropertyPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnExport = new System.Windows.Forms.Button();
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
@@ -55,6 +55,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aRMToARMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -65,9 +68,6 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aRMToARMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -375,6 +375,25 @@
             this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.newMigrationToolStripMenuItem.Text = "&New Migration";
             // 
+            // aSMToARMToolStripMenuItem
+            // 
+            this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(323, 38);
+            this.aSMToARMToolStripMenuItem.Text = "Azure ASM To ARM";
+            this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
+            // 
+            // aRMToARMToolStripMenuItem1
+            // 
+            this.aRMToARMToolStripMenuItem1.Name = "aRMToARMToolStripMenuItem1";
+            this.aRMToARMToolStripMenuItem1.Size = new System.Drawing.Size(323, 38);
+            this.aRMToARMToolStripMenuItem1.Text = "Azure ARM To ARM";
+            this.aRMToARMToolStripMenuItem1.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(320, 6);
+            // 
             // aWSToARMToolStripMenuItem
             // 
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
@@ -420,7 +439,7 @@
             this.visitMigAzOnGithubToolStripMenuItem,
             this.reportAnIssueOnGithubToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // visitMigAzOnGithubToolStripMenuItem
@@ -436,25 +455,6 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(391, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
-            // 
-            // aSMToARMToolStripMenuItem
-            // 
-            this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(323, 38);
-            this.aSMToARMToolStripMenuItem.Text = "Azure ASM To ARM";
-            this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
-            // 
-            // aRMToARMToolStripMenuItem1
-            // 
-            this.aRMToARMToolStripMenuItem1.Name = "aRMToARMToolStripMenuItem1";
-            this.aRMToARMToolStripMenuItem1.Size = new System.Drawing.Size(323, 38);
-            this.aRMToARMToolStripMenuItem1.Text = "Azure ARM To ARM";
-            this.aRMToARMToolStripMenuItem1.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem1_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(320, 6);
             // 
             // MigAzForm
             // 
@@ -530,7 +530,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportAnIssueOnGithubToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visitMigAzOnGithubToolStripMenuItem;
-        private UserControls.PropertyPanel propertyPanel1;
+        private Azure.UserControls.PropertyPanel propertyPanel1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabControl tabOutputResults;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;

@@ -136,7 +136,7 @@ namespace MigAz.Forms
 
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
+            MigAz.AWS.AwsToArm awsToArm = new MigAz.AWS.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
             awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 

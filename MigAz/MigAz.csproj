@@ -99,10 +99,6 @@
     <Compile Include="Forms\MigAzForm.Designer.cs">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ARM\Models\CloudServiceVM.cs" />
-    <Compile Include="Forms\ARM\Models\SaveSelection.cs" />
-    <Compile Include="Forms\ARM\Providers\AppSettingsProvider.cs" />
-    <Compile Include="Forms\ARM\Providers\UISaveSelectionProvider.cs" />
     <Compile Include="Forms\ExportResultsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,12 +136,6 @@
     <Compile Include="UserControls\AvailabilitySetProperties.Designer.cs">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Migrators\AwsToArm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\Migrators\AwsToArm.Designer.cs">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\DiskProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -163,12 +153,6 @@
     </Compile>
     <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\PropertyPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\PropertyPanel.Designer.cs">
-      <DependentUpon>PropertyPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\ResourceGroupProperties.cs">
       <SubType>UserControl</SubType>
@@ -228,9 +212,6 @@
     <EmbeddedResource Include="UserControls\AvailabilitySetProperties.resx">
       <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\Migrators\AwsToArm.resx">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -239,9 +220,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\PropertyPanel.resx">
-      <DependentUpon>PropertyPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>

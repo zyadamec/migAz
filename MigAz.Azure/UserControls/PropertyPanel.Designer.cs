@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls
+﻿namespace MigAz.Azure.UserControls
 {
     partial class PropertyPanel
     {

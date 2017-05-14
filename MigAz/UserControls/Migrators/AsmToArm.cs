@@ -10,6 +10,7 @@ using MigAz.Core.Interface;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core;
 using MigAz.Forms;
+using MigAz.Azure.UserControls;
 
 namespace MigAz.UserControls.Migrators
 {

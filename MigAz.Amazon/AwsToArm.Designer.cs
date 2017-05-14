@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls.Migrators
+﻿namespace MigAz.AWS
 {
     partial class AwsToArm
     {
@@ -39,10 +39,6 @@
             this.lvwVirtualNetworks = new System.Windows.Forms.ListView();
             this.colVpcId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colVpcName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btnExport = new System.Windows.Forms.Button();
-            this.btnChoosePath = new System.Windows.Forms.Button();
-            this.txtDestinationFolder = new System.Windows.Forms.TextBox();
-            this.lblOutputFolder = new System.Windows.Forms.Label();
             this.btnGetToken = new System.Windows.Forms.Button();
             this.azureLoginContextViewer21 = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
@@ -60,6 +56,7 @@
             this.cmbRegion.Name = "cmbRegion";
             this.cmbRegion.Size = new System.Drawing.Size(631, 34);
             this.cmbRegion.TabIndex = 51;
+            this.cmbRegion.SelectedIndexChanged += new System.EventHandler(this.cmbRegion_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -150,47 +147,6 @@
             this.colVpcName.Text = "Vpc Name";
             this.colVpcName.Width = 146;
             // 
-            // btnExport
-            // 
-            this.btnExport.Enabled = false;
-            this.btnExport.Location = new System.Drawing.Point(1276, 859);
-            this.btnExport.Margin = new System.Windows.Forms.Padding(6);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(362, 44);
-            this.btnExport.TabIndex = 44;
-            this.btnExport.Text = "Export 0 objects";
-            this.btnExport.UseVisualStyleBackColor = true;
-            // 
-            // btnChoosePath
-            // 
-            this.btnChoosePath.Enabled = false;
-            this.btnChoosePath.Location = new System.Drawing.Point(1144, 855);
-            this.btnChoosePath.Margin = new System.Windows.Forms.Padding(6);
-            this.btnChoosePath.Name = "btnChoosePath";
-            this.btnChoosePath.Size = new System.Drawing.Size(58, 44);
-            this.btnChoosePath.TabIndex = 43;
-            this.btnChoosePath.Text = "...";
-            this.btnChoosePath.UseVisualStyleBackColor = true;
-            // 
-            // txtDestinationFolder
-            // 
-            this.txtDestinationFolder.Enabled = false;
-            this.txtDestinationFolder.Location = new System.Drawing.Point(464, 859);
-            this.txtDestinationFolder.Margin = new System.Windows.Forms.Padding(6);
-            this.txtDestinationFolder.Name = "txtDestinationFolder";
-            this.txtDestinationFolder.Size = new System.Drawing.Size(666, 31);
-            this.txtDestinationFolder.TabIndex = 42;
-            // 
-            // lblOutputFolder
-            // 
-            this.lblOutputFolder.AutoSize = true;
-            this.lblOutputFolder.Location = new System.Drawing.Point(304, 864);
-            this.lblOutputFolder.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lblOutputFolder.Name = "lblOutputFolder";
-            this.lblOutputFolder.Size = new System.Drawing.Size(149, 25);
-            this.lblOutputFolder.TabIndex = 45;
-            this.lblOutputFolder.Text = "Output Folder:";
-            // 
             // btnGetToken
             // 
             this.btnGetToken.Location = new System.Drawing.Point(67, 85);
@@ -200,6 +156,7 @@
             this.btnGetToken.TabIndex = 52;
             this.btnGetToken.Text = "Sign In";
             this.btnGetToken.UseVisualStyleBackColor = true;
+            this.btnGetToken.Click += new System.EventHandler(this.btnGetToken_Click);
             // 
             // azureLoginContextViewer21
             // 
@@ -223,10 +180,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lvwVirtualMachines);
             this.Controls.Add(this.lvwVirtualNetworks);
-            this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.btnChoosePath);
-            this.Controls.Add(this.txtDestinationFolder);
-            this.Controls.Add(this.lblOutputFolder);
             this.Name = "AwsToArm";
             this.Size = new System.Drawing.Size(1818, 1032);
             this.Load += new System.EventHandler(this.AwsToArm_Load);
@@ -248,10 +201,6 @@
         private System.Windows.Forms.ListView lvwVirtualNetworks;
         private System.Windows.Forms.ColumnHeader colVpcId;
         private System.Windows.Forms.ColumnHeader colVpcName;
-        private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.Button btnChoosePath;
-        private System.Windows.Forms.TextBox txtDestinationFolder;
-        private System.Windows.Forms.Label lblOutputFolder;
         private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewer21;
         private System.Windows.Forms.Button btnGetToken;
     }

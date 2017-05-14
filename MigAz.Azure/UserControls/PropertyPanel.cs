@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.UserControls
+namespace MigAz.Azure.UserControls
 {
     public partial class PropertyPanel : UserControl
     {

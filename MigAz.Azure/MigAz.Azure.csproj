@@ -155,6 +155,12 @@
     <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="Models\TelemetryRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\PropertyPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PropertyPanel.Designer.cs">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -174,6 +180,9 @@
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generator\DeployDocTemplate.html" />
+    <EmbeddedResource Include="UserControls\PropertyPanel.resx">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
