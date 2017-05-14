@@ -49,6 +49,9 @@ namespace MigAz.Azure.Arm
         {
             get
             {
+                if (this.MediaLink == String.Empty)
+                    return String.Empty;
+
                 return MediaLink.Split(new char[] { '/' })[2].Split(new char[] { '.' })[0];
             }
         }
@@ -57,6 +60,9 @@ namespace MigAz.Azure.Arm
         {
             get
             {
+                if (this.MediaLink == String.Empty)
+                    return String.Empty;
+
                 return MediaLink.Split(new char[] { '/' })[3];
             }
         }
@@ -65,6 +71,9 @@ namespace MigAz.Azure.Arm
         {
             get
             {
+                if (this.MediaLink == String.Empty)
+                    return String.Empty;
+
                 return MediaLink.Split(new char[] { '/' })[4];
             }
         }
