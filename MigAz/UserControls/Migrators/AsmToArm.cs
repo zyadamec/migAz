@@ -32,6 +32,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
+        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
@@ -312,6 +313,12 @@ namespace MigAz.UserControls.Migrators
                         tnStorageAccount.SelectedImageKey = "StorageAccount";
                         storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         storageAccountParentNode.Expand();
+                    }
+
+                    foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                    {
+                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = new Azure.MigrationTarget.ManagedDisk(this.AzureContextTargetARM, armManagedDisk);
+                        _ArmTargetManagedDisks.Add(targetManagedDisk);
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
