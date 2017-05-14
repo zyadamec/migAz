@@ -19,16 +19,12 @@ namespace MigAz.Azure.Asm
         private Hashtable _VmDetails;
         Disk _OSVirtualHardDisk;
         List<Disk> _DataDisks;
-        List<LoadBalancerRule> _LoadBalancerRules;
-        List<NetworkInterface> _NetworkInterfaces;
+        List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
+        List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
         private VirtualNetwork _SourceVirtualNetwork;
         private Subnet _SourceSubnet;
-        private IVirtualNetwork _TargetVirtualNetwork;
-        private ISubnet _TargetSubnet;
-        private AvailabilitySet _TargetAvailabilitySet = null;
+        private String _NetworkSecurityGroupName = String.Empty;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
-        private NetworkInterface _PrimaryNetworkInterface = null;
-        private string _TargetName = String.Empty;
 
         #endregion
 
@@ -42,8 +38,6 @@ namespace MigAz.Azure.Asm
             this._AzureContext = azureContext;
             this._XmlNode = virtualMachineXml;
             this._VmDetails = vmDetails;
-            this.TargetName = this.RoleName;
-            this._PrimaryNetworkInterface = new NetworkInterface(azureContext, this, settingsProvider, null);
 
             _OSVirtualHardDisk = new Disk(azureContext, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
 
@@ -54,26 +48,73 @@ namespace MigAz.Azure.Asm
                 _DataDisks.Add(asmDisk);
             }
 
-            _LoadBalancerRules = new List<LoadBalancerRule>();
             foreach (XmlNode loadBalancerRuleNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
             {
                 _LoadBalancerRules.Add(new LoadBalancerRule(_AzureContext, loadBalancerRuleNode));
             }
 
-            _NetworkInterfaces = new List<NetworkInterface>();
-            foreach (XmlNode networkInterfaceNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
+            #region Primary Network Interface
+
+            NetworkInterface primaryNetworkInterface = new NetworkInterface(_AzureContext, this);
+            this.NetworkInterfaces.Add(primaryNetworkInterface);
+
+            primaryNetworkInterface.IsPrimary = true;
+            primaryNetworkInterface.Name = this.RoleName + "-NIC1";
+
+            NetworkInterfaceIpConfiguration primaryNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+            primaryNetworkInterface.NetworkInterfaceIpConfigurations.Add(primaryNetworkInterfaceIpConfiguration);
+
+            // code note, unclear why this is index [1] on the ConfigurationSet ... couldn't it be any a different order?
+            primaryNetworkInterfaceIpConfiguration.VirtualNetworkName = vmDetails["virtualnetworkname"].ToString();
+            primaryNetworkInterfaceIpConfiguration.SubnetName = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/SubnetNames/SubnetName").InnerText;
+            if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress") != null)
             {
-                _NetworkInterfaces.Add(new NetworkInterface(_AzureContext, this, settingsProvider, networkInterfaceNode));
+                primaryNetworkInterfaceIpConfiguration.PrivateIpAllocationMethod = "Static";
+                primaryNetworkInterfaceIpConfiguration.PrivateIpAddress = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress").InnerText;
             }
+
+            if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/NetworkSecurityGroup") != null)
+            {
+                _NetworkSecurityGroupName = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/NetworkSecurityGroup").InnerText;
+            }
+
+            #endregion
+
+
+            #region Additional Network Interfaces
+
+            foreach (XmlNode additionalNetworkInterfaceXml in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
+            {
+                NetworkInterface additionalNetworkInterface = new NetworkInterface(_AzureContext, this);
+                this.NetworkInterfaces.Add(additionalNetworkInterface);
+
+                additionalNetworkInterface.Name = this.RoleName + "-" + additionalNetworkInterfaceXml.SelectSingleNode("Name").InnerText;
+
+                if (additionalNetworkInterfaceXml.SelectNodes("IPForwarding").Count > 0)
+                {
+                    additionalNetworkInterface.EnableIpForwarding = true;
+                }
+
+                NetworkInterfaceIpConfiguration ipConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+                additionalNetworkInterface.NetworkInterfaceIpConfigurations.Add(ipConfiguration);
+
+                ipConfiguration.Name = "ipconfig1";
+                ipConfiguration.VirtualNetworkName = vmDetails["virtualnetworkname"].ToString();
+                ipConfiguration.SubnetName = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText;
+                if (additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress") != null)
+                {
+                    ipConfiguration.PrivateIpAllocationMethod = "Static";
+                    ipConfiguration.PrivateIpAddress = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                }
+            }
+
+            #endregion
         }
 
         #endregion
 
         public async Task InitializeChildren()
         {
-            this._TargetAvailabilitySet = _AzureContext.AzureRetriever.GetAzureASMAvailabilitySet(this);
-
-
             if (this.VirtualNetworkName != String.Empty)
             {
                 _SourceVirtualNetwork = await _AzureContext.AzureRetriever.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
@@ -101,25 +142,11 @@ namespace MigAz.Azure.Asm
                 _AsmNetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
         }
 
-        internal string GetDefaultAvailabilitySetName()
-        {
-            if (this.AvailabilitySetName != String.Empty)
-                return this.AvailabilitySetName;
-            else
-                return this.CloudServiceName;
-
-        }
-
         #region Properties
 
         public CloudService Parent
         {
             get { return _AsmCloudService; }
-        }
-
-        public NetworkInterface PrimaryNetworkInterface
-        {
-            get { return _PrimaryNetworkInterface; }
         }
 
         public List<Disk> DataDisks
@@ -135,6 +162,20 @@ namespace MigAz.Azure.Asm
         public List<NetworkInterface> NetworkInterfaces
         {
             get { return _NetworkInterfaces; }
+        }
+
+        public NetworkInterface PrimaryNetworkInterface
+        {
+            get
+            {
+                foreach (NetworkInterface networkInterface in _NetworkInterfaces)
+                {
+                    if (networkInterface.IsPrimary)
+                        return networkInterface;
+                }
+
+                return null;
+            }
         }
 
         public string AvailabilitySetName
@@ -153,11 +194,7 @@ namespace MigAz.Azure.Asm
             get { return _AsmNetworkSecurityGroup; }
         }
 
-        public AvailabilitySet TargetAvailabilitySet
-        {
-            get { return _TargetAvailabilitySet; }
-            set { _TargetAvailabilitySet = value; }
-        }
+
 
         public string RoleName
         {
@@ -240,11 +277,6 @@ namespace MigAz.Azure.Asm
             }
         }
 
-        public IVirtualNetwork TargetVirtualNetwork
-        {
-            get { return _TargetVirtualNetwork; }
-            set { _TargetVirtualNetwork = value; }
-        }
 
         public Subnet SourceSubnet
         {
@@ -255,21 +287,9 @@ namespace MigAz.Azure.Asm
             get { return _SourceVirtualNetwork; }
         }
 
-        public ISubnet TargetSubnet
+        public override string ToString()
         {
-            get { return _TargetSubnet; }
-            set { _TargetSubnet = value; }
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value; }
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
+            return this.RoleName;
         }
 
         #endregion

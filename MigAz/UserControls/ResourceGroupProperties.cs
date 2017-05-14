@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure;
-using MigAz.Azure.Arm;
 using System.Net;
-using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.UserControls.Migrators;
-using MigAz.Core.Interface;
 
 namespace MigAz.UserControls
 {
@@ -35,9 +25,9 @@ namespace MigAz.UserControls
             _ParentForm = parentForm;
             _ResourceGroupNode = resourceGroupNode;
 
-            ResourceGroup armResourceGroup = (ResourceGroup) _ResourceGroupNode.Tag;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
 
-            txtName.Text = armResourceGroup.Name;
+            txtTargetName.Text = armResourceGroup.TargetName;
 
             try
             {
@@ -60,35 +50,43 @@ namespace MigAz.UserControls
                 }
             }
 
-            if (armResourceGroup.Location != null)
+            if (armResourceGroup.TargetLocation != null)
             {
                 foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
                 {
-                    if (armLocation.Name == armResourceGroup.Location.Name)
+                    if (armLocation.Name == armResourceGroup.TargetLocation.Name)
                         cboTargetLocation.SelectedItem = armLocation;
                 }
             }
         }
 
-        private void txtName_TextChanged(object sender, EventArgs e)
+        private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
-            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
 
-            armResourceGroup.Name = txtSender.Text;
-            _ResourceGroupNode.Text = armResourceGroup.GetFinalTargetName();
-            _ResourceGroupNode.Name = armResourceGroup.Name;
+            armResourceGroup.TargetName = txtSender.Text;
+            _ResourceGroupNode.Text = armResourceGroup.ToString();
+            _ResourceGroupNode.Name = armResourceGroup.ToString();
 
             PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         private void cboTargetLocation_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            ResourceGroup armResourceGroup = (ResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.Location = (ILocation) cmbSender.SelectedItem;
+            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
+            armResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
 
             PropertyChanged();
         }

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
+using MigAz.Azure.MigrationTarget;
 using MigAz.UserControls.Migrators;
 
 namespace MigAz.UserControls
@@ -28,23 +22,38 @@ namespace MigAz.UserControls
         {
             _NetworkSecurityGroupNode = networkSecurityGroupNode;
 
-            TreeNode asmNetworkSecurityGroupNode = (TreeNode)_NetworkSecurityGroupNode.Tag;
-            NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
+            NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
+            if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+            {
+                Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
+                lblSourceName.Text = asmNetworkSecurityGroup.Name;
+            }
+            else if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
+            {
+                Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
+                lblSourceName.Text = armNetworkSecurityGroup.Name;
+            }
 
-            lblSourceName.Text = asmNetworkSecurityGroup.Name;
-            txtTargetName.Text = asmNetworkSecurityGroup.TargetName;
+            txtTargetName.Text = targetNetworkSecurityGroup.TargetName;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-            TreeNode asmNetworkSecurityGroupNode = (TreeNode)_NetworkSecurityGroupNode.Tag;
-            NetworkSecurityGroup asmNetworkSecurityGroup = (NetworkSecurityGroup)asmNetworkSecurityGroupNode.Tag;
+            NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
 
-            asmNetworkSecurityGroup.TargetName = txtSender.Text;
-            _NetworkSecurityGroupNode.Text = asmNetworkSecurityGroup.GetFinalTargetName();
+            targetNetworkSecurityGroup.TargetName = txtSender.Text;
+            _NetworkSecurityGroupNode.Text = targetNetworkSecurityGroup.ToString();
 
             PropertyChanged();
+        }
+
+        private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

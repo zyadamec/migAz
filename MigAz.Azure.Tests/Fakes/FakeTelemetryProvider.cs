@@ -5,7 +5,7 @@ namespace MigAz.Tests.Fakes
 {
     class FakeTelemetryProvider : ITelemetryProvider
     {
-        public void PostTelemetryRecord(AsmToArmGenerator templateResult)
+        public void PostTelemetryRecord(AzureGenerator templateResult)
         {
         }
     }

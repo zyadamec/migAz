@@ -30,7 +30,7 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtName = new System.Windows.Forms.TextBox();
+            this.txtTargetName = new System.Windows.Forms.TextBox();
             this.cboTargetLocation = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
@@ -52,13 +52,14 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "Location:";
             // 
-            // txtName
+            // txtTargetName
             // 
-            this.txtName.Location = new System.Drawing.Point(130, 20);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(389, 31);
-            this.txtName.TabIndex = 0;
-            this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
+            this.txtTargetName.Location = new System.Drawing.Point(130, 20);
+            this.txtTargetName.Name = "txtTargetName";
+            this.txtTargetName.Size = new System.Drawing.Size(389, 31);
+            this.txtTargetName.TabIndex = 0;
+            this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtTargetName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
             // cboTargetLocation
             // 
@@ -76,7 +77,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.cboTargetLocation);
-            this.Controls.Add(this.txtName);
+            this.Controls.Add(this.txtTargetName);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "ResourceGroupProperties";
@@ -90,7 +91,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtTargetName;
         private System.Windows.Forms.ComboBox cboTargetLocation;
     }
 }

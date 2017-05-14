@@ -47,7 +47,7 @@
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabRest = new System.Windows.Forms.TabPage();
             this.txtRest = new System.Windows.Forms.TextBox();
-            this.propertyPanel1 = new MigAz.UserControls.PropertyPanel();
+            this.propertyPanel1 = new MigAz.Azure.UserControls.PropertyPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnExport = new System.Windows.Forms.Button();
             this.txtDestinationFolder = new System.Windows.Forms.TextBox();
@@ -56,7 +56,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aSMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aRMToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aRMToARMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.aWSToARMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeMigrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -130,7 +131,7 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 40);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 42);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -142,7 +143,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.propertyPanel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
-            this.splitContainer1.Size = new System.Drawing.Size(1993, 891);
+            this.splitContainer1.Size = new System.Drawing.Size(1993, 889);
             this.splitContainer1.SplitterDistance = 1276;
             this.splitContainer1.TabIndex = 57;
             // 
@@ -162,11 +163,11 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabMigAzMonitoring);
             this.splitContainer2.Panel2.Resize += new System.EventHandler(this.splitContainer2_Panel2_Resize);
-            this.splitContainer2.Size = new System.Drawing.Size(1276, 891);
-            this.splitContainer2.SplitterDistance = 598;
+            this.splitContainer2.Size = new System.Drawing.Size(1276, 889);
+            this.splitContainer2.SplitterDistance = 596;
             this.splitContainer2.TabIndex = 0;
             // 
-            // tabControl1
+            // tabMigAzMonitoring
             // 
             this.tabMigAzMonitoring.Controls.Add(this.tabMessages);
             this.tabMigAzMonitoring.Controls.Add(this.tabPage1);
@@ -174,7 +175,7 @@
             this.tabMigAzMonitoring.Controls.Add(this.tabRest);
             this.tabMigAzMonitoring.HotTrack = true;
             this.tabMigAzMonitoring.Location = new System.Drawing.Point(3, 3);
-            this.tabMigAzMonitoring.Name = "tabControl1";
+            this.tabMigAzMonitoring.Name = "tabMigAzMonitoring";
             this.tabMigAzMonitoring.SelectedIndex = 0;
             this.tabMigAzMonitoring.Size = new System.Drawing.Size(922, 289);
             this.tabMigAzMonitoring.TabIndex = 0;
@@ -191,11 +192,11 @@
             this.tabMessages.Text = "Messages";
             this.tabMessages.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dgvMigAzMessages
             // 
             this.dgvMigAzMessages.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMigAzMessages.Location = new System.Drawing.Point(0, 0);
-            this.dgvMigAzMessages.Name = "dataGridView1";
+            this.dgvMigAzMessages.Name = "dgvMigAzMessages";
             this.dgvMigAzMessages.RowTemplate.Height = 33;
             this.dgvMigAzMessages.Size = new System.Drawing.Size(890, 236);
             this.dgvMigAzMessages.TabIndex = 0;
@@ -346,7 +347,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1993, 40);
+            this.menuStrip1.Size = new System.Drawing.Size(1993, 42);
             this.menuStrip1.TabIndex = 58;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -367,66 +368,68 @@
             // 
             this.newMigrationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aSMToARMToolStripMenuItem,
-            this.aRMToARMToolStripMenuItem,
+            this.aRMToARMToolStripMenuItem1,
+            this.toolStripMenuItem2,
             this.aWSToARMToolStripMenuItem});
             this.newMigrationToolStripMenuItem.Name = "newMigrationToolStripMenuItem";
-            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.newMigrationToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.newMigrationToolStripMenuItem.Text = "&New Migration";
             // 
             // aSMToARMToolStripMenuItem
             // 
             this.aSMToARMToolStripMenuItem.Name = "aSMToARMToolStripMenuItem";
-            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.aSMToARMToolStripMenuItem.Text = "ASM To ARM";
+            this.aSMToARMToolStripMenuItem.Size = new System.Drawing.Size(323, 38);
+            this.aSMToARMToolStripMenuItem.Text = "Azure ASM To ARM";
             this.aSMToARMToolStripMenuItem.Click += new System.EventHandler(this.aSMToARMToolStripMenuItem_Click);
             // 
-            // aRMToARMToolStripMenuItem
+            // aRMToARMToolStripMenuItem1
             // 
-            this.aRMToARMToolStripMenuItem.Enabled = false;
-            this.aRMToARMToolStripMenuItem.Name = "aRMToARMToolStripMenuItem";
-            this.aRMToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.aRMToARMToolStripMenuItem.Text = "ARM To ARM";
-            this.aRMToARMToolStripMenuItem.Visible = false;
-            this.aRMToARMToolStripMenuItem.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem_Click);
+            this.aRMToARMToolStripMenuItem1.Name = "aRMToARMToolStripMenuItem1";
+            this.aRMToARMToolStripMenuItem1.Size = new System.Drawing.Size(323, 38);
+            this.aRMToARMToolStripMenuItem1.Text = "Azure ARM To ARM";
+            this.aRMToARMToolStripMenuItem1.Click += new System.EventHandler(this.aRMToARMToolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(320, 6);
             // 
             // aWSToARMToolStripMenuItem
             // 
-            this.aWSToARMToolStripMenuItem.Enabled = false;
             this.aWSToARMToolStripMenuItem.Name = "aWSToARMToolStripMenuItem";
-            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(269, 38);
-            this.aWSToARMToolStripMenuItem.Text = "AWS To ARM";
-            this.aWSToARMToolStripMenuItem.Visible = false;
+            this.aWSToARMToolStripMenuItem.Size = new System.Drawing.Size(323, 38);
+            this.aWSToARMToolStripMenuItem.Text = "AWS To Azure ARM";
             this.aWSToARMToolStripMenuItem.Click += new System.EventHandler(this.aWSToARMToolStripMenuItem_Click);
             // 
             // closeMigrationToolStripMenuItem
             // 
             this.closeMigrationToolStripMenuItem.Enabled = false;
             this.closeMigrationToolStripMenuItem.Name = "closeMigrationToolStripMenuItem";
-            this.closeMigrationToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.closeMigrationToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.closeMigrationToolStripMenuItem.Text = "&Close Migration";
             this.closeMigrationToolStripMenuItem.Click += new System.EventHandler(this.closeMigrationToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(281, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(280, 6);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(281, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(280, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(284, 38);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(283, 38);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -442,14 +445,14 @@
             // visitMigAzOnGithubToolStripMenuItem
             // 
             this.visitMigAzOnGithubToolStripMenuItem.Name = "visitMigAzOnGithubToolStripMenuItem";
-            this.visitMigAzOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
+            this.visitMigAzOnGithubToolStripMenuItem.Size = new System.Drawing.Size(391, 38);
             this.visitMigAzOnGithubToolStripMenuItem.Text = "Visit MigAz on Github";
             this.visitMigAzOnGithubToolStripMenuItem.Click += new System.EventHandler(this.visitMigAzOnGithubToolStripMenuItem_Click);
             // 
             // reportAnIssueOnGithubToolStripMenuItem
             // 
             this.reportAnIssueOnGithubToolStripMenuItem.Name = "reportAnIssueOnGithubToolStripMenuItem";
-            this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(392, 38);
+            this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(391, 38);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
             // 
@@ -511,8 +514,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newMigrationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aSMToARMToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aRMToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aWSToARMToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -529,7 +530,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reportAnIssueOnGithubToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visitMigAzOnGithubToolStripMenuItem;
-        private UserControls.PropertyPanel propertyPanel1;
+        private Azure.UserControls.PropertyPanel propertyPanel1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabControl tabOutputResults;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
@@ -537,6 +538,9 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button btnRefreshOutput;
         private System.Windows.Forms.Label lblLastOutputRefresh;
+        private System.Windows.Forms.ToolStripMenuItem aSMToARMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aRMToARMToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

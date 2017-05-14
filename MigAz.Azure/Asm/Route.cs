@@ -1,8 +1,9 @@
-﻿using System.Xml;
+﻿using MigAz.Core.Interface;
+using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class Route
+    public class Route : IRoute
     {
         private AzureContext _AzureContext;
         private XmlNode _XmlNode;

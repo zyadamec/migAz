@@ -41,9 +41,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(8, 47);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(209, 25);
+            this.label2.Size = new System.Drawing.Size(142, 25);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Target (ARM) Name:";
+            this.label2.Text = "Target Name:";
             // 
             // txtTargetName
             // 
@@ -59,9 +59,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(8, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(214, 25);
+            this.label1.Size = new System.Drawing.Size(148, 25);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Source (ASM) Name:";
+            this.label1.Text = "Source Name:";
             // 
             // lblSourceName
             // 

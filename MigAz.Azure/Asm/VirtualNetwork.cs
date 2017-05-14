@@ -16,12 +16,11 @@ namespace MigAz.Azure.Asm
         private AzureContext _AzureContext = null;
         private XmlNode _XmlNode = null;
         private AffinityGroup _AsmAffinityGroup = null;
-        private List<ISubnet> _AsmSubnets = null;
+        private List<ISubnet> _AsmSubnets = new List<ISubnet>();
         private VirtualNetworkGateway _AsmVirtualNetworkGateway = null;
         private List<VirtualNetworkGateway> _AsmVirtualNetworkGateways2 = null;
         private List<LocalNetworkSite> _AsmLocalNetworkSites = null;
         private List<ClientRootCertificate> _AsmClientRootCertificates = null;
-        private String _TargetName = String.Empty;
 
         #endregion
 
@@ -33,8 +32,6 @@ namespace MigAz.Azure.Asm
         {
             _AzureContext = azureContext;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
         }
 
         public async Task InitializeChildrenAsync()
@@ -42,7 +39,6 @@ namespace MigAz.Azure.Asm
             if (_XmlNode.SelectSingleNode("AffinityGroup") != null)
                 _AsmAffinityGroup = await _AzureContext.AzureRetriever.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
 
-            _AsmSubnets = new List<ISubnet>();
             foreach (XmlNode subnetNode in _XmlNode.SelectNodes("Subnets/Subnet"))
             {
                 Subnet asmSubnet = new Subnet(_AzureContext, this, subnetNode);
@@ -72,20 +68,9 @@ namespace MigAz.Azure.Asm
             get { return _XmlNode.SelectSingleNode("Name").InnerText; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Replace(" ", String.Empty); }
-        }
-
         public string Id
         {
             get { return this.Name; }
-        }
-
-        public string TargetId
-        {
-            get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.GetFinalTargetName() + "')]"; }
         }
 
         public string Location
@@ -143,13 +128,26 @@ namespace MigAz.Azure.Asm
             }
         }
 
-        public VirtualNetworkGateway Gateway
+        public ISubnet GatewaySubnet
+        {
+            get
+            {
+                foreach (Subnet subnet in this.Subnets)
+                {
+                    if (subnet.Name == ArmConst.GatewaySubnetName)
+                        return subnet;
+                }
+
+                return null;
+            }
+        }
+
+        public VirtualNetworkGateway Gateway  // todo now asap, see below
         {
             get { return _AsmVirtualNetworkGateway; }
-            set { _AsmVirtualNetworkGateway = value; } // set was only allowed because of unit test, recommend getting rid of in future
         }
          
-        public List<VirtualNetworkGateway> Gateways2
+        public List<VirtualNetworkGateway> Gateways2 // todo now asap, see above
         {
             get { return _AsmVirtualNetworkGateways2; }
         }
@@ -170,12 +168,7 @@ namespace MigAz.Azure.Asm
         {
             get
             {
-                foreach (Subnet asmSubnet in this.Subnets)
-                {
-                    if (asmSubnet.Name == ArmConst.GatewaySubnetName)
-                        return true;
-                }
-                return false;
+                return this.GatewaySubnet != null;
             }
         }
 
@@ -210,15 +203,25 @@ namespace MigAz.Azure.Asm
 
         public override string ToString()
         {
-            return this.TargetName;
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.TargetName + this._AzureContext.SettingsProvider.VirtualNetworkSuffix;
+            return this.Name;
         }
 
         #endregion
 
+        public static bool operator ==(VirtualNetwork lhs, VirtualNetwork rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.Id == rhs.Id))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(VirtualNetwork lhs, VirtualNetwork rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }

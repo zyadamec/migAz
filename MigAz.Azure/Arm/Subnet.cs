@@ -1,20 +1,32 @@
 ﻿using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class Subnet : ISubnet
+    public class Subnet : ISubnet, IMigrationSubnet
     {
         private JToken _Subnet;
+        private AzureContext _AzureContext;
         private VirtualNetwork _Parent;
+        private NetworkSecurityGroup _NetworkSecurityGroup = null;
 
         private Subnet() { }
 
-        public Subnet(VirtualNetwork parent, JToken subnet)
+        public Subnet(AzureContext azureContext, VirtualNetwork parent, JToken subnet)
         {
             _Parent = parent;
+            _AzureContext = azureContext;
             _Subnet = subnet;
+        }
+
+        public async Task InitializeChildrenAsync()
+        {
+            if (this.NetworkSecurityGroupId != string.Empty)
+            {
+                _NetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+            }
         }
 
         public string Name
@@ -36,6 +48,16 @@ namespace MigAz.Azure.Arm
         {
             get { return (string)_Subnet["properties"]["addressPrefix"]; }
         }
+        private string NetworkSecurityGroupId
+        {
+            get
+            {
+                if (_Subnet["properties"]["networkSecurityGroup"] == null)
+                    return string.Empty;
+
+                return (string)_Subnet["properties"]["networkSecurityGroup"]["id"];
+            }
+        }
 
         public RouteTable RouteTable
         {
@@ -51,7 +73,7 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                return null; // TODO
+                return _NetworkSecurityGroup;
             }
         }
 
@@ -60,11 +82,25 @@ namespace MigAz.Azure.Arm
             get { return this.Name == ArmConst.GatewaySubnetName; }
         }
 
-        public string TargetName { get; set; }
-
         public override string ToString()
         {
             return this.Name;
+        }
+
+        public static bool operator ==(Subnet lhs, Subnet rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.Id == rhs.Id))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(Subnet lhs, Subnet rhs)
+        {
+            return !(lhs == rhs);
         }
     }
 }

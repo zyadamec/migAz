@@ -8,10 +8,6 @@ namespace MigAz.Azure.Arm
 {
     public class ResourceGroup
     {
-        private String _Name = String.Empty;
-        private ILocation _Location;
-        private AzureContext _AzureContext;
-
         private JObject _ResourceGroupJson;
         private AzureEnvironment _AzureEnvironment;
 
@@ -23,26 +19,13 @@ namespace MigAz.Azure.Arm
 
         private ResourceGroup() { }
 
-        public ResourceGroup(AzureContext azureContext, String resourceGroupName)
-        {
-            this._AzureContext = azureContext;
-            this.Name = resourceGroupName;
-        }
+        public string Name => (string)_ResourceGroupJson["name"];
+        public string Location => (string)_ResourceGroupJson["location"];
+        public string Id => (string)_ResourceGroupJson["id"];
 
-        public String Name
+        public override string ToString()
         {
-            get { return _Name; }
-            set { _Name = value.Trim(); }
-        }
-        public ILocation Location
-        {
-            get { return _Location; }
-            set { _Location = value; }
-        }
-
-        public string GetFinalTargetName()
-        {
-            return this.Name + this._AzureContext.SettingsProvider.ResourceGroupSuffix;
+            return this.Name + " (" + this.Location + ")";
         }
     }
 }

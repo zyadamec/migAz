@@ -1,8 +1,9 @@
-﻿using System.Xml;
+﻿using MigAz.Core.Interface;
+using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class VirtualNetworkGateway
+    public class VirtualNetworkGateway : IVirtualNetworkGateway
     {
         private AzureContext _AzureContext;
         private XmlNode _GatewayXml;
@@ -37,9 +38,14 @@ namespace MigAz.Azure.Asm
             get { return this.State != "NotProvisioned"; }
         }
 
-        public string GetFinalTargetname()
+        public string Name
         {
-            return this._AsmVirtualNetwork.TargetName + this._AzureContext.SettingsProvider.VirtualNetworkGatewaySuffix;
+            get { return _GatewayXml.SelectSingleNode("//GatewayId").InnerText; }
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }

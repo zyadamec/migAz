@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.UserControls
 {
@@ -27,21 +28,28 @@ namespace MigAz.UserControls
         {
             _AsmSubnetNode = asmSubnetNode;
 
-            if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Asm.Subnet))
+            Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
+            txtTargetName.Text = targetSubnet.TargetName;
+
+            if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
             {
-                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)_AsmSubnetNode.Tag;
+                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.SourceSubnet;
 
                 lblSourceName.Text = asmSubnet.Name;
                 lblAddressSpace.Text = asmSubnet.AddressPrefix;
-                txtTargetName.Text = asmSubnet.TargetName;
             }
-            else if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Arm.Subnet))
+            else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
             {
-                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)_AsmSubnetNode.Tag;
+                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.SourceSubnet;
 
                 lblSourceName.Text = armSubnet.Name;
                 lblAddressSpace.Text = armSubnet.AddressPrefix;
-                txtTargetName.Text = armSubnet.TargetName;
+            }
+
+            if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+            {
+                // if gateway subnet, the name can't be changed
+                txtTargetName.Enabled = false;
             }
         }
 
@@ -50,20 +58,9 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
 
-            if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Asm.Subnet))
-            {
-                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)_AsmSubnetNode.Tag;
-
-                asmSubnet.TargetName = txtSender.Text;
-                _AsmSubnetNode.Text = asmSubnet.TargetName;
-            }
-            else if (_AsmSubnetNode.Tag.GetType() == typeof(Azure.Arm.Subnet))
-            {
-                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)_AsmSubnetNode.Tag;
-
-                armSubnet.TargetName = txtSender.Text;
-                _AsmSubnetNode.Text = armSubnet.TargetName;
-            }
+            Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
+            targetSubnet.TargetName = txtSender.Text;
+            _AsmSubnetNode.Text = targetSubnet.ToString();
 
             PropertyChanged();
         }

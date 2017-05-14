@@ -48,18 +48,18 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(7, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(214, 25);
+            this.label1.Size = new System.Drawing.Size(148, 25);
             this.label1.TabIndex = 11;
-            this.label1.Text = "Source (ASM) Name:";
+            this.label1.Text = "Source Name:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(7, 48);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(209, 25);
+            this.label2.Size = new System.Drawing.Size(142, 25);
             this.label2.TabIndex = 10;
-            this.label2.Text = "Target (ARM) Name:";
+            this.label2.Text = "Target Name:";
             // 
             // txtTargetName
             // 
@@ -68,6 +68,7 @@
             this.txtTargetName.Size = new System.Drawing.Size(318, 31);
             this.txtTargetName.TabIndex = 9;
             this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtTargetName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
             // NetworkSecurityGroupProperties
             // 

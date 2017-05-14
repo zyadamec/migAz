@@ -12,7 +12,6 @@ namespace MigAz.Azure.Asm
         private AzureContext _AzureContext;
         private XmlNode _XmlNode = null;
         private StorageAccountKeys _AsmStorageAccountKeys;
-        private string _TargetName;
 
         #endregion
 
@@ -25,8 +24,6 @@ namespace MigAz.Azure.Asm
         {
             _AzureContext = azureContext;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
         }
 
         #endregion
@@ -73,12 +70,6 @@ namespace MigAz.Azure.Asm
             set { _AsmStorageAccountKeys = value; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value; }
-        }
-
         public string BlobStorageNamespace
         {
             get
@@ -98,15 +89,7 @@ namespace MigAz.Azure.Asm
 
         public override string ToString()
         {
-            return this.GetFinalTargetName();
-        }
-
-        public string GetFinalTargetName()
-        {
-            if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
-                return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;
-            else
-                return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;
+            return this.Name;
         }
 
         #endregion

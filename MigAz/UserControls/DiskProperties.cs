@@ -17,8 +17,8 @@ namespace MigAz.UserControls
     public partial class DiskProperties : UserControl
     {
         private AsmToArm _AsmToArmForm;
-        private TreeNode _ARMDataDiskNode;
-        private Azure.Asm.Disk _AsmDataDisk;
+        private TreeNode _DiskTreeNode;
+        private Azure.MigrationTarget.Disk _TargetDisk;
         private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
@@ -63,10 +63,10 @@ namespace MigAz.UserControls
             }
         }
 
-        internal void Bind(AsmToArm asmToArmForm, Azure.Asm.Disk asmDisk)
+        internal void Bind(AsmToArm asmToArmForm, Azure.MigrationTarget.Disk targetDisk)
         {
             _AsmToArmForm = asmToArmForm;
-            _AsmDataDisk = asmDisk;
+            _TargetDisk = targetDisk;
 
             BindCommon();
         }
@@ -74,8 +74,8 @@ namespace MigAz.UserControls
         internal void Bind(AsmToArm asmToArmForm, TreeNode armDataDiskNode)
         {
             _AsmToArmForm = asmToArmForm;
-            _ARMDataDiskNode = armDataDiskNode;
-            _AsmDataDisk = (Azure.Asm.Disk)_ARMDataDiskNode.Tag;
+            _DiskTreeNode = armDataDiskNode;
+            _TargetDisk = (Azure.MigrationTarget.Disk)_DiskTreeNode.Tag;
 
             BindCommon();
         }
@@ -86,18 +86,24 @@ namespace MigAz.UserControls
                 rbManagedDisk.Checked = true;
             else
             {
-                if (_AsmDataDisk.TargetStorageAccount == null || _AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount))
-                    rbStorageAccountInMigration.Checked = true;
-                else
-                    rbExistingARMStorageAccount.Checked = true;
+                if (_TargetDisk != null)
+                {
+                    if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                        rbStorageAccountInMigration.Checked = true;
+                    else if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        rbExistingARMStorageAccount.Checked = true;
+                }
             }
 
-            lblAsmStorageAccount.Text = _AsmDataDisk.StorageAccountName;
-            lblDiskName.Text = _AsmDataDisk.DiskName;
-            lblHostCaching.Text = _AsmDataDisk.HostCaching;
-            lblLUN.Text = _AsmDataDisk.Lun.ToString();
-
-            txtTargetDiskName.Text = _AsmDataDisk.TargetName;
+            if (_TargetDisk != null)
+            {
+                lblAsmStorageAccount.Text = _TargetDisk.SourceStorageAccountName;
+                lblDiskName.Text = _TargetDisk.TargetName;
+                lblHostCaching.Text = _TargetDisk.HostCaching;
+                lblLUN.Text = _TargetDisk.Lun.ToString();
+                txtTargetDiskName.Text = _TargetDisk.TargetName;
+                txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
+            }
         }
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
@@ -119,46 +125,41 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.Name, _AsmToArmForm.TargetResourceGroup.GetFinalTargetName(), _AsmToArmForm.TargetResourceGroup, false);
-                TreeNode storageAccountsNode = _AsmToArmForm.SeekARMChildTreeNode(targetResourceGroupNode.Nodes, "Storage Accounts", "Storage Accounts", "Storage Accounts", false);
+                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
 
-                if (storageAccountsNode != null)
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                 {
-                    foreach (TreeNode armStorageAccountNode in storageAccountsNode.Nodes)
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                     {
-                        TreeNode asmStorageAccountNode = (TreeNode)armStorageAccountNode.Tag;
-                        cmbTargetStorage.Items.Add(asmStorageAccountNode.Tag);
+                        Azure.MigrationTarget.StorageAccount storageAccountTarget = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
+                        cmbTargetStorage.Items.Add(storageAccountTarget);
                     }
                 }
 
-                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount)))
+                if (_TargetDisk != null)
                 {
-
-                }
-                else
-                {
-                    for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                    if (_TargetDisk.TargetStorageAccount != null)
                     {
-                        Azure.Asm.StorageAccount cmbStorageAccount = (Azure.Asm.StorageAccount)cmbTargetStorage.Items[i];
-                        if (cmbStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                         {
-                            cmbTargetStorage.SelectedIndex = i;
-                            break;
+                            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                            {
+                                cmbTargetStorage.SelectedIndex = i;
+                                break;
+                            }
                         }
+
+                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                        //{
+                        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        //    {
+                        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
+                        //        break;
+                        //    }
+                        //}
                     }
-
-                    // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                    //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                    //{
-                    //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                    //    {
-                    //        cmbTargetStorage.SelectedItem = asmStorageAccount;
-                    //        break;
-                    //    }
-                    //}
-
-                    if (cmbTargetStorage.SelectedItem == null)
-                        _LogProvider.WriteLog("rbStorageAccountInMigration_CheckedChanged", "Unable to location previously selected ASM Storage Account '" + _AsmDataDisk.TargetStorageAccount.Id + "' as an object included for ASM to ARM migration.  Please select a target storage account for the Azure Disk.");
                 }
             }
         }
@@ -177,28 +178,31 @@ namespace MigAz.UserControls
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
 
-                if ((_AsmDataDisk.TargetStorageAccount == null) || (_AsmDataDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
+                if (_TargetDisk != null)
                 {
-
-                }
-                else
-                {
-                    for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                    if ((_TargetDisk.TargetStorageAccount == null) || (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
                     {
-                        Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
-                        if (cmbStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                        {
-                            cmbTargetStorage.SelectedIndex = i;
-                            break;
-                        }
-                    }
 
-                    // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                    //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
-                    //{
-                    //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                    //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
-                    //}
+                    }
+                    else
+                    {
+                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                        {
+                            Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                            {
+                                cmbTargetStorage.SelectedIndex = i;
+                                break;
+                            }
+                        }
+
+                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                        //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
+                        //{
+                        //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
+                        //}
+                    }
                 }
             }
 
@@ -209,62 +213,48 @@ namespace MigAz.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            if (cmbSender.SelectedItem == null)
+            if (_TargetDisk != null)
+                _TargetDisk.TargetStorageAccount = null;
+
+            if (cmbSender.SelectedItem != null)
             {
-                _AsmDataDisk.TargetStorageAccount = null;
-            }
-            else
-            {
-                if (cmbSender.SelectedItem.GetType() == typeof(Azure.Asm.StorageAccount))
-                {
-                    Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)cmbSender.SelectedItem;
-                    _AsmDataDisk.TargetStorageAccount = asmStorageAccount;
-                }
-                else if (cmbSender.SelectedItem.GetType() == typeof(Azure.Arm.StorageAccount))
-                {
-                    Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)cmbSender.SelectedItem;
-                    _AsmDataDisk.TargetStorageAccount = armStorageAccount;
-                }
-                else
-                    _AsmDataDisk.TargetStorageAccount = null;
+                IStorageTarget targetStorageAccount = (IStorageTarget)cmbSender.SelectedItem;
+                if (_TargetDisk != null)
+                    _TargetDisk.TargetStorageAccount = targetStorageAccount;
             }
 
-            UpdateParentNode();
             PropertyChanged();
-        }
-
-        private void UpdateParentNode()
-        {
-            if (_ARMDataDiskNode != null)
-            {
-                TreeNode parentNode = (TreeNode)_ARMDataDiskNode.Parent.Tag;
-                Azure.Asm.VirtualMachine parentVirtualMachine = (Azure.Asm.VirtualMachine)parentNode.Tag;
-                foreach (Azure.Asm.Disk parentDisk in parentVirtualMachine.DataDisks)
-                {
-                    if (parentDisk.DiskName == _AsmDataDisk.DiskName)
-                    {
-                        parentDisk.TargetStorageAccount = _AsmDataDisk.TargetStorageAccount;
-                        parentDisk.TargetName = _AsmDataDisk.TargetName;
-                    }
-                }
-            }
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
         private void txtTargetDiskName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
-            _AsmDataDisk.TargetName = txtSender.Text.Trim();
-
-            if (_ARMDataDiskNode != null)
-            {
-                _ARMDataDiskNode.Text = _AsmDataDisk.TargetName;
-                UpdateParentNode();
-            }
+            _TargetDisk.TargetName = txtSender.Text.Trim();
+            if (_DiskTreeNode != null)
+                _DiskTreeNode.Text = _TargetDisk.ToString();
 
             PropertyChanged();
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
+        private void txtBlobName_TextChanged(object sender, EventArgs e)
+        {
+            TextBox txtSender = (TextBox)sender;
 
+            _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
+
+            PropertyChanged();
+            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
+        }
+
+        private void txtTargetDiskName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

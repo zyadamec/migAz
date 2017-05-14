@@ -93,14 +93,14 @@ namespace MigAz.Tests.Fakes
                         CloudService parentCloudService = this.GetAzureAsmCloudService(parts[2]).Result;
                         VirtualMachine asmVirtualMachine = new VirtualMachine(_AzureContext, parentCloudService, this._AzureContext.SettingsProvider, doc, info);
                         await asmVirtualMachine.InitializeChildren();
-                        asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
-                        asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
-                        asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
+                        // todo asmVirtualMachine.OSVirtualHardDisk.TargetStorageAccount = asmVirtualMachine.OSVirtualHardDisk.SourceStorageAccount;
+                        //asmVirtualMachine.TargetVirtualNetwork = asmVirtualMachine.SourceVirtualNetwork;
+                        //asmVirtualMachine.TargetSubnet = asmVirtualMachine.SourceSubnet;
 
-                        foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
-                        {
-                            dataDisk.TargetStorageAccount = dataDisk.SourceStorageAccount;
-                        }
+                        // todo foreach (Disk dataDisk in asmVirtualMachine.DataDisks)
+                        //{
+                        //    dataDisk.TargetStorageAccount = dataDisk.SourceStorageAccount;
+                        //}
 
                         parentCloudService.VirtualMachines.Add(asmVirtualMachine);
 
@@ -146,7 +146,6 @@ namespace MigAz.Tests.Fakes
                         info.Add("virtualnetworkname", parts[2]);
 
                         _VirtualNetworkGateway = new VirtualNetworkGateway(_AzureContext, _VirtualNetworks[0], doc);
-                        _VirtualNetworks[0].Gateway = _VirtualNetworkGateway;
 
                         break;
                     case "virtualnetworkgatewaysharedkey":
@@ -234,7 +233,7 @@ namespace MigAz.Tests.Fakes
             {
                 foreach (CloudService asmCloudService in _CloudServices)
                 {
-                    if (asmCloudService.ServiceName == cloudServiceName)
+                    if (asmCloudService.Name == cloudServiceName)
                         return asmCloudService;
                 }
             }

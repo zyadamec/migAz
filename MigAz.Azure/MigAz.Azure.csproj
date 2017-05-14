@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MigAz.Azure</RootNamespace>
     <AssemblyName>MigAz.Azure</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -34,17 +34,14 @@
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.9.1126, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.9\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.8.999, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.9.1126, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.9\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -61,12 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arm\AvailabilitySet.cs" />
-    <Compile Include="Asm\AvailabilitySet.cs" />
-    <Compile Include="Arm\DataDisk.cs" />
     <Compile Include="Arm\Disk.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
-    <Compile Include="Arm\NetworkInterfaceCard.cs" />
+    <Compile Include="Arm\NetworkInterface.cs" />
+    <Compile Include="Arm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
@@ -77,6 +73,12 @@
     <Compile Include="Arm\Subnet.cs" />
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
+    <Compile Include="Arm\VirtualNetworkGateway.cs" />
+    <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
+    <Compile Include="AzureRestRequest.cs" />
+    <Compile Include="AzureRestResponse.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="ExportArtifacts.cs" />
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,6 +91,22 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="MigrationTarget\AvailabilitySet.cs" />
+    <Compile Include="MigrationTarget\Disk.cs" />
+    <Compile Include="MigrationTarget\LoadBalancer.cs" />
+    <Compile Include="MigrationTarget\LoadBalancerRule.cs" />
+    <Compile Include="MigrationTarget\NetworkInterface.cs" />
+    <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
+    <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />
+    <Compile Include="MigrationTarget\NetworkSecurityGroupRule.cs" />
+    <Compile Include="MigrationTarget\ResourceGroup.cs" />
+    <Compile Include="MigrationTarget\Route.cs" />
+    <Compile Include="MigrationTarget\RouteTable.cs" />
+    <Compile Include="MigrationTarget\StorageAccount.cs" />
+    <Compile Include="MigrationTarget\Subnet.cs" />
+    <Compile Include="MigrationTarget\VirtualMachine.cs" />
+    <Compile Include="MigrationTarget\VirtualNetwork.cs" />
+    <Compile Include="MigrationTarget\VirtualNetworkGateway.cs" />
     <Compile Include="Models\ArmToArmTelemetryRecord.cs" />
     <Compile Include="UserControls\AzureArmLoginControl.cs">
       <SubType>UserControl</SubType>
@@ -129,8 +147,7 @@
     <Compile Include="AzureSubscription.cs" />
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
-    <Compile Include="Generator\ArmToArm\ArmToArmGenerator.cs" />
-    <Compile Include="Generator\AsmToArm\AsmToArmGenerator.cs" />
+    <Compile Include="Generator\AzureGenerator.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
@@ -138,6 +155,12 @@
     <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="Models\TelemetryRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\PropertyPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PropertyPanel.Designer.cs">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -156,10 +179,10 @@
     <EmbeddedResource Include="UserControls\AzureLoginContextViewer.resx">
       <DependentUpon>AzureLoginContextViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Generator\AsmToArm\DeployDocTemplate.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Generator\ArmToArm\DeployDocTemplate.html" />
+    <EmbeddedResource Include="Generator\DeployDocTemplate.html" />
+    <EmbeddedResource Include="UserControls\PropertyPanel.resx">
+      <DependentUpon>PropertyPanel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
@@ -167,6 +190,7 @@
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

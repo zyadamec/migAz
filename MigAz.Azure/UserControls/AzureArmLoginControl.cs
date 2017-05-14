@@ -162,6 +162,8 @@ namespace MigAz.Azure.UserControls
                     await _AzureContext.Logout();
                     lblAuthenticatedUser.Text = "<Not Authenticated>";
                     btnAuthenticate.Text = "Sign In";
+                    cboTenant.Items.Clear();
+                    cboTenant.Enabled = false;
                     cmbSubscriptions.Items.Clear();
                     cmbSubscriptions.Enabled = false;
                     cboAzureEnvironment.Enabled = true;

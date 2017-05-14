@@ -1,17 +1,19 @@
 ﻿using MigAz.Core.Interface;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class NetworkInterface
+    public class NetworkInterface : INetworkInterface
     {
         #region Variables
 
         private AzureContext _AzureContext;
         private VirtualMachine _AsmVirtualMachine;
-        private XmlNode _XmlNode;
-        private String _TargetName;
+        private String _Name = "NetworkInterface1";
+        private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
 
         #endregion
 
@@ -19,59 +21,44 @@ namespace MigAz.Azure.Asm
 
         private NetworkInterface() { }
 
-        public NetworkInterface(AzureContext azureContext, VirtualMachine asmVirtualMachine, ISettingsProvider settingsProvider, XmlNode xmlNode)
+        public NetworkInterface(AzureContext azureContext, VirtualMachine asmVirtualMachine)
         {
             _AzureContext = azureContext;
             _AsmVirtualMachine = asmVirtualMachine;
-            _XmlNode = xmlNode;
 
-            this.TargetName = _AsmVirtualMachine.RoleName;
+            this.IsPrimary = false;
         }
 
         #endregion
 
         #region Properties
 
-        public VirtualMachine Parent
+        public VirtualMachine VirtualMachine
         {
             get { return _AsmVirtualMachine; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim(); }
-        }
-        public string SubnetName
-        {
-            get { return _XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText; }
-        }
-
-        public string StaticVirtualNetworkIPAddress
-        {
-            get
-            {
-                if (_XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress") == null)
-                    return String.Empty;
-
-                return _XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress").InnerText;
-            }
-        }
+        public bool IsPrimary { get; set; }
 
         public string Name
         {
-            get { return _XmlNode.SelectSingleNode("Name").InnerText; }
+            get { return _Name; }
+            set { _Name = value.Replace(" ", String.Empty); }
         }
 
-        public bool EnableIPForwarding
+        public bool EnableIpForwarding { get; internal set; }
+
+        public List<NetworkInterfaceIpConfiguration> NetworkInterfaceIpConfigurations
         {
-            get { return _XmlNode.SelectNodes("IPForwarding").Count > 0; }
+            get { return _NetworkInterfaceIpConfigurations; }
         }
 
-        public string GetFinalTargetName()
+        public override string ToString()
         {
-            return this.TargetName + this._AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
+            return this.Name;
         }
+
+
         #endregion
     }
 }

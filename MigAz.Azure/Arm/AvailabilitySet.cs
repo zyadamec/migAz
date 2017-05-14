@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class AvailabilitySet
+    public class AvailabilitySet : IAvailabilitySetSource
     {
         private JToken _AvailabilitySet;
         private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();
@@ -17,10 +18,6 @@ namespace MigAz.Azure.Arm
             this._AvailabilitySet = availabilitySet;
         }
 
-        public string TargetName
-        {
-            get;set;
-        }
         public string Id => (string)_AvailabilitySet["id"];
         public string Name => (string)_AvailabilitySet["name"];
         public string Location => (string)_AvailabilitySet["location"];
@@ -33,9 +30,11 @@ namespace MigAz.Azure.Arm
             get { return _VirtualMachines; }
         }
 
-        public string GetFinalTargetName()
+        public override string ToString()
         {
-            return this.TargetName;
+            return this.Name;
         }
+
+
     }
 }

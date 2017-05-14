@@ -49,16 +49,17 @@
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "ResourceGroup");
-            this.imageList1.Images.SetKeyName(1, "Disk");
-            this.imageList1.Images.SetKeyName(2, "LoadBalancer");
-            this.imageList1.Images.SetKeyName(3, "NetworkInterface.png");
-            this.imageList1.Images.SetKeyName(4, "NetworkSecurityGroup");
-            this.imageList1.Images.SetKeyName(5, "PublicIPAddress.png");
-            this.imageList1.Images.SetKeyName(6, "StorageAccount");
-            this.imageList1.Images.SetKeyName(7, "VirtualMachine");
-            this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
-            this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(0, "Disk");
+            this.imageList1.Images.SetKeyName(1, "LoadBalancer");
+            this.imageList1.Images.SetKeyName(2, "NetworkInterface");
+            this.imageList1.Images.SetKeyName(3, "NetworkSecurityGroup");
+            this.imageList1.Images.SetKeyName(4, "PublicIPAddress.png");
+            this.imageList1.Images.SetKeyName(5, "StorageAccount");
+            this.imageList1.Images.SetKeyName(6, "VirtualMachine");
+            this.imageList1.Images.SetKeyName(7, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(8, "Subscription");
+            this.imageList1.Images.SetKeyName(9, "ResourceGroup");
+            this.imageList1.Images.SetKeyName(10, "AvailabilitySet");
             // 
             // azureLoginContextViewerARM
             // 
@@ -82,8 +83,11 @@
             // 
             // treeTargetARM
             // 
+            this.treeTargetARM.ImageIndex = 0;
+            this.treeTargetARM.ImageList = this.imageList1;
             this.treeTargetARM.Location = new System.Drawing.Point(905, 241);
             this.treeTargetARM.Name = "treeTargetARM";
+            this.treeTargetARM.SelectedImageIndex = 0;
             this.treeTargetARM.Size = new System.Drawing.Size(855, 545);
             this.treeTargetARM.TabIndex = 57;
             this.treeTargetARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeARM_AfterSelect);
@@ -144,8 +148,11 @@
             // treeSourceARM
             // 
             this.treeSourceARM.CheckBoxes = true;
+            this.treeSourceARM.ImageIndex = 0;
+            this.treeSourceARM.ImageList = this.imageList1;
             this.treeSourceARM.Location = new System.Drawing.Point(0, 0);
             this.treeSourceARM.Name = "treeSourceARM";
+            this.treeSourceARM.SelectedImageIndex = 0;
             this.treeSourceARM.Size = new System.Drawing.Size(842, 500);
             this.treeSourceARM.TabIndex = 57;
             this.treeSourceARM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeASM_AfterCheck);

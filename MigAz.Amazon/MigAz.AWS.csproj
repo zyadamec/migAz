@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MigAz.AWS</RootNamespace>
     <AssemblyName>MigAz.AWS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -54,7 +54,12 @@
     <Compile Include="AWSExportArtifacts.cs" />
     <Compile Include="AwsObjectRetriever.cs" />
     <Compile Include="AwsRetriever.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="AwsToArm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AwsToArm.Designer.cs">
+      <DependentUpon>AwsToArm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EbsVolume.cs" />
     <Compile Include="Ec2Instance.cs" />
     <Compile Include="Forms\AuthenticationForm.cs">
@@ -68,8 +73,10 @@
     <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="ParamComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\AwsAppSettingsProvider.cs" />
     <Compile Include="Providers\AwsToArmSaveSelectionProvider.cs" />
     <Compile Include="Providers\AwsToArmTelemetryProvider.cs" />
+    <Compile Include="Providers\UISaveSelectionProvider.cs" />
     <Compile Include="VPC.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,12 +84,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">
+      <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
+      <Name>MigAz.Azure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
       <Project>{1bdc90e2-902b-4397-8b4f-7dff2d486fc2}</Project>
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AwsToArm.resx">
+      <DependentUpon>AwsToArm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AuthenticationForm.resx">
       <DependentUpon>AuthenticationForm.cs</DependentUpon>
     </EmbeddedResource>

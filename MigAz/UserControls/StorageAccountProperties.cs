@@ -14,7 +14,7 @@ namespace MigAz.UserControls
 {
     public partial class StorageAccountProperties : UserControl
     {
-        private TreeNode _ArmStorageAccountNode;
+        private TreeNode _StorageAccountNode;
         private AzureContext _AzureContext;
 
         public delegate Task AfterPropertyChanged();
@@ -30,38 +30,17 @@ namespace MigAz.UserControls
             _AzureContext = azureContext;
             txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
 
-            _ArmStorageAccountNode = sourceStorageAccountNode;
-            TreeNode storageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
+            _StorageAccountNode = sourceStorageAccountNode;
+            Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)_StorageAccountNode.Tag;
+            lblAccountType.Text = storageAccount.SourceAccount.AccountType;
+            lblSourceASMName.Text = storageAccount.SourceAccount.Name;
 
-            if (storageAccountNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
+            if (storageAccount.TargetName != null)
             {
-                StorageAccount asmStorageAccount = (StorageAccount)storageAccountNode.Tag;
-
-                lblAccountType.Text = asmStorageAccount.AccountType;
-                lblSourceASMName.Text = asmStorageAccount.Name;
-
-                if (asmStorageAccount.TargetName != null)
-                {
-                    if (asmStorageAccount.TargetName.Length > txtTargetName.MaxLength)
-                        txtTargetName.Text = asmStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
-                    else
-                        txtTargetName.Text = asmStorageAccount.TargetName;
-                }
-            }
-            else if (storageAccountNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
-            {
-                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)storageAccountNode.Tag;
-
-                lblAccountType.Text = armStorageAccount.AccountType;
-                lblSourceASMName.Text = armStorageAccount.Name;
-
-                if (armStorageAccount.TargetName != null)
-                {
-                    if (armStorageAccount.TargetName.Length > txtTargetName.MaxLength)
-                        txtTargetName.Text = armStorageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
-                    else
-                        txtTargetName.Text = armStorageAccount.TargetName;
-                }
+                if (storageAccount.TargetName.Length > txtTargetName.MaxLength)
+                    txtTargetName.Text = storageAccount.TargetName.Substring(0, txtTargetName.MaxLength);
+                else
+                    txtTargetName.Text = storageAccount.TargetName;
             }
         }
 
@@ -69,22 +48,9 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            TreeNode asmStorageAccountNode = (TreeNode)_ArmStorageAccountNode.Tag;
-
-            if (asmStorageAccountNode.Tag.GetType() == typeof(Azure.Asm.StorageAccount))
-            {
-                Azure.Asm.StorageAccount asmStorageAccount = (Azure.Asm.StorageAccount)asmStorageAccountNode.Tag;
-
-                asmStorageAccount.TargetName = txtSender.Text;
-                _ArmStorageAccountNode.Text = asmStorageAccount.GetFinalTargetName();
-            }
-            else if (asmStorageAccountNode.Tag.GetType() == typeof(Azure.Arm.StorageAccount))
-            {
-                Azure.Arm.StorageAccount armStorageAccount = (Azure.Arm.StorageAccount)asmStorageAccountNode.Tag;
-
-                armStorageAccount.TargetName = txtSender.Text;
-                _ArmStorageAccountNode.Text = armStorageAccount.GetFinalTargetName();
-            }
+            Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)_StorageAccountNode.Tag;
+            storageAccount.TargetName = txtSender.Text;
+            _StorageAccountNode.Text = storageAccount.ToString();
 
             PropertyChanged();
         }

@@ -28,9 +28,7 @@ namespace MigAz.UserControls
         {
             _armAvailabilitySetNode = availabilitySetNode;
 
-            Azure.Asm.AvailabilitySet armAvailabilitySet = (Azure.Asm.AvailabilitySet)_armAvailabilitySetNode.Tag;
-
-            //lblAccountType.Text = asmCloudService.AccountType;
+            Azure.MigrationTarget.AvailabilitySet armAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
             txtTargetName.Text = armAvailabilitySet.TargetName;
         }
 
@@ -38,10 +36,10 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.Asm.AvailabilitySet armAvailabilitySet = (Azure.Asm.AvailabilitySet)_armAvailabilitySetNode.Tag;
+            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
 
-            armAvailabilitySet.TargetName = txtSender.Text;
-            _armAvailabilitySetNode.Text = armAvailabilitySet.GetFinalTargetName();
+            targetAvailabilitySet.TargetName = txtSender.Text;
+            _armAvailabilitySetNode.Text = targetAvailabilitySet.ToString();
 
             PropertyChanged();
         }

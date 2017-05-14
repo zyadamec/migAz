@@ -16,7 +16,6 @@ namespace MigAz.Azure.Asm
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
         private RouteTable _AsmRouteTable = null;
         private XmlNode _XmlNode = null;
-        private String _TargetName = null;
 
         #endregion
 
@@ -29,8 +28,6 @@ namespace MigAz.Azure.Asm
             _AzureContext = azureContext;
             _Parent = parent;
             _XmlNode = xmlNode;
-
-            this.TargetName = this.Name;
         }
 
         #endregion
@@ -41,20 +38,10 @@ namespace MigAz.Azure.Asm
         {
             get { return _XmlNode.SelectSingleNode("Name").InnerText; }
         }
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Replace(" ", String.Empty); }
-        }
 
         public string Id
         {
             get { return this.Name; }
-        }
-
-        public string TargetId
-        {
-            get {  return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.Parent.TargetName + "/subnets/" + this.TargetName + "')]"; }
         }
 
         public string AddressPrefix
@@ -130,6 +117,22 @@ namespace MigAz.Azure.Asm
         }
 
         #endregion
+
+        public static bool operator ==(Subnet lhs, Subnet rhs)
+        {
+            bool status = false;
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && lhs.Id == rhs.Id))
+            {
+                status = true;
+            }
+            return status;
+        }
+
+        public static bool operator !=(Subnet lhs, Subnet rhs)
+        {
+            return !(lhs == rhs);
+        }
 
     }
 }

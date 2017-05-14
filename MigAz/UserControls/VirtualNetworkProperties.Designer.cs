@@ -51,9 +51,9 @@
             this.lblASMVirtualNetworkName.AutoSize = true;
             this.lblASMVirtualNetworkName.Location = new System.Drawing.Point(16, 24);
             this.lblASMVirtualNetworkName.Name = "lblASMVirtualNetworkName";
-            this.lblASMVirtualNetworkName.Size = new System.Drawing.Size(179, 25);
+            this.lblASMVirtualNetworkName.Size = new System.Drawing.Size(148, 25);
             this.lblASMVirtualNetworkName.TabIndex = 6;
-            this.lblASMVirtualNetworkName.Text = "ASM VNet Name:";
+            this.lblASMVirtualNetworkName.Text = "Source Name:";
             // 
             // label3
             // 
@@ -70,17 +70,17 @@
             this.txtVirtualNetworkName.Name = "txtVirtualNetworkName";
             this.txtVirtualNetworkName.Size = new System.Drawing.Size(352, 31);
             this.txtVirtualNetworkName.TabIndex = 10;
-            this.txtVirtualNetworkName.TextChanged += new System.EventHandler(this.txtVirtualNetworkName_TextChanged);
-            this.txtVirtualNetworkName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtVirtualNetworkName_KeyPress);
+            this.txtVirtualNetworkName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
+            this.txtVirtualNetworkName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
             // lblARMVirtualNetworkName
             // 
             this.lblARMVirtualNetworkName.AutoSize = true;
             this.lblARMVirtualNetworkName.Location = new System.Drawing.Point(16, 64);
             this.lblARMVirtualNetworkName.Name = "lblARMVirtualNetworkName";
-            this.lblARMVirtualNetworkName.Size = new System.Drawing.Size(180, 25);
+            this.lblARMVirtualNetworkName.Size = new System.Drawing.Size(142, 25);
             this.lblARMVirtualNetworkName.TabIndex = 11;
-            this.lblARMVirtualNetworkName.Text = "ARM VNet Name:";
+            this.lblARMVirtualNetworkName.Text = "Target Name:";
             // 
             // dgvAddressSpaces
             // 

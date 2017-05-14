@@ -8,26 +8,24 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualMachine : Core.ArmTemplate.VirtualMachine, IVirtualMachine
+    public class VirtualMachine : IVirtualMachine
     {
         private JToken _VirtualMachine;
         private List<Disk> _DataDisks = new List<Disk>();
-        private ResourceGroup _ResourceGroup;
-        private NetworkSecurityGroup _NetworkSecurityGroup;
         private Disk _OSVirtualHardDisk;
-        private VirtualNetwork _VirtualNetwork;
-        private List<NetworkInterfaceCard> _NetworkInterfaceCards = new List<NetworkInterfaceCard>();
+        private NetworkSecurityGroup _NetworkSecurityGroup;
+        private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
 
-        private VirtualMachine() : base(Guid.Empty) { }
+        private VirtualMachine() { }
 
-        public VirtualMachine(JToken virtualMachine) : base(Guid.Empty)
+        public VirtualMachine(AzureContext azureContext, JToken virtualMachine)
         {
             _VirtualMachine = virtualMachine;
 
-            _OSVirtualHardDisk = new Disk(_VirtualMachine["properties"]["storageProfile"]["osDisk"]);
+            _OSVirtualHardDisk = new Disk(azureContext, _VirtualMachine["properties"]["storageProfile"]["osDisk"]);
             foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new DataDisk(dataDiskToken));
+                _DataDisks.Add(new Disk(azureContext, dataDiskToken));
             }
         }
 
@@ -37,6 +35,7 @@ namespace MigAz.Azure.Arm
         public string Id => (string)_VirtualMachine["id"];
         public Guid VmId => new Guid((string)_VirtualMachine["properties"]["vmId"]);
         public string VmSize => (string)_VirtualMachine["properties"]["hardwareProfile"]["vmSize"];
+        public string OSVirtualHardDiskOS => (string)_VirtualMachine["properties"]["storageProfile"]["osDisk"]["osType"];
 
         internal string AvailabilitySetId
         {
@@ -48,40 +47,62 @@ namespace MigAz.Azure.Arm
                 }
                 catch (NullReferenceException)
                 {
-                    return null;
+                    return String.Empty;
                 }
             }
         }
 
         public List<Disk> DataDisks => _DataDisks;
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
-        public ResourceGroup ResourceGroup => _ResourceGroup;
+        public ResourceGroup ResourceGroup { get; set; }
         public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
-        public VirtualNetwork VirtualNetwork => _VirtualNetwork;
-        public List<NetworkInterfaceCard> NetworkInterfaces => _NetworkInterfaceCards;
+        public List<NetworkInterface> NetworkInterfaces => _NetworkInterfaceCards;
 
         public AvailabilitySet AvailabilitySet
         {
             get; private set;
         }
-        public AvailabilitySet TargetAvailabilitySet
+        public NetworkInterface PrimaryNetworkInterface
         {
-            get; set;
-        }
-        public Subnet TargetSubnet
-        {
-            get; set;
-        }
-        public string TargetName { get; set; }
+            get
+            {
+                foreach (NetworkInterface networkInterface in this.NetworkInterfaces)
+                {
+                    if (networkInterface.IsPrimary)
+                        return networkInterface;
+                }
 
+                return null;
+            }
+        }
         internal async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
 
+            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+
+            await this.OSVirtualHardDisk.InitializeChildrenAsync();
+
+            foreach (Disk dataDisk in this.DataDisks)
+            {
+                await dataDisk.InitializeChildrenAsync();
+            }
+
+            foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
+            {
+                NetworkInterface networkInterface = await azureContext.AzureRetriever.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
+                networkInterface.VirtualMachine = this;
+                _NetworkInterfaceCards.Add(networkInterface);
+            }
+
             return;
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

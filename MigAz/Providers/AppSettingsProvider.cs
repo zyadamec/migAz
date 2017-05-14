@@ -1,6 +1,6 @@
 ﻿using MigAz.Core.Interface;
 
-namespace MigAz.Forms.AWS.Providers
+namespace MigAz.Providers
 {
     public class AppSettingsProvider : ISettingsProvider
     {

@@ -5,5 +5,7 @@
         string Id { get; }
         string Name { get; }
         string BlobStorageNamespace { get; }
+
+        string AccountType { get; }
     }
 }

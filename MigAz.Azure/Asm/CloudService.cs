@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Xml;
 
 namespace MigAz.Azure.Asm
 {
-    public class CloudService
+    public class CloudService : IAvailabilitySetSource
     {
         private AzureContext _AzureContext;
         private XmlNode _XmlNode;
@@ -26,7 +27,7 @@ namespace MigAz.Azure.Asm
             this._XmlNode = cloudServiceXml;
         }
 
-        public string ServiceName
+        public string Name
         {
             get
             {
@@ -158,7 +159,7 @@ namespace MigAz.Azure.Asm
             List<ReservedIP> asmReservedIPs = await _AzureContext.AzureRetriever.GetAzureAsmReservedIPs();
             foreach (ReservedIP asmReservedIP in asmReservedIPs)
             {
-                if (asmReservedIP.ServiceName == this.ServiceName)
+                if (asmReservedIP.ServiceName == this.Name)
                 {
                     _AsmReservedIP = asmReservedIP;
                 }
