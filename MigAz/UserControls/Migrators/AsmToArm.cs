@@ -21,7 +21,7 @@ namespace MigAz.UserControls.Migrators
         private TreeNode _SourceAsmNode;
         private TreeNode _SourceArmNode;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
-        private AsmToArmTelemetryProvider _telemetryProvider;
+        private AzureTelemetryProvider _telemetryProvider;
         private AppSettingsProvider _appSettingsProvider;
         private AzureContext _AzureContextSourceASM;
         private AzureContext _AzureContextTargetARM;
@@ -47,7 +47,7 @@ namespace MigAz.UserControls.Migrators
             InitializeComponent();
 
             _saveSelectionProvider = new UISaveSelectionProvider();
-            _telemetryProvider = new AsmToArmTelemetryProvider();
+            _telemetryProvider = new AzureTelemetryProvider();
             _appSettingsProvider = new AppSettingsProvider();
             _PropertyPanel = propertyPanel;
 

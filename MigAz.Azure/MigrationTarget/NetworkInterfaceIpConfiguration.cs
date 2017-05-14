@@ -118,7 +118,13 @@ namespace MigAz.Azure.MigrationTarget
         public String TargetPrivateIpAddress
         {
             get { return _TargetStaticIpAddress; }
-            set { _TargetStaticIpAddress = value.Trim(); }
+            set
+            {
+                if (value == null)
+                    _TargetStaticIpAddress = String.Empty;
+                else
+                    _TargetStaticIpAddress = value.Trim();
+            }
         }
 
         public string SourceName

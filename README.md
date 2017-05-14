@@ -1,6 +1,6 @@
 Hello Azure expert!
 
-This repo is the home for all MigAz tools. MigAz intent is to help you on Azure deployments and migrations.
+This repo is the home for the MigAz. MigAz intent is to help you on Azure Resource Manager (ARM) deployments and migrations.
 
 The base principal of MigAz tools is to work on top of ARM templates. This creates the foundations for you to create, change and migrate deployments with the power and flexibility of ARM templates deployment model. This is true if you are now starting to work with ARM templates and want to learn, or you already have advanced knowledge but need a tool to make you even more productive.
 
@@ -19,12 +19,12 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 5. Login credentials at destination Azure subscription
 
 ## Get it
-Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM Migration).  Note that ARM and AWS are not yet integrated into the new v2 project baseline and remain available via their respective release folders ([ARM Release](arm/release) and [AWS Release](aws/release)).
+Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM and ARM to ARM Migration).  Note that Migaz AWS to ARM is not yet integrated into the new v2 project baseline and remains available via the AWS release folders ([AWS Release](aws/release)).
 
 ## Instructions
-[Azure ASM to Azure ARM Migration](asm) - MigAz ASM version will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
+[Azure ASM to Azure ARM Migration](asm) - MigAz ASM to ARM will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
 
-[Azure ARM to Azure ARM Migration](arm) - MigAz ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
+[Azure ARM to Azure ARM Migration](arm) - MigAz ARM to ARM version allows you to create an ARM template out of an Azure IaaS ARM deployment. It also provides an automation script for blobs copy.
 
 [AWS to Azure ARM Migration](aws) - MigAz AWS version will help you on your AWS to Azure migrations. MigAz AWS version allows you to create an ARM template out of an AWS EC2 deployment.
 
@@ -35,7 +35,9 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 ## Release Notes
 ### v2.2.0.0
-- Consolidated stand alone MigAz ARM to ARM version into new MigAz v2.2.0.0 release.  Discontinued stand alone version. 
+- Consolidated stand alone MigAz ARM to ARM version into new MigAz v2.2.0.0 release.  Discontinued MigAz ARM to ARM stand alone version. 
+- Open need to validate ASM to ARM Load Balancer and Public IP generation (proceeding with release to resolve prior issues).
+- Next steps to author Managed Disk integration, then consolidation of MigAz AWS to ARM.
 
 ### v2.1.0.0
 - Added retry logic with back off timer to Azure REST API calls on 500 HTTP Error response
