@@ -441,9 +441,9 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.0.0";
+            string currentVersion = "2.2.1.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
-            string newVersionNumber = await versionCheck.GetAvailableVersion("https://asmtoarmtoolapi.azurewebsites.net/api/version", currentVersion);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
                 DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1355,12 +1355,12 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            tabSourceResources.Height = 265;
+            tabSourceResources.Height = this.Height - 125;
             treeSourceASM.Width = tabSourceResources.Width - 8;
             treeSourceASM.Height = tabSourceResources.Height - 26;
             treeSourceARM.Width = tabSourceResources.Width - 8;
             treeSourceARM.Height = tabSourceResources.Height - 26;
-            treeTargetARM.Height = 250;
+            treeTargetARM.Height = this.Height - 140;
         }
 
         #endregion

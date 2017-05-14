@@ -64,9 +64,14 @@ namespace MigAz.Azure.Asm
             NetworkInterfaceIpConfiguration primaryNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
             primaryNetworkInterface.NetworkInterfaceIpConfigurations.Add(primaryNetworkInterfaceIpConfiguration);
 
-            // code note, unclear why this is index [1] on the ConfigurationSet ... couldn't it be any a different order?
             primaryNetworkInterfaceIpConfiguration.VirtualNetworkName = vmDetails["virtualnetworkname"].ToString();
-            primaryNetworkInterfaceIpConfiguration.SubnetName = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/SubnetNames/SubnetName").InnerText;
+
+            // code note, unclear why this is index [1] on the ConfigurationSet ... couldn't it be a different order?
+            if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/SubnetNames/SubnetName") != null)
+            {
+                primaryNetworkInterfaceIpConfiguration.SubnetName = _XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/SubnetNames/SubnetName").InnerText;
+            }
+
             if (_XmlNode.SelectSingleNode("//ConfigurationSets/ConfigurationSet[1]/StaticVirtualNetworkIPAddress") != null)
             {
                 primaryNetworkInterfaceIpConfiguration.PrivateIpAllocationMethod = "Static";
@@ -100,7 +105,12 @@ namespace MigAz.Azure.Asm
 
                 ipConfiguration.Name = "ipconfig1";
                 ipConfiguration.VirtualNetworkName = vmDetails["virtualnetworkname"].ToString();
-                ipConfiguration.SubnetName = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText;
+
+                if (_XmlNode.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName") != null)
+                {
+                    ipConfiguration.SubnetName = additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/SubnetName").InnerText;
+                }
+
                 if (additionalNetworkInterfaceXml.SelectSingleNode("IPConfigurations/IPConfiguration/StaticVirtualNetworkIPAddress") != null)
                 {
                     ipConfiguration.PrivateIpAllocationMethod = "Static";
