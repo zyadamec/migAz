@@ -315,10 +315,17 @@ namespace MigAz.UserControls.Migrators
                         storageAccountParentNode.Expand();
                     }
 
-                    foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                    try
                     {
-                        Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
-                        _ArmTargetManagedDisks.Add(targetManagedDisk);
+                        foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                        {
+                            Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
+                            _ArmTargetManagedDisks.Add(targetManagedDisk);
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        int i = 0;
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
@@ -802,7 +809,7 @@ namespace MigAz.UserControls.Migrators
 
                     VirtualMachineProperties properties = new VirtualMachineProperties();
                     properties.LogProvider = LogProvider;
-                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
+                    properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
                     await properties.Bind(e.Node, this);
                     _PropertyPanel.PropertyDetailControl = properties;
@@ -851,7 +858,7 @@ namespace MigAz.UserControls.Migrators
 
                     DiskProperties properties = new DiskProperties();
                     properties.LogProvider = this.LogProvider;
-                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
+                    properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;

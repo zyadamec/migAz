@@ -97,6 +97,13 @@ namespace MigAz.UserControls
 
             if (_TargetDisk != null)
             {
+                lblAsmStorageAccount.Text = String.Empty;
+                lblDiskName.Text = _TargetDisk.TargetName;
+                lblHostCaching.Text = _TargetDisk.HostCaching;
+                lblLUN.Text = _TargetDisk.Lun.ToString();
+                txtTargetDiskName.Text = _TargetDisk.TargetName;
+                txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
+
                 if (_TargetDisk.SourceDisk != null)
                 {
                     if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk))
@@ -109,13 +116,7 @@ namespace MigAz.UserControls
                         Azure.Arm.Disk armDisk = (Azure.Arm.Disk)_TargetDisk.SourceDisk;
                         lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
                     }
-                    lblAsmStorageAccount.Text = "-"; ;
                 }
-                lblDiskName.Text = _TargetDisk.TargetName;
-                lblHostCaching.Text = _TargetDisk.HostCaching;
-                lblLUN.Text = _TargetDisk.Lun.ToString();
-                txtTargetDiskName.Text = _TargetDisk.TargetName;
-                txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
             }
         }
 

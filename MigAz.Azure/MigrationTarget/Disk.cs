@@ -25,19 +25,26 @@ namespace MigAz.Azure.MigrationTarget
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
-        public Disk(Arm.Disk sourceDisk)
-        {
-            this.SourceDisk = sourceDisk;
-            this.TargetName = sourceDisk.Name;
-            this.Lun = sourceDisk.Lun;
-            this.HostCaching = sourceDisk.Caching;
-            this.DiskSizeInGB = sourceDisk.DiskSizeGb;
-            this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
-            this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
-        }
-
         public Disk(IArmDisk sourceDisk)
         {
+            this.SourceDisk = (IDisk)sourceDisk;
+
+            if (sourceDisk.GetType() == typeof(Azure.Arm.Disk))
+            {
+                Azure.Arm.Disk armDisk = (Azure.Arm.Disk)sourceDisk;
+
+                this.TargetName = armDisk.Name;
+                this.Lun = armDisk.Lun;
+                this.HostCaching = armDisk.Caching;
+                this.DiskSizeInGB = armDisk.DiskSizeGb;
+                this.TargetStorageAccountBlob = armDisk.StorageAccountBlob;
+                this.SourceStorageAccount = armDisk.SourceStorageAccount;
+            }
+            else if (sourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+            {
+                Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
+
+            }
 
         }
 
