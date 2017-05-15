@@ -32,6 +32,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
+        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
@@ -314,6 +315,12 @@ namespace MigAz.UserControls.Migrators
                         storageAccountParentNode.Expand();
                     }
 
+                    foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                    {
+                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = new Azure.MigrationTarget.ManagedDisk(this.AzureContextTargetARM, armManagedDisk);
+                        _ArmTargetManagedDisks.Add(targetManagedDisk);
+                    }
+
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
                     {
                         TreeNode virtualMachineParentNode = subscriptionNodeARM;
@@ -441,9 +448,9 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.0.0";
+            string currentVersion = "2.2.1.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
-            string newVersionNumber = await versionCheck.GetAvailableVersion("https://asmtoarmtoolapi.azurewebsites.net/api/version", currentVersion);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
                 DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1355,12 +1362,12 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            tabSourceResources.Height = 265;
+            tabSourceResources.Height = this.Height - 125;
             treeSourceASM.Width = tabSourceResources.Width - 8;
             treeSourceASM.Height = tabSourceResources.Height - 26;
             treeSourceARM.Width = tabSourceResources.Width - 8;
             treeSourceARM.Height = tabSourceResources.Height - 26;
-            treeTargetARM.Height = 250;
+            treeTargetARM.Height = this.Height - 140;
         }
 
         #endregion

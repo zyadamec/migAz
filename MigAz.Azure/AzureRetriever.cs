@@ -1173,7 +1173,7 @@ namespace MigAz.Azure
                     break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualMachines + "?api-version=2016-04-30-preview";
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
 

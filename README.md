@@ -34,6 +34,10 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.2.1.0
+- Fixed ASM Virtual Machine constructor with null Subnet
+- Added Control resizing to allow larger (height) TreeView controls on form
+
 ### v2.2.0.0
 - Consolidated stand alone MigAz ARM to ARM version into new MigAz v2.2.0.0 release.  Discontinued MigAz ARM to ARM stand alone version. 
 - Open need to validate ASM to ARM Load Balancer and Public IP generation (proceeding with release to resolve prior issues).

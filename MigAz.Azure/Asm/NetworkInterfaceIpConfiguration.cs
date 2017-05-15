@@ -12,6 +12,8 @@ namespace MigAz.Azure.Asm
         private AzureContext _AzureContext;
         private String _Name = "ipconfig1";
         private String _PrivateIpAllocationMethod = "Dynamic";
+        private String _VirtualNetworkName = String.Empty;
+        private String _SubnetName = String.Empty;
 
         public NetworkInterfaceIpConfiguration(AzureContext azureContext)
         {
@@ -20,19 +22,7 @@ namespace MigAz.Azure.Asm
 
         public async Task InitializeChildrenAsync()
         {
-            //_VirtualNetwork = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.VirtualNetworkName);
-
-            //if (_VirtualNetwork != null)
-            //{
-            //    foreach (Subnet subnet in _VirtualNetwork.Subnets)
-            //    {
-            //        if (subnet.Name == this.SubnetName)
-            //        {
-            //            _Subnet = subnet;
-            //            break;
-            //        }
-            //    }
-            //}
+ 
         }
 
         public string Name
@@ -60,9 +50,29 @@ namespace MigAz.Azure.Asm
         public string SubnetId { get; set; }
         public string PublicIpAddressId { get; set; }
 
-        public string VirtualNetworkName { get; set; }
 
-        public string SubnetName { get; set; }
+        public string VirtualNetworkName
+        {
+            get { return _VirtualNetworkName; }
+            set
+            {
+                if (value == null)
+                    _VirtualNetworkName = String.Empty;
+                else
+                    _VirtualNetworkName = value.Trim();
+            }
+        }
+        public string SubnetName
+        {
+            get { return _SubnetName; }
+            set
+            {
+                if (value == null)
+                    _SubnetName = String.Empty;
+                else
+                    _SubnetName = value.Trim();
+            }
+        }
 
         public VirtualNetwork VirtualNetwork { get; set; }
         public Subnet Subnet { get; set; }

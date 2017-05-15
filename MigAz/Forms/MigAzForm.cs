@@ -381,5 +381,16 @@ namespace MigAz.Forms
             Application.DoEvents();
             asmToArm.ChangeAzureContext();
         }
+
+        private void splitContainer2_Panel1_Resize(object sender, EventArgs e)
+        {
+            if (splitContainer2.Panel1.Controls.Count == 1)
+            {
+                if (splitContainer2.Panel1.Height < 510)
+                    splitContainer2.Panel1.Controls[0].Height = 500;
+                else
+                    splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 10;
+            }
+        }
     }
 }
