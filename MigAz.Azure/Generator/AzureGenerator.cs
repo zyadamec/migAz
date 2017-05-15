@@ -244,18 +244,22 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             await UpdateExportJsonStream();
 
-            StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
-            LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
-            string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
-            byte[] b = asciiEncoding.GetBytes(jsontext);
-            MemoryStream copyBlobDetailStream = new MemoryStream();
-            copyBlobDetailStream.Write(b, 0, b.Length);
-            TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
+            // Only generate copyblobdetails.json if it contains disks that are being copied
+            if (_CopyBlobDetails.Count > 0)
+            {
+                StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
+                LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
 
-            LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
+                string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+                byte[] b = asciiEncoding.GetBytes(jsontext);
+                MemoryStream copyBlobDetailStream = new MemoryStream();
+                copyBlobDetailStream.Write(b, 0, b.Length);
+                TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
 
+                LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
+            }
 
             StatusProvider.UpdateStatus("BUSY:  Generating DeployInstructions.html");
             LogProvider.WriteLog("SerializeStreams", "Start DeployInstructions.html stream");
@@ -1228,19 +1232,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 osdisk.createOption = "Attach";
                 osdisk.osType = virtualMachine.OSVirtualHardDiskOS;
 
-                // Block of code to help copying the blobs to the new storage accounts
-                CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                if (this.SourceSubscription != null)
-                    copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                copyblobdetail.SourceSA = virtualMachine.OSVirtualHardDisk.SourceStorageAccountName;
-                copyblobdetail.SourceContainer = virtualMachine.OSVirtualHardDisk.SourceStorageAccountContainer;
-                copyblobdetail.SourceBlob = virtualMachine.OSVirtualHardDisk.SourceStorageAccountBlob;
-                copyblobdetail.SourceKey = virtualMachine.OSVirtualHardDisk.SourceStorageKey;
-                copyblobdetail.DestinationSA = osDiskTargetStorageAccountName;
-                copyblobdetail.DestinationContainer = virtualMachine.OSVirtualHardDisk.TargetStorageAccountContainer;
-                copyblobdetail.DestinationBlob = virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob;
-                this._CopyBlobDetails.Add(copyblobdetail);
-                // end of block of code to help copying the blobs to the new storage accounts
+                this._CopyBlobDetails.Add(BuildCopyBlob(virtualMachine.OSVirtualHardDisk));
             }
 
             // process data disks
@@ -1249,7 +1241,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 if (dataDisk.TargetStorageAccount != null)
                 {
-                    string dataDiskTargetStorageAccountName = dataDisk.TargetStorageAccount.ToString();
                     DataDisk datadisk = new DataDisk();
                     datadisk.name = dataDisk.ToString();
                     datadisk.caching = dataDisk.HostCaching;
@@ -1271,17 +1262,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                         datadisk.createOption = "Attach";
 
                         // Block of code to help copying the blobs to the new storage accounts
-                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                        if (this.SourceSubscription != null)
-                            copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                        copyblobdetail.SourceSA = dataDisk.SourceStorageAccountName;
-                        copyblobdetail.SourceContainer = dataDisk.SourceStorageAccountContainer;
-                        copyblobdetail.SourceBlob = dataDisk.SourceStorageAccountBlob;
-                        copyblobdetail.SourceKey = dataDisk.SourceStorageKey;
-                        copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
-                        copyblobdetail.DestinationContainer = dataDisk.TargetStorageAccountContainer;
-                        copyblobdetail.DestinationBlob = dataDisk.TargetStorageAccountBlob;
-                        this._CopyBlobDetails.Add(copyblobdetail);
+                        this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk));
                         // end of block of code to help copying the blobs to the new storage accounts
                     }
 
@@ -1347,6 +1328,44 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(virtualmachine);
 
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + virtualMachine.ToString());
+        }
+
+        private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk)
+        {
+            if (disk.SourceDisk == null)
+                return null;
+
+            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+            if (this.SourceSubscription != null)
+                copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+
+            if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Asm.Disk))
+            {
+                Asm.Disk asmDataDisk = (Asm.Disk)disk.SourceDisk;
+
+                copyblobdetail.SourceSA = asmDataDisk.StorageAccountName;
+                copyblobdetail.SourceContainer = asmDataDisk.StorageAccountContainer;
+                copyblobdetail.SourceBlob = asmDataDisk.StorageAccountBlob;
+
+                if (asmDataDisk.SourceStorageAccount != null && asmDataDisk.SourceStorageAccount.Keys != null)
+                    copyblobdetail.SourceKey = asmDataDisk.SourceStorageAccount.Keys.Primary;
+            }
+            else if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Arm.Disk))
+            {
+                Arm.Disk armDataDisk = (Arm.Disk)disk.SourceDisk;
+
+                copyblobdetail.SourceSA = armDataDisk.StorageAccountName;
+                copyblobdetail.SourceContainer = armDataDisk.StorageAccountContainer;
+                copyblobdetail.SourceBlob = armDataDisk.StorageAccountBlob;
+
+                if (armDataDisk.SourceStorageAccount != null && armDataDisk.SourceStorageAccount.Keys != null)
+                    copyblobdetail.SourceKey = armDataDisk.SourceStorageAccount.Keys[0].Value;
+            }
+            copyblobdetail.DestinationSA = disk.TargetStorageAccount.ToString();
+            copyblobdetail.DestinationContainer = disk.TargetStorageAccountContainer;
+            copyblobdetail.DestinationBlob = disk.TargetStorageAccountBlob;
+
+            return copyblobdetail;
         }
 
         private void BuildStorageAccountObject(MigrationTarget.StorageAccount targetStorageAccount)

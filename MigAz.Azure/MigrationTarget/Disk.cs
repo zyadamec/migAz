@@ -36,6 +36,11 @@ namespace MigAz.Azure.MigrationTarget
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
+        public Disk(IArmDisk sourceDisk)
+        {
+
+        }
+
 
         public string TargetName
         {
@@ -49,17 +54,6 @@ namespace MigAz.Azure.MigrationTarget
         }
 
         public IDisk SourceDisk { get; set; }
-
-        public String SourceMediaLink
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return String.Empty;
-
-                return this.SourceDisk.MediaLink;
-            }
-        }
 
         public String SourceName
         {
@@ -87,49 +81,6 @@ namespace MigAz.Azure.MigrationTarget
         public IStorageAccount SourceStorageAccount
         {
             get; private set;
-        }
-
-        public string SourceStorageKey
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageKey;
-            }
-        }
-
-        public string SourceStorageAccountBlob
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountBlob;
-            }
-        }
-        public string SourceStorageAccountContainer
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountContainer;
-            }
-        }
-
-        public string SourceStorageAccountName
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountName;
-            }
         }
 
         public IStorageTarget TargetStorageAccount

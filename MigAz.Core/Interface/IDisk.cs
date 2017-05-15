@@ -8,10 +8,10 @@ namespace MigAz.Core.Interface
 {
     public interface IDisk
     {
-        String MediaLink { get; }
-        String StorageAccountBlob { get; }
-        String StorageAccountContainer { get; }
-        String StorageAccountName { get; }
-        String StorageKey { get; }
+        //String MediaLink { get; }
+        //String StorageAccountBlob { get; }
+        //String StorageAccountContainer { get; }
+        //String StorageAccountName { get; }
+        //String StorageKey { get; }
     }
 }

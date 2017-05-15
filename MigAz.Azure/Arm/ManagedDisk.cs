@@ -8,15 +8,20 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class ManagedDisk : Core.ArmTemplate.ManagedDisk
+    public class ManagedDisk : IArmDisk
     {
         private JToken _ManagedDiskToken;
 
-        private ManagedDisk() : base(Guid.Empty) { }
+        private ManagedDisk() { }
 
-        public ManagedDisk(JToken managedDisk) : base(Guid.Empty)
+        public ManagedDisk(JToken managedDisk) 
         {
             _ManagedDiskToken = managedDisk;
+        }
+
+        public async Task InitializeChildrenAsync()
+        {
+
         }
 
         #region Properties

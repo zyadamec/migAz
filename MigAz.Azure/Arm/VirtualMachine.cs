@@ -11,8 +11,8 @@ namespace MigAz.Azure.Arm
     public class VirtualMachine : IVirtualMachine
     {
         private JToken _VirtualMachine;
-        private List<Disk> _DataDisks = new List<Disk>();
-        private Disk _OSVirtualHardDisk;
+        private List<IArmDisk> _DataDisks = new List<IArmDisk>();
+        private IArmDisk _OSVirtualHardDisk;
         private NetworkSecurityGroup _NetworkSecurityGroup;
         private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
 
@@ -52,10 +52,10 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public List<Disk> DataDisks => _DataDisks;
+        public List<IArmDisk> DataDisks => _DataDisks;
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
         public ResourceGroup ResourceGroup { get; set; }
-        public Disk OSVirtualHardDisk => _OSVirtualHardDisk;
+        public IArmDisk OSVirtualHardDisk => _OSVirtualHardDisk;
         public List<NetworkInterface> NetworkInterfaces => _NetworkInterfaceCards;
 
         public AvailabilitySet AvailabilitySet

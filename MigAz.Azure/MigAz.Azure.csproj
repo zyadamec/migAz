@@ -95,7 +95,6 @@
     <Compile Include="MigrationTarget\Disk.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
     <Compile Include="MigrationTarget\LoadBalancerRule.cs" />
-    <Compile Include="MigrationTarget\ManagedDisk.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />

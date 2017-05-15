@@ -32,7 +32,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
-        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks;
+        private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
@@ -317,7 +317,7 @@ namespace MigAz.UserControls.Migrators
 
                     foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
                     {
-                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = new Azure.MigrationTarget.ManagedDisk(this.AzureContextTargetARM, armManagedDisk);
+                        Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
                         _ArmTargetManagedDisks.Add(targetManagedDisk);
                     }
 
@@ -448,7 +448,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.1.0";
+            string currentVersion = "2.2.2.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -575,12 +575,15 @@ namespace MigAz.UserControls.Migrators
 
                             #region OS Disk Storage Account
 
-                            foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
-                            {
-                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.Disk)) // Disk in a Storage Account, not a Managed Disk
+                            { 
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.Disk)armVirtualMachine.OSVirtualHardDisk).StorageAccountName, true))
                                 {
-                                    if (!treeNode.Checked)
-                                        treeNode.Checked = true;
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
                                 }
                             }
 

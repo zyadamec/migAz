@@ -8,7 +8,7 @@ using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class Disk : IDisk
+    public class Disk : IDisk, IArmDisk
     {
         private AzureContext _AzureContext;
         private JToken jToken;
