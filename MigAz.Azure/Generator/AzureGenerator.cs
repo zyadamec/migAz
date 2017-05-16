@@ -355,7 +355,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
 
             availabilityset.name = availabilitySet.ToString();
-            availabilityset.location =  = "[resourceGroup().location]";
+            availabilityset.location = "[resourceGroup().location]";
 
             this.AddResource(availabilityset);
 
@@ -565,7 +565,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     // add Network Security Group if exists
                     if (targetSubnet.NetworkSecurityGroup != null)
                     {
-                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
+                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
                         // Add NSG reference to the subnet
                         Reference networksecuritygroup_ref = new Reference();
                         networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
@@ -814,24 +814,24 @@ namespace MigAz.Azure.Generator.AsmToArm
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             // for each rule
-            foreach (MigrationTarget.NetworkSecurityGroupRule asmNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
+            foreach (MigrationTarget.NetworkSecurityGroupRule targetNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
             {
                 // if not system rule
-                if (!asmNetworkSecurityGroupRule.IsSystemRule)
+                if (!targetNetworkSecurityGroupRule.IsSystemRule)
                 {
                     SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                    securityrule_properties.description = asmNetworkSecurityGroupRule.ToString();
-                    securityrule_properties.direction = asmNetworkSecurityGroupRule.Type;
-                    securityrule_properties.priority = asmNetworkSecurityGroupRule.Priority;
-                    securityrule_properties.access = asmNetworkSecurityGroupRule.Access;
-                    securityrule_properties.sourceAddressPrefix = asmNetworkSecurityGroupRule.SourceAddressPrefix;
-                    securityrule_properties.destinationAddressPrefix = asmNetworkSecurityGroupRule.DestinationAddressPrefix;
-                    securityrule_properties.sourcePortRange = asmNetworkSecurityGroupRule.SourcePortRange;
-                    securityrule_properties.destinationPortRange = asmNetworkSecurityGroupRule.DestinationPortRange;
-                    securityrule_properties.protocol = asmNetworkSecurityGroupRule.Protocol;
+                    securityrule_properties.description = targetNetworkSecurityGroupRule.ToString();
+                    securityrule_properties.direction = targetNetworkSecurityGroupRule.Direction;
+                    securityrule_properties.priority = targetNetworkSecurityGroupRule.Priority;
+                    securityrule_properties.access = targetNetworkSecurityGroupRule.Access;
+                    securityrule_properties.sourceAddressPrefix = targetNetworkSecurityGroupRule.SourceAddressPrefix;
+                    securityrule_properties.destinationAddressPrefix = targetNetworkSecurityGroupRule.DestinationAddressPrefix;
+                    securityrule_properties.sourcePortRange = targetNetworkSecurityGroupRule.SourcePortRange;
+                    securityrule_properties.destinationPortRange = targetNetworkSecurityGroupRule.DestinationPortRange;
+                    securityrule_properties.protocol = targetNetworkSecurityGroupRule.Protocol;
 
                     SecurityRule securityrule = new SecurityRule();
-                    securityrule.name = asmNetworkSecurityGroupRule.ToString();
+                    securityrule.name = targetNetworkSecurityGroupRule.ToString();
                     securityrule.properties = securityrule_properties;
 
                     networksecuritygroup_properties.securityRules.Add(securityrule);
@@ -843,49 +843,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             this.AddResource(networksecuritygroup);
 
             LogProvider.WriteLog("BuildNetworkSecurityGroup", "End");
-
-            return networksecuritygroup;
-        }
-
-        private Core.ArmTemplate.NetworkSecurityGroup BuildARMNetworkSecurityGroup(MigrationTarget.NetworkSecurityGroup networkSecurityGroup)
-        {
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
-
-            Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = new Core.ArmTemplate.NetworkSecurityGroup(this.ExecutionGuid);
-            networksecuritygroup.name = networkSecurityGroup.ToString();
-            networksecuritygroup.location = "[resourceGroup().location]";
-
-            NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
-            networksecuritygroup_properties.securityRules = new List<SecurityRule>();
-
-            //foreach rule without System Rule
-            foreach (MigrationTarget.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
-            {
-                SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                securityrule_properties.description = rule.ToString();
-                securityrule_properties.direction = rule.Direction;
-                securityrule_properties.priority = rule.Priority;
-                securityrule_properties.access = rule.Access;
-                securityrule_properties.sourceAddressPrefix = rule.SourceAddressPrefix;
-                securityrule_properties.sourceAddressPrefix.Replace("_", "");
-                securityrule_properties.destinationAddressPrefix = rule.DestinationAddressPrefix;
-                securityrule_properties.destinationAddressPrefix.Replace("_", "");
-                securityrule_properties.sourcePortRange = rule.SourcePortRange;
-                securityrule_properties.destinationPortRange = rule.DestinationPortRange;
-                securityrule_properties.protocol = rule.Protocol;
-
-                SecurityRule securityrule = new SecurityRule();
-                securityrule.name = rule.ToString();
-                securityrule.properties = securityrule_properties;
-
-                networksecuritygroup_properties.securityRules.Add(securityrule);
-            }
-
-            networksecuritygroup.properties = networksecuritygroup_properties;
-
-            this.AddResource(networksecuritygroup);
-
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "End Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
 
             return networksecuritygroup;
         }
@@ -1017,13 +974,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
                     {
+                        // only adding VNet DependsOn here because as it is a resource in the target migration (resource group)
                         MigrationTarget.VirtualNetwork targetVirtualNetwork = (MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
                         dependson.Add(targetVirtualNetwork.TargetId);
-                    }
-                    else if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
-                    {
-                        Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
-                        dependson.Add(armVirtualNetwork.Id);
                     }
                 }
 
@@ -1280,15 +1233,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             virtualmachine_properties.networkProfile = networkprofile;
             virtualmachine_properties.storageProfile = storageprofile;
 
-            //    List<string> dependson = new List<string>();
-
-            //    //foreach (var nic in networkinterfaces)
-            //    //{
-            //    //    dependson.Add(nic.id.ToString());
-            //    //}
-
-            //    // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
-
             // process availability set
             if (virtualMachine.TargetAvailabilitySet != null)
             {
@@ -1306,7 +1250,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
+                if (storageaccountdependency.GetType() == typeof(Azure.MigrationTarget.StorageAccount)) // only add depends on if it is a Storage Account in the target template.  Otherwise, we'll get a "not in template" error for a resource that exists in another Resource Group.
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
             virtualmachine.properties = virtualmachine_properties;
