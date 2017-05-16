@@ -355,8 +355,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
 
             availabilityset.name = availabilitySet.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                availabilityset.location = this.TargetResourceGroup.TargetLocation.Name;
+            availabilityset.location =  = "[resourceGroup().location]";
 
             this.AddResource(availabilityset);
 
@@ -375,8 +374,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 loadbalancer = new LoadBalancer(this.ExecutionGuid);
                 loadbalancer.name = asmVirtualMachine.LoadBalancerName;
-                if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                    loadbalancer.location = this.TargetResourceGroup.TargetLocation.Name;
+                loadbalancer.location = "[resourceGroup().location]";
 
                 FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
 
@@ -535,8 +533,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = targetVirtualNetwork.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                virtualnetwork.location = this.TargetResourceGroup.TargetLocation.Name;
+            virtualnetwork.location = "[resourceGroup().location]";
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -631,7 +628,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
                     publicipaddress.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
-                    publicipaddress.location = templateVirtualNetwork.location;
+                    publicipaddress.location = "[resourceGroup().location]";
                     publicipaddress.properties = publicipaddress_properties;
 
                     this.AddResource(publicipaddress);
@@ -717,7 +714,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
 
                     VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
-                    virtualnetworkgateway.location = templateVirtualNetwork.location;
+                    virtualnetworkgateway.location = "[resourceGroup().location]";
                     virtualnetworkgateway.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix;
                     virtualnetworkgateway.properties = virtualnetworkgateway_properties;
                     virtualnetworkgateway.dependsOn = dependson;
@@ -756,7 +753,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     localnetworkgateway.name = asmLocalNetworkSite.Name + "-LocalGateway";
                     localnetworkgateway.name = localnetworkgateway.name.Replace(" ", String.Empty);
 
-                    localnetworkgateway.location = virtualnetwork.location;
+                    localnetworkgateway.location = "[resourceGroup().location]";
                     localnetworkgateway.properties = localnetworkgateway_properties;
 
                     this.AddResource(localnetworkgateway);
@@ -796,7 +793,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 GatewayConnection gatewayconnection = new GatewayConnection(this.ExecutionGuid);
                 gatewayconnection.name = virtualnetworkgateway.name + "-" + asmLocalNetworkSite.TargetName + "-connection"; // TODO, HardCoded
-                gatewayconnection.location = virtualnetwork.location;
+                gatewayconnection.location = "[resourceGroup().location]";
                 gatewayconnection.properties = gatewayconnection_properties;
                 gatewayconnection.dependsOn = dependson;
 
@@ -811,8 +808,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
             networksecuritygroup.name = targetNetworkSecurityGroup.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                networksecuritygroup.location = this.TargetResourceGroup.TargetLocation.Name;
+            networksecuritygroup.location = "[resourceGroup().location]";
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
@@ -857,7 +853,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = new Core.ArmTemplate.NetworkSecurityGroup(this.ExecutionGuid);
             networksecuritygroup.name = networkSecurityGroup.ToString();
-            networksecuritygroup.location = _TargetResourceGroup.TargetLocation.Name;
+            networksecuritygroup.location = "[resourceGroup().location]";
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
@@ -900,8 +896,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                routetable.location = this.TargetResourceGroup.TargetLocation.Name;
+            routetable.location = "[resourceGroup().location]";
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Route>();
@@ -957,7 +952,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             Core.ArmTemplate.RouteTable routetable = new Core.ArmTemplate.RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.Name;
-            routetable.location = _TargetResourceGroup.TargetLocation.Name;
+            routetable.location = "[resourceGroup().location]";
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Core.ArmTemplate.Route>();
@@ -998,8 +993,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
             networkInterface.name = targetNetworkInterface.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+            networkInterface.location = "[resourceGroup().location]";
 
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
@@ -1067,8 +1061,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
                     publicipaddress.name = targetNetworkInterface.ToString();
-                    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+                    publicipaddress.location = "[resourceGroup().location]";
                     publicipaddress.properties = new PublicIPAddress_Properties();
 
                     Core.ArmTemplate.Reference publicIPAddress = new Core.ArmTemplate.Reference();
@@ -1136,8 +1129,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualMachine virtualmachine = new VirtualMachine(this.ExecutionGuid);
             virtualmachine.name = virtualMachine.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                virtualmachine.location = this.TargetResourceGroup.TargetLocation.Name;
+            virtualmachine.location = "[resourceGroup().location]";
 
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
             List<string> dependson = new List<string>();
@@ -1377,8 +1369,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
             storageaccount.name = targetStorageAccount.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                storageaccount.location = this.TargetResourceGroup.TargetLocation.Name;   
+            storageaccount.location = "[resourceGroup().location]";
             storageaccount.properties = storageaccount_properties;
 
             this.AddResource(storageaccount);
@@ -1481,8 +1472,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
 //    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
 //    publicipaddress.name = publicipaddress_name + _settingsProvider.PublicIPSuffix;
-//    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-//        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+//    publicipaddress.location = "[resourceGroup().location]";
 //    publicipaddress.properties = publicipaddress_properties;
 
 //    this.AddResource(publicipaddress);

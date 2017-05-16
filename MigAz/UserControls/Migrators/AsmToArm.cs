@@ -325,7 +325,7 @@ namespace MigAz.UserControls.Migrators
                     }
                     catch (Exception exc)
                     {
-                        int i = 0;
+                        // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
