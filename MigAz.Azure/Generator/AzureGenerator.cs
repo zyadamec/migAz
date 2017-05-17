@@ -50,9 +50,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
             Alerts.Clear();
-            TemplateStreams.Clear();
-            Resources.Clear();
-            _CopyBlobDetails.Clear();
 
             _ExportArtifacts = (ExportArtifacts)artifacts;
 
@@ -195,6 +192,10 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         public override async Task GenerateStreams()
         {
+            TemplateStreams.Clear();
+            Resources.Clear();
+            _CopyBlobDetails.Clear();
+
             LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
             LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
@@ -225,8 +226,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
             {
                 StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
-
-                // process virtual machine
                 await BuildVirtualMachineObject(virtualMachine);
             }
             LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
