@@ -537,64 +537,49 @@ namespace MigAz.Azure.Generator.AsmToArm
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
-            if (targetVirtualNetwork.TargetSubnets.Count == 0)
+            foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
             {
                 Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = targetVirtualNetwork.AddressPrefixes[0];
+                properties.addressPrefix = targetSubnet.AddressPrefix;
 
                 Subnet subnet = new Subnet();
-                subnet.name = "Subnet1";
+                subnet.name = targetSubnet.TargetName;
                 subnet.properties = properties;
 
                 subnets.Add(subnet);
-                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", targetVirtualNetwork);
-            }
-            else
-            {
-                foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+
+                // add Network Security Group if exists
+                if (targetSubnet.NetworkSecurityGroup != null)
                 {
-                    Subnet_Properties properties = new Subnet_Properties();
-                    properties.addressPrefix = targetSubnet.AddressPrefix;
+                    Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
+                    // Add NSG reference to the subnet
+                    Reference networksecuritygroup_ref = new Reference();
+                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
 
-                    Subnet subnet = new Subnet();
-                    subnet.name = targetSubnet.TargetName;
-                    subnet.properties = properties;
+                    properties.networkSecurityGroup = networksecuritygroup_ref;
 
-                    subnets.Add(subnet);
-
-                    // add Network Security Group if exists
-                    if (targetSubnet.NetworkSecurityGroup != null)
+                    // Add NSG dependsOn to the Virtual Network object
+                    if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
                     {
-                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
-                        // Add NSG reference to the subnet
-                        Reference networksecuritygroup_ref = new Reference();
-                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
-
-                        properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                        // Add NSG dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
-                        {
-                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
-                        }
+                        virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
                     }
+                }
 
-                    // add Route Table if exists
-                    if (targetSubnet.RouteTable != null)
+                // add Route Table if exists
+                if (targetSubnet.RouteTable != null)
+                {
+                    RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
+
+                    // Add Route Table reference to the subnet
+                    Reference routetable_ref = new Reference();
+                    routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + routetable.name + "')]";
+
+                    properties.routeTable = routetable_ref;
+
+                    // Add Route Table dependsOn to the Virtual Network object
+                    if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
                     {
-                        RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
-
-                        // Add Route Table reference to the subnet
-                        Reference routetable_ref = new Reference();
-                        routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + routetable.name + "')]";
-
-                        properties.routeTable = routetable_ref;
-
-                        // Add Route Table dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
-                        {
-                            virtualnetwork.dependsOn.Add(routetable_ref.id);
-                        }
+                        virtualnetwork.dependsOn.Add(routetable_ref.id);
                     }
                 }
             }
