@@ -796,6 +796,10 @@ namespace MigAz.UserControls.Migrators
                 {
                     exportArtifacts.VirtualMachines.Add((Azure.MigrationTarget.VirtualMachine)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    exportArtifacts.LoadBalancers.Add((Azure.MigrationTarget.LoadBalancer)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
@@ -914,6 +918,15 @@ namespace MigAz.UserControls.Migrators
                     this._PropertyPanel.ResourceImage = imageList1.Images["ResourceGroup"];
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(this, e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["LoadBalancer"];
+
+                    LoadBalancerProperties properties = new LoadBalancerProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
                     await properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
@@ -1092,6 +1105,7 @@ namespace MigAz.UserControls.Migrators
                 }
                 else
                     throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
+
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
                 return childNode;
