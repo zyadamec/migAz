@@ -10,12 +10,29 @@ namespace MigAz.Azure.MigrationTarget
     public class LoadBalancer : IMigrationTarget
     {
         private string _TargetName = String.Empty;
+        private ILoadBalancer _source;
+
+
+        public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer)
+        {
+            this.Source = sourceLoadBalancer;
+            this.TargetName = sourceLoadBalancer.Name;
+        }
+
+        public ILoadBalancer Source
+        {
+            get { return _source; }
+            set { _source = value; }
+        }
 
         public String SourceName
         {
             get
             {
-                return String.Empty;
+                if (this.Source == null)
+                    return String.Empty;
+                else
+                    return this.Source.Name;
             }
         }
 

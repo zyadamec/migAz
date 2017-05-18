@@ -47,6 +47,7 @@ namespace MigAz.Azure
         private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
         private List<Arm.NetworkSecurityGroup> _ArmNetworkSecurityGroups;
         private List<Arm.VirtualNetworkGateway> _ArmVirtualNetworkGateways;
+        private List<Arm.LoadBalancer> _ArmLoadBalancers;
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
@@ -68,6 +69,7 @@ namespace MigAz.Azure
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
             _ArmNetworkInterfaces = null;
+            _ArmLoadBalancers = null;
             _ArmNetworkSecurityGroups = null;
             _MigrationAvailabilitySets = null;
             _ArmManagedDisks = null;
@@ -985,6 +987,30 @@ namespace MigAz.Azure
             return _ArmNetworkSecurityGroups;
         }
 
+        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start");
+
+            if (_ArmLoadBalancers != null)
+                return _ArmLoadBalancers;
+
+            JObject loadBalancersJson = await this.GetAzureARMResources("LoadBalancers", null);
+
+            var loadBalancers = from networkSecurityGroup in loadBalancersJson["value"]
+                                        select networkSecurityGroup;
+
+            _ArmLoadBalancers = new List<Arm.LoadBalancer>();
+
+            foreach (var loadBalancer in loadBalancers)
+            {
+                Arm.LoadBalancer armLoadBalancer = new Arm.LoadBalancer(loadBalancer);
+                await armLoadBalancer.InitializeChildrenAsync(_AzureContext);
+                _ArmLoadBalancers.Add(armLoadBalancer);
+            }
+
+            return _ArmLoadBalancers;
+        }
+
         #endregion
 
         private async Task<XmlDocument> GetAzureAsmResources(string resourceType, Hashtable info)
@@ -1177,6 +1203,11 @@ namespace MigAz.Azure
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
+                case "LoadBalancers":
+                    // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);

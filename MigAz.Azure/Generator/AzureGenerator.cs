@@ -1087,13 +1087,9 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
 
-            //BuildPublicIPAddressObject(ref virtualmachine);
-            //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
-
             foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
             {
                 NetworkInterface networkInterface = BuildNetworkInterfaceObject(targetNetworkInterface, networkinterfaces);
-
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]");
             }
 

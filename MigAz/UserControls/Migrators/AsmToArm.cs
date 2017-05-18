@@ -33,6 +33,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
+        private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
@@ -240,6 +241,7 @@ namespace MigAz.UserControls.Migrators
                     _ArmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
                     _ArmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
                     _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
+                    _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
 
                     TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
                     subscriptionNodeARM.ImageKey = "Subscription";
@@ -367,6 +369,7 @@ namespace MigAz.UserControls.Migrators
                         networkSecurityGroupParentNode = tnResourceGroup;
 
                         Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+                        _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
 
                         TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
                         tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
@@ -376,6 +379,26 @@ namespace MigAz.UserControls.Migrators
                         networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         networkSecurityGroupParentNode.Expand();
                     }
+
+                    foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers())
+                    {
+                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
+
+                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armLoadBalancer.ResourceGroup);
+                        networkSecurityGroupParentNode = tnResourceGroup;
+
+                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                        _ArmTargetLoadBalancers.Add(targetLoadBalancer);
+
+                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
+                        tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
+                        tnNetworkSecurityGroup.Tag = targetLoadBalancer;
+                        tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
+                        tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                        networkSecurityGroupParentNode.Expand();
+                    }
+
 
                     subscriptionNodeARM.ExpandAll();
 
@@ -710,7 +733,8 @@ namespace MigAz.UserControls.Migrators
                 Type tagType = e.Node.Tag.GetType();
                 if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
+                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) || 
+                    (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                 {
                     if (e.Node.Checked)
@@ -1061,7 +1085,13 @@ namespace MigAz.UserControls.Migrators
                     childNode.ImageKey = "NetworkInterface";
                     childNode.SelectedImageKey = "NetworkInterface";
                 }
-
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    childNode.ImageKey = "LoadBalancer";
+                    childNode.SelectedImageKey = "LoadBalancer";
+                }
+                else
+                    throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
                 return childNode;
@@ -1297,6 +1327,14 @@ namespace MigAz.UserControls.Migrators
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+            {
+                Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)parentNode;
+                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.SourceName, targetLoadBalancer.ToString(), targetLoadBalancer, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetLoadBalancerNode;
             }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
             {
