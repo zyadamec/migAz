@@ -129,12 +129,12 @@ namespace MigAz.Forms
         #region Menu Items
 
 
-        private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            MigAz.AWS.AwsToArm awsToArm = new MigAz.AWS.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
-            awsToArm.Bind();
+            MigAz.AWS.Forms.AwsToArm awsToArm = new MigAz.AWS.Forms.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
+            await awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
             newMigrationToolStripMenuItem.Enabled = false ;

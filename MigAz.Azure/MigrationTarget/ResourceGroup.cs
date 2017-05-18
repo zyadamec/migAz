@@ -41,7 +41,10 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + this._AzureContext.SettingsProvider.ResourceGroupSuffix;
+            if (this._AzureContext == null || this._AzureContext.SettingsProvider == null)
+                return this.TargetName;
+            else
+                return this.TargetName + this._AzureContext.SettingsProvider.ResourceGroupSuffix;
         }
     }
 }

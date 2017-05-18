@@ -198,40 +198,44 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
-            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+            if (_ExportArtifacts != null)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
-                await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+                foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
+                    await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
-            foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
-                await BuildVirtualNetworkObject(virtualNetwork);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Networks");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
+                foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
+                    await BuildVirtualNetworkObject(virtualNetwork);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Networks");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
-            foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
-                BuildStorageAccountObject(storageAccount);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
+                foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
+                    BuildStorageAccountObject(storageAccount);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
-            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
-                await BuildVirtualMachineObject(virtualMachine);
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
+                foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
+                    await BuildVirtualMachineObject(virtualMachine);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
             }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
+            else
+                LogProvider.WriteLog("GenerateStreams", "ExportArtifacts is null, nothing to export.");
 
             StatusProvider.UpdateStatus("Ready");
-
             LogProvider.WriteLog("GenerateStreams", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
