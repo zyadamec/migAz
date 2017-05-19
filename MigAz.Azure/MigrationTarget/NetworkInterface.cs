@@ -13,7 +13,7 @@ namespace MigAz.Azure.MigrationTarget
         private INetworkInterface _SourceNetworkInterface;
         private bool _EnableIPForwarding = false;
         private List<MigrationTarget.NetworkInterfaceIpConfiguration> _TargetNetworkInterfaceIpConfigurations = new List<MigrationTarget.NetworkInterfaceIpConfiguration>();
-        private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
+        private List<LoadBalancingRule> _LoadBalancerRules = new List<LoadBalancingRule>();
         private string _TargetName = String.Empty;
 
         private NetworkInterface() { }
@@ -94,7 +94,7 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public List<LoadBalancerRule> LoadBalancerRules
+        public List<LoadBalancingRule> LoadBalancerRules
         {
             get { return _LoadBalancerRules; } // todo now asap
         }

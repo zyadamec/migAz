@@ -444,72 +444,71 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             LoadBalancer_Properties properties = (LoadBalancer_Properties)loadbalancer.properties;
 
-            // Add Load Balancer Rules
-            foreach (Azure.MigrationTarget.LoadBalancerRule asmLoadBalancerRule in loadBalancer.Rules)
+            // Add Inbound Nat Rules
+            foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
             {
-                //        if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // if it's a inbound nat rule
-                //        {
-                //            InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties();
-                //            inboundnatrule_properties.frontendPort = asmLoadBalancerRule.Port;
-                //            inboundnatrule_properties.backendPort = asmLoadBalancerRule.LocalPort;
-                //            inboundnatrule_properties.protocol = asmLoadBalancerRule.Protocol;
+                InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties();
+                inboundnatrule_properties.frontendPort = inboundNatRule.FrontEndPort;
+                inboundnatrule_properties.backendPort = inboundNatRule.BackEndPort;
+                inboundnatrule_properties.protocol = inboundNatRule.Protocol;
 
-                //            Reference frontendIPConfiguration = new Reference();
-                //            frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
-                //            inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
+                if (inboundNatRule.FrontEndIpConfiguration != null)
+                {
+                    Reference frontendIPConfiguration = new Reference();
+                    frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
+                    inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
+                }
 
-                //            InboundNatRule inboundnatrule = new InboundNatRule();
-                //            inboundnatrule.name = asmVirtualMachine.RoleName + "-" + asmLoadBalancerRule.Name;
-                //            inboundnatrule.name = inboundnatrule.name.Replace(" ", String.Empty);  // future enhancement, move to target name
-                //            inboundnatrule.properties = inboundnatrule_properties;
+                InboundNatRule inboundnatrule = new InboundNatRule();
+                inboundnatrule.name = inboundNatRule.Name;
+                inboundnatrule.properties = inboundnatrule_properties;
 
-                //            if (!properties.inboundNatRules.Contains(inboundnatrule))
-                //                properties.inboundNatRules.Add(inboundnatrule);
-                //        }
-                //        else // if it's a load balancing rule
-                //        {
-                //            string name = asmLoadBalancerRule.LoadBalancedEndpointSetName.Replace(" ", String.Empty);
-
-                //            // build probe
-                //            Probe_Properties probe_properties = new Probe_Properties();
-                //            probe_properties.port = asmLoadBalancerRule.ProbePort;
-                //            probe_properties.protocol = asmLoadBalancerRule.ProbeProtocol;
-
-                //            Probe probe = new Probe();
-                //            probe.name = name;
-                //            probe.properties = probe_properties;
-
-                //            if (!properties.probes.Contains(probe))
-                //                properties.probes.Add(probe);
-
-                //            // build load balancing rule
-                //            Reference frontendipconfiguration_ref = new Reference();
-                //            frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
-
-                //            Reference backendaddresspool_ref = new Reference();
-                //            backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/default')]";
-
-                //            Reference probe_ref = new Reference();
-                //            probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + probe.name + "')]";
-
-                //            LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
-                //            loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
-                //            loadbalancingrule_properties.backendAddressPool = backendaddresspool_ref;
-                //            loadbalancingrule_properties.probe = probe_ref;
-                //            loadbalancingrule_properties.frontendPort = asmLoadBalancerRule.Port;
-                //            loadbalancingrule_properties.backendPort = asmLoadBalancerRule.LocalPort;
-                //            loadbalancingrule_properties.protocol = asmLoadBalancerRule.Protocol;
-
-                //            LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
-                //            loadbalancingrule.name = name;
-                //            loadbalancingrule.properties = loadbalancingrule_properties;
-
-                //            if (!properties.loadBalancingRules.Contains(loadbalancingrule))
-                //                properties.loadBalancingRules.Add(loadbalancingrule);
-
-                //            LogProvider.WriteLog("BuildLoadBalancerRules", ArmConst.ProviderLoadBalancers + loadbalancer.name + "/loadBalancingRules/" + loadbalancingrule.name);
-                //        }
+                properties.inboundNatRules.Add(inboundnatrule);
             }
+
+            foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
+            {
+                Probe_Properties probe_properties = new Probe_Properties();
+                probe_properties.port = targetProbe.Port;
+                probe_properties.protocol = targetProbe.Protocol;
+                probe_properties.intervalInSeconds = targetProbe.IntervalInSeconds;
+                probe_properties.numberOfProbes = targetProbe.NumberOfProbes;
+                probe_properties.requestPath = targetProbe.RequestPath;
+
+                Probe probe = new Probe();
+                probe.name = targetProbe.Name;
+                probe.properties = probe_properties;
+
+                properties.probes.Add(probe);
+            }
+
+            foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
+            {
+                // todo now asap, these 3 references below need to be driven off objects added to the LoadBalancingRule class
+                Reference frontendipconfiguration_ref = new Reference();
+                frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
+
+                Reference backendaddresspool_ref = new Reference();
+                backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/default')]";
+
+                Reference probe_ref = new Reference();
+                probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + "default" + "')]";
+
+                LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
+                loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
+                loadbalancingrule_properties.backendAddressPool = backendaddresspool_ref;
+                loadbalancingrule_properties.probe = probe_ref;
+                loadbalancingrule_properties.frontendPort = targetLoadBalancingRule.FrontEndPort;
+                loadbalancingrule_properties.backendPort = targetLoadBalancingRule.BackEndPort;
+                loadbalancingrule_properties.protocol = targetLoadBalancingRule.Protocol;
+
+                LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
+                loadbalancingrule.name = targetLoadBalancingRule.Name;
+                loadbalancingrule.properties = loadbalancingrule_properties;
+
+                properties.loadBalancingRules.Add(loadbalancingrule);
+            }
+
 
             this.AddResource(loadbalancer);
 
@@ -976,18 +975,19 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 // Adds the references to the inboud nat rules
                 List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-                foreach (MigrationTarget.LoadBalancerRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
+                foreach (MigrationTarget.LoadBalancingRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
                 {
-                    if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-                    {
-                        string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
-                        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+                    // todo now asap, is this reference right??  why an InboundNatRule Reference
+                //    if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
+                //    {
+                //        string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
+                //        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
 
-                        Reference loadBalancerInboundNatRule = new Reference();
-                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
+                //        Reference loadBalancerInboundNatRule = new Reference();
+                //        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
 
-                        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-                    }
+                //        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+                //    }
                 }
 
                 ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;

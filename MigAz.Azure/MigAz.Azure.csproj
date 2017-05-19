@@ -97,12 +97,14 @@
     <Compile Include="Interface\IArmDisk.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
+    <Compile Include="MigrationTarget\InboundNatRule.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
-    <Compile Include="MigrationTarget\LoadBalancerRule.cs" />
+    <Compile Include="MigrationTarget\LoadBalancingRule.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroupRule.cs" />
+    <Compile Include="MigrationTarget\Probe.cs" />
     <Compile Include="MigrationTarget\ResourceGroup.cs" />
     <Compile Include="MigrationTarget\Route.cs" />
     <Compile Include="MigrationTarget\RouteTable.cs" />
