@@ -54,9 +54,9 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public new async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+            await base.InitializeChildrenAsync(azureContext);
 
             foreach (Subnet subnet in this.Subnets)
             {
@@ -64,9 +64,6 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public string Name => (string)ResourceToken["name"];
-        public string Id => (string)ResourceToken["id"];
-        public string Location => (string)ResourceToken["location"];
         public string Type => (string)ResourceToken["type"];
         public ISubnet GatewaySubnet
         {
@@ -84,8 +81,6 @@ namespace MigAz.Azure.Arm
         public List<ISubnet> Subnets => _Subnets;
         public List<string> AddressPrefixes => _AddressPrefixes;
         public List<string> DnsServers => _DnsServers;
-
-        public ResourceGroup ResourceGroup { get; set; }
 
         public List<VirtualNetworkGateway> VirtualNetworkGateways
         {

@@ -22,5 +22,14 @@ namespace MigAz.Azure.Arm
         public string Name => (string)_ResourceToken["name"];
         public string Id => (string)_ResourceToken["id"];
         public string Location => (string)_ResourceToken["location"];
+
+        public ResourceGroup ResourceGroup { get; set; }
+
+        internal async Task InitializeChildrenAsync(AzureContext azureContext)
+        {
+            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+            return;
+        }
+
     }
 }

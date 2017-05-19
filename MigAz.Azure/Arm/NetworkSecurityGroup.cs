@@ -24,15 +24,6 @@ namespace MigAz.Azure.Arm
 
         public List<NetworkSecurityGroupRule> Rules => _Rules;
 
-        public ResourceGroup ResourceGroup { get; set; }
-
-        internal async Task InitializeChildrenAsync(AzureContext azureContext)
-        {
-            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
-
-            return;
-        }
-
         public override string ToString()
         {
             return this.Name;

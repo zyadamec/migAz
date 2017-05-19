@@ -13,6 +13,5 @@ namespace MigAz.Azure.Arm
 
         public string Name => "TODO";
         public List<Route> Routes => _Routes; // todo  routenode in resource.properties.routes)
-        public ResourceGroup ResourceGroup => null; // todo
     }
 }

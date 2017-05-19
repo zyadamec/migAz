@@ -49,7 +49,6 @@ namespace MigAz.Azure.Arm
 
         public List<IArmDisk> DataDisks => _DataDisks;
         public NetworkSecurityGroup NetworkSecurityGroup => _NetworkSecurityGroup;
-        public ResourceGroup ResourceGroup { get; set; }
         public IArmDisk OSVirtualHardDisk => _OSVirtualHardDisk;
         public List<NetworkInterface> NetworkInterfaces => _NetworkInterfaceCards;
 
@@ -70,13 +69,13 @@ namespace MigAz.Azure.Arm
                 return null;
             }
         }
-        internal async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal new async Task InitializeChildrenAsync(AzureContext azureContext)
         {
+            await base.InitializeChildrenAsync(azureContext);
+
             this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
-
-            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
 
             await this.OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
 

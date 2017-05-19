@@ -102,8 +102,6 @@ namespace MigAz.Azure.Arm
             get { return (string)ResourceToken["sku"]["tier"]; }
         }
 
-        public ResourceGroup ResourceGroup { get; set; }
-
         public string BlobStorageNamespace
         {
             get
