@@ -11,6 +11,9 @@ namespace MigAz.Azure.MigrationTarget
     {
         private string _TargetName = String.Empty;
         private ILoadBalancer _source;
+        private List<LoadBalancerRule> _Rules = new List<LoadBalancerRule>();
+        private IMigrationVirtualNetwork _TargetVirtualNetwork;
+        private IMigrationSubnet _TargetSubnet;
 
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer)
@@ -25,6 +28,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _source = value; }
         }
 
+        public List<LoadBalancerRule> Rules
+        {
+            get { return _Rules; }
+        }
+
         public String SourceName
         {
             get
@@ -34,6 +42,23 @@ namespace MigAz.Azure.MigrationTarget
                 else
                     return this.Source.Name;
             }
+        }
+
+        public String StaticVirtualNetworkIPAddress
+        {
+            get;set;
+        }
+
+        public IMigrationSubnet TargetSubnet
+        {
+            get { return _TargetSubnet; }
+            set { _TargetSubnet = value; }
+        }
+
+        public IMigrationVirtualNetwork TargetVirtualNetwork
+        {
+            get { return _TargetVirtualNetwork; }
+            set { _TargetVirtualNetwork = value; }
         }
 
         public string TargetName
