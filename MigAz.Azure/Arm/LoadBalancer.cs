@@ -8,18 +8,11 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class LoadBalancer : ILoadBalancer
+    public class LoadBalancer : ArmResource, ILoadBalancer
     {
-        private JToken _LoadBalancerToken;
-
-        public LoadBalancer(JToken jToken)
+        public LoadBalancer(JToken resourceToken) : base(resourceToken)
         {
-            this._LoadBalancerToken = jToken;
         }
-
-        public string Id => (string)_LoadBalancerToken["id"];
-
-        public string Name => (string)_LoadBalancerToken["name"];
 
         public ResourceGroup ResourceGroup { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,15 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class Route : IRoute
+    public class Route : ArmResource, IRoute
     {
+        private Route() : base(null) { }
 
-        public string Name => "TODO";
+        private Route(JToken resourceToken) : base(resourceToken)
+        {
+
+        }
+
         public string AddressPrefix => "TODO";
         public string NextHopType => "TODO";
         public string NextHopIpAddress => "TODO";

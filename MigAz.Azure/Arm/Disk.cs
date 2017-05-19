@@ -4,44 +4,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using MigAz.Core.Interface;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class Disk : IDisk, IArmDisk
+    public class Disk : ArmResource, IArmDisk
     {
-        private AzureContext _AzureContext;
-        private JToken jToken;
         private StorageAccount _SourceStorageAccount = null;
 
-        public Disk(AzureContext azureContext, JToken jToken)
+        public Disk(JToken resourceToken) : base(resourceToken)
         {
-            this._AzureContext = azureContext;
-            this.jToken = jToken;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = await _AzureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
+            _SourceStorageAccount = await azureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
         }
 
-        public string Name => (string)this.jToken["name"];
-        public string CreateOption => (string)this.jToken["createOption"];
-        public string Caching => (string)this.jToken["caching"];
-        public int DiskSizeGb => Convert.ToInt32((string)this.jToken["diskSizeGB"]);
+        public string Name => (string)this.ResourceToken["name"];
+        public string CreateOption => (string)this.ResourceToken["createOption"];
+        public string Caching => (string)this.ResourceToken["caching"];
+        public int DiskSizeGb => Convert.ToInt32((string)this.ResourceToken["diskSizeGB"]);
 
-        public int Lun => Convert.ToInt32((string)jToken["lun"]);
+        public int Lun => Convert.ToInt32((string)ResourceToken["lun"]);
 
         public string MediaLink
         {
             get
             {
-                if (this.jToken["vhd"] == null)
+                if (this.ResourceToken["vhd"] == null)
                     return String.Empty;
-                if (this.jToken["vhd"]["uri"] == null)
+                if (this.ResourceToken["vhd"]["uri"] == null)
                     return String.Empty;
 
-                return (string)this.jToken["vhd"]["uri"];
+                return (string)this.ResourceToken["vhd"]["uri"];
             }
         } 
 

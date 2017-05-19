@@ -1,4 +1,4 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,67 +8,52 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class ManagedDisk : IArmDisk
+    public class ManagedDisk : ArmResource, IArmDisk
     {
-        private JToken _ManagedDiskToken;
+        private ManagedDisk() : base(null) { }
 
-        private ManagedDisk() { }
-
-        public ManagedDisk(JToken managedDisk) 
+        public ManagedDisk(JToken resourceToken) : base(resourceToken)
         {
-            _ManagedDiskToken = managedDisk;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
 
         }
 
         #region Properties
 
-        public string Id
-        {
-            get { return (string)_ManagedDiskToken["id"]; }
-        }
-        public string Name
-        {
-            get { return (string)_ManagedDiskToken["name"]; }
-        }
-        public string Location
-        {
-            get { return (string)_ManagedDiskToken["location"]; }
-        }
         public string Type
         {
-            get { return (string)_ManagedDiskToken["type"]; }
+            get { return (string)ResourceToken["type"]; }
         }
 
         public string DiskSizeGB
         {
-            get { return (string)_ManagedDiskToken["properties"]["diskSizeGB"]; }
+            get { return (string)ResourceToken["properties"]["diskSizeGB"]; }
         }
 
         public string OwnerId
         {
-            get { return (string)_ManagedDiskToken["properties"]["ownerId"]; }
+            get { return (string)ResourceToken["properties"]["ownerId"]; }
         }
 
         public string ProvisioningState
         {
-            get { return (string)_ManagedDiskToken["properties"]["provisioningState"]; }
+            get { return (string)ResourceToken["properties"]["provisioningState"]; }
         }
 
         public string DiskState
         {
-            get { return (string)_ManagedDiskToken["properties"]["diskState"]; }
+            get { return (string)ResourceToken["properties"]["diskState"]; }
         }
         public string TimeCreated
         {
-            get { return (string)_ManagedDiskToken["properties"]["timeCreated"]; }
+            get { return (string)ResourceToken["properties"]["timeCreated"]; }
         }
         public string AccountType
         {
-            get { return (string)_ManagedDiskToken["properties"]["accountType"]; }
+            get { return (string)ResourceToken["properties"]["accountType"]; }
         }
         #endregion
 

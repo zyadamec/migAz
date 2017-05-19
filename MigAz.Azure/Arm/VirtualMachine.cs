@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,34 +9,28 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualMachine : IVirtualMachine
+    public class VirtualMachine : ArmResource, IVirtualMachine
     {
-        private JToken _VirtualMachine;
         private List<IArmDisk> _DataDisks = new List<IArmDisk>();
         private IArmDisk _OSVirtualHardDisk;
         private NetworkSecurityGroup _NetworkSecurityGroup;
         private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
 
-        private VirtualMachine() { }
+        private VirtualMachine() : base(null) { }
 
-        public VirtualMachine(AzureContext azureContext, JToken virtualMachine)
+        public VirtualMachine(JToken resourceToken) : base(resourceToken)
         {
-            _VirtualMachine = virtualMachine;
-
-            _OSVirtualHardDisk = new Disk(azureContext, _VirtualMachine["properties"]["storageProfile"]["osDisk"]);
-            foreach (JToken dataDiskToken in _VirtualMachine["properties"]["storageProfile"]["dataDisks"])
+            _OSVirtualHardDisk = new Disk(ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            foreach (JToken dataDiskToken in ResourceToken["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new Disk(azureContext, dataDiskToken));
+                _DataDisks.Add(new Disk(dataDiskToken));
             }
         }
 
-        public string Name => (string)_VirtualMachine["name"];
-        public string Location => (string)_VirtualMachine["location"];
-        public string Type => (string)_VirtualMachine["type"];
-        public string Id => (string)_VirtualMachine["id"];
-        public Guid VmId => new Guid((string)_VirtualMachine["properties"]["vmId"]);
-        public string VmSize => (string)_VirtualMachine["properties"]["hardwareProfile"]["vmSize"];
-        public string OSVirtualHardDiskOS => (string)_VirtualMachine["properties"]["storageProfile"]["osDisk"]["osType"];
+        public string Type => (string)ResourceToken["type"];
+        public Guid VmId => new Guid((string)ResourceToken["properties"]["vmId"]);
+        public string VmSize => (string)ResourceToken["properties"]["hardwareProfile"]["vmSize"];
+        public string OSVirtualHardDiskOS => (string)ResourceToken["properties"]["storageProfile"]["osDisk"]["osType"];
 
         internal string AvailabilitySetId
         {
@@ -43,7 +38,7 @@ namespace MigAz.Azure.Arm
             {
                 try
                 {
-                    return (string)_VirtualMachine["properties"]["availabilitySet"]["id"];
+                    return (string)ResourceToken["properties"]["availabilitySet"]["id"];
                 }
                 catch (NullReferenceException)
                 {
@@ -83,14 +78,14 @@ namespace MigAz.Azure.Arm
 
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
 
-            await this.OSVirtualHardDisk.InitializeChildrenAsync();
+            await this.OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
 
             foreach (Disk dataDisk in this.DataDisks)
             {
-                await dataDisk.InitializeChildrenAsync();
+                await dataDisk.InitializeChildrenAsync(azureContext);
             }
 
-            foreach (JToken networkInterfaceToken in _VirtualMachine["properties"]["networkProfile"]["networkInterfaces"])
+            foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
             {
                 NetworkInterface networkInterface = await azureContext.AzureRetriever.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
                 networkInterface.VirtualMachine = this;

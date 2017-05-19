@@ -8,22 +8,17 @@ using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class AvailabilitySet : IAvailabilitySetSource
+    public class AvailabilitySet : ArmResource, IAvailabilitySetSource
     {
-        private JToken _AvailabilitySet;
         private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();
 
-        public AvailabilitySet(JToken availabilitySet)
+        public AvailabilitySet(JToken resourceToken) : base(resourceToken)
         {
-            this._AvailabilitySet = availabilitySet;
         }
 
-        public string Id => (string)_AvailabilitySet["id"];
-        public string Name => (string)_AvailabilitySet["name"];
-        public string Location => (string)_AvailabilitySet["location"];
-        public Int32 PlatformUpdateDomainCount => (Int32)_AvailabilitySet["properties"]["platformUpdateDomainCount"];
-        public Int32 PlatformFaultDomainCount => (Int32)_AvailabilitySet["properties"]["platformFaultDomainCount"];
-        public string SkuName => (string)_AvailabilitySet["sku"]["name"];
+        public Int32 PlatformUpdateDomainCount => (Int32)ResourceToken["properties"]["platformUpdateDomainCount"];
+        public Int32 PlatformFaultDomainCount => (Int32)ResourceToken["properties"]["platformFaultDomainCount"];
+        public string SkuName => (string)ResourceToken["sku"]["name"];
 
         public List<VirtualMachine> VirtualMachines
         {

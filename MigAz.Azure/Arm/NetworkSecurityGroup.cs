@@ -8,26 +8,19 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class NetworkSecurityGroup  : INetworkSecurityGroup
+    public class NetworkSecurityGroup : ArmResource, INetworkSecurityGroup
     {
-        private JToken _NetworkSecurityGroup;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
-        private NetworkSecurityGroup() { }
+        private NetworkSecurityGroup() : base(null) { }
 
-        public NetworkSecurityGroup(JToken networkSecurityGroupToken)
+        public NetworkSecurityGroup(JToken resourceToken) : base(resourceToken)
         {
-            _NetworkSecurityGroup = networkSecurityGroupToken;
-
-            foreach (JToken securityRulesToken in _NetworkSecurityGroup["properties"]["securityRules"])
+            foreach (JToken securityRulesToken in ResourceToken["properties"]["securityRules"])
             {
                 _Rules.Add(new NetworkSecurityGroupRule(securityRulesToken));
             }
         }
-
-        public string Id => (string)_NetworkSecurityGroup["id"];
-
-        public string Name => (string)_NetworkSecurityGroup["name"];
 
         public List<NetworkSecurityGroupRule> Rules => _Rules;
 

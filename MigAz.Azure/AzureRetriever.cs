@@ -703,9 +703,9 @@ namespace MigAz.Azure
 
             foreach (var virtualNetwork in virtualNetworks)
             {
-                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(_AzureContext, virtualNetwork);
+                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
 
-                await armVirtualNetwork.InitializeChildrenAsync();
+                await armVirtualNetwork.InitializeChildrenAsync(_AzureContext);
                 foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways())
                 {
 
@@ -755,7 +755,7 @@ namespace MigAz.Azure
 
             foreach (var storageAccount in storageAccounts)
             {
-                Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(_AzureContext, storageAccount);
+                Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(storageAccount, _AzureContext.AzureEnvironment);
                 armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
@@ -822,8 +822,8 @@ namespace MigAz.Azure
 
             foreach (var virtualMachine in virtualMachines)
             {
-                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(_AzureContext, virtualMachine);
-                await armVirtualMachine.InitializeChildrenAsync(this._AzureContext);
+                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                await armVirtualMachine.InitializeChildrenAsync(_AzureContext);
                 _ArmVirtualMachines.Add(armVirtualMachine);
             }
 
@@ -905,8 +905,8 @@ namespace MigAz.Azure
 
             foreach (var networkInterface in networkInterfaces)
             {
-                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(_AzureContext, networkInterface);
-                await armNetworkInterface.InitializeChildrenAsync();
+                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
+                await armNetworkInterface.InitializeChildrenAsync(_AzureContext);
                 _ArmNetworkInterfaces.Add(armNetworkInterface);
             }
 
@@ -942,7 +942,7 @@ namespace MigAz.Azure
 
             foreach (var virtualNetworkGateway in virtualNetworkGateways)
             {
-                Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(_AzureContext, virtualNetworkGateway);
+                Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(virtualNetworkGateway);
                 _ArmVirtualNetworkGateways.Add(armVirtualNetworkGateway);
             }
 
