@@ -37,7 +37,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _Protocol = value; }
         }
 
-        public object FrontEndIpConfiguration
+        public FrontEndIpConfiguration FrontEndIpConfiguration
         {
             get;set;
         }

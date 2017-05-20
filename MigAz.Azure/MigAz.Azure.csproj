@@ -96,7 +96,9 @@
     </Compile>
     <Compile Include="Interface\IArmDisk.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
+    <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
+    <Compile Include="MigrationTarget\FrontEndIpConfiguration.cs" />
     <Compile Include="MigrationTarget\InboundNatRule.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
     <Compile Include="MigrationTarget\LoadBalancingRule.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroupRule.cs" />
     <Compile Include="MigrationTarget\Probe.cs" />
+    <Compile Include="MigrationTarget\PublicIp.cs" />
     <Compile Include="MigrationTarget\ResourceGroup.cs" />
     <Compile Include="MigrationTarget\Route.cs" />
     <Compile Include="MigrationTarget\RouteTable.cs" />

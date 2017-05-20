@@ -384,48 +384,45 @@ namespace MigAz.Azure.Generator.AsmToArm
             loadbalancer.name = loadBalancer.ToString();
             loadbalancer.location = "[resourceGroup().location]";
 
+            LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
+            loadbalancer.properties = loadbalancer_properties;
+
             List<string> dependson = new List<string>();
 
-            FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
-
-            frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
-            if (loadBalancer.StaticVirtualNetworkIPAddress != String.Empty)
-            {
-                frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
-                frontendipconfiguration_properties.privateIPAddress = loadBalancer.StaticVirtualNetworkIPAddress;
-            }
-
-            #region todo now asap, needs to be based on new target subnet property
-
-            //dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
-            //loadbalancer.dependsOn = dependson;
-
-            //Reference subnet_ref = new Reference();
-            //subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
-            //frontendipconfiguration_properties.subnet = subnet_ref;
-
-            #endregion
-
-            // if External Load Balancer
-            #region If External Load Balancer
-
-            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
-            loadbalancer.dependsOn = dependson;
-
-            Reference publicipaddress_ref = new Reference();
-            publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
-            frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-
-            #endregion
-
-            LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
-
-            FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
-            frontendipconfiguration.properties = frontendipconfiguration_properties;
-
             List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
-            frontendipconfigurations.Add(frontendipconfiguration);
             loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
+
+            foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
+            {
+                FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
+                frontendipconfiguration.name = targetFrontEndIpConfiguration.Name;
+                frontendipconfigurations.Add(frontendipconfiguration);
+
+                FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
+                frontendipconfiguration.properties = frontendipconfiguration_properties;
+
+                if (targetFrontEndIpConfiguration.PublicIp == null)
+                {
+                    frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.PrivateIPAllocationMethod;
+                    frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.PrivateIPAddress;
+
+                    ////dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
+                    ////loadbalancer.dependsOn = dependson;
+
+                    ////Reference subnet_ref = new Reference();
+                    ////subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
+                    ////frontendipconfiguration_properties.subnet = subnet_ref;
+                }
+                else
+                {
+                    Reference publicipaddress_ref = new Reference();
+                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
+                    frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+
+                    //dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
+                    //loadbalancer.dependsOn = dependson;
+                }
+            }
 
             Hashtable backendaddresspool = new Hashtable();
             backendaddresspool.Add("name", "default");
@@ -440,9 +437,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             loadbalancer_properties.inboundNatRules = inboundnatrules;
             loadbalancer_properties.loadBalancingRules = loadbalancingrules;
             loadbalancer_properties.probes = probes;
-            loadbalancer.properties = loadbalancer_properties;
-
-            LoadBalancer_Properties properties = (LoadBalancer_Properties)loadbalancer.properties;
 
             // Add Inbound Nat Rules
             foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
@@ -463,7 +457,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 inboundnatrule.name = inboundNatRule.Name;
                 inboundnatrule.properties = inboundnatrule_properties;
 
-                properties.inboundNatRules.Add(inboundnatrule);
+                loadbalancer_properties.inboundNatRules.Add(inboundnatrule);
             }
 
             foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
@@ -479,20 +473,20 @@ namespace MigAz.Azure.Generator.AsmToArm
                 probe.name = targetProbe.Name;
                 probe.properties = probe_properties;
 
-                properties.probes.Add(probe);
+                loadbalancer_properties.probes.Add(probe);
             }
 
             foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
             {
-                // todo now asap, these 3 references below need to be driven off objects added to the LoadBalancingRule class
                 Reference frontendipconfiguration_ref = new Reference();
-                frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
+                frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]";
 
+                // todo now asap, reference below need to be driven off objects added to the LoadBalancingRule class
                 Reference backendaddresspool_ref = new Reference();
                 backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/default')]";
 
                 Reference probe_ref = new Reference();
-                probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + "default" + "')]";
+                probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]";
 
                 LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
                 loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
@@ -506,9 +500,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                 loadbalancingrule.name = targetLoadBalancingRule.Name;
                 loadbalancingrule.properties = loadbalancingrule_properties;
 
-                properties.loadBalancingRules.Add(loadbalancingrule);
+                loadbalancer_properties.loadBalancingRules.Add(loadbalancingrule);
             }
-
 
             this.AddResource(loadbalancer);
 

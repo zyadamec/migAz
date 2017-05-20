@@ -30,7 +30,7 @@ namespace MigAz.UserControls
             _AsmToArmForm = parentForm;
             _TargetLoadBalancerNode = treeNode;
             _TargetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)treeNode.Tag;
-            txtTargetName.Text = _TargetLoadBalancer.TargetName;
+            txtTargetName.Text = _TargetLoadBalancer.Name;
 
             if (rbExistingARMVNet.Enabled == false ||
                     _TargetLoadBalancer.TargetSubnet == null ||
@@ -49,7 +49,7 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _TargetLoadBalancer.TargetName = txtSender.Text;
+            _TargetLoadBalancer.Name = txtSender.Text;
             _TargetLoadBalancerNode.Text = _TargetLoadBalancer.ToString();
 
             PropertyChanged();

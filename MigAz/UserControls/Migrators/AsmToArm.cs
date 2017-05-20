@@ -11,6 +11,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core;
 using MigAz.Forms;
 using MigAz.Azure.UserControls;
+using System.Xml;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -29,10 +30,12 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _AsmTargetNetworkSecurityGroups;
         private List<Azure.MigrationTarget.StorageAccount> _AsmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks;
+        private List<Azure.MigrationTarget.VirtualMachine> _AsmTargetVirtualMachines;
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
+        private List<Azure.MigrationTarget.PublicIp> _AsmTargetPublicIps;
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
@@ -147,6 +150,8 @@ namespace MigAz.UserControls.Migrators
                     _AsmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
                     _AsmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
                     _AsmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
+                    _AsmTargetPublicIps = new List<Azure.MigrationTarget.PublicIp>();
+                    _AsmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
 
                     TreeNode subscriptionNodeASM = new TreeNode(sender.AzureSubscription.Name);
                     treeSourceASM.Nodes.Add(subscriptionNodeASM);
@@ -199,6 +204,7 @@ namespace MigAz.UserControls.Migrators
                     List<Azure.Asm.CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
                     foreach (Azure.Asm.CloudService asmCloudService in asmCloudServices)
                     {
+                        List<Azure.MigrationTarget.VirtualMachine> cloudServiceTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                         Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, asmCloudService);
 
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
@@ -222,6 +228,8 @@ namespace MigAz.UserControls.Migrators
 
                             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
                             targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
+                            cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
+                            _AsmTargetVirtualMachines.Add(targetVirtualMachine);
 
                             TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
                             virtualMachineNode.Name = targetVirtualMachine.SourceName;
@@ -229,6 +237,80 @@ namespace MigAz.UserControls.Migrators
                             cloudServiceNode.Nodes.Add(virtualMachineNode);
                             cloudServiceNode.Expand();
                         }
+
+                        Azure.MigrationTarget.LoadBalancer loadbalancer = new Azure.MigrationTarget.LoadBalancer("TODO Load Balancer Name Here");
+
+                        Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration();
+                        loadbalancer.FrontEndIpConfigurations.Add(frontEndIpConfiguration);
+
+                        // if internal load balancer
+                        if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/Type").Count > 0)
+                        {
+                            string virtualnetworkname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/VirtualNetworkName").InnerText;
+                            string subnetname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/SubnetName").InnerText.Replace(" ", "");
+
+                            if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
+                            {
+                                frontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
+                                frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                            }
+
+                            // todo now asap
+                            //subnet_ref.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + virtualnetworkname + "/subnets/" + subnetname + "')]";
+                            //frontendipconfiguration_properties.subnet = subnet_ref;
+                        }
+                        // if external load balancer
+                        else
+                        {
+                            Azure.MigrationTarget.PublicIp loadBalancerPublicIp = new Azure.MigrationTarget.PublicIp();
+                            _AsmTargetPublicIps.Add(loadBalancerPublicIp);
+                            frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
+                            // todo now asap -- how does this Public IP get into target tree view ?  need array
+                        }
+
+                        //backendaddresspools.Add(backendaddresspool);
+
+                        foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)
+                        {
+                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+
+                            foreach (XmlNode inputendpoint in asmVirtualMachine.ResourceXml.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
+                            {
+                                if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") == null) // if it's a inbound nat rule
+                                {
+                                    Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule();
+                                    targetInboundNatRule.Name = asmVirtualMachine.RoleName + "-" + inputendpoint.SelectSingleNode("Name").InnerText;
+                                    targetInboundNatRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                    targetInboundNatRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                    targetInboundNatRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                    targetInboundNatRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                    loadbalancer.InboundNatRules.Add(targetInboundNatRule);
+                                }
+                                else // if it's a load balancing rule
+                                {
+                                    XmlNode probenode = inputendpoint.SelectSingleNode("LoadBalancerProbe");
+
+                                    Azure.MigrationTarget.Probe targetProbe = new Azure.MigrationTarget.Probe();
+                                    targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                    targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+                                    targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+
+                                    loadbalancer.Probes.Add(targetProbe);
+
+                                    Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule();
+                                    targetLoadBalancingRule.Name = targetProbe.Name;
+                                    targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                    targetLoadBalancingRule.BackEndAddressPool = backendaddresspool_ref; // TODO NOW, Need to obtain
+                                    targetLoadBalancingRule.Probe = targetProbe;
+                                    targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                    targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                    targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+
+                                    loadbalancer.LoadBalancingRules.Add(targetLoadBalancingRule);
+                                }
+                            }
+                        }
+
                     }
 
                     subscriptionNodeASM.ExpandAll();

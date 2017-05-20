@@ -9,9 +9,20 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class LoadBalancingRule : InboundNatRule
     {
+        private Probe _Probe = null;
+        private BackEndAddressPool _BackEndAddressPool = null;
 
+        public Probe Probe
+        {
+            get { return _Probe; }
+            set { _Probe = value; }
+        }
 
-
+        public BackEndAddressPool BackEndAddressPool
+        {
+            get { return _BackEndAddressPool; }
+            set { _BackEndAddressPool = value; }
+        }
 
         public override string ToString()
         {

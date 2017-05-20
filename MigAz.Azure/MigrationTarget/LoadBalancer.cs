@@ -11,16 +11,22 @@ namespace MigAz.Azure.MigrationTarget
     {
         private string _TargetName = String.Empty;
         private ILoadBalancer _source;
-        private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private IMigrationVirtualNetwork _TargetVirtualNetwork;
         private IMigrationSubnet _TargetSubnet;
+        private List<FrontEndIpConfiguration> _FrontEndIpConfiguration = new List<FrontEndIpConfiguration>();
+        private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private List<Probe> _Probes = new List<Probe>();
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer)
         {
             this.Source = sourceLoadBalancer;
-            this.TargetName = sourceLoadBalancer.Name;
+            this.Name = sourceLoadBalancer.Name;
+        }
+
+        public LoadBalancer(String loadBalancerName)
+        {
+            this.Name = loadBalancerName;
         }
 
         public ILoadBalancer Source
@@ -38,6 +44,12 @@ namespace MigAz.Azure.MigrationTarget
                 else
                     return this.Source.Name;
             }
+        }
+
+        public List<FrontEndIpConfiguration> FrontEndIpConfigurations
+        {
+            get { return _FrontEndIpConfiguration; }
+            set { _FrontEndIpConfiguration = value; }
         }
 
         public List<InboundNatRule> InboundNatRules
@@ -72,7 +84,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetVirtualNetwork = value; }
         }
 
-        public string TargetName
+        public string Name
         {
             get { return _TargetName; }
             set { _TargetName = value.Trim().Replace(" ", String.Empty); }
@@ -80,7 +92,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName;
+            return this.Name;
         }
     }
 }

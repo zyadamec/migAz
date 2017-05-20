@@ -154,6 +154,11 @@ namespace MigAz.Azure.Asm
 
         #region Properties
 
+        public XmlNode ResourceXml
+        {
+            get { return _XmlNode; }
+        }
+
         public CloudService Parent
         {
             get { return _AsmCloudService; }
