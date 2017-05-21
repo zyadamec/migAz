@@ -375,19 +375,33 @@ namespace MigAz.Azure.Generator.AsmToArm
             return availabilityset;
         }
 
-//        private void BuildLoadBalancerObject(Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, ExportArtifacts artifacts)
+        private async Task BuildPublicIPAddressObject(Azure.MigrationTarget.PublicIp publicIp)
+        {
+            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
+
+            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+            publicipaddress.name = publicIp.ToString();
+            publicipaddress.location = "[resourceGroup().location]";
+            publicipaddress.properties = new PublicIPAddress_Properties();
+
+            this.AddResource(publicipaddress);
+
+            LogProvider.WriteLog("BuildPublicIPAddressObject", "End " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
+        }
+
         private async Task BuildLoadBalancerObject(Azure.MigrationTarget.LoadBalancer loadBalancer)
         {
             LogProvider.WriteLog("BuildLoadBalancerObject", "Start " + ArmConst.ProviderLoadBalancers + loadBalancer.ToString());
 
+            List<string> dependson = new List<string>();
             LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid);
             loadbalancer.name = loadBalancer.ToString();
             loadbalancer.location = "[resourceGroup().location]";
+            loadbalancer.dependsOn = dependson;
 
             LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
             loadbalancer.properties = loadbalancer_properties;
 
-            List<string> dependson = new List<string>();
 
             List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
             loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
@@ -415,12 +429,13 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
                 else
                 {
+                    await BuildPublicIPAddressObject(targetFrontEndIpConfiguration.PublicIp);
+
                     Reference publicipaddress_ref = new Reference();
-                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
+                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
                     frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
 
-                    //dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
-                    //loadbalancer.dependsOn = dependson;
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
                 }
             }
 

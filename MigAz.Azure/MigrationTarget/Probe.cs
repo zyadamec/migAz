@@ -10,7 +10,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private String _Name = String.Empty;
         private String _Protocol = "tcp";
-        private String _RequestPath = "tcp";
+        private String _RequestPath = String.Empty;
         private Int32 _NumberOfProbes = 2;
         private Int32 _IntervalInSeconds = 15;
 
