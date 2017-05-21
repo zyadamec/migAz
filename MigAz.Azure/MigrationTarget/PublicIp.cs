@@ -11,6 +11,13 @@ namespace MigAz.Azure.MigrationTarget
     {
         private String _SourceName = String.Empty;
         private String _Name = String.Empty;
+        private String _DomainNameLabel = String.Empty;
+
+        public String DomainNameLabel
+        {
+            get { return _DomainNameLabel; }
+            set { _DomainNameLabel = value.ToLower(); }
+        }
 
 
         public String SourceName

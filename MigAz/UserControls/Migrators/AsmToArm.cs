@@ -268,12 +268,12 @@ namespace MigAz.UserControls.Migrators
                             //subnet_ref.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + virtualnetworkname + "/subnets/" + subnetname + "')]";
                             //frontendipconfiguration_properties.subnet = subnet_ref;
                         }
-                        // if external load balancer
-                        else
+                        else // if external load balancer
                         {
                             Azure.MigrationTarget.PublicIp loadBalancerPublicIp = new Azure.MigrationTarget.PublicIp();
                             loadBalancerPublicIp.SourceName = asmCloudService.Name + "-PIP";
                             loadBalancerPublicIp.Name = asmCloudService.Name;
+                            loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
                             frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
 
                             TreeNode publicIPAddressNode = new TreeNode(loadBalancerPublicIp.SourceName);

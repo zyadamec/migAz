@@ -382,7 +382,16 @@ namespace MigAz.Azure.Generator.AsmToArm
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
             publicipaddress.name = publicIp.ToString();
             publicipaddress.location = "[resourceGroup().location]";
-            publicipaddress.properties = new PublicIPAddress_Properties();
+
+            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+            publicipaddress.properties = publicipaddress_properties;
+
+            if (publicIp.DomainNameLabel != String.Empty)
+            {
+                Hashtable dnssettings = new Hashtable();
+                dnssettings.Add("domainNameLabel", publicIp.DomainNameLabel);
+                publicipaddress_properties.dnsSettings = dnssettings;
+            }
 
             this.AddResource(publicipaddress);
 
