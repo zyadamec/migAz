@@ -160,6 +160,12 @@
     <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\PublicIpProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PublicIpProperties.Designer.cs">
+      <DependentUpon>PublicIpProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ResourceGroupProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -230,6 +236,9 @@
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\PublicIpProperties.resx">
+      <DependentUpon>PublicIpProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -283,7 +292,7 @@
     <Content Include="Resources\LoadBalancer.png" />
     <Content Include="Resources\NetworkInterface.png" />
     <Content Include="Resources\NetworkSecurityGroup.png" />
-    <Content Include="Resources\PublicIPAddress.png" />
+    <Content Include="Resources\PublicIp.png" />
     <Content Include="Resources\Storage.png" />
     <Content Include="Resources\Subscription.png" />
     <Content Include="Resources\VirtualMachine.png" />

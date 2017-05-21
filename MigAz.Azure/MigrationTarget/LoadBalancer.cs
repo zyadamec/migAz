@@ -9,11 +9,13 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class LoadBalancer : IMigrationTarget
     {
+        private String _SourceName = String.Empty;
         private string _TargetName = String.Empty;
         private ILoadBalancer _source;
         private IMigrationVirtualNetwork _TargetVirtualNetwork;
         private IMigrationSubnet _TargetSubnet;
         private List<FrontEndIpConfiguration> _FrontEndIpConfiguration = new List<FrontEndIpConfiguration>();
+        private List<BackEndAddressPool> _BackEndAddressPools = new List<BackEndAddressPool>();
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private List<Probe> _Probes = new List<Probe>();
@@ -24,15 +26,17 @@ namespace MigAz.Azure.MigrationTarget
             this.Name = sourceLoadBalancer.Name;
         }
 
-        public LoadBalancer(String loadBalancerName)
+        public LoadBalancer()
         {
-            this.Name = loadBalancerName;
         }
 
         public ILoadBalancer Source
         {
             get { return _source; }
-            set { _source = value; }
+            set
+            {
+                _source = value;
+            }
         }
 
         public String SourceName
@@ -40,12 +44,21 @@ namespace MigAz.Azure.MigrationTarget
             get
             {
                 if (this.Source == null)
-                    return String.Empty;
+                    return _SourceName;
                 else
                     return this.Source.Name;
             }
+            set
+            {
+                _SourceName = value;
+            }
         }
 
+        public List<BackEndAddressPool> BackEndAddressPools
+        {
+            get { return _BackEndAddressPools; }
+            set { _BackEndAddressPools = value; }
+        }
         public List<FrontEndIpConfiguration> FrontEndIpConfigurations
         {
             get { return _FrontEndIpConfiguration; }
