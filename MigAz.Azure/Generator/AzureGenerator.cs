@@ -439,11 +439,15 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
             }
 
-            Hashtable backendaddresspool = new Hashtable();
-            backendaddresspool.Add("name", "default");
             List<Hashtable> backendaddresspools = new List<Hashtable>();
-            backendaddresspools.Add(backendaddresspool);
             loadbalancer_properties.backendAddressPools = backendaddresspools;
+
+            foreach (Azure.MigrationTarget.BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
+            {
+                Hashtable backendaddresspool = new Hashtable();
+                backendaddresspool.Add("name", targetBackEndAddressPool.Name);
+                backendaddresspools.Add(backendaddresspool);
+            }
 
             List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
             List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
