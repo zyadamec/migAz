@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,12 @@ namespace MigAz.Azure.MigrationTarget
     public class FrontEndIpConfiguration
     {
         private String _Name = "default";
+
         private String _PrivateIPAllocationMethod = "Dynamic";
         private String _PrivateIPAddress = String.Empty;
+        private IMigrationVirtualNetwork _TargetVirtualNetwork;
+        private IMigrationSubnet _TargetSubnet;
+
         private PublicIp _PublicIp = null;
 
         public String Name
@@ -29,6 +34,18 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _PrivateIPAddress; }
             set { _PrivateIPAddress = value; }
+        }
+
+        public IMigrationSubnet TargetSubnet
+        {
+            get { return _TargetSubnet; }
+            set { _TargetSubnet = value; }
+        }
+
+        public IMigrationVirtualNetwork TargetVirtualNetwork
+        {
+            get { return _TargetVirtualNetwork; }
+            set { _TargetVirtualNetwork = value; }
         }
 
         public PublicIp PublicIp

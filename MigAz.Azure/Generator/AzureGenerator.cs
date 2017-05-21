@@ -429,12 +429,16 @@ namespace MigAz.Azure.Generator.AsmToArm
                     frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.PrivateIPAllocationMethod;
                     frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.PrivateIPAddress;
 
-                    ////dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
-                    ////loadbalancer.dependsOn = dependson;
+                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + targetFrontEndIpConfiguration.TargetVirtualNetwork.ToString() + "')]");
 
-                    ////Reference subnet_ref = new Reference();
-                    ////subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
-                    ////frontendipconfiguration_properties.subnet = subnet_ref;
+                    Reference subnet_ref = new Reference();
+                    frontendipconfiguration_properties.subnet = subnet_ref;
+
+                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetSubnet != null)
+                    {
+                        subnet_ref.id = targetFrontEndIpConfiguration.TargetSubnet.TargetId;
+                    }
                 }
                 else
                 {

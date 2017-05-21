@@ -12,8 +12,6 @@ namespace MigAz.Azure.MigrationTarget
         private String _SourceName = String.Empty;
         private string _TargetName = String.Empty;
         private ILoadBalancer _source;
-        private IMigrationVirtualNetwork _TargetVirtualNetwork;
-        private IMigrationSubnet _TargetSubnet;
         private List<FrontEndIpConfiguration> _FrontEndIpConfiguration = new List<FrontEndIpConfiguration>();
         private List<BackEndAddressPool> _BackEndAddressPools = new List<BackEndAddressPool>();
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
@@ -83,18 +81,6 @@ namespace MigAz.Azure.MigrationTarget
         public String StaticVirtualNetworkIPAddress
         {
             get;set;
-        }
-
-        public IMigrationSubnet TargetSubnet
-        {
-            get { return _TargetSubnet; }
-            set { _TargetSubnet = value; }
-        }
-
-        public IMigrationVirtualNetwork TargetVirtualNetwork
-        {
-            get { return _TargetVirtualNetwork; }
-            set { _TargetVirtualNetwork = value; }
         }
 
         public string Name
