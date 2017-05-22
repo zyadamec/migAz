@@ -386,10 +386,10 @@ namespace MigAz.Forms
         {
             if (splitContainer2.Panel1.Controls.Count == 1)
             {
-                if (splitContainer2.Panel1.Height < 510)
-                    splitContainer2.Panel1.Controls[0].Height = 500;
+                if (splitContainer2.Panel1.Height < 300)
+                    splitContainer2.Panel1.Controls[0].Height = 300;
                 else
-                    splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 10;
+                    splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 20;
             }
         }
     }

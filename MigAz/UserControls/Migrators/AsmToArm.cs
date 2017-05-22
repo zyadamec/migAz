@@ -1578,12 +1578,12 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            tabSourceResources.Height = this.Height - 125;
+            tabSourceResources.Height = this.Height - 130;
             treeSourceASM.Width = tabSourceResources.Width - 8;
             treeSourceASM.Height = tabSourceResources.Height - 26;
             treeSourceARM.Width = tabSourceResources.Width - 8;
             treeSourceARM.Height = tabSourceResources.Height - 26;
-            treeTargetARM.Height = this.Height - 140;
+            treeTargetARM.Height = this.Height - 150;
         }
 
         #endregion
