@@ -69,6 +69,25 @@ namespace MigAz.Azure.Generator.AsmToArm
                     this.AddAlert(AlertType.Error, "Target Name for Network Security Group must be specified.", targetNetworkSecurityGroup);
             }
 
+            foreach (MigrationTarget.LoadBalancer targetLoadBalancer in _ExportArtifacts.LoadBalancers)
+            {
+                if (targetLoadBalancer.Name == string.Empty)
+                    this.AddAlert(AlertType.Error, "Target Name for Load Balancer must be specified.", targetLoadBalancer);
+
+                if (targetLoadBalancer.FrontEndIpConfigurations.Count == 0)
+                {
+                    this.AddAlert(AlertType.Error, "Load Balancer must have a FrontEndIpConfiguration.", targetLoadBalancer);
+                }
+                else
+                {
+                    if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp == null &&
+                        targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
+                    {
+                        this.AddAlert(AlertType.Error, "Load Balancer must have either an internal Subnet association or Public IP association.", targetLoadBalancer);
+                    }
+                }
+            }
+
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
             {
                 if (virtualMachine.TargetName == string.Empty)
