@@ -303,23 +303,49 @@ namespace MigAz.UserControls.Migrators
                                 {
                                     XmlNode probenode = inputendpoint.SelectSingleNode("LoadBalancerProbe");
 
-                                    Azure.MigrationTarget.Probe targetProbe = new Azure.MigrationTarget.Probe();
-                                    targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
-                                    targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
-                                    targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                    Azure.MigrationTarget.Probe targetProbe = null;
+                                    foreach (Azure.MigrationTarget.Probe existingProbe in targetLoadBalancer.Probes)
+                                    {
+                                        if (existingProbe.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        {
+                                            targetProbe = existingProbe;
+                                            break;
+                                        }
+                                    }
 
-                                    targetLoadBalancer.Probes.Add(targetProbe);
+                                    if (targetProbe == null)
+                                    {
+                                        targetProbe = new Azure.MigrationTarget.Probe();
+                                        targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                        targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+                                        targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
 
-                                    Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule();
-                                    targetLoadBalancingRule.Name = targetProbe.Name;
-                                    targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
-                                    targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
-                                    targetLoadBalancingRule.Probe = targetProbe;
-                                    targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
-                                    targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
-                                    targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                        targetLoadBalancer.Probes.Add(targetProbe);
+                                    }
 
-                                    targetLoadBalancer.LoadBalancingRules.Add(targetLoadBalancingRule);
+                                    Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
+                                    foreach (Azure.MigrationTarget.LoadBalancingRule existingLoadBalancingRule in targetLoadBalancer.LoadBalancingRules)
+                                    {
+                                        if (existingLoadBalancingRule.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        {
+                                            targetLoadBalancingRule = existingLoadBalancingRule;
+                                            break;
+                                        }
+                                    }
+
+                                    if (targetLoadBalancingRule == null)
+                                    {
+                                        targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule();
+                                        targetLoadBalancingRule.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                        targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                        targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
+                                        targetLoadBalancingRule.Probe = targetProbe;
+                                        targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                        targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                        targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+
+                                        targetLoadBalancer.LoadBalancingRules.Add(targetLoadBalancingRule);
+                                    }
                                 }
                             }
                         }
