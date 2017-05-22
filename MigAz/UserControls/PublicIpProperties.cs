@@ -28,6 +28,7 @@ namespace MigAz.UserControls
 
             Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)_PublicIpNode.Tag;
             txtTargetName.Text = targetPublicIp.Name;
+            txtDomainNameLabel.Text = targetPublicIp.DomainNameLabel;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -38,6 +39,17 @@ namespace MigAz.UserControls
 
             targetPublicIp.Name = txtSender.Text;
             _PublicIpNode.Text = targetPublicIp.ToString();
+
+            PropertyChanged();
+        }
+
+        private void txtDomainNameLabel_TextChanged(object sender, EventArgs e)
+        {
+            TextBox txtSender = (TextBox)sender;
+
+            Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)_PublicIpNode.Tag;
+
+            targetPublicIp.DomainNameLabel = txtSender.Text;
 
             PropertyChanged();
         }

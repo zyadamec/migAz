@@ -30,6 +30,8 @@
         {
             this.label2 = new System.Windows.Forms.Label();
             this.txtTargetName = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtDomainNameLabel = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label2
@@ -49,10 +51,29 @@
             this.txtTargetName.TabIndex = 3;
             this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(16, 74);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(212, 25);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Domain Name Label:";
+            // 
+            // txtDomainNameLabel
+            // 
+            this.txtDomainNameLabel.Location = new System.Drawing.Point(234, 74);
+            this.txtDomainNameLabel.Name = "txtDomainNameLabel";
+            this.txtDomainNameLabel.Size = new System.Drawing.Size(270, 31);
+            this.txtDomainNameLabel.TabIndex = 5;
+            this.txtDomainNameLabel.TextChanged += new System.EventHandler(this.txtDomainNameLabel_TextChanged);
+            // 
             // PublicIpProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtDomainNameLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtTargetName);
             this.Name = "PublicIpProperties";
@@ -66,5 +87,7 @@
 
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtTargetName;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtDomainNameLabel;
     }
 }
