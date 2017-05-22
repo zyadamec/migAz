@@ -987,31 +987,26 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 // If there is at least one endpoint add the reference to the LB backend pool
                 List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-                if (targetNetworkInterface.LoadBalancerRules.Count > 0)
+                ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
+
+                if (targetNetworkInterface.BackEndAddressPool != null)
                 {
                     Reference loadBalancerBackendAddressPool = new Reference();
-                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/backendAddressPools/default')]";
+                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
 
                     loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "')]");
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
                 }
 
                 // Adds the references to the inboud nat rules
                 List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-                foreach (MigrationTarget.LoadBalancingRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
+                foreach (MigrationTarget.InboundNatRule inboundNatRule in targetNetworkInterface.InboundNatRules)
                 {
-                    // todo now asap, is this reference right??  why an InboundNatRule Reference
-                //    if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-                //    {
-                //        string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
-                //        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+                    Reference loadBalancerInboundNatRule = new Reference();
+                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
 
-                //        Reference loadBalancerInboundNatRule = new Reference();
-                //        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
-
-                //        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-                //    }
+                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
                 }
 
                 ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;

@@ -35,6 +35,7 @@ namespace MigAz.UserControls
             if (rbExistingARMVNet.Enabled == false ||
                     _TargetLoadBalancer == null ||
                     _TargetLoadBalancer.FrontEndIpConfigurations.Count == 0 ||
+                    _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null ||
                     _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
                 )
             {

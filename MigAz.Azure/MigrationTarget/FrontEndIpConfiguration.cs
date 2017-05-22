@@ -18,6 +18,21 @@ namespace MigAz.Azure.MigrationTarget
 
         private PublicIp _PublicIp = null;
 
+        private LoadBalancer _ParentLoadBalancer = null;
+
+        private FrontEndIpConfiguration() { }
+
+        public FrontEndIpConfiguration(LoadBalancer loadBalancer)
+        {
+            _ParentLoadBalancer = loadBalancer;
+            loadBalancer.FrontEndIpConfigurations.Add(this);
+        }
+
+        public LoadBalancer LoadBalancer
+        {
+            get { return _ParentLoadBalancer; }
+        }
+
         public String Name
         {
             get { return _Name; }

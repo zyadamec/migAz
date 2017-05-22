@@ -246,11 +246,9 @@ namespace MigAz.UserControls.Migrators
                         cloudServiceNode.Nodes.Add(loadBalancerNode);
                         cloudServiceNode.Expand();
 
-                        Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration();
-                        targetLoadBalancer.FrontEndIpConfigurations.Add(frontEndIpConfiguration);
+                        Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration(targetLoadBalancer);
 
-                        Azure.MigrationTarget.BackEndAddressPool backEndAddressPool = new Azure.MigrationTarget.BackEndAddressPool();
-                        targetLoadBalancer.BackEndAddressPools.Add(backEndAddressPool);
+                        Azure.MigrationTarget.BackEndAddressPool backEndAddressPool = new Azure.MigrationTarget.BackEndAddressPool(targetLoadBalancer);
 
                         // if internal load balancer
                         if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/Type").Count > 0)
@@ -285,19 +283,23 @@ namespace MigAz.UserControls.Migrators
 
                         foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)
                         {
-                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+                            if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                targetVirtualMachine.PrimaryNetworkInterface.BackEndAddressPool = backEndAddressPool;
 
+                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
                             foreach (XmlNode inputendpoint in asmVirtualMachine.ResourceXml.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
                             {
                                 if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") == null) // if it's a inbound nat rule
                                 {
-                                    Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule();
+                                    Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule(targetLoadBalancer);
                                     targetInboundNatRule.Name = asmVirtualMachine.RoleName + "-" + inputendpoint.SelectSingleNode("Name").InnerText;
                                     targetInboundNatRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
                                     targetInboundNatRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
                                     targetInboundNatRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
                                     targetInboundNatRule.FrontEndIpConfiguration = frontEndIpConfiguration;
-                                    targetLoadBalancer.InboundNatRules.Add(targetInboundNatRule);
+
+                                    if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                        targetVirtualMachine.PrimaryNetworkInterface.InboundNatRules.Add(targetInboundNatRule);
                                 }
                                 else // if it's a load balancing rule
                                 {
@@ -319,8 +321,6 @@ namespace MigAz.UserControls.Migrators
                                         targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
                                         targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
                                         targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
-
-                                        targetLoadBalancer.Probes.Add(targetProbe);
                                     }
 
                                     Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
@@ -335,7 +335,7 @@ namespace MigAz.UserControls.Migrators
 
                                     if (targetLoadBalancingRule == null)
                                     {
-                                        targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule();
+                                        targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule(targetLoadBalancer);
                                         targetLoadBalancingRule.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
                                         targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
                                         targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
@@ -343,8 +343,6 @@ namespace MigAz.UserControls.Migrators
                                         targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
                                         targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
                                         targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
-
-                                        targetLoadBalancer.LoadBalancingRules.Add(targetLoadBalancingRule);
                                     }
                                 }
                             }

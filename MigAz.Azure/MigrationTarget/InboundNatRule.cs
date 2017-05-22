@@ -12,7 +12,20 @@ namespace MigAz.Azure.MigrationTarget
         private Int32 _FrontEndPort = 0;
         private Int32 _BackEndPort = 0;
         private String _Protocol = "tcp";
+        private LoadBalancer _ParentLoadBalancer = null;
 
+        private InboundNatRule() { }
+
+        public InboundNatRule(LoadBalancer loadBalancer)
+        {
+            _ParentLoadBalancer = loadBalancer;
+            loadBalancer.InboundNatRules.Add(this);
+        }
+
+        public LoadBalancer LoadBalancer
+        {
+            get { return _ParentLoadBalancer; }
+        }
         public String Name
         {
             get { return _Name; }
