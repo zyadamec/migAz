@@ -54,20 +54,14 @@
     <Compile Include="AWSExportArtifacts.cs" />
     <Compile Include="AwsObjectRetriever.cs" />
     <Compile Include="AwsRetriever.cs" />
-    <Compile Include="AwsToArm.cs">
+    <Compile Include="Forms\AwsToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AwsToArm.Designer.cs">
+    <Compile Include="Forms\AwsToArm.Designer.cs">
       <DependentUpon>AwsToArm.cs</DependentUpon>
     </Compile>
     <Compile Include="EbsVolume.cs" />
     <Compile Include="Ec2Instance.cs" />
-    <Compile Include="Forms\AuthenticationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AuthenticationForm.Designer.cs">
-      <DependentUpon>AuthenticationForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Generator\AwsToArmGenerator.cs" />
     <Compile Include="Models\AwsToArmTelemetryRecord.cs" />
     <Compile Include="Models\SaveSelection.cs" />
@@ -77,6 +71,12 @@
     <Compile Include="Providers\AwsToArmSaveSelectionProvider.cs" />
     <Compile Include="Providers\AwsToArmTelemetryProvider.cs" />
     <Compile Include="Providers\UISaveSelectionProvider.cs" />
+    <Compile Include="UserControls\AmazonWebServiceLoginViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\AmazonWebServiceLoginViewer.Designer.cs">
+      <DependentUpon>AmazonWebServiceLoginViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="VPC.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -94,13 +94,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AwsToArm.resx">
+    <EmbeddedResource Include="Forms\AwsToArm.resx">
       <DependentUpon>AwsToArm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\AuthenticationForm.resx">
-      <DependentUpon>AuthenticationForm.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\AmazonWebServiceLoginViewer.resx">
+      <DependentUpon>AmazonWebServiceLoginViewer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

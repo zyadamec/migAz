@@ -95,7 +95,7 @@
             this.imageList1.Images.SetKeyName(2, "LoadBalancer");
             this.imageList1.Images.SetKeyName(3, "NetworkInterface.png");
             this.imageList1.Images.SetKeyName(4, "NetworkSecurityGroup");
-            this.imageList1.Images.SetKeyName(5, "PublicIPAddress.png");
+            this.imageList1.Images.SetKeyName(5, "PublicIp");
             this.imageList1.Images.SetKeyName(6, "StorageAccount");
             this.imageList1.Images.SetKeyName(7, "VirtualMachine");
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");

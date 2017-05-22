@@ -13,7 +13,8 @@ namespace MigAz.Azure.MigrationTarget
         private INetworkInterface _SourceNetworkInterface;
         private bool _EnableIPForwarding = false;
         private List<MigrationTarget.NetworkInterfaceIpConfiguration> _TargetNetworkInterfaceIpConfigurations = new List<MigrationTarget.NetworkInterfaceIpConfiguration>();
-        private List<LoadBalancerRule> _LoadBalancerRules = new List<LoadBalancerRule>();
+        private BackEndAddressPool _BackEndAddressPool = null;
+        private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private string _TargetName = String.Empty;
 
         private NetworkInterface() { }
@@ -89,14 +90,15 @@ namespace MigAz.Azure.MigrationTarget
             get; set;
         }
 
-        public string LoadBalancerName
+        public List<InboundNatRule> InboundNatRules
         {
-            get;set;
+            get { return _InboundNatRules; }
         }
 
-        public List<LoadBalancerRule> LoadBalancerRules
+        public BackEndAddressPool BackEndAddressPool
         {
-            get { return _LoadBalancerRules; } // todo now asap
+            get { return _BackEndAddressPool; }
+            set { _BackEndAddressPool = value; }
         }
 
         public INetworkInterface SourceNetworkInterface

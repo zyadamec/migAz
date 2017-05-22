@@ -50,9 +50,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
             Alerts.Clear();
-            TemplateStreams.Clear();
-            Resources.Clear();
-            _CopyBlobDetails.Clear();
 
             _ExportArtifacts = (ExportArtifacts)artifacts;
 
@@ -70,6 +67,25 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 if (targetNetworkSecurityGroup.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Network Security Group must be specified.", targetNetworkSecurityGroup);
+            }
+
+            foreach (MigrationTarget.LoadBalancer targetLoadBalancer in _ExportArtifacts.LoadBalancers)
+            {
+                if (targetLoadBalancer.Name == string.Empty)
+                    this.AddAlert(AlertType.Error, "Target Name for Load Balancer must be specified.", targetLoadBalancer);
+
+                if (targetLoadBalancer.FrontEndIpConfigurations.Count == 0)
+                {
+                    this.AddAlert(AlertType.Error, "Load Balancer must have a FrontEndIpConfiguration.", targetLoadBalancer);
+                }
+                else
+                {
+                    if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp == null &&
+                        targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
+                    {
+                        this.AddAlert(AlertType.Error, "Load Balancer must have either an internal Subnet association or Public IP association.", targetLoadBalancer);
+                    }
+                }
             }
 
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
@@ -195,44 +211,58 @@ namespace MigAz.Azure.Generator.AsmToArm
 
         public override async Task GenerateStreams()
         {
+            TemplateStreams.Clear();
+            Resources.Clear();
+            _CopyBlobDetails.Clear();
+
             LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
-            foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+            if (_ExportArtifacts != null)
             {
-                StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
-                await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+                foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
+                    await BuildNetworkSecurityGroup(targetNetworkSecurityGroup);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
-            foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
-                await BuildVirtualNetworkObject(virtualNetwork);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Networks");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
+                foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network : " + virtualNetwork.ToString());
+                    await BuildVirtualNetworkObject(virtualNetwork);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Networks");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
-            foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
-                BuildStorageAccountObject(storageAccount);
-            }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Load Balancers");
+                foreach (Azure.MigrationTarget.LoadBalancer loadBalancer in _ExportArtifacts.LoadBalancers)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Load Balancer : " + loadBalancer.ToString());
+                    await BuildLoadBalancerObject(loadBalancer);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Load Balancers");
 
-            LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
-            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
-            {
-                StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
+                foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
+                    BuildStorageAccountObject(storageAccount);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
-                // process virtual machine
-                await BuildVirtualMachineObject(virtualMachine);
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
+                foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
+                    await BuildVirtualMachineObject(virtualMachine);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
             }
-            LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
+            else
+                LogProvider.WriteLog("GenerateStreams", "ExportArtifacts is null, nothing to export.");
 
             StatusProvider.UpdateStatus("Ready");
-
             LogProvider.WriteLog("GenerateStreams", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
@@ -244,18 +274,22 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             await UpdateExportJsonStream();
 
-            StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
-            LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
-            string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
-            byte[] b = asciiEncoding.GetBytes(jsontext);
-            MemoryStream copyBlobDetailStream = new MemoryStream();
-            copyBlobDetailStream.Write(b, 0, b.Length);
-            TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
+            // Only generate copyblobdetails.json if it contains disks that are being copied
+            if (_CopyBlobDetails.Count > 0)
+            {
+                StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
+                LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
 
-            LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
+                string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+                byte[] b = asciiEncoding.GetBytes(jsontext);
+                MemoryStream copyBlobDetailStream = new MemoryStream();
+                copyBlobDetailStream.Write(b, 0, b.Length);
+                TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
 
+                LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
+            }
 
             StatusProvider.UpdateStatus("BUSY:  Generating DeployInstructions.html");
             LogProvider.WriteLog("SerializeStreams", "Start DeployInstructions.html stream");
@@ -351,8 +385,7 @@ namespace MigAz.Azure.Generator.AsmToArm
             AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
 
             availabilityset.name = availabilitySet.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                availabilityset.location = this.TargetResourceGroup.TargetLocation.Name;
+            availabilityset.location = "[resourceGroup().location]";
 
             this.AddResource(availabilityset);
 
@@ -361,160 +394,168 @@ namespace MigAz.Azure.Generator.AsmToArm
             return availabilityset;
         }
 
-        private void BuildLoadBalancerObject(Asm.CloudService asmCloudService, Asm.VirtualMachine asmVirtualMachine, ExportArtifacts artifacts)
+        private async Task BuildPublicIPAddressObject(Azure.MigrationTarget.PublicIp publicIp)
         {
-            LogProvider.WriteLog("BuildLoadBalancerObject", "Start");
+            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
 
-            LoadBalancer loadbalancer = (LoadBalancer) this.GetResource(typeof(LoadBalancer), asmVirtualMachine.LoadBalancerName);
+            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+            publicipaddress.name = publicIp.ToString();
+            publicipaddress.location = "[resourceGroup().location]";
 
-            if (loadbalancer == null)
+            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+            publicipaddress.properties = publicipaddress_properties;
+
+            if (publicIp.DomainNameLabel != String.Empty)
             {
-                loadbalancer = new LoadBalancer(this.ExecutionGuid);
-                loadbalancer.name = asmVirtualMachine.LoadBalancerName;
-                if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                    loadbalancer.location = this.TargetResourceGroup.TargetLocation.Name;
-
-                FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
-
-                // if internal load balancer
-                // shouldn't this change to a foreach loop?
-                if (asmCloudService.LoadBalancers.Count > 0)
-                {
-                    string virtualnetworkname = String.Empty; // todo now asap asmCloudService.VirtualNetwork.ToString();
-                    string subnetname = String.Empty; // todo now asap asmCloudService.LoadBalancers[0].Subnet.TargetName;
-
-                    frontendipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
-                    if (asmCloudService.StaticVirtualNetworkIPAddress != String.Empty)
-                    {
-                        frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
-                        frontendipconfiguration_properties.privateIPAddress = asmCloudService.StaticVirtualNetworkIPAddress;
-                    }
-
-                    List<string> dependson = new List<string>();
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "')]");
-                    loadbalancer.dependsOn = dependson;
-
-                    Reference subnet_ref = new Reference();
-                    subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + virtualnetworkname + "/subnets/" + subnetname + "')]";
-                    frontendipconfiguration_properties.subnet = subnet_ref;
-                }
-                // if external load balancer
-                else
-                {
-                    List<string> dependson = new List<string>();
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]");
-                    loadbalancer.dependsOn = dependson;
-
-                    Reference publicipaddress_ref = new Reference();
-                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + loadbalancer.name + _settingsProvider.PublicIPSuffix + "')]";
-                    frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-                }
-
-                LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
-
-                FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
-                frontendipconfiguration.properties = frontendipconfiguration_properties;
-
-                List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
-                frontendipconfigurations.Add(frontendipconfiguration);
-                loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
-
-                Hashtable backendaddresspool = new Hashtable();
-                backendaddresspool.Add("name", "default");
-                List<Hashtable> backendaddresspools = new List<Hashtable>();
-                backendaddresspools.Add(backendaddresspool);
-                loadbalancer_properties.backendAddressPools = backendaddresspools;
-
-                List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
-                List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
-                List<Probe> probes = new List<Probe>();
-
-                loadbalancer_properties.inboundNatRules = inboundnatrules;
-                loadbalancer_properties.loadBalancingRules = loadbalancingrules;
-                loadbalancer_properties.probes = probes;
-                loadbalancer.properties = loadbalancer_properties;
+                Hashtable dnssettings = new Hashtable();
+                dnssettings.Add("domainNameLabel", publicIp.DomainNameLabel);
+                publicipaddress_properties.dnsSettings = dnssettings;
             }
 
-            LoadBalancer_Properties properties = (LoadBalancer_Properties)loadbalancer.properties;
+            this.AddResource(publicipaddress);
 
-            // Add Load Balancer Rules
-            foreach (Asm.LoadBalancerRule asmLoadBalancerRule in asmVirtualMachine.LoadBalancerRules)
+            LogProvider.WriteLog("BuildPublicIPAddressObject", "End " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
+        }
+
+        private async Task BuildLoadBalancerObject(Azure.MigrationTarget.LoadBalancer loadBalancer)
+        {
+            LogProvider.WriteLog("BuildLoadBalancerObject", "Start " + ArmConst.ProviderLoadBalancers + loadBalancer.ToString());
+
+            List<string> dependson = new List<string>();
+            LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid);
+            loadbalancer.name = loadBalancer.ToString();
+            loadbalancer.location = "[resourceGroup().location]";
+            loadbalancer.dependsOn = dependson;
+
+            LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
+            loadbalancer.properties = loadbalancer_properties;
+
+
+            List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
+            loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
+
+            foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
             {
-                if (asmLoadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // if it's a inbound nat rule
-                {
-                    InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties();
-                    inboundnatrule_properties.frontendPort = asmLoadBalancerRule.Port;
-                    inboundnatrule_properties.backendPort = asmLoadBalancerRule.LocalPort;
-                    inboundnatrule_properties.protocol = asmLoadBalancerRule.Protocol;
+                FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
+                frontendipconfiguration.name = targetFrontEndIpConfiguration.Name;
+                frontendipconfigurations.Add(frontendipconfiguration);
 
+                FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
+                frontendipconfiguration.properties = frontendipconfiguration_properties;
+
+                if (targetFrontEndIpConfiguration.PublicIp == null)
+                {
+                    frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.PrivateIPAllocationMethod;
+                    frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.PrivateIPAddress;
+
+                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + targetFrontEndIpConfiguration.TargetVirtualNetwork.ToString() + "')]");
+
+                    Reference subnet_ref = new Reference();
+                    frontendipconfiguration_properties.subnet = subnet_ref;
+
+                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetSubnet != null)
+                    {
+                        subnet_ref.id = targetFrontEndIpConfiguration.TargetSubnet.TargetId;
+                    }
+                }
+                else
+                {
+                    await BuildPublicIPAddressObject(targetFrontEndIpConfiguration.PublicIp);
+
+                    Reference publicipaddress_ref = new Reference();
+                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
+                    frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                }
+            }
+
+            List<Hashtable> backendaddresspools = new List<Hashtable>();
+            loadbalancer_properties.backendAddressPools = backendaddresspools;
+
+            foreach (Azure.MigrationTarget.BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
+            {
+                Hashtable backendaddresspool = new Hashtable();
+                backendaddresspool.Add("name", targetBackEndAddressPool.Name);
+                backendaddresspools.Add(backendaddresspool);
+            }
+
+            List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
+            List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
+            List<Probe> probes = new List<Probe>();
+
+            loadbalancer_properties.inboundNatRules = inboundnatrules;
+            loadbalancer_properties.loadBalancingRules = loadbalancingrules;
+            loadbalancer_properties.probes = probes;
+
+            // Add Inbound Nat Rules
+            foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
+            {
+                InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties();
+                inboundnatrule_properties.frontendPort = inboundNatRule.FrontEndPort;
+                inboundnatrule_properties.backendPort = inboundNatRule.BackEndPort;
+                inboundnatrule_properties.protocol = inboundNatRule.Protocol;
+
+                if (inboundNatRule.FrontEndIpConfiguration != null)
+                {
                     Reference frontendIPConfiguration = new Reference();
                     frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
                     inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
-
-                    InboundNatRule inboundnatrule = new InboundNatRule();
-                    inboundnatrule.name = asmVirtualMachine.RoleName + "-" + asmLoadBalancerRule.Name;
-                    inboundnatrule.name = inboundnatrule.name.Replace(" ", String.Empty);  // future enhancement, move to target name
-                    inboundnatrule.properties = inboundnatrule_properties;
-
-                    if (!properties.inboundNatRules.Contains(inboundnatrule))
-                        properties.inboundNatRules.Add(inboundnatrule);
                 }
-                else // if it's a load balancing rule
-                {
-                    string name = asmLoadBalancerRule.LoadBalancedEndpointSetName.Replace(" ", String.Empty);
 
-                    // build probe
-                    Probe_Properties probe_properties = new Probe_Properties();
-                    probe_properties.port = asmLoadBalancerRule.ProbePort;
-                    probe_properties.protocol = asmLoadBalancerRule.ProbeProtocol;
+                InboundNatRule inboundnatrule = new InboundNatRule();
+                inboundnatrule.name = inboundNatRule.Name;
+                inboundnatrule.properties = inboundnatrule_properties;
 
-                    Probe probe = new Probe();
-                    probe.name = name;
-                    probe.properties = probe_properties;
-
-                    if (!properties.probes.Contains(probe))
-                        properties.probes.Add(probe);
-
-                    // build load balancing rule
-                    Reference frontendipconfiguration_ref = new Reference();
-                    frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
-
-                    Reference backendaddresspool_ref = new Reference();
-                    backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/default')]";
-
-                    Reference probe_ref = new Reference();
-                    probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + probe.name + "')]";
-
-                    LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
-                    loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
-                    loadbalancingrule_properties.backendAddressPool = backendaddresspool_ref;
-                    loadbalancingrule_properties.probe = probe_ref;
-                    loadbalancingrule_properties.frontendPort = asmLoadBalancerRule.Port;
-                    loadbalancingrule_properties.backendPort = asmLoadBalancerRule.LocalPort;
-                    loadbalancingrule_properties.protocol = asmLoadBalancerRule.Protocol;
-
-                    LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
-                    loadbalancingrule.name = name;
-                    loadbalancingrule.properties = loadbalancingrule_properties;
-
-                    if (!properties.loadBalancingRules.Contains(loadbalancingrule))
-                        properties.loadBalancingRules.Add(loadbalancingrule);
-
-                    LogProvider.WriteLog("BuildLoadBalancerRules", ArmConst.ProviderLoadBalancers + loadbalancer.name + "/loadBalancingRules/" + loadbalancingrule.name);
-                }
+                loadbalancer_properties.inboundNatRules.Add(inboundnatrule);
             }
 
-            // Add the load balancer only if there is any Load Balancing rule or Inbound NAT rule
-            if (properties.inboundNatRules.Count > 0 || properties.loadBalancingRules.Count > 0)
+            foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
             {
-                this.AddResource(loadbalancer);
-            }
-            else
-            {
-                LogProvider.WriteLog("BuildLoadBalancerObject", "EMPTY Microsoft.Network/loadBalancers/" + loadbalancer.name);
+                Probe_Properties probe_properties = new Probe_Properties();
+                probe_properties.port = targetProbe.Port;
+                probe_properties.protocol = targetProbe.Protocol;
+                probe_properties.intervalInSeconds = targetProbe.IntervalInSeconds;
+                probe_properties.numberOfProbes = targetProbe.NumberOfProbes;
+                probe_properties.requestPath = targetProbe.RequestPath;
+
+                Probe probe = new Probe();
+                probe.name = targetProbe.Name;
+                probe.properties = probe_properties;
+
+                loadbalancer_properties.probes.Add(probe);
             }
 
-            LogProvider.WriteLog("BuildLoadBalancerObject", "End");
+            foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
+            {
+                Reference frontendipconfiguration_ref = new Reference();
+                frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]";
+
+                Reference backendaddresspool_ref = new Reference();
+                backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/" + targetLoadBalancingRule.BackEndAddressPool.Name + "')]";
+
+                Reference probe_ref = new Reference();
+                probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]";
+
+                LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
+                loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
+                loadbalancingrule_properties.backendAddressPool = backendaddresspool_ref;
+                loadbalancingrule_properties.probe = probe_ref;
+                loadbalancingrule_properties.frontendPort = targetLoadBalancingRule.FrontEndPort;
+                loadbalancingrule_properties.backendPort = targetLoadBalancingRule.BackEndPort;
+                loadbalancingrule_properties.protocol = targetLoadBalancingRule.Protocol;
+
+                LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
+                loadbalancingrule.name = targetLoadBalancingRule.Name;
+                loadbalancingrule.properties = loadbalancingrule_properties;
+
+                loadbalancer_properties.loadBalancingRules.Add(loadbalancingrule);
+            }
+
+            this.AddResource(loadbalancer);
+
+            LogProvider.WriteLog("BuildLoadBalancerObject", "End " + ArmConst.ProviderLoadBalancers + loadBalancer.ToString());
         }
 
         private async Task BuildVirtualNetworkObject(Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork)
@@ -531,69 +572,53 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = targetVirtualNetwork.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                virtualnetwork.location = this.TargetResourceGroup.TargetLocation.Name;
+            virtualnetwork.location = "[resourceGroup().location]";
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
-            if (targetVirtualNetwork.TargetSubnets.Count == 0)
+            foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
             {
                 Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = targetVirtualNetwork.AddressPrefixes[0];
+                properties.addressPrefix = targetSubnet.AddressPrefix;
 
                 Subnet subnet = new Subnet();
-                subnet.name = "Subnet1";
+                subnet.name = targetSubnet.TargetName;
                 subnet.properties = properties;
 
                 subnets.Add(subnet);
-                this.AddAlert(AlertType.Error, $"VNET '{virtualnetwork.name}' has no subnets defined. We've created a default subnet 'Subnet1' covering the entire address space.", targetVirtualNetwork);
-            }
-            else
-            {
-                foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+
+                // add Network Security Group if exists
+                if (targetSubnet.NetworkSecurityGroup != null)
                 {
-                    Subnet_Properties properties = new Subnet_Properties();
-                    properties.addressPrefix = targetSubnet.AddressPrefix;
+                    Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = await BuildNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
+                    // Add NSG reference to the subnet
+                    Reference networksecuritygroup_ref = new Reference();
+                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
 
-                    Subnet subnet = new Subnet();
-                    subnet.name = targetSubnet.TargetName;
-                    subnet.properties = properties;
+                    properties.networkSecurityGroup = networksecuritygroup_ref;
 
-                    subnets.Add(subnet);
-
-                    // add Network Security Group if exists
-                    if (targetSubnet.NetworkSecurityGroup != null)
+                    // Add NSG dependsOn to the Virtual Network object
+                    if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
                     {
-                        Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = BuildARMNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup);
-                        // Add NSG reference to the subnet
-                        Reference networksecuritygroup_ref = new Reference();
-                        networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networksecuritygroup.name + "')]";
-
-                        properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                        // Add NSG dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
-                        {
-                            virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
-                        }
+                        virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
                     }
+                }
 
-                    // add Route Table if exists
-                    if (targetSubnet.RouteTable != null)
+                // add Route Table if exists
+                if (targetSubnet.RouteTable != null)
+                {
+                    RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
+
+                    // Add Route Table reference to the subnet
+                    Reference routetable_ref = new Reference();
+                    routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + routetable.name + "')]";
+
+                    properties.routeTable = routetable_ref;
+
+                    // Add Route Table dependsOn to the Virtual Network object
+                    if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
                     {
-                        RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
-
-                        // Add Route Table reference to the subnet
-                        Reference routetable_ref = new Reference();
-                        routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + routetable.name + "')]";
-
-                        properties.routeTable = routetable_ref;
-
-                        // Add Route Table dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
-                        {
-                            virtualnetwork.dependsOn.Add(routetable_ref.id);
-                        }
+                        virtualnetwork.dependsOn.Add(routetable_ref.id);
                     }
                 }
             }
@@ -627,7 +652,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                     PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
                     publicipaddress.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
-                    publicipaddress.location = templateVirtualNetwork.location;
+                    publicipaddress.location = "[resourceGroup().location]";
                     publicipaddress.properties = publicipaddress_properties;
 
                     this.AddResource(publicipaddress);
@@ -713,7 +738,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
 
                     VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
-                    virtualnetworkgateway.location = templateVirtualNetwork.location;
+                    virtualnetworkgateway.location = "[resourceGroup().location]";
                     virtualnetworkgateway.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix;
                     virtualnetworkgateway.properties = virtualnetworkgateway_properties;
                     virtualnetworkgateway.dependsOn = dependson;
@@ -752,7 +777,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                     localnetworkgateway.name = asmLocalNetworkSite.Name + "-LocalGateway";
                     localnetworkgateway.name = localnetworkgateway.name.Replace(" ", String.Empty);
 
-                    localnetworkgateway.location = virtualnetwork.location;
+                    localnetworkgateway.location = "[resourceGroup().location]";
                     localnetworkgateway.properties = localnetworkgateway_properties;
 
                     this.AddResource(localnetworkgateway);
@@ -792,7 +817,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 GatewayConnection gatewayconnection = new GatewayConnection(this.ExecutionGuid);
                 gatewayconnection.name = virtualnetworkgateway.name + "-" + asmLocalNetworkSite.TargetName + "-connection"; // TODO, HardCoded
-                gatewayconnection.location = virtualnetwork.location;
+                gatewayconnection.location = "[resourceGroup().location]";
                 gatewayconnection.properties = gatewayconnection_properties;
                 gatewayconnection.dependsOn = dependson;
 
@@ -807,31 +832,30 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
             networksecuritygroup.name = targetNetworkSecurityGroup.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                networksecuritygroup.location = this.TargetResourceGroup.TargetLocation.Name;
+            networksecuritygroup.location = "[resourceGroup().location]";
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
 
             // for each rule
-            foreach (MigrationTarget.NetworkSecurityGroupRule asmNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
+            foreach (MigrationTarget.NetworkSecurityGroupRule targetNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
             {
                 // if not system rule
-                if (!asmNetworkSecurityGroupRule.IsSystemRule)
+                if (!targetNetworkSecurityGroupRule.IsSystemRule)
                 {
                     SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                    securityrule_properties.description = asmNetworkSecurityGroupRule.ToString();
-                    securityrule_properties.direction = asmNetworkSecurityGroupRule.Type;
-                    securityrule_properties.priority = asmNetworkSecurityGroupRule.Priority;
-                    securityrule_properties.access = asmNetworkSecurityGroupRule.Access;
-                    securityrule_properties.sourceAddressPrefix = asmNetworkSecurityGroupRule.SourceAddressPrefix;
-                    securityrule_properties.destinationAddressPrefix = asmNetworkSecurityGroupRule.DestinationAddressPrefix;
-                    securityrule_properties.sourcePortRange = asmNetworkSecurityGroupRule.SourcePortRange;
-                    securityrule_properties.destinationPortRange = asmNetworkSecurityGroupRule.DestinationPortRange;
-                    securityrule_properties.protocol = asmNetworkSecurityGroupRule.Protocol;
+                    securityrule_properties.description = targetNetworkSecurityGroupRule.ToString();
+                    securityrule_properties.direction = targetNetworkSecurityGroupRule.Direction;
+                    securityrule_properties.priority = targetNetworkSecurityGroupRule.Priority;
+                    securityrule_properties.access = targetNetworkSecurityGroupRule.Access;
+                    securityrule_properties.sourceAddressPrefix = targetNetworkSecurityGroupRule.SourceAddressPrefix;
+                    securityrule_properties.destinationAddressPrefix = targetNetworkSecurityGroupRule.DestinationAddressPrefix;
+                    securityrule_properties.sourcePortRange = targetNetworkSecurityGroupRule.SourcePortRange;
+                    securityrule_properties.destinationPortRange = targetNetworkSecurityGroupRule.DestinationPortRange;
+                    securityrule_properties.protocol = targetNetworkSecurityGroupRule.Protocol;
 
                     SecurityRule securityrule = new SecurityRule();
-                    securityrule.name = asmNetworkSecurityGroupRule.ToString();
+                    securityrule.name = targetNetworkSecurityGroupRule.ToString();
                     securityrule.properties = securityrule_properties;
 
                     networksecuritygroup_properties.securityRules.Add(securityrule);
@@ -847,57 +871,13 @@ namespace MigAz.Azure.Generator.AsmToArm
             return networksecuritygroup;
         }
 
-        private Core.ArmTemplate.NetworkSecurityGroup BuildARMNetworkSecurityGroup(MigrationTarget.NetworkSecurityGroup networkSecurityGroup)
-        {
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
-
-            Core.ArmTemplate.NetworkSecurityGroup networksecuritygroup = new Core.ArmTemplate.NetworkSecurityGroup(this.ExecutionGuid);
-            networksecuritygroup.name = networkSecurityGroup.ToString();
-            networksecuritygroup.location = _TargetResourceGroup.TargetLocation.Name;
-
-            NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
-            networksecuritygroup_properties.securityRules = new List<SecurityRule>();
-
-            //foreach rule without System Rule
-            foreach (MigrationTarget.NetworkSecurityGroupRule rule in networkSecurityGroup.Rules)
-            {
-                SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                securityrule_properties.description = rule.ToString();
-                securityrule_properties.direction = rule.Direction;
-                securityrule_properties.priority = rule.Priority;
-                securityrule_properties.access = rule.Access;
-                securityrule_properties.sourceAddressPrefix = rule.SourceAddressPrefix;
-                securityrule_properties.sourceAddressPrefix.Replace("_", "");
-                securityrule_properties.destinationAddressPrefix = rule.DestinationAddressPrefix;
-                securityrule_properties.destinationAddressPrefix.Replace("_", "");
-                securityrule_properties.sourcePortRange = rule.SourcePortRange;
-                securityrule_properties.destinationPortRange = rule.DestinationPortRange;
-                securityrule_properties.protocol = rule.Protocol;
-
-                SecurityRule securityrule = new SecurityRule();
-                securityrule.name = rule.ToString();
-                securityrule.properties = securityrule_properties;
-
-                networksecuritygroup_properties.securityRules.Add(securityrule);
-            }
-
-            networksecuritygroup.properties = networksecuritygroup_properties;
-
-            this.AddResource(networksecuritygroup);
-
-            LogProvider.WriteLog("BuildNetworkSecurityGroup", "End Microsoft.Network/networkSecurityGroups/" + networkSecurityGroup.ToString());
-
-            return networksecuritygroup;
-        }
-
         private async Task<RouteTable> BuildRouteTable(MigrationTarget.RouteTable routeTable)
         {
             LogProvider.WriteLog("BuildRouteTable", "Start");
 
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                routetable.location = this.TargetResourceGroup.TargetLocation.Name;
+            routetable.location = "[resourceGroup().location]";
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Route>();
@@ -953,7 +933,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             Core.ArmTemplate.RouteTable routetable = new Core.ArmTemplate.RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.Name;
-            routetable.location = _TargetResourceGroup.TargetLocation.Name;
+            routetable.location = "[resourceGroup().location]";
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Core.ArmTemplate.Route>();
@@ -994,8 +974,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
             networkInterface.name = targetNetworkInterface.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                networkInterface.location = this.TargetResourceGroup.TargetLocation.Name;
+            networkInterface.location = "[resourceGroup().location]";
 
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
@@ -1019,42 +998,34 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(MigrationTarget.VirtualNetwork))
                     {
+                        // only adding VNet DependsOn here because as it is a resource in the target migration (resource group)
                         MigrationTarget.VirtualNetwork targetVirtualNetwork = (MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
                         dependson.Add(targetVirtualNetwork.TargetId);
-                    }
-                    else if (ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
-                    {
-                        Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
-                        dependson.Add(armVirtualNetwork.Id);
                     }
                 }
 
                 // If there is at least one endpoint add the reference to the LB backend pool
                 List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-                if (targetNetworkInterface.LoadBalancerRules.Count > 0)
+                ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
+
+                if (targetNetworkInterface.BackEndAddressPool != null)
                 {
                     Reference loadBalancerBackendAddressPool = new Reference();
-                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/backendAddressPools/default')]";
+                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
 
                     loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "')]");
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
                 }
 
                 // Adds the references to the inboud nat rules
                 List<Reference> loadBalancerInboundNatRules = new List<Reference>();
-                foreach (MigrationTarget.LoadBalancerRule loadBalancerRule in targetNetworkInterface.LoadBalancerRules)
+                foreach (MigrationTarget.InboundNatRule inboundNatRule in targetNetworkInterface.InboundNatRules)
                 {
-                    if (loadBalancerRule.LoadBalancedEndpointSetName == String.Empty) // don't want to add a load balance endpoint as an inbound nat rule
-                    {
-                        string inboundnatrulename = networkInterface.ToString() + "-" + loadBalancerRule.ToString();
-                        inboundnatrulename = inboundnatrulename.Replace(" ", String.Empty);
+                    Reference loadBalancerInboundNatRule = new Reference();
+                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
 
-                        Reference loadBalancerInboundNatRule = new Reference();
-                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.LoadBalancerName + "/inboundNatRules/" + inboundnatrulename + "')]";
-
-                        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
-                    }
+                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
                 }
 
                 ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
@@ -1063,8 +1034,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 {
                     PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
                     publicipaddress.name = targetNetworkInterface.ToString();
-                    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+                    publicipaddress.location = "[resourceGroup().location]";
                     publicipaddress.properties = new PublicIPAddress_Properties();
 
                     Core.ArmTemplate.Reference publicIPAddress = new Core.ArmTemplate.Reference();
@@ -1132,8 +1102,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             VirtualMachine virtualmachine = new VirtualMachine(this.ExecutionGuid);
             virtualmachine.name = virtualMachine.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                virtualmachine.location = this.TargetResourceGroup.TargetLocation.Name;
+            virtualmachine.location = "[resourceGroup().location]";
 
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
             List<string> dependson = new List<string>();
@@ -1150,13 +1119,9 @@ namespace MigAz.Azure.Generator.AsmToArm
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
 
-            //BuildPublicIPAddressObject(ref virtualmachine);
-            //BuildLoadBalancerObject(asmVirtualMachine.Parent, asmVirtualMachine, _ExportArtifacts);
-
             foreach (MigrationTarget.NetworkInterface targetNetworkInterface in virtualMachine.NetworkInterfaces)
             {
                 NetworkInterface networkInterface = BuildNetworkInterfaceObject(targetNetworkInterface, networkinterfaces);
-
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]");
             }
 
@@ -1228,19 +1193,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 osdisk.createOption = "Attach";
                 osdisk.osType = virtualMachine.OSVirtualHardDiskOS;
 
-                // Block of code to help copying the blobs to the new storage accounts
-                CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                if (this.SourceSubscription != null)
-                    copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                copyblobdetail.SourceSA = virtualMachine.OSVirtualHardDisk.SourceStorageAccountName;
-                copyblobdetail.SourceContainer = virtualMachine.OSVirtualHardDisk.SourceStorageAccountContainer;
-                copyblobdetail.SourceBlob = virtualMachine.OSVirtualHardDisk.SourceStorageAccountBlob;
-                copyblobdetail.SourceKey = virtualMachine.OSVirtualHardDisk.SourceStorageKey;
-                copyblobdetail.DestinationSA = osDiskTargetStorageAccountName;
-                copyblobdetail.DestinationContainer = virtualMachine.OSVirtualHardDisk.TargetStorageAccountContainer;
-                copyblobdetail.DestinationBlob = virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob;
-                this._CopyBlobDetails.Add(copyblobdetail);
-                // end of block of code to help copying the blobs to the new storage accounts
+                this._CopyBlobDetails.Add(BuildCopyBlob(virtualMachine.OSVirtualHardDisk));
             }
 
             // process data disks
@@ -1249,7 +1202,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             {
                 if (dataDisk.TargetStorageAccount != null)
                 {
-                    string dataDiskTargetStorageAccountName = dataDisk.TargetStorageAccount.ToString();
                     DataDisk datadisk = new DataDisk();
                     datadisk.name = dataDisk.ToString();
                     datadisk.caching = dataDisk.HostCaching;
@@ -1271,17 +1223,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                         datadisk.createOption = "Attach";
 
                         // Block of code to help copying the blobs to the new storage accounts
-                        CopyBlobDetail copyblobdetail = new CopyBlobDetail();
-                        if (this.SourceSubscription != null)
-                            copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
-                        copyblobdetail.SourceSA = dataDisk.SourceStorageAccountName;
-                        copyblobdetail.SourceContainer = dataDisk.SourceStorageAccountContainer;
-                        copyblobdetail.SourceBlob = dataDisk.SourceStorageAccountBlob;
-                        copyblobdetail.SourceKey = dataDisk.SourceStorageKey;
-                        copyblobdetail.DestinationSA = dataDiskTargetStorageAccountName;
-                        copyblobdetail.DestinationContainer = dataDisk.TargetStorageAccountContainer;
-                        copyblobdetail.DestinationBlob = dataDisk.TargetStorageAccountBlob;
-                        this._CopyBlobDetails.Add(copyblobdetail);
+                        this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk));
                         // end of block of code to help copying the blobs to the new storage accounts
                     }
 
@@ -1307,15 +1249,6 @@ namespace MigAz.Azure.Generator.AsmToArm
             virtualmachine_properties.networkProfile = networkprofile;
             virtualmachine_properties.storageProfile = storageprofile;
 
-            //    List<string> dependson = new List<string>();
-
-            //    //foreach (var nic in networkinterfaces)
-            //    //{
-            //    //    dependson.Add(nic.id.ToString());
-            //    //}
-
-            //    // dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/networkInterfaces/" + networkinterfacename + "')]");
-
             // process availability set
             if (virtualMachine.TargetAvailabilitySet != null)
             {
@@ -1333,7 +1266,8 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
             {
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
+                if (storageaccountdependency.GetType() == typeof(Azure.MigrationTarget.StorageAccount)) // only add depends on if it is a Storage Account in the target template.  Otherwise, we'll get a "not in template" error for a resource that exists in another Resource Group.
+                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
             virtualmachine.properties = virtualmachine_properties;
@@ -1349,6 +1283,44 @@ namespace MigAz.Azure.Generator.AsmToArm
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + virtualMachine.ToString());
         }
 
+        private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk)
+        {
+            if (disk.SourceDisk == null)
+                return null;
+
+            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+            if (this.SourceSubscription != null)
+                copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+
+            if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Asm.Disk))
+            {
+                Asm.Disk asmDataDisk = (Asm.Disk)disk.SourceDisk;
+
+                copyblobdetail.SourceSA = asmDataDisk.StorageAccountName;
+                copyblobdetail.SourceContainer = asmDataDisk.StorageAccountContainer;
+                copyblobdetail.SourceBlob = asmDataDisk.StorageAccountBlob;
+
+                if (asmDataDisk.SourceStorageAccount != null && asmDataDisk.SourceStorageAccount.Keys != null)
+                    copyblobdetail.SourceKey = asmDataDisk.SourceStorageAccount.Keys.Primary;
+            }
+            else if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Arm.Disk))
+            {
+                Arm.Disk armDataDisk = (Arm.Disk)disk.SourceDisk;
+
+                copyblobdetail.SourceSA = armDataDisk.StorageAccountName;
+                copyblobdetail.SourceContainer = armDataDisk.StorageAccountContainer;
+                copyblobdetail.SourceBlob = armDataDisk.StorageAccountBlob;
+
+                if (armDataDisk.SourceStorageAccount != null && armDataDisk.SourceStorageAccount.Keys != null)
+                    copyblobdetail.SourceKey = armDataDisk.SourceStorageAccount.Keys[0].Value;
+            }
+            copyblobdetail.DestinationSA = disk.TargetStorageAccount.ToString();
+            copyblobdetail.DestinationContainer = disk.TargetStorageAccountContainer;
+            copyblobdetail.DestinationBlob = disk.TargetStorageAccountBlob;
+
+            return copyblobdetail;
+        }
+
         private void BuildStorageAccountObject(MigrationTarget.StorageAccount targetStorageAccount)
         {
             LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + targetStorageAccount.ToString());
@@ -1358,8 +1330,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
             storageaccount.name = targetStorageAccount.ToString();
-            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-                storageaccount.location = this.TargetResourceGroup.TargetLocation.Name;   
+            storageaccount.location = "[resourceGroup().location]";
             storageaccount.properties = storageaccount_properties;
 
             this.AddResource(storageaccount);
@@ -1462,8 +1433,7 @@ namespace MigAz.Azure.Generator.AsmToArm
 
 //    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
 //    publicipaddress.name = publicipaddress_name + _settingsProvider.PublicIPSuffix;
-//    if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null)
-//        publicipaddress.location = this.TargetResourceGroup.TargetLocation.Name;
+//    publicipaddress.location = "[resourceGroup().location]";
 //    publicipaddress.properties = publicipaddress_properties;
 
 //    this.AddResource(publicipaddress);

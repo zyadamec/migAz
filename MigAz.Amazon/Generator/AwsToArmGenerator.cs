@@ -447,6 +447,7 @@ namespace MigAz.AWS.Generator
             {
                 dhcpoptions = null;
             }
+
             //VirtualNetworks
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = GetVPCName(vpc.VpcId);

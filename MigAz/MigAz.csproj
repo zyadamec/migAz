@@ -124,6 +124,12 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\LoadBalancerProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
+      <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Migrators\AsmToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -153,6 +159,12 @@
     </Compile>
     <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PublicIpProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PublicIpProperties.Designer.cs">
+      <DependentUpon>PublicIpProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\ResourceGroupProperties.cs">
       <SubType>UserControl</SubType>
@@ -206,6 +218,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
+      <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Migrators\AsmToArm.resx">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </EmbeddedResource>
@@ -220,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\PublicIpProperties.resx">
+      <DependentUpon>PublicIpProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
@@ -274,7 +292,7 @@
     <Content Include="Resources\LoadBalancer.png" />
     <Content Include="Resources\NetworkInterface.png" />
     <Content Include="Resources\NetworkSecurityGroup.png" />
-    <Content Include="Resources\PublicIPAddress.png" />
+    <Content Include="Resources\PublicIp.png" />
     <Content Include="Resources\Storage.png" />
     <Content Include="Resources\Subscription.png" />
     <Content Include="Resources\VirtualMachine.png" />

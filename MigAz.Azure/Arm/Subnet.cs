@@ -8,24 +8,22 @@ namespace MigAz.Azure.Arm
     public class Subnet : ISubnet, IMigrationSubnet
     {
         private JToken _Subnet;
-        private AzureContext _AzureContext;
         private VirtualNetwork _Parent;
         private NetworkSecurityGroup _NetworkSecurityGroup = null;
 
         private Subnet() { }
 
-        public Subnet(AzureContext azureContext, VirtualNetwork parent, JToken subnet)
+        public Subnet(VirtualNetwork parent, JToken subnet)
         {
             _Parent = parent;
-            _AzureContext = azureContext;
             _Subnet = subnet;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (this.NetworkSecurityGroupId != string.Empty)
             {
-                _NetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+                _NetworkSecurityGroup = await azureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
             }
         }
 

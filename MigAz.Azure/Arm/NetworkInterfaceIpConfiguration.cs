@@ -10,20 +10,18 @@ namespace MigAz.Azure.Arm
 {
     public class NetworkInterfaceIpConfiguration : INetworkInterfaceIpConfiguration
     {
-        private AzureContext _AzureContext;
         private JToken _NetworkInterfaceIpConfiguration;
         private VirtualNetwork _VirtualNetwork;
         private Subnet _Subnet;
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext, JToken networkInterfaceIpConfiguration)
+        public NetworkInterfaceIpConfiguration(JToken networkInterfaceIpConfiguration)
         {
-            _AzureContext = azureContext;
             _NetworkInterfaceIpConfiguration = networkInterfaceIpConfiguration;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _VirtualNetwork = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.VirtualNetworkName);
+            _VirtualNetwork = await azureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.VirtualNetworkName);
 
             if (_VirtualNetwork != null)
             {

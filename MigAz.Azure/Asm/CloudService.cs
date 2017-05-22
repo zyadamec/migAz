@@ -27,6 +27,11 @@ namespace MigAz.Azure.Asm
             this._XmlNode = cloudServiceXml;
         }
 
+        public XmlNode ResourceXml
+        {
+            get { return _XmlNode; }
+        }
+
         public string Name
         {
             get

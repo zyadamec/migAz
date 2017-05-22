@@ -5,35 +5,21 @@ using System.Collections.Generic;
 
 namespace MigAz.Azure.Arm
 {
-    public class StorageAccount : IStorageAccount, IStorageTarget
+    public class StorageAccount : ArmResource, IStorageAccount, IStorageTarget
     {
-        private AzureContext _AzureContext;
-        private JToken _StorageAccount;
-        private List<StorageAccountKey> _StorageAccountKeys = new List<StorageAccountKey>();
+        private List<StorageAccountKey> ResourceTokenKeys = new List<StorageAccountKey>();
+        private AzureEnvironment _AzureEnvironment;
 
-        private StorageAccount() { }
+        private StorageAccount() : base(null) { }
 
-        public StorageAccount(
-            AzureContext azureContext,
-            JToken storageAccount)
+        public StorageAccount(JToken resourceToken, AzureEnvironment azureEnvironment) : base(resourceToken)
         {
-            _AzureContext = azureContext;
-            _StorageAccount = storageAccount;
+            _AzureEnvironment = azureEnvironment;
         }
 
         public List<StorageAccountKey> Keys
         {
-            get { return _StorageAccountKeys; }
-        }
-
-        public string Name
-        {
-            get { return (string)_StorageAccount["name"]; }
-        }
-
-        public string Id
-        {
-            get { return (string)_StorageAccount["id"]; }
+            get { return ResourceTokenKeys; }
         }
 
         public string AccountType
@@ -41,93 +27,86 @@ namespace MigAz.Azure.Arm
             get { return this.SkuName; }
         }
 
-        public string Location
-        {
-            get { return (string)_StorageAccount["location"]; }
-        }
-
         public string Kind
         {
-            get { return (string)_StorageAccount["kind"]; }
+            get { return (string)ResourceToken["kind"]; }
         }
 
         public string CreationTime
         {
-            get { return (string)_StorageAccount["properties"]["creationTime"]; }
+            get { return (string)ResourceToken["properties"]["creationTime"]; }
         }
 
         public string PrimaryLocation
         {
-            get { return (string)_StorageAccount["properties"]["primaryLocation"]; }
+            get { return (string)ResourceToken["properties"]["primaryLocation"]; }
         }
 
         public string PrimaryEndpointBlob
         {
-            get { return (string)_StorageAccount["properties"]["primaryEndpoints"]["blob"]; }
+            get { return (string)ResourceToken["properties"]["primaryEndpoints"]["blob"]; }
         }
 
         public string PrimaryEndpointFile
         {
-            get { return (string)_StorageAccount["properties"]["primaryEndpoints"]["file"]; }
+            get { return (string)ResourceToken["properties"]["primaryEndpoints"]["file"]; }
         }
 
         public string PrimaryEndpointQueue
         {
-            get { return (string)_StorageAccount["properties"]["primaryEndpoints"]["queue"]; }
+            get { return (string)ResourceToken["properties"]["primaryEndpoints"]["queue"]; }
         }
 
         public string PrimaryEndpointTable
         {
-            get { return (string)_StorageAccount["properties"]["primaryEndpoints"]["table"]; }
+            get { return (string)ResourceToken["properties"]["primaryEndpoints"]["table"]; }
         }
 
         public string PrimaryStatus
         {
-            get { return (string)_StorageAccount["properties"]["statusOfPrimary"]; }
+            get { return (string)ResourceToken["properties"]["statusOfPrimary"]; }
         }
 
         public string SecondaryLocation
         {
-            get { return (string)_StorageAccount["properties"]["secondaryLocation"]; }
+            get { return (string)ResourceToken["properties"]["secondaryLocation"]; }
         }
 
         public string SecondaryEndpointBlob
         {
-            get { return (string)_StorageAccount["properties"]["secondaryEndpoints"]["blob"]; }
+            get { return (string)ResourceToken["properties"]["secondaryEndpoints"]["blob"]; }
         }
 
         public string SecondaryEndpointQueue
         {
-            get { return (string)_StorageAccount["properties"]["secondaryEndpoints"]["queue"]; }
+            get { return (string)ResourceToken["properties"]["secondaryEndpoints"]["queue"]; }
         }
 
         public string SecondaryEndpointTable
         {
-            get { return (string)_StorageAccount["properties"]["secondaryEndpoints"]["table"]; }
+            get { return (string)ResourceToken["properties"]["secondaryEndpoints"]["table"]; }
         }
 
         public string SecondaryStatus
         {
-            get { return (string)_StorageAccount["properties"]["statusOfSecondary"]; }
+            get { return (string)ResourceToken["properties"]["statusOfSecondary"]; }
         }
 
         public string SkuName
         {
-            get { return (string)_StorageAccount["sku"]["name"]; }
+            get { return (string)ResourceToken["sku"]["name"]; }
         }
 
         public string SkuTier
         {
-            get { return (string)_StorageAccount["sku"]["tier"]; }
+            get { return (string)ResourceToken["sku"]["tier"]; }
         }
-
-        public ResourceGroup ResourceGroup { get; set; }
 
         public string BlobStorageNamespace
         {
             get
             {
-                return AzureServiceUrls.GetBlobEndpointUrl(_AzureContext.AzureEnvironment);
+                return AzureServiceUrls.GetBlobEndpointUrl(_AzureEnvironment);
             }
         }
 

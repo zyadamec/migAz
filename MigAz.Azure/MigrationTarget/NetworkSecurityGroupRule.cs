@@ -21,6 +21,7 @@ namespace MigAz.Azure.MigrationTarget
             this.Priority = asmRule.Priority;
             this.Protocol = asmRule.Protocol;
             this.SourceAddressPrefix = asmRule.SourceAddressPrefix;
+            this.SourcePortRange = asmRule.SourcePortRange;
         }
 
         public NetworkSecurityGroupRule(AzureContext azureContext, Arm.NetworkSecurityGroupRule armRule)
@@ -33,13 +34,10 @@ namespace MigAz.Azure.MigrationTarget
             this.Direction = armRule.Direction;
             this.Priority = armRule.Priority;
             this.Protocol = armRule.Protocol;
+            this.SourcePortRange = armRule.SourcePortRange;
             this.SourceAddressPrefix = armRule.SourceAddressPrefix;
         }
 
-        public string Type
-        {
-            get; set;
-        }
         public string Direction
         {
             get; set;

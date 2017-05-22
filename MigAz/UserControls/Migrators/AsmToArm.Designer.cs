@@ -53,7 +53,7 @@
             this.imageList1.Images.SetKeyName(1, "LoadBalancer");
             this.imageList1.Images.SetKeyName(2, "NetworkInterface");
             this.imageList1.Images.SetKeyName(3, "NetworkSecurityGroup");
-            this.imageList1.Images.SetKeyName(4, "PublicIPAddress.png");
+            this.imageList1.Images.SetKeyName(4, "PublicIp");
             this.imageList1.Images.SetKeyName(5, "StorageAccount");
             this.imageList1.Images.SetKeyName(6, "VirtualMachine");
             this.imageList1.Images.SetKeyName(7, "VirtualNetwork");

@@ -9,43 +9,34 @@ using System.Threading.Tasks;
 namespace MigAz.Azure.Arm
 {
 
-    public class NetworkInterface : INetworkInterface
+    public class NetworkInterface : ArmResource, INetworkInterface
     {
-        private AzureContext _AzureContext;
-        private JToken _NetworkInterface;
         private VirtualMachine _VirtualMachine;
         private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
 
-        private NetworkInterface() { }
+        private NetworkInterface() : base(null) { }
 
-        public NetworkInterface(AzureContext azureContext, JToken networkInterfaceToken)
+        public NetworkInterface(JToken resourceToken) : base(resourceToken)
         {
-            _AzureContext = azureContext;
-            _NetworkInterface = networkInterfaceToken;
-
-            foreach (JToken networkInterfaceIpConfigurationToken in _NetworkInterface["properties"]["ipConfigurations"])
+            foreach (JToken networkInterfaceIpConfigurationToken in ResourceToken["properties"]["ipConfigurations"])
             {
-                NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext, networkInterfaceIpConfigurationToken);
+                NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(networkInterfaceIpConfigurationToken);
                 _NetworkInterfaceIpConfigurations.Add(networkInterfaceIpConfiguration);
             }
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in this.NetworkInterfaceIpConfigurations)
             {
-                await networkInterfaceIpConfiguration.InitializeChildrenAsync();
+                await networkInterfaceIpConfiguration.InitializeChildrenAsync(azureContext);
             }
         }
 
-        public string Id => (string)_NetworkInterface["id"];
-        public string Name => (string)_NetworkInterface["name"];
-        public string Location => (string)_NetworkInterface["location"];
-        public string ProvisioningState => (string)_NetworkInterface["properties"]["provisioningState"];
-        public string EnableIPForwarding => (string)_NetworkInterface["properties"]["enableIPForwarding"];
-        public string EnableAcceleratedNetworking => (string)_NetworkInterface["properties"]["enableAcceleratedNetworking"];
-        public Guid ResourceGuid => new Guid((string)_NetworkInterface["properties"]["resourceGuid"]);
-        public bool IsPrimary => Convert.ToBoolean((string)_NetworkInterface["properties"]["primary"]);
+        public string EnableIPForwarding => (string)ResourceToken["properties"]["enableIPForwarding"];
+        public string EnableAcceleratedNetworking => (string)ResourceToken["properties"]["enableAcceleratedNetworking"];
+        public Guid ResourceGuid => new Guid((string)ResourceToken["properties"]["resourceGuid"]);
+        public bool IsPrimary => Convert.ToBoolean((string)ResourceToken["properties"]["primary"]);
         public VirtualMachine VirtualMachine
         {
             get { return _VirtualMachine; }

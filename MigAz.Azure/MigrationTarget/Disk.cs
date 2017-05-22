@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +26,27 @@ namespace MigAz.Azure.MigrationTarget
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
-        public Disk(Arm.Disk sourceDisk)
+        public Disk(IArmDisk sourceDisk)
         {
-            this.SourceDisk = sourceDisk;
-            this.TargetName = sourceDisk.Name;
-            this.Lun = sourceDisk.Lun;
-            this.HostCaching = sourceDisk.Caching;
-            this.DiskSizeInGB = sourceDisk.DiskSizeGb;
-            this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
-            this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
+            this.SourceDisk = (IDisk)sourceDisk;
+
+            if (sourceDisk.GetType() == typeof(Azure.Arm.Disk))
+            {
+                Azure.Arm.Disk armDisk = (Azure.Arm.Disk)sourceDisk;
+
+                this.TargetName = armDisk.Name;
+                this.Lun = armDisk.Lun;
+                this.HostCaching = armDisk.Caching;
+                this.DiskSizeInGB = armDisk.DiskSizeGb;
+                this.TargetStorageAccountBlob = armDisk.StorageAccountBlob;
+                this.SourceStorageAccount = armDisk.SourceStorageAccount;
+            }
+            else if (sourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+            {
+                Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
+
+            }
+
         }
 
 
@@ -49,17 +62,6 @@ namespace MigAz.Azure.MigrationTarget
         }
 
         public IDisk SourceDisk { get; set; }
-
-        public String SourceMediaLink
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return String.Empty;
-
-                return this.SourceDisk.MediaLink;
-            }
-        }
 
         public String SourceName
         {
@@ -87,49 +89,6 @@ namespace MigAz.Azure.MigrationTarget
         public IStorageAccount SourceStorageAccount
         {
             get; private set;
-        }
-
-        public string SourceStorageKey
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageKey;
-            }
-        }
-
-        public string SourceStorageAccountBlob
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountBlob;
-            }
-        }
-        public string SourceStorageAccountContainer
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountContainer;
-            }
-        }
-
-        public string SourceStorageAccountName
-        {
-            get
-            {
-                if (this.SourceDisk == null)
-                    return null;
-
-                return this.SourceDisk.StorageAccountName;
-            }
         }
 
         public IStorageTarget TargetStorageAccount

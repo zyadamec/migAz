@@ -11,6 +11,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core;
 using MigAz.Forms;
 using MigAz.Azure.UserControls;
+using System.Xml;
 
 namespace MigAz.UserControls.Migrators
 {
@@ -29,10 +30,12 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _AsmTargetNetworkSecurityGroups;
         private List<Azure.MigrationTarget.StorageAccount> _AsmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks;
+        private List<Azure.MigrationTarget.VirtualMachine> _AsmTargetVirtualMachines;
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
-        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks;
+        private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
+        private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
@@ -146,6 +149,7 @@ namespace MigAz.UserControls.Migrators
                     _AsmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
                     _AsmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
                     _AsmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
+                    _AsmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
 
                     TreeNode subscriptionNodeASM = new TreeNode(sender.AzureSubscription.Name);
                     treeSourceASM.Nodes.Add(subscriptionNodeASM);
@@ -198,29 +202,32 @@ namespace MigAz.UserControls.Migrators
                     List<Azure.Asm.CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
                     foreach (Azure.Asm.CloudService asmCloudService in asmCloudServices)
                     {
+                        List<Azure.MigrationTarget.VirtualMachine> cloudServiceTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                         Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, asmCloudService);
+
+                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
+                        TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.Name, false);
+                        TreeNode cloudServiceNode = null;
+                        if (cloudServiceNodeSearch.Count() == 1)
+                        {
+                            cloudServiceNode = cloudServiceNodeSearch[0];
+                        }
+
+                        if (cloudServiceNode == null)
+                        {
+                            cloudServiceNode = new TreeNode(asmCloudService.Name);
+                            cloudServiceNode.Name = asmCloudService.Name;
+                            cloudServiceNode.Tag = targetAvailabilitySet;
+                            parentNode.Nodes.Add(cloudServiceNode);
+                            parentNode.Expand();
+                        }
 
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                         {
-                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
-                            TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.Name, false);
-                            TreeNode cloudServiceNode = null;
-                            if (cloudServiceNodeSearch.Count() == 1)
-                            {
-                                cloudServiceNode = cloudServiceNodeSearch[0];
-                            }
-
-                            if (cloudServiceNode == null)
-                            {
-                                cloudServiceNode = new TreeNode(asmCloudService.Name);
-                                cloudServiceNode.Name = asmCloudService.Name;
-                                cloudServiceNode.Tag = targetAvailabilitySet;
-                                parentNode.Nodes.Add(cloudServiceNode);
-                                parentNode.Expand();
-                            }
-
                             Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
                             targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
+                            cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
+                            _AsmTargetVirtualMachines.Add(targetVirtualMachine);
 
                             TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
                             virtualMachineNode.Name = targetVirtualMachine.SourceName;
@@ -228,6 +235,127 @@ namespace MigAz.UserControls.Migrators
                             cloudServiceNode.Nodes.Add(virtualMachineNode);
                             cloudServiceNode.Expand();
                         }
+
+                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer();
+                        targetLoadBalancer.Name = asmCloudService.Name;
+                        targetLoadBalancer.SourceName = asmCloudService.Name + "-LB";
+
+                        TreeNode loadBalancerNode = new TreeNode(targetLoadBalancer.SourceName);
+                        loadBalancerNode.Name = targetLoadBalancer.SourceName;
+                        loadBalancerNode.Tag = targetLoadBalancer;
+                        cloudServiceNode.Nodes.Add(loadBalancerNode);
+                        cloudServiceNode.Expand();
+
+                        Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration(targetLoadBalancer);
+
+                        Azure.MigrationTarget.BackEndAddressPool backEndAddressPool = new Azure.MigrationTarget.BackEndAddressPool(targetLoadBalancer);
+
+                        // if internal load balancer
+                        if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/Type").Count > 0)
+                        {
+                            string virtualnetworkname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/VirtualNetworkName").InnerText;
+                            string subnetname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/SubnetName").InnerText.Replace(" ", "");
+
+                            if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
+                            {
+                                frontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
+                                frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                            }
+
+                            if (cloudServiceTargetVirtualMachines.Count > 0)
+                            {
+                                if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface != null)
+                                {
+                                    if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                                    {
+                                        frontEndIpConfiguration.TargetVirtualNetwork = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork;
+                                        frontEndIpConfiguration.TargetSubnet = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet;
+                                    }
+                                }
+                            }
+                        }
+                        else // if external load balancer
+                        {
+                            Azure.MigrationTarget.PublicIp loadBalancerPublicIp = new Azure.MigrationTarget.PublicIp();
+                            loadBalancerPublicIp.SourceName = asmCloudService.Name + "-PIP";
+                            loadBalancerPublicIp.Name = asmCloudService.Name;
+                            loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
+                            frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
+
+                            TreeNode publicIPAddressNode = new TreeNode(loadBalancerPublicIp.SourceName);
+                            publicIPAddressNode.Name = loadBalancerPublicIp.SourceName;
+                            publicIPAddressNode.Tag = loadBalancerPublicIp;
+                            cloudServiceNode.Nodes.Add(publicIPAddressNode);
+                            cloudServiceNode.Expand();
+                        }
+
+                        foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)
+                        {
+                            if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                targetVirtualMachine.PrimaryNetworkInterface.BackEndAddressPool = backEndAddressPool;
+
+                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+                            foreach (XmlNode inputendpoint in asmVirtualMachine.ResourceXml.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
+                            {
+                                if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") == null) // if it's a inbound nat rule
+                                {
+                                    Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule(targetLoadBalancer);
+                                    targetInboundNatRule.Name = asmVirtualMachine.RoleName + "-" + inputendpoint.SelectSingleNode("Name").InnerText;
+                                    targetInboundNatRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                    targetInboundNatRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                    targetInboundNatRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                    targetInboundNatRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+
+                                    if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                        targetVirtualMachine.PrimaryNetworkInterface.InboundNatRules.Add(targetInboundNatRule);
+                                }
+                                else // if it's a load balancing rule
+                                {
+                                    XmlNode probenode = inputendpoint.SelectSingleNode("LoadBalancerProbe");
+
+                                    Azure.MigrationTarget.Probe targetProbe = null;
+                                    foreach (Azure.MigrationTarget.Probe existingProbe in targetLoadBalancer.Probes)
+                                    {
+                                        if (existingProbe.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        {
+                                            targetProbe = existingProbe;
+                                            break;
+                                        }
+                                    }
+
+                                    if (targetProbe == null)
+                                    {
+                                        targetProbe = new Azure.MigrationTarget.Probe();
+                                        targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                        targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+                                        targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                    }
+
+                                    Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
+                                    foreach (Azure.MigrationTarget.LoadBalancingRule existingLoadBalancingRule in targetLoadBalancer.LoadBalancingRules)
+                                    {
+                                        if (existingLoadBalancingRule.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        {
+                                            targetLoadBalancingRule = existingLoadBalancingRule;
+                                            break;
+                                        }
+                                    }
+
+                                    if (targetLoadBalancingRule == null)
+                                    {
+                                        targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule(targetLoadBalancer);
+                                        targetLoadBalancingRule.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                        targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                        targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
+                                        targetLoadBalancingRule.Probe = targetProbe;
+                                        targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                        targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                        targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                    }
+                                }
+                            }
+                        }
+
                     }
 
                     subscriptionNodeASM.ExpandAll();
@@ -240,12 +368,17 @@ namespace MigAz.UserControls.Migrators
                     _ArmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
                     _ArmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
                     _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
+                    _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
 
                     TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
                     subscriptionNodeARM.ImageKey = "Subscription";
                     subscriptionNodeARM.SelectedImageKey = "Subscription";
                     treeSourceARM.Nodes.Add(subscriptionNodeARM);
                     subscriptionNodeARM.Expand();
+                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                    {
+                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+                    }
 
                     foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups())
                     {
@@ -315,10 +448,17 @@ namespace MigAz.UserControls.Migrators
                         storageAccountParentNode.Expand();
                     }
 
-                    foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                    try
                     {
-                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = new Azure.MigrationTarget.ManagedDisk(this.AzureContextTargetARM, armManagedDisk);
-                        _ArmTargetManagedDisks.Add(targetManagedDisk);
+                        foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                        {
+                            Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
+                            _ArmTargetManagedDisks.Add(targetManagedDisk);
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
                     }
 
                     foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
@@ -356,6 +496,7 @@ namespace MigAz.UserControls.Migrators
                         networkSecurityGroupParentNode = tnResourceGroup;
 
                         Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+                        _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
 
                         TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
                         tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
@@ -365,6 +506,26 @@ namespace MigAz.UserControls.Migrators
                         networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         networkSecurityGroupParentNode.Expand();
                     }
+
+                    foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers())
+                    {
+                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
+
+                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armLoadBalancer.ResourceGroup);
+                        networkSecurityGroupParentNode = tnResourceGroup;
+
+                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                        _ArmTargetLoadBalancers.Add(targetLoadBalancer);
+
+                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
+                        tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
+                        tnNetworkSecurityGroup.Tag = targetLoadBalancer;
+                        tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
+                        tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                        networkSecurityGroupParentNode.Expand();
+                    }
+
 
                     subscriptionNodeARM.ExpandAll();
 
@@ -448,7 +609,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.1.0";
+            string currentVersion = "2.2.3.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -575,12 +736,15 @@ namespace MigAz.UserControls.Migrators
 
                             #region OS Disk Storage Account
 
-                            foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(armVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
-                            {
-                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.Disk)) // Disk in a Storage Account, not a Managed Disk
+                            { 
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.Disk)armVirtualMachine.OSVirtualHardDisk).StorageAccountName, true))
                                 {
-                                    if (!treeNode.Checked)
-                                        treeNode.Checked = true;
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
                                 }
                             }
 
@@ -697,6 +861,8 @@ namespace MigAz.UserControls.Migrators
                 if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
                     (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
+                    (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
+                    (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                 {
                     if (e.Node.Checked)
@@ -758,6 +924,10 @@ namespace MigAz.UserControls.Migrators
                 {
                     exportArtifacts.VirtualMachines.Add((Azure.MigrationTarget.VirtualMachine)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    exportArtifacts.LoadBalancers.Add((Azure.MigrationTarget.LoadBalancer)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
@@ -799,7 +969,7 @@ namespace MigAz.UserControls.Migrators
 
                     VirtualMachineProperties properties = new VirtualMachineProperties();
                     properties.LogProvider = LogProvider;
-                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
+                    properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
                     await properties.Bind(e.Node, this);
                     _PropertyPanel.PropertyDetailControl = properties;
@@ -848,7 +1018,7 @@ namespace MigAz.UserControls.Migrators
 
                     DiskProperties properties = new DiskProperties();
                     properties.LogProvider = this.LogProvider;
-                    properties.AllowManangedDisk = (await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks() != null);
+                    properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
                     properties.Bind(this, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
@@ -878,6 +1048,24 @@ namespace MigAz.UserControls.Migrators
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
                     await properties.Bind(this, e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["LoadBalancer"];
+
+                    LoadBalancerProperties properties = new LoadBalancerProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(this, e.Node);
+                    _PropertyPanel.PropertyDetailControl = properties;
+                }
+                else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
+                {
+                    this._PropertyPanel.ResourceImage = imageList1.Images["PublicIp"];
+
+                    PublicIpProperties properties = new PublicIpProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
             }
@@ -1047,6 +1235,18 @@ namespace MigAz.UserControls.Migrators
                     childNode.ImageKey = "NetworkInterface";
                     childNode.SelectedImageKey = "NetworkInterface";
                 }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    childNode.ImageKey = "LoadBalancer";
+                    childNode.SelectedImageKey = "LoadBalancer";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
+                {
+                    childNode.ImageKey = "PublicIp";
+                    childNode.SelectedImageKey = "PublicIp";
+                }
+                else
+                    throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
 
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
@@ -1284,6 +1484,22 @@ namespace MigAz.UserControls.Migrators
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
             }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+            {
+                Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)parentNode;
+                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.SourceName, targetLoadBalancer.ToString(), targetLoadBalancer, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetLoadBalancerNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.PublicIp))
+            {
+                Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)parentNode;
+                TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.SourceName, targetPublicIp.ToString(), targetPublicIp, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetPublicIpNode;
+            }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
             {
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
@@ -1362,12 +1578,12 @@ namespace MigAz.UserControls.Migrators
 
         private void AsmToArmForm_Resize(object sender, EventArgs e)
         {
-            tabSourceResources.Height = this.Height - 125;
+            tabSourceResources.Height = this.Height - 130;
             treeSourceASM.Width = tabSourceResources.Width - 8;
             treeSourceASM.Height = tabSourceResources.Height - 26;
             treeSourceARM.Width = tabSourceResources.Width - 8;
             treeSourceARM.Height = tabSourceResources.Height - 26;
-            treeTargetARM.Height = this.Height - 140;
+            treeTargetARM.Height = this.Height - 150;
         }
 
         #endregion

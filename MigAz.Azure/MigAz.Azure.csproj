@@ -57,14 +57,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arm\ArmResource.cs" />
     <Compile Include="Arm\AvailabilitySet.cs" />
     <Compile Include="Arm\Disk.cs" />
+    <Compile Include="Arm\LoadBalancer.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
     <Compile Include="Arm\NetworkInterface.cs" />
     <Compile Include="Arm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
+    <Compile Include="Arm\PublicIP.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
     <Compile Include="Arm\Route.cs" />
     <Compile Include="Arm\RouteTable.cs" />
@@ -91,15 +94,20 @@
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\IArmDisk.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
+    <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
+    <Compile Include="MigrationTarget\FrontEndIpConfiguration.cs" />
+    <Compile Include="MigrationTarget\InboundNatRule.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
-    <Compile Include="MigrationTarget\LoadBalancerRule.cs" />
-    <Compile Include="MigrationTarget\ManagedDisk.cs" />
+    <Compile Include="MigrationTarget\LoadBalancingRule.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroupRule.cs" />
+    <Compile Include="MigrationTarget\Probe.cs" />
+    <Compile Include="MigrationTarget\PublicIp.cs" />
     <Compile Include="MigrationTarget\ResourceGroup.cs" />
     <Compile Include="MigrationTarget\Route.cs" />
     <Compile Include="MigrationTarget\RouteTable.cs" />

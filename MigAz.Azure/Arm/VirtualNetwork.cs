@@ -8,32 +8,27 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VirtualNetwork : IVirtualNetwork, IMigrationVirtualNetwork
+    public class VirtualNetwork : ArmResource, IVirtualNetwork, IMigrationVirtualNetwork
     {
-        private AzureContext _AzureContext;
-        private JToken _VirtualNetwork;
-        private List<VirtualNetworkGateway> _VirtualNetworkGateways = new List<VirtualNetworkGateway>();
+        private List<VirtualNetworkGateway> ResourceTokenGateways = new List<VirtualNetworkGateway>();
         private List<ISubnet> _Subnets = new List<ISubnet>();
         private List<string> _AddressPrefixes = new List<string>();
         private List<string> _DnsServers = new List<string>();
 
-        private VirtualNetwork() { }
+        private VirtualNetwork() : base(null) { }
 
-        public VirtualNetwork(AzureContext azureContext, JToken virtualNetwork) 
+        public VirtualNetwork(JToken resourceToken) : base(resourceToken)
         {
-            _AzureContext = azureContext;
-            _VirtualNetwork = virtualNetwork;
-
-            var subnets = from vnet in _VirtualNetwork["properties"]["subnets"]
+            var subnets = from vnet in ResourceToken["properties"]["subnets"]
                           select vnet;
 
             foreach (var subnet in subnets)
             {
-                Subnet armSubnet = new Subnet(_AzureContext, this, subnet);
+                Subnet armSubnet = new Subnet(this, subnet);
                 _Subnets.Add(armSubnet);
             }
 
-            var addressPrefixes = from vnet in _VirtualNetwork["properties"]["addressSpace"]["addressPrefixes"]
+            var addressPrefixes = from vnet in ResourceToken["properties"]["addressSpace"]["addressPrefixes"]
                                   select vnet;
 
             foreach (var addressPrefix in addressPrefixes)
@@ -41,13 +36,13 @@ namespace MigAz.Azure.Arm
                 _AddressPrefixes.Add(addressPrefix.ToString());
             }
 
-            if (_VirtualNetwork["properties"] != null)
+            if (ResourceToken["properties"] != null)
             {
-                if (_VirtualNetwork["properties"]["dhcpOptions"] != null)
+                if (ResourceToken["properties"]["dhcpOptions"] != null)
                 {
-                    if (_VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"] != null)
+                    if (ResourceToken["properties"]["dhcpOptions"]["dnsServers"] != null)
                     {
-                        var dnsPrefixes = from vnet in _VirtualNetwork["properties"]["dhcpOptions"]["dnsServers"]
+                        var dnsPrefixes = from vnet in ResourceToken["properties"]["dhcpOptions"]["dnsServers"]
                                           select vnet;
 
                         foreach (var dnsPrefix in dnsPrefixes)
@@ -59,20 +54,17 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public async Task InitializeChildrenAsync()
+        public new async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            this.ResourceGroup = await _AzureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+            await base.InitializeChildrenAsync(azureContext);
 
             foreach (Subnet subnet in this.Subnets)
             {
-                await subnet.InitializeChildrenAsync();
+                await subnet.InitializeChildrenAsync(azureContext);
             }
         }
 
-        public string Name => (string)_VirtualNetwork["name"];
-        public string Id => (string)_VirtualNetwork["id"];
-        public string Location => (string)_VirtualNetwork["location"];
-        public string Type => (string)_VirtualNetwork["type"];
+        public string Type => (string)ResourceToken["type"];
         public ISubnet GatewaySubnet
         {
             get
@@ -90,11 +82,9 @@ namespace MigAz.Azure.Arm
         public List<string> AddressPrefixes => _AddressPrefixes;
         public List<string> DnsServers => _DnsServers;
 
-        public ResourceGroup ResourceGroup { get; set; }
-
         public List<VirtualNetworkGateway> VirtualNetworkGateways
         {
-            get { return _VirtualNetworkGateways; }
+            get { return ResourceTokenGateways; }
         }
 
         public override string ToString()

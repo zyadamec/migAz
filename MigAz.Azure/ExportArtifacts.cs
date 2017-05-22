@@ -12,12 +12,14 @@ namespace MigAz.Azure
             StorageAccounts = new List<StorageAccount>();
             VirtualNetworks = new List<VirtualNetwork>();
             VirtualMachines = new List<VirtualMachine>();
+            LoadBalancers = new List<LoadBalancer>();
         }
 
         public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
         public List<StorageAccount> StorageAccounts { get; }
         public List<VirtualNetwork> VirtualNetworks { get; }
         public List<VirtualMachine> VirtualMachines { get; }
+        public List<LoadBalancer> LoadBalancers { get; }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {

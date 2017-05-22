@@ -34,6 +34,10 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.2.3.0
+- Only exports copyblobdetails.json if there are disks that are being copied.
+- Reintroduced ASM to ARM conversion of Load Balancers and Public IP objects, utilizing "target" objects for export.
+
 ### v2.2.1.0
 - Fixed ASM Virtual Machine constructor with null Subnet
 - Added Control resizing to allow larger (height) TreeView controls on form

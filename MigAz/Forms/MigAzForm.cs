@@ -129,15 +129,15 @@ namespace MigAz.Forms
         #region Menu Items
 
 
-        private void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Coming soon to MigAz v2.  Continue to utilize seperate AWS to ARM MigAz Tool until integrated.  https://aka.ms/MigAz");
             return;
 
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            MigAz.AWS.AwsToArm awsToArm = new MigAz.AWS.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
-            awsToArm.Bind();
+            MigAz.AWS.Forms.AwsToArm awsToArm = new MigAz.AWS.Forms.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
+            await awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
             newMigrationToolStripMenuItem.Enabled = false ;
@@ -386,10 +386,10 @@ namespace MigAz.Forms
         {
             if (splitContainer2.Panel1.Controls.Count == 1)
             {
-                if (splitContainer2.Panel1.Height < 510)
-                    splitContainer2.Panel1.Controls[0].Height = 500;
+                if (splitContainer2.Panel1.Height < 300)
+                    splitContainer2.Panel1.Controls[0].Height = 300;
                 else
-                    splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 10;
+                    splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 20;
             }
         }
     }

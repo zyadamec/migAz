@@ -47,6 +47,7 @@ namespace MigAz.Azure
         private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
         private List<Arm.NetworkSecurityGroup> _ArmNetworkSecurityGroups;
         private List<Arm.VirtualNetworkGateway> _ArmVirtualNetworkGateways;
+        private List<Arm.LoadBalancer> _ArmLoadBalancers;
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
@@ -68,6 +69,7 @@ namespace MigAz.Azure
             _ArmStorageAccounts = null;
             _ArmAvailabilitySets = null;
             _ArmNetworkInterfaces = null;
+            _ArmLoadBalancers = null;
             _ArmNetworkSecurityGroups = null;
             _MigrationAvailabilitySets = null;
             _ArmManagedDisks = null;
@@ -701,9 +703,9 @@ namespace MigAz.Azure
 
             foreach (var virtualNetwork in virtualNetworks)
             {
-                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(_AzureContext, virtualNetwork);
+                Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
 
-                await armVirtualNetwork.InitializeChildrenAsync();
+                await armVirtualNetwork.InitializeChildrenAsync(_AzureContext);
                 foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways())
                 {
 
@@ -753,7 +755,7 @@ namespace MigAz.Azure
 
             foreach (var storageAccount in storageAccounts)
             {
-                Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(_AzureContext, storageAccount);
+                Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(storageAccount, _AzureContext.AzureEnvironment);
                 armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
@@ -820,8 +822,8 @@ namespace MigAz.Azure
 
             foreach (var virtualMachine in virtualMachines)
             {
-                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(_AzureContext, virtualMachine);
-                await armVirtualMachine.InitializeChildrenAsync(this._AzureContext);
+                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                await armVirtualMachine.InitializeChildrenAsync(_AzureContext);
                 _ArmVirtualMachines.Add(armVirtualMachine);
             }
 
@@ -903,8 +905,8 @@ namespace MigAz.Azure
 
             foreach (var networkInterface in networkInterfaces)
             {
-                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(_AzureContext, networkInterface);
-                await armNetworkInterface.InitializeChildrenAsync();
+                Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
+                await armNetworkInterface.InitializeChildrenAsync(_AzureContext);
                 _ArmNetworkInterfaces.Add(armNetworkInterface);
             }
 
@@ -940,7 +942,7 @@ namespace MigAz.Azure
 
             foreach (var virtualNetworkGateway in virtualNetworkGateways)
             {
-                Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(_AzureContext, virtualNetworkGateway);
+                Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(virtualNetworkGateway);
                 _ArmVirtualNetworkGateways.Add(armVirtualNetworkGateway);
             }
 
@@ -983,6 +985,30 @@ namespace MigAz.Azure
             }
 
             return _ArmNetworkSecurityGroups;
+        }
+
+        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start");
+
+            if (_ArmLoadBalancers != null)
+                return _ArmLoadBalancers;
+
+            JObject loadBalancersJson = await this.GetAzureARMResources("LoadBalancers", null);
+
+            var loadBalancers = from networkSecurityGroup in loadBalancersJson["value"]
+                                        select networkSecurityGroup;
+
+            _ArmLoadBalancers = new List<Arm.LoadBalancer>();
+
+            foreach (var loadBalancer in loadBalancers)
+            {
+                Arm.LoadBalancer armLoadBalancer = new Arm.LoadBalancer(loadBalancer);
+                await armLoadBalancer.InitializeChildrenAsync(_AzureContext);
+                _ArmLoadBalancers.Add(armLoadBalancer);
+            }
+
+            return _ArmLoadBalancers;
         }
 
         #endregion
@@ -1072,6 +1098,8 @@ namespace MigAz.Azure
                 case "Locations":
                     url = AzureServiceUrls.GetASMServiceManagementUrl(this._AzureContext.AzureEnvironment) + _AzureSubscription.SubscriptionId + "/locations";
                     break;
+                default:
+                    throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
             
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, _AzureContext.TokenProvider.AuthenticationResult.AccessToken);
@@ -1176,93 +1204,13 @@ namespace MigAz.Azure
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
-
-
-
-
-
-                //case "VirtualNetwork":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["VirtualNWId"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Virtual Network details...");
-                //    break;
-                //case "VirtualMachine":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + RGName + "/providers/Microsoft.Compute/virtualMachines/" + info["virtualmachineName"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Virtual Machine for Subscription ID : " + subscriptionId + " in the Resource Group " + RGName + "...");
-                //    break;
-                //case "NetworkInterface":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["networkinterfaceId"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Network Interface details...");
-                //    break;
-                //case "Loadbalancer":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["LBId"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting LoadBalancer details...");
-                //    break;
-                //case "NetworkSecurityGroup":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["NetworkSecurityGroup"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Network Security Group : " + info["name"] + "...");
-                //    break;
-                //case "RouteTable":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["RouteTable"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Route Table : " + info["routetablename"] + "...");
-                //    break;
-                //case "Subnet":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["SubnetId"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Subnet details : " + info["SubnetId"] + "...");
-                //    break;
-                //case "VirtualNetworkGateway":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + info["RGName"] + "/providers/Microsoft.Network/virtualNetworkGateways/" + info["vnetGWName"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Virtual Network Gateway : " + info["vnetGWName"] + "...");
-                //    break;
-                //case "PublicIP":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["publicipId"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting PublicIP details...");
-                //    break;
-                //case "Connections":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + RGName + "/providers/Microsoft.Network/connections?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Connections from the Resource Group : " + RGName + "...");
-                //    break;
-                //case "Domains":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.GraphAuth) + "myorganization/domains?api-version=1.6";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
-                //    break;
-                //case "sharedkey":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["connectionid"] + "/sharedkey?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting SharedKey details...");
-                //    break;
-                //case "localNetworkGateway":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + info["localnwgwid"] + "?api-version=2016-03-30";
-                //    _statusProvider.UpdateStatus("BUSY: Getting LocalNWGateway details...");
-                //    break;
-                //case "ClientRootCertificates":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + subscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Client Root Certificates for Virtual Network : " + info["virtualnetworkname"] + "...");
-                //    break;
-                //case "ClientRootCertificate":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + subscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates/" + info["thumbprint"];
-                //    _statusProvider.UpdateStatus("BUSY: Getting certificate data for certificate : " + info["thumbprint"] + "...");
-                //    break;
-                //case "NSGSubnet":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + subscriptionId + "/services/networking/virtualnetwork/" + info["virtualnetworkname"] + "/subnets/" + info["subnetname"] + "/networksecuritygroups";
-                //    _statusProvider.UpdateStatus("BUSY: Getting NSG for subnet " + info["subnetname"] + "...");
-                //    break;
-                //case "VirtualNetworkGatewaySharedKey":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + subscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/connection/" + info["localnetworksitename"] + "/sharedkey";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Virtual Network Gateway Shared Key: " + info["localnetworksitename"] + "...");
-                //    break;
-                //case "StorageAccounts":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + RGName + "/providers/Microsoft.Storage/storageAccounts?api-version=2015-05-01-preview";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Storage Accounts for Subscription ID : " + subscriptionId + " in the Resource Group " + RGName + "...");
-                //    break;
-                //case "StorageAccount":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + RGName + "/providers/Microsoft.Storage/storageAccounts/" + info["name"] + "?api-version=2015-05-01-preview";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Storage Accounts for Subscription ID : " + subscriptionId + "...");
-                //    break;
-                //case "StorageAccountKeys":
-                //    url = ServiceUrls.GetServiceManagementUrl(app.Default.AzureEnvironment) + "subscriptions/" + subscriptionId + "/resourceGroups/" + RGName + "/providers/Microsoft.Storage/storageAccounts/" + info["name"] + "/listKeys?api-version=2016-01-01";
-                //    _statusProvider.UpdateStatus("BUSY: Getting Storage Accounts for Subscription ID : " + subscriptionId + "...");
-                //    break;
-
-
+                case "LoadBalancers":
+                    // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    break;
+                default:
+                    throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, authenticationResult.AccessToken, methodType, useCached);
