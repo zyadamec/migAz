@@ -32,18 +32,31 @@ namespace MigAz.UserControls
             _TargetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)treeNode.Tag;
             txtTargetName.Text = _TargetLoadBalancer.Name;
 
-            if (rbExistingARMVNet.Enabled == false ||
-                    _TargetLoadBalancer == null ||
-                    _TargetLoadBalancer.FrontEndIpConfigurations.Count == 0 ||
-                    _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null ||
-                    _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
-                )
+            if (_TargetLoadBalancer.FrontEndIpConfigurations.Count > 0 &&
+                _TargetLoadBalancer.FrontEndIpConfigurations[0].PublicIp != null)
             {
-                rbVNetInMigration.Checked = true;
+                // todo, this if statement above is temporary.  Property control needs more build out to specific public vs private load balancer, selecting public ip if public and the vnet/subnet only if internal
+                // the enabled statements below are temporary until this selection is added
+                rbExistingARMVNet.Enabled = false;
+                rbVNetInMigration.Enabled = false;
+                cmbExistingArmSubnet.Enabled = false;
+                cmbExistingArmVNets.Enabled = false;
             }
             else
             {
-                rbExistingARMVNet.Checked = true;
+                if (rbExistingARMVNet.Enabled == false ||
+                        _TargetLoadBalancer == null ||
+                        _TargetLoadBalancer.FrontEndIpConfigurations.Count == 0 ||
+                        _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null ||
+                        _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                    )
+                {
+                    rbVNetInMigration.Checked = true;
+                }
+                else
+                {
+                    rbExistingARMVNet.Checked = true;
+                }
             }
         }
 
