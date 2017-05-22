@@ -262,9 +262,17 @@ namespace MigAz.UserControls.Migrators
                                 frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
                             }
 
-                            // todo now asap
-                            //subnet_ref.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + virtualnetworkname + "/subnets/" + subnetname + "')]";
-                            //frontendipconfiguration_properties.subnet = subnet_ref;
+                            if (cloudServiceTargetVirtualMachines.Count > 0)
+                            {
+                                if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface != null)
+                                {
+                                    if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                                    {
+                                        frontEndIpConfiguration.TargetVirtualNetwork = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork;
+                                        frontEndIpConfiguration.TargetSubnet = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet;
+                                    }
+                                }
+                            }
                         }
                         else // if external load balancer
                         {
