@@ -131,6 +131,9 @@ namespace MigAz.Forms
 
         private async void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Coming soon to MigAz v2.  Continue to utilize seperate AWS to ARM MigAz Tool until integrated.  https://aka.ms/MigAz");
+            return;
+
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             MigAz.AWS.Forms.AwsToArm awsToArm = new MigAz.AWS.Forms.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
