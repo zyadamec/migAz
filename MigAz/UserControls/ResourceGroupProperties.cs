@@ -4,12 +4,13 @@ using System.Windows.Forms;
 using System.Net;
 using MigAz.Azure.Interface;
 using MigAz.UserControls.Migrators;
+using MigAz.Azure;
 
 namespace MigAz.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
-        private AsmToArm _ParentForm;
+        private AzureContext _AzureContext;
         private TreeNode _ResourceGroupNode;
 
         public delegate Task AfterPropertyChanged();
@@ -20,9 +21,9 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AsmToArm parentForm, TreeNode resourceGroupNode)
+        internal async Task Bind(AzureContext azureContext, TreeNode resourceGroupNode)
         {
-            _ParentForm = parentForm;
+            _AzureContext = azureContext;
             _ResourceGroupNode = resourceGroupNode;
 
             Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
@@ -32,7 +33,7 @@ namespace MigAz.UserControls
             try
             {
                 cboTargetLocation.Items.Clear();
-                foreach (Azure.Arm.Location armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
+                foreach (Azure.Arm.Location armLocation in await azureContext.AzureRetriever.GetAzureARMLocations())
                 {
                     cboTargetLocation.Items.Add(armLocation);
                 }
@@ -44,7 +45,7 @@ namespace MigAz.UserControls
                 // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
 
                 cboTargetLocation.Items.Clear();
-                foreach (Azure.Asm.Location asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
+                foreach (Azure.Asm.Location asmLocation in await azureContext.AzureRetriever.GetAzureASMLocations())
                 {
                     cboTargetLocation.Items.Add(asmLocation);
                 }

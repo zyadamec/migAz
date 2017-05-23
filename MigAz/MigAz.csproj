@@ -148,6 +148,12 @@
     <Compile Include="UserControls\DiskProperties.Designer.cs">
       <DependentUpon>DiskProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Migrators\AwsToArm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Migrators\AwsToArm.Designer.cs">
+      <DependentUpon>AwsToArm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\NetworkInterfaceProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -229,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Migrators\AwsToArm.resx">
+      <DependentUpon>AwsToArm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkInterfaceProperties.resx">
       <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>

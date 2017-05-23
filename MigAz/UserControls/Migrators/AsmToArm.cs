@@ -1047,7 +1047,7 @@ namespace MigAz.UserControls.Migrators
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(this, e.Node);
+                    await properties.Bind(_AzureContextTargetARM, e.Node);
                     _PropertyPanel.PropertyDetailControl = properties;
                 }
                 else if (e.Node.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))

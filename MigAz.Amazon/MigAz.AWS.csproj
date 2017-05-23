@@ -54,15 +54,12 @@
     <Compile Include="AWSExportArtifacts.cs" />
     <Compile Include="AwsObjectRetriever.cs" />
     <Compile Include="AwsRetriever.cs" />
-    <Compile Include="Forms\AwsToArm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\AwsToArm.Designer.cs">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </Compile>
     <Compile Include="EbsVolume.cs" />
     <Compile Include="Ec2Instance.cs" />
+    <Compile Include="Generator\AWSRetriever.cs" />
     <Compile Include="Generator\AwsToArmGenerator.cs" />
+    <Compile Include="MigrationSource\Subnet.cs" />
+    <Compile Include="MigrationSource\VirtualNetwork.cs" />
     <Compile Include="Models\AwsToArmTelemetryRecord.cs" />
     <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="ParamComparer.cs" />
@@ -94,14 +91,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\AwsToArm.resx">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\AmazonWebServiceLoginViewer.resx">
       <DependentUpon>AmazonWebServiceLoginViewer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Forms\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

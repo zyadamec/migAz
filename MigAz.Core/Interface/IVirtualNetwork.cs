@@ -7,5 +7,7 @@ namespace MigAz.Core.Interface
         string Id { get; }
         List<ISubnet> Subnets { get; }
         ISubnet GatewaySubnet { get; }
+        List<string> AddressPrefixes { get; }
+        string Name { get; }
     }
 }
