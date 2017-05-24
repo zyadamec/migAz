@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.MigrationTarget;
-using MigAz.UserControls.Migrators;
 
-namespace MigAz.UserControls
+namespace MigAz.Azure.UserControls
 {
     public partial class NetworkSecurityGroupProperties : UserControl
     {
