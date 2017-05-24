@@ -7,7 +7,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class VirtualMachineProperties : UserControl
     {
-        private TreeNode _VirtualMachineNode;
+        private MigrationTarget.VirtualMachine _VirtualMachine;
         private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
@@ -35,30 +35,32 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        public async Task Bind(TreeNode armVirtualMachineNode)
+        public async Task Bind(MigrationTarget.VirtualMachine virtualMachine)
         {
-            _VirtualMachineNode = armVirtualMachineNode;
+            _VirtualMachine = virtualMachine;
 
-            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
-            txtTargetName.Text = targetVirtualMachine.TargetName;
+            txtTargetName.Text = _VirtualMachine.TargetName;
 
-            if (targetVirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
+            if (_VirtualMachine.Source != null)
             {
-                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+                if (_VirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
+                {
+                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)_VirtualMachine.Source;
 
-                lblRoleSize.Text = asmVirtualMachine.RoleSize;
-                lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
+                    lblRoleSize.Text = asmVirtualMachine.RoleSize;
+                    lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
+                }
+                else if (_VirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)_VirtualMachine.Source;
+
+                    lblRoleSize.Text = armVirtualMachine.VmSize;
+                    lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
+                }
             }
-            else if (targetVirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
-            {
-                Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)targetVirtualMachine.Source;
 
-                lblRoleSize.Text = armVirtualMachine.VmSize;
-                lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
-            }
-
-            if (targetVirtualMachine.OSVirtualHardDisk != null)
-                this.diskProperties1.Bind(targetVirtualMachine.OSVirtualHardDisk);
+            if (_VirtualMachine.OSVirtualHardDisk != null)
+                this.diskProperties1.Bind(_VirtualMachine.OSVirtualHardDisk);
             else
                 this.diskProperties1.Visible = false;
         }
@@ -70,10 +72,7 @@ namespace MigAz.Azure.UserControls
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
-            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)_VirtualMachineNode.Tag;
-
-            targetVirtualMachine.TargetName = txtTargetName.Text;
-            _VirtualMachineNode.Text = targetVirtualMachine.ToString();
+            _VirtualMachine.TargetName = txtTargetName.Text;
 
             PropertyChanged();
         }

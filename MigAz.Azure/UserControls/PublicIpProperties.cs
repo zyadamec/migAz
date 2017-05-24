@@ -12,7 +12,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class PublicIpProperties : UserControl
     {
-        TreeNode _PublicIpNode;
+        MigrationTarget.PublicIp _PublicIp;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -22,23 +22,19 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TreeNode publicIpNode)
+        internal void Bind(MigrationTarget.PublicIp publicIp)
         {
-            _PublicIpNode = publicIpNode;
+            _PublicIp = publicIp;
 
-            Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)_PublicIpNode.Tag;
-            txtTargetName.Text = targetPublicIp.Name;
-            txtDomainNameLabel.Text = targetPublicIp.DomainNameLabel;
+            txtTargetName.Text = _PublicIp.Name;
+            txtDomainNameLabel.Text = _PublicIp.DomainNameLabel;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)_PublicIpNode.Tag;
-
-            targetPublicIp.Name = txtSender.Text;
-            _PublicIpNode.Text = targetPublicIp.ToString();
+            _PublicIp.Name = txtSender.Text;
 
             PropertyChanged();
         }
@@ -47,9 +43,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)_PublicIpNode.Tag;
-
-            targetPublicIp.DomainNameLabel = txtSender.Text;
+            _PublicIp.DomainNameLabel = txtSender.Text;
 
             PropertyChanged();
         }

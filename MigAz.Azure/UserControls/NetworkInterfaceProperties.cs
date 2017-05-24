@@ -164,7 +164,7 @@ namespace MigAz.Azure.UserControls
                 #endregion
             }
 
-            await PropertyChanged();
+            PropertyChanged();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)

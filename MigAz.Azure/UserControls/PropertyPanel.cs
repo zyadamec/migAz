@@ -100,7 +100,7 @@ namespace MigAz.Azure.UserControls
                     properties.LogProvider = LogProvider;
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell await properties.Bind(migrationTarget, this);
+                    await properties.Bind((Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
@@ -149,7 +149,7 @@ namespace MigAz.Azure.UserControls
                     properties.LogProvider = this.LogProvider;
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(this, e.Node);
+                    properties.Bind((Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
@@ -167,7 +167,7 @@ namespace MigAz.Azure.UserControls
 
                     NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
+                    await properties.Bind(this.AzureContext, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
@@ -185,7 +185,7 @@ namespace MigAz.Azure.UserControls
 
                     LoadBalancerProperties properties = new LoadBalancerProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell await properties.Bind(this, e.Node);
+                    await properties.Bind((Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
@@ -194,7 +194,7 @@ namespace MigAz.Azure.UserControls
 
                     PublicIpProperties properties = new PublicIpProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(e.Node);
+                    properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
             }
