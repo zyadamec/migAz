@@ -9,7 +9,7 @@ namespace MigAz.Azure.UserControls
     public partial class ResourceGroupProperties : UserControl
     {
         private AzureContext _AzureContext;
-        private TreeNode _ResourceGroupNode;
+        private MigrationTarget.ResourceGroup _ResourceGroup;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -19,14 +19,12 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AzureContext azureContext, TreeNode resourceGroupNode)
+        internal async Task Bind(AzureContext azureContext, MigrationTarget.ResourceGroup resourceGroup)
         {
             _AzureContext = azureContext;
-            _ResourceGroupNode = resourceGroupNode;
+            _ResourceGroup = resourceGroup;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
-
-            txtTargetName.Text = armResourceGroup.TargetName;
+            txtTargetName.Text = resourceGroup.TargetName;
 
             try
             {
@@ -49,11 +47,11 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (armResourceGroup.TargetLocation != null)
+            if (resourceGroup.TargetLocation != null)
             {
                 foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
                 {
-                    if (armLocation.Name == armResourceGroup.TargetLocation.Name)
+                    if (armLocation.Name == resourceGroup.TargetLocation.Name)
                         cboTargetLocation.SelectedItem = armLocation;
                 }
             }
@@ -63,11 +61,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
-
-            armResourceGroup.TargetName = txtSender.Text;
-            _ResourceGroupNode.Text = armResourceGroup.ToString();
-            _ResourceGroupNode.Name = armResourceGroup.ToString();
+            _ResourceGroup.TargetName = txtSender.Text;
 
             PropertyChanged();
         }
@@ -84,8 +78,7 @@ namespace MigAz.Azure.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
+            _ResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
 
             PropertyChanged();
         }

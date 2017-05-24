@@ -22,6 +22,10 @@ namespace MigAz.Azure.UserControls
         {
             get; set;
         }
+        public AzureContext AzureContext
+        {
+            get; set;
+        }
 
         public Image ResourceImage
         {
@@ -74,15 +78,21 @@ namespace MigAz.Azure.UserControls
             pnlProperties.Height = groupBox1.Height - 90;
         }
 
-        public async void Bind(IMigrationTarget migrationTarget)
+        public async Task Bind(TreeNode migrationTargetNode)
         {
             this.Clear();
 
-            if (migrationTarget != null)
-            {
-                this.ResourceText = migrationTarget.ToString();
+            if (this.AzureContext == null)
+                throw new ArgumentException("AzureContext Property must be set on Property Panel before Binding.");
 
-                if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+            if (this.LogProvider == null)
+                throw new ArgumentException("LogProvider Property must be set on Property Panel before Binding.");
+
+            if (migrationTargetNode != null && migrationTargetNode.Tag != null)
+            {
+                this.ResourceText = migrationTargetNode.ToString();
+
+                if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
                     this.ResourceImage = imageList1.Images["VirtualMachine"];
 
@@ -93,45 +103,45 @@ namespace MigAz.Azure.UserControls
                     // todo now asap russell await properties.Bind(migrationTarget, this);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                 {
                     this.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
 
                     NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(migrationTarget);
+                    properties.Bind((Azure.MigrationTarget.NetworkSecurityGroup)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
                 {
                     this.ResourceImage = imageList1.Images["VirtualNetwork"];
 
                     VirtualNetworkProperties properties = new VirtualNetworkProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(e.Node);
+                    properties.Bind((Azure.MigrationTarget.VirtualNetwork)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
                 {
                     this.ResourceImage = imageList1.Images["VirtualNetwork"];
 
                     SubnetProperties properties = new SubnetProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(e.Node);
+                    properties.Bind((Azure.MigrationTarget.Subnet)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                 {
                     this.ResourceImage = imageList1.Images["StorageAccount"];
 
                     StorageAccountProperties properties = new StorageAccountProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(this._AzureContextTargetARM, migrationTarget);
+                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.Disk))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
                 {
-                    Azure.MigrationTarget.Disk migrationDisk = (Azure.MigrationTarget.Disk)migrationTarget;
+                    Azure.MigrationTarget.Disk migrationDisk = (Azure.MigrationTarget.Disk)migrationTargetNode.Tag;
 
                     this.ResourceImage = imageList1.Images["Disk"];
 
@@ -142,34 +152,34 @@ namespace MigAz.Azure.UserControls
                     // todo now asap russell properties.Bind(this, e.Node);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
                 {
                     this.ResourceImage = imageList1.Images["AvailabilitySet"];
 
                     AvailabilitySetProperties properties = new AvailabilitySetProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(e.Node);
+                    properties.Bind(migrationTargetNode);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
                 {
                     this.ResourceImage = imageList1.Images["NetworkInterface"];
 
                     NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell properties.Bind(this, e.Node);
+                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
                 {
                     this.ResourceImage = imageList1.Images["ResourceGroup"];
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    // todo now asap russell await properties.Bind(_AzureContextARM, migrationTarget);
+                    await properties.Bind(AzureContext, (Azure.MigrationTarget.ResourceGroup) migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
                 {
                     this.ResourceImage = imageList1.Images["LoadBalancer"];
 
@@ -178,7 +188,7 @@ namespace MigAz.Azure.UserControls
                     // todo now asap russell await properties.Bind(this, e.Node);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.PublicIp))
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
                 {
                     this.ResourceImage = imageList1.Images["PublicIp"];
 
@@ -192,7 +202,8 @@ namespace MigAz.Azure.UserControls
 
         private Task Properties_PropertyChanged()
         {
-            throw new NotImplementedException();
+            // todo now asap russell
+            return null;
         }
     }
 }

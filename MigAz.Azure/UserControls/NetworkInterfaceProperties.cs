@@ -13,10 +13,8 @@ namespace MigAz.Azure.UserControls
 {
     public partial class NetworkInterfaceProperties : UserControl
     {
-
-        private TreeNode _NetworkInterfaceNode;
+        private AzureContext _AzureContext;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
-        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,8 +24,9 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
+        internal async Task Bind(AzureContext azureContext, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
+            _AzureContext = azureContext;
             _TargetNetworkInterface = targetNetworkInterface;
             lblSourceName.Text = _TargetNetworkInterface.SourceName;
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
@@ -52,17 +51,16 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            // todo now asap russell 
-            //try
-            //{
-            //    List<Azure.Arm.VirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
-            //    rbExistingARMVNet.Enabled = a.Count() > 0;
-            //}
-            //catch (Exception exc)
-            //{
-            //    _AsmToArmForm.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
-            //    rbExistingARMVNet.Enabled = false;
-            //}
+            try
+            {
+                List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks();
+                rbExistingARMVNet.Enabled = a.Count() > 0;
+            }
+            catch (Exception exc)
+            {
+                _AzureContext.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
+                rbExistingARMVNet.Enabled = false;
+            }
 
             if (rbExistingARMVNet.Enabled == false ||
                 _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() == 0 ||
@@ -77,28 +75,7 @@ namespace MigAz.Azure.UserControls
                 rbExistingARMVNet.Checked = true;
             }
         }
-
-        internal void Bind(TreeNode networkInterfaceNode)
-        {
-            _NetworkInterfaceNode = networkInterfaceNode;
-            _TargetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)_NetworkInterfaceNode.Tag;
-            lblSourceName.Text = _TargetNetworkInterface.SourceName;
-            txtTargetName.Text = _TargetNetworkInterface.TargetName;
-
-            if (rbExistingARMVNet.Enabled == false ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() == 0 ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet == null ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
-                )
-            {
-                rbVNetInMigration.Checked = true;
-            }
-            else
-            {
-                rbExistingARMVNet.Checked = true;
-            }
-        }
-
+        
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbExistingArmSubnet.Items.Clear();
@@ -282,9 +259,6 @@ namespace MigAz.Azure.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _TargetNetworkInterface.TargetName = txtSender.Text.Trim();
-
-            if (_NetworkInterfaceNode != null)
-                _NetworkInterfaceNode.Text = _TargetNetworkInterface.ToString();
 
             PropertyChanged();
         }

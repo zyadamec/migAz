@@ -7,7 +7,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class NetworkSecurityGroupProperties : UserControl
     {
-        private TreeNode _NetworkSecurityGroupNode;
+        private MigrationTarget.NetworkSecurityGroup _NetworkSecurityGroup;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -17,32 +17,32 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TreeNode networkSecurityGroupNode)
+        internal void Bind(MigrationTarget.NetworkSecurityGroup networkSecurityGroup)
         {
-            _NetworkSecurityGroupNode = networkSecurityGroupNode;
+            _NetworkSecurityGroup = networkSecurityGroup;
 
-            NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
-            if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+            if (_NetworkSecurityGroup.SourceNetworkSecurityGroup != null)
             {
-                Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
-                lblSourceName.Text = asmNetworkSecurityGroup.Name;
-            }
-            else if (targetNetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
-            {
-                Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup;
-                lblSourceName.Text = armNetworkSecurityGroup.Name;
+                if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+                {
+                    Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
+                    lblSourceName.Text = asmNetworkSecurityGroup.Name;
+                }
+                else if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
+                {
+                    Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
+                    lblSourceName.Text = armNetworkSecurityGroup.Name;
+                }
             }
 
-            txtTargetName.Text = targetNetworkSecurityGroup.TargetName;
+            txtTargetName.Text = _NetworkSecurityGroup.TargetName;
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-            NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)_NetworkSecurityGroupNode.Tag;
 
-            targetNetworkSecurityGroup.TargetName = txtSender.Text;
-            _NetworkSecurityGroupNode.Text = targetNetworkSecurityGroup.ToString();
+            _NetworkSecurityGroup.TargetName = txtSender.Text;
 
             PropertyChanged();
         }

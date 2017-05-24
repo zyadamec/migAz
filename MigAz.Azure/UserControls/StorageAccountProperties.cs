@@ -14,7 +14,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class StorageAccountProperties : UserControl
     {
-        private TreeNode _StorageAccountNode;
+        private MigrationTarget.StorageAccount _StorageAccount;
         private AzureContext _AzureContext;
 
         public delegate Task AfterPropertyChanged();
@@ -25,13 +25,12 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public void Bind(AzureContext azureContext, TreeNode sourceStorageAccountNode)
+        public void Bind(AzureContext azureContext, MigrationTarget.StorageAccount storageAccount)
         {
             _AzureContext = azureContext;
             txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
 
-            _StorageAccountNode = sourceStorageAccountNode;
-            Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)_StorageAccountNode.Tag;
+            _StorageAccount = storageAccount;
             lblAccountType.Text = storageAccount.SourceAccount.AccountType;
             lblSourceASMName.Text = storageAccount.SourceAccount.Name;
 
@@ -48,9 +47,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)_StorageAccountNode.Tag;
-            storageAccount.TargetName = txtSender.Text;
-            _StorageAccountNode.Text = storageAccount.ToString();
+            _StorageAccount.TargetName = txtSender.Text;
 
             PropertyChanged();
         }

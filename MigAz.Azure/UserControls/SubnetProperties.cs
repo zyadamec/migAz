@@ -14,7 +14,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class SubnetProperties : UserControl
     {
-        private TreeNode _AsmSubnetNode;
+        private MigrationTarget.Subnet _Subnet;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -24,26 +24,28 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TreeNode asmSubnetNode)
+        internal void Bind(MigrationTarget.Subnet targetSubnet)
         {
-            _AsmSubnetNode = asmSubnetNode;
+            _Subnet = targetSubnet;
 
-            Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
             txtTargetName.Text = targetSubnet.TargetName;
 
-            if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
+            if (targetSubnet.SourceSubnet != null)
             {
-                Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.SourceSubnet;
+                if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
+                {
+                    Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.SourceSubnet;
 
-                lblSourceName.Text = asmSubnet.Name;
-                lblAddressSpace.Text = asmSubnet.AddressPrefix;
-            }
-            else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
-            {
-                Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.SourceSubnet;
+                    lblSourceName.Text = asmSubnet.Name;
+                    lblAddressSpace.Text = asmSubnet.AddressPrefix;
+                }
+                else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
+                {
+                    Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.SourceSubnet;
 
-                lblSourceName.Text = armSubnet.Name;
-                lblAddressSpace.Text = armSubnet.AddressPrefix;
+                    lblSourceName.Text = armSubnet.Name;
+                    lblAddressSpace.Text = armSubnet.AddressPrefix;
+                }
             }
 
             if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
@@ -57,10 +59,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-
-            Azure.MigrationTarget.Subnet targetSubnet = (Azure.MigrationTarget.Subnet)_AsmSubnetNode.Tag;
-            targetSubnet.TargetName = txtSender.Text;
-            _AsmSubnetNode.Text = targetSubnet.ToString();
+            _Subnet.TargetName = txtSender.Text;
 
             PropertyChanged();
         }

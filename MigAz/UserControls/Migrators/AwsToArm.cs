@@ -48,6 +48,8 @@ namespace MigAz.UserControls.Migrators
 
             this.TemplateGenerator = new AzureGenerator(_AzureContextTargetARM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, _TargetResourceGroup, LogProvider, StatusProvider, null, null); // _telemetryProvider, _appSettingsProvider);
 
+            this._PropertyPanel.LogProvider = this.LogProvider;
+            this._PropertyPanel.AzureContext = _AzureContextTargetARM;
         }
 
         private Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
@@ -692,7 +694,7 @@ namespace MigAz.UserControls.Migrators
         {
             LogProvider.WriteLog("treeARM_AfterSelect", "Start");
 
-            _PropertyPanel.Bind((IMigrationTarget)e.Node.Tag);
+            _PropertyPanel.Bind(e.Node);
 
             LogProvider.WriteLog("treeARM_AfterSelect", "End");
             StatusProvider.UpdateStatus("Ready");
