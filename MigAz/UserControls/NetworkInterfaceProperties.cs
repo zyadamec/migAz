@@ -57,7 +57,7 @@ namespace MigAz.UserControls
 
             try
             {
-                List<Azure.Arm.VirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
+                List<Azure.Arm.VirtualNetwork> a = _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
                 rbExistingARMVNet.Enabled = a.Count() > 0;
             }
             catch (Exception exc)
@@ -204,7 +204,7 @@ namespace MigAz.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);

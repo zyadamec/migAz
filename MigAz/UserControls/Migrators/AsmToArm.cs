@@ -381,152 +381,107 @@ namespace MigAz.UserControls.Migrators
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
                     {
                         TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
-                    }
 
-                    foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups())
-                    {
-                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
-
-                        if (armNetworkSecurityGroup.ResourceGroup != null)
+                        foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups(armResourceGroup))
                         {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armNetworkSecurityGroup.ResourceGroup);
-                            networkSecurityGroupParentNode = tnResourceGroup;
+                            TreeNode networkSecurityGroupParentNode = tnResourceGroup;
+
+                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+                            _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+
+                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
+                            tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
+                            tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
+                            tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
+                            tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
+                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                            networkSecurityGroupParentNode.Expand();
                         }
 
-                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
-                        _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
-
-                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                        tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
-                        tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
-                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        networkSecurityGroupParentNode.Expand();
-                    }
-
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks())
-                    {
-                        TreeNode virtualNetworkParentNode = subscriptionNodeARM;
-
-                        if (armVirtualNetwork.ResourceGroup != null)
+                        foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks(armResourceGroup))
                         {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualNetwork.ResourceGroup);
-                            virtualNetworkParentNode = tnResourceGroup;
+                            TreeNode virtualNetworkParentNode = tnResourceGroup;
+
+                            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork, _ArmTargetNetworkSecurityGroups);
+                            _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
+
+                            TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
+                            tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
+                            tnVirtualNetwork.Tag = targetVirtualNetwork;
+                            tnVirtualNetwork.ImageKey = "VirtualNetwork";
+                            tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
+                            virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
+                            virtualNetworkParentNode.Expand();
                         }
 
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork, _ArmTargetNetworkSecurityGroups);
-                        _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
-
-                        TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
-                        tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
-                        tnVirtualNetwork.Tag = targetVirtualNetwork;
-                        tnVirtualNetwork.ImageKey = "VirtualNetwork";
-                        tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
-                        virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
-                        virtualNetworkParentNode.Expand();
-                    }
-
-                    foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts())
-                    {
-                        TreeNode storageAccountParentNode = subscriptionNodeARM;
-
-                        if (armStorageAccount.ResourceGroup != null)
+                        foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts(armResourceGroup))
                         {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armStorageAccount.ResourceGroup);
-                            tnResourceGroup.ImageKey = "ResourceGroup";
-                            tnResourceGroup.SelectedImageKey = "ResourceGroup";
-                            storageAccountParentNode = tnResourceGroup;
+                            TreeNode storageAccountParentNode = tnResourceGroup;
+
+                            Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
+                            _ArmTargetStorageAccounts.Add(targetStorageAccount);
+
+                            TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
+                            tnStorageAccount.Name = targetStorageAccount.SourceName;
+                            tnStorageAccount.Tag = targetStorageAccount;
+                            tnStorageAccount.ImageKey = "StorageAccount";
+                            tnStorageAccount.SelectedImageKey = "StorageAccount";
+                            storageAccountParentNode.Nodes.Add(tnStorageAccount);
+                            storageAccountParentNode.Expand();
                         }
 
-                        Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
-                        _ArmTargetStorageAccounts.Add(targetStorageAccount);
-
-                        TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
-                        tnStorageAccount.Name = targetStorageAccount.SourceName;
-                        tnStorageAccount.Tag = targetStorageAccount;
-                        tnStorageAccount.ImageKey = "StorageAccount";
-                        tnStorageAccount.SelectedImageKey = "StorageAccount";
-                        storageAccountParentNode.Nodes.Add(tnStorageAccount);
-                        storageAccountParentNode.Expand();
-                    }
-
-                    try
-                    {
-                        foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks())
+                        try
                         {
-                            Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
-                            _ArmTargetManagedDisks.Add(targetManagedDisk);
+                            foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks(armResourceGroup))
+                            {
+                                Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
+                                _ArmTargetManagedDisks.Add(targetManagedDisk);
+                            }
                         }
-                    }
-                    catch (Exception exc)
-                    {
-                        // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
-                    }
-
-                    foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines())
-                    {
-                        TreeNode virtualMachineParentNode = subscriptionNodeARM;
-
-                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armVirtualMachine.ResourceGroup);
-                        virtualMachineParentNode = tnResourceGroup;
-
-                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
-                        _ArmTargetVirtualMachines.Add(targetVirtualMachine);
-
-                        if (armVirtualMachine.AvailabilitySet != null)
+                        catch (Exception exc)
                         {
-                            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
-                            TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
-                            targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
-                            virtualMachineParentNode = tnAvailabilitySet;
+                            // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
                         }
 
-                        TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
-                        tnVirtualMachine.Name = targetVirtualMachine.SourceName;
-                        tnVirtualMachine.Tag = targetVirtualMachine;
-                        tnVirtualMachine.ImageKey = "VirtualMachine";
-                        tnVirtualMachine.SelectedImageKey = "VirtualMachine";
-                        virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
-                        virtualMachineParentNode.Expand();
-                    }
+                        foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines(armResourceGroup))
+                        {
+                            TreeNode virtualMachineParentNode = tnResourceGroup;
 
-                    foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups())
-                    {
-                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
+                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
+                            _ArmTargetVirtualMachines.Add(targetVirtualMachine);
 
-                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armNetworkSecurityGroup.ResourceGroup);
-                        networkSecurityGroupParentNode = tnResourceGroup;
+                            if (armVirtualMachine.AvailabilitySet != null)
+                            {
+                                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
+                                TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
+                                targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
+                                virtualMachineParentNode = tnAvailabilitySet;
+                            }
 
-                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
-                        _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+                            TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
+                            tnVirtualMachine.Name = targetVirtualMachine.SourceName;
+                            tnVirtualMachine.Tag = targetVirtualMachine;
+                            tnVirtualMachine.ImageKey = "VirtualMachine";
+                            tnVirtualMachine.SelectedImageKey = "VirtualMachine";
+                            virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
+                            virtualMachineParentNode.Expand();
+                        }
 
-                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                        tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
-                        tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
-                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        networkSecurityGroupParentNode.Expand();
-                    }
+                        foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers(armResourceGroup))
+                        {
+                            TreeNode networkSecurityGroupParentNode = tnResourceGroup;
 
-                    foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers())
-                    {
-                        TreeNode networkSecurityGroupParentNode = subscriptionNodeARM;
+                            Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                            _ArmTargetLoadBalancers.Add(targetLoadBalancer);
 
-                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armLoadBalancer.ResourceGroup);
-                        networkSecurityGroupParentNode = tnResourceGroup;
-
-                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
-                        _ArmTargetLoadBalancers.Add(targetLoadBalancer);
-
-                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
-                        tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
-                        tnNetworkSecurityGroup.Tag = targetLoadBalancer;
-                        tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
-                        tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
-                        networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        networkSecurityGroupParentNode.Expand();
+                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
+                            tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
+                            tnNetworkSecurityGroup.Tag = targetLoadBalancer;
+                            tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
+                            tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                            networkSecurityGroupParentNode.Expand();
+                        }
                     }
 
 

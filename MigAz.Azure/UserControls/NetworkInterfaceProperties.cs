@@ -53,7 +53,7 @@ namespace MigAz.Azure.UserControls
 
             try
             {
-                List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks();
+                List<Azure.Arm.VirtualNetwork> a = _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks();
                 rbExistingARMVNet.Enabled = a.Count() > 0;
             }
             catch (Exception exc)

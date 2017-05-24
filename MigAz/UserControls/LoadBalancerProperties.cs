@@ -142,7 +142,7 @@ namespace MigAz.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);

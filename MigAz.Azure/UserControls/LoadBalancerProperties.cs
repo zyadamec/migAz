@@ -75,7 +75,7 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                // todo now asap russell 
+                // todo now asap russell
                 //TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
 
                 //foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
@@ -87,37 +87,37 @@ namespace MigAz.Azure.UserControls
                 //    }
                 //}
 
-                //#endregion
+                #endregion
 
-                //#region Seek Target VNet and Subnet as ComboBox SelectedItems
+                #region Seek Target VNet and Subnet as ComboBox SelectedItems
 
-                //if (_TargetLoadBalancer != null && _TargetLoadBalancer.FrontEndIpConfigurations.Count > 0)
-                //{
-                //    if (_TargetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork != null)
-                //    {
-                //        // Attempt to match target to list items
-                //        foreach (Azure.MigrationTarget.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
-                //        {
-                //            if (listVirtualNetwork.ToString() == _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.ToString())
-                //            {
-                //                cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
-                //                break;
-                //            }
-                //        }
+                if (_LoadBalancer != null && _LoadBalancer.FrontEndIpConfigurations.Count > 0)
+                {
+                    if (_LoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork != null)
+                    {
+                        // Attempt to match target to list items
+                        foreach (Azure.MigrationTarget.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                        {
+                            if (listVirtualNetwork.ToString() == _LoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.ToString())
+                            {
+                                cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                                break;
+                            }
+                        }
 
-                //        if (cmbExistingArmVNets.SelectedItem != null && _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet != null)
-                //        {
-                //            foreach (Azure.MigrationTarget.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                //            {
-                //                if (listSubnet.ToString() == _TargetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.ToString())
-                //                {
-                //                    cmbExistingArmSubnet.SelectedItem = listSubnet;
-                //                    break;
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
+                        if (cmbExistingArmVNets.SelectedItem != null && _LoadBalancer.FrontEndIpConfigurations[0].TargetSubnet != null)
+                        {
+                            foreach (Azure.MigrationTarget.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                            {
+                                if (listSubnet.ToString() == _LoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.ToString())
+                                {
+                                    cmbExistingArmSubnet.SelectedItem = listSubnet;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 #endregion
             }

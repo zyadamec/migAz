@@ -187,7 +187,7 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
+                foreach (Azure.Arm.StorageAccount armStorageAccount in _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
