@@ -124,83 +124,17 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserControls\LoadBalancerProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
-      <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\Migrators\AsmToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\Migrators\AsmToArm.Designer.cs">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AvailabilitySetProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AvailabilitySetProperties.Designer.cs">
-      <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\DiskProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\DiskProperties.Designer.cs">
-      <DependentUpon>DiskProperties.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\Migrators\AwsToArm.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\Migrators\AwsToArm.Designer.cs">
       <DependentUpon>AwsToArm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\NetworkInterfaceProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\NetworkInterfaceProperties.Designer.cs">
-      <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\NetworkSecurityGroupProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
-      <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\PublicIpProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\PublicIpProperties.Designer.cs">
-      <DependentUpon>PublicIpProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\ResourceGroupProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\ResourceGroupProperties.Designer.cs">
-      <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\StorageAccountProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\StorageAccountProperties.Designer.cs">
-      <DependentUpon>StorageAccountProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\SubnetProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\SubnetProperties.Designer.cs">
-      <DependentUpon>SubnetProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\VirtualMachineProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\VirtualMachineProperties.Designer.cs">
-      <DependentUpon>VirtualMachineProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\VirtualNetworkProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\VirtualNetworkProperties.Designer.cs">
-      <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
@@ -224,44 +158,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
-      <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Migrators\AsmToArm.resx">
       <DependentUpon>AsmToArm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AvailabilitySetProperties.resx">
-      <DependentUpon>AvailabilitySetProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\DiskProperties.resx">
-      <DependentUpon>DiskProperties.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Migrators\AwsToArm.resx">
       <DependentUpon>AwsToArm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\NetworkInterfaceProperties.resx">
-      <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
-      <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\PublicIpProperties.resx">
-      <DependentUpon>PublicIpProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
-      <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\StorageAccountProperties.resx">
-      <DependentUpon>StorageAccountProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\SubnetProperties.resx">
-      <DependentUpon>SubnetProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\VirtualMachineProperties.resx">
-      <DependentUpon>VirtualMachineProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\VirtualNetworkProperties.resx">
-      <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

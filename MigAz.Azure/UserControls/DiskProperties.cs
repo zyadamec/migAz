@@ -15,9 +15,8 @@ namespace MigAz.Azure.UserControls
 {
     public partial class DiskProperties : UserControl
     {
-        private TreeNode _DiskTreeNode;
+        private AzureContext _AzureContext;
         private Azure.MigrationTarget.Disk _TargetDisk;
-        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -44,12 +43,6 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        public ILogProvider LogProvider
-        {
-            get { return _LogProvider; }
-            set { _LogProvider = value; }
-        }
-
         public IStorageAccount TargetStorageAccount
         {
             get
@@ -61,17 +54,10 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void Bind(Azure.MigrationTarget.Disk targetDisk)
+        internal void Bind(AzureContext azureContext, Azure.MigrationTarget.Disk targetDisk)
         {
+            _AzureContext = azureContext;
             _TargetDisk = targetDisk;
-
-            BindCommon();
-        }
-
-        internal void Bind(TreeNode armDataDiskNode)
-        {
-            _DiskTreeNode = armDataDiskNode;
-            _TargetDisk = (Azure.MigrationTarget.Disk)_DiskTreeNode.Tag;
 
             BindCommon();
         }
@@ -184,11 +170,10 @@ namespace MigAz.Azure.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                // todo now asap russell 
-                //foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
-                //{
-                //    cmbTargetStorage.Items.Add(armStorageAccount);
-                //}
+                foreach (Azure.Arm.StorageAccount armStorageAccount in _AzureContext.AzureRetriever.GetAzureARMStorageAccounts())
+                {
+                    cmbTargetStorage.Items.Add(armStorageAccount);
+                }
 
                 if (_TargetDisk != null)
                 {
@@ -243,8 +228,6 @@ namespace MigAz.Azure.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _TargetDisk.TargetName = txtSender.Text.Trim();
-            if (_DiskTreeNode != null)
-                _DiskTreeNode.Text = _TargetDisk.ToString();
 
             PropertyChanged();
         }

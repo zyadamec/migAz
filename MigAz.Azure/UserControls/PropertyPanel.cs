@@ -97,10 +97,9 @@ namespace MigAz.Azure.UserControls
                     this.ResourceImage = imageList1.Images["VirtualMachine"];
 
                     VirtualMachineProperties properties = new VirtualMachineProperties();
-                    properties.LogProvider = LogProvider;
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind((Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
+                    await properties.Bind(this.AzureContext, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
@@ -146,10 +145,9 @@ namespace MigAz.Azure.UserControls
                     this.ResourceImage = imageList1.Images["Disk"];
 
                     DiskProperties properties = new DiskProperties();
-                    properties.LogProvider = this.LogProvider;
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind((Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
+                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))

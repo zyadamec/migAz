@@ -90,7 +90,6 @@
             // 
             this.diskProperties1.AllowManangedDisk = false;
             this.diskProperties1.Location = new System.Drawing.Point(17, 250);
-            this.diskProperties1.LogProvider = null;
             this.diskProperties1.Name = "diskProperties1";
             this.diskProperties1.Size = new System.Drawing.Size(640, 528);
             this.diskProperties1.TabIndex = 19;

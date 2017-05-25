@@ -8,7 +8,7 @@ namespace MigAz.Azure.UserControls
     public partial class VirtualMachineProperties : UserControl
     {
         private MigrationTarget.VirtualMachine _VirtualMachine;
-        private ILogProvider _LogProvider;
+        private AzureContext _AzureContext;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -25,18 +25,9 @@ namespace MigAz.Azure.UserControls
             this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
         }
 
-        public ILogProvider LogProvider
+        public async Task Bind(AzureContext azureContext, MigrationTarget.VirtualMachine virtualMachine)
         {
-            get { return _LogProvider; }
-            set
-            {
-                _LogProvider = value;
-                this.diskProperties1.LogProvider = value;
-            }
-        }
-
-        public async Task Bind(MigrationTarget.VirtualMachine virtualMachine)
-        {
+            _AzureContext = azureContext;
             _VirtualMachine = virtualMachine;
 
             txtTargetName.Text = _VirtualMachine.TargetName;
@@ -60,7 +51,7 @@ namespace MigAz.Azure.UserControls
             }
 
             if (_VirtualMachine.OSVirtualHardDisk != null)
-                this.diskProperties1.Bind(_VirtualMachine.OSVirtualHardDisk);
+                this.diskProperties1.Bind(azureContext, _VirtualMachine.OSVirtualHardDisk);
             else
                 this.diskProperties1.Visible = false;
         }
