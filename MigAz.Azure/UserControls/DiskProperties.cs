@@ -93,12 +93,14 @@ namespace MigAz.Azure.UserControls
                     if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk))
                     {
                         Azure.Asm.Disk asmDisk = (Azure.Asm.Disk)_TargetDisk.SourceDisk;
-                        lblAsmStorageAccount.Text = asmDisk.SourceStorageAccount.Name;
+                        if (asmDisk.SourceStorageAccount != null)
+                            lblAsmStorageAccount.Text = asmDisk.SourceStorageAccount.Name;
                     }
                     else if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
                     {
                         Azure.Arm.Disk armDisk = (Azure.Arm.Disk)_TargetDisk.SourceDisk;
-                        lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
+                        if (armDisk.SourceStorageAccount != null)
+                            lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
                     }
                 }
             }

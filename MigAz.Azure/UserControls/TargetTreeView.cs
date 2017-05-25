@@ -143,6 +143,8 @@ namespace MigAz.Azure.UserControls
                             treeTargetARM.SelectedNode = treeNode;
                         else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && sourceObject.ToString() == nodeObject.ToString())
                             treeTargetARM.SelectedNode = treeNode;
+                        else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.LoadBalancer) && sourceObject.ToString() == nodeObject.ToString())
+                            treeTargetARM.SelectedNode = treeNode;
                     }
                 }
                 SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);

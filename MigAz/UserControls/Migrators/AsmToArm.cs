@@ -159,343 +159,354 @@ namespace MigAz.UserControls.Migrators
 
                     #region Bind Source ASM Objects
 
-                    _AsmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
-                    _AsmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
-                    _AsmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
-                    _AsmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
-
-                    TreeNode subscriptionNodeASM = new TreeNode(sender.AzureSubscription.Name);
-                    treeSourceASM.Nodes.Add(subscriptionNodeASM);
-                    subscriptionNodeASM.Expand();
-
-                    foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
+                    try
                     {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
+                        _AsmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
+                        _AsmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
+                        _AsmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
+                        _AsmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
 
-                        Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
-                        _AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+                        TreeNode subscriptionNodeASM = new TreeNode(sender.AzureSubscription.Name);
+                        treeSourceASM.Nodes.Add(subscriptionNodeASM);
+                        subscriptionNodeASM.Expand();
 
-                        TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                        tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                        tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                        parentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        parentNode.Expand();
-                    }
-
-                    List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
-                    foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
-                    {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
-
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork, _AsmTargetNetworkSecurityGroups);
-                        _AsmTargetVirtualNetworks.Add(targetVirtualNetwork);
-
-                        TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
-                        tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
-                        tnVirtualNetwork.Text = targetVirtualNetwork.SourceName;
-                        tnVirtualNetwork.Tag = targetVirtualNetwork;
-                        parentNode.Nodes.Add(tnVirtualNetwork);
-                        parentNode.Expand();
-                    }
-
-                    foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
-                    {
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
-
-                        Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, asmStorageAccount);
-                        _AsmTargetStorageAccounts.Add(targetStorageAccount);
-
-                        TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
-                        tnStorageAccount.Name = targetStorageAccount.SourceName;
-                        tnStorageAccount.Tag = targetStorageAccount;
-                        parentNode.Nodes.Add(tnStorageAccount);
-                        parentNode.Expand();
-                    }
-
-                    List<Azure.Asm.CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
-                    foreach (Azure.Asm.CloudService asmCloudService in asmCloudServices)
-                    {
-                        List<Azure.MigrationTarget.VirtualMachine> cloudServiceTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
-                        Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, asmCloudService);
-
-                        TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
-                        TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.Name, false);
-                        TreeNode cloudServiceNode = null;
-                        if (cloudServiceNodeSearch.Count() == 1)
+                        foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroups())
                         {
-                            cloudServiceNode = cloudServiceNodeSearch[0];
-                        }
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
 
-                        if (cloudServiceNode == null)
-                        {
-                            cloudServiceNode = new TreeNode(asmCloudService.Name);
-                            cloudServiceNode.Name = asmCloudService.Name;
-                            cloudServiceNode.Tag = targetAvailabilitySet;
-                            parentNode.Nodes.Add(cloudServiceNode);
+                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
+                            _AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+
+                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
+                            tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
+                            tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
+                            parentNode.Nodes.Add(tnNetworkSecurityGroup);
                             parentNode.Expand();
                         }
 
-                        foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
+                        List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmVirtualNetworks();
+                        foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                         {
-                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
-                            targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
-                            cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
-                            _AsmTargetVirtualMachines.Add(targetVirtualMachine);
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmVirtualNetwork.Location, "Virtual Networks");
 
-                            TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
-                            virtualMachineNode.Name = targetVirtualMachine.SourceName;
-                            virtualMachineNode.Tag = targetVirtualMachine;
-                            cloudServiceNode.Nodes.Add(virtualMachineNode);
-                            cloudServiceNode.Expand();
+                            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, asmVirtualNetwork, _AsmTargetNetworkSecurityGroups);
+                            _AsmTargetVirtualNetworks.Add(targetVirtualNetwork);
+
+                            TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
+                            tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
+                            tnVirtualNetwork.Text = targetVirtualNetwork.SourceName;
+                            tnVirtualNetwork.Tag = targetVirtualNetwork;
+                            parentNode.Nodes.Add(tnVirtualNetwork);
+                            parentNode.Expand();
                         }
 
-                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer();
-                        targetLoadBalancer.Name = asmCloudService.Name;
-                        targetLoadBalancer.SourceName = asmCloudService.Name + "-LB";
-
-                        TreeNode loadBalancerNode = new TreeNode(targetLoadBalancer.SourceName);
-                        loadBalancerNode.Name = targetLoadBalancer.SourceName;
-                        loadBalancerNode.Tag = targetLoadBalancer;
-                        cloudServiceNode.Nodes.Add(loadBalancerNode);
-                        cloudServiceNode.Expand();
-
-                        Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration(targetLoadBalancer);
-
-                        Azure.MigrationTarget.BackEndAddressPool backEndAddressPool = new Azure.MigrationTarget.BackEndAddressPool(targetLoadBalancer);
-
-                        // if internal load balancer
-                        if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/Type").Count > 0)
+                        foreach (Azure.Asm.StorageAccount asmStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureAsmStorageAccounts())
                         {
-                            string virtualnetworkname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/VirtualNetworkName").InnerText;
-                            string subnetname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/SubnetName").InnerText.Replace(" ", "");
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmStorageAccount.GeoPrimaryRegion, "Storage Accounts");
 
-                            if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
+                            Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, asmStorageAccount);
+                            _AsmTargetStorageAccounts.Add(targetStorageAccount);
+
+                            TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
+                            tnStorageAccount.Name = targetStorageAccount.SourceName;
+                            tnStorageAccount.Tag = targetStorageAccount;
+                            parentNode.Nodes.Add(tnStorageAccount);
+                            parentNode.Expand();
+                        }
+
+                        List<Azure.Asm.CloudService> asmCloudServices = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmCloudServices();
+                        foreach (Azure.Asm.CloudService asmCloudService in asmCloudServices)
+                        {
+                            List<Azure.MigrationTarget.VirtualMachine> cloudServiceTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
+                            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, asmCloudService);
+
+                            TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmCloudService.Location, "Cloud Services");
+                            TreeNode[] cloudServiceNodeSearch = parentNode.Nodes.Find(asmCloudService.Name, false);
+                            TreeNode cloudServiceNode = null;
+                            if (cloudServiceNodeSearch.Count() == 1)
                             {
-                                frontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
-                                frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                                cloudServiceNode = cloudServiceNodeSearch[0];
                             }
 
-                            if (cloudServiceTargetVirtualMachines.Count > 0)
+                            if (cloudServiceNode == null)
                             {
-                                if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface != null)
-                                {
-                                    if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
-                                    {
-                                        frontEndIpConfiguration.TargetVirtualNetwork = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork;
-                                        frontEndIpConfiguration.TargetSubnet = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet;
-                                    }
-                                }
+                                cloudServiceNode = new TreeNode(asmCloudService.Name);
+                                cloudServiceNode.Name = asmCloudService.Name;
+                                cloudServiceNode.Tag = targetAvailabilitySet;
+                                parentNode.Nodes.Add(cloudServiceNode);
+                                parentNode.Expand();
                             }
-                        }
-                        else // if external load balancer
-                        {
-                            Azure.MigrationTarget.PublicIp loadBalancerPublicIp = new Azure.MigrationTarget.PublicIp();
-                            loadBalancerPublicIp.SourceName = asmCloudService.Name + "-PIP";
-                            loadBalancerPublicIp.Name = asmCloudService.Name;
-                            loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
-                            frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
 
-                            TreeNode publicIPAddressNode = new TreeNode(loadBalancerPublicIp.SourceName);
-                            publicIPAddressNode.Name = loadBalancerPublicIp.SourceName;
-                            publicIPAddressNode.Tag = loadBalancerPublicIp;
-                            cloudServiceNode.Nodes.Add(publicIPAddressNode);
-                            cloudServiceNode.Expand();
-                        }
-
-                        foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)
-                        {
-                            if (targetVirtualMachine.PrimaryNetworkInterface != null)
-                                targetVirtualMachine.PrimaryNetworkInterface.BackEndAddressPool = backEndAddressPool;
-
-                            Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
-                            foreach (XmlNode inputendpoint in asmVirtualMachine.ResourceXml.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
+                            foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                             {
-                                if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") == null) // if it's a inbound nat rule
-                                {
-                                    Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule(targetLoadBalancer);
-                                    targetInboundNatRule.Name = asmVirtualMachine.RoleName + "-" + inputendpoint.SelectSingleNode("Name").InnerText;
-                                    targetInboundNatRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
-                                    targetInboundNatRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
-                                    targetInboundNatRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
-                                    targetInboundNatRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
+                                targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
+                                cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
+                                _AsmTargetVirtualMachines.Add(targetVirtualMachine);
 
-                                    if (targetVirtualMachine.PrimaryNetworkInterface != null)
-                                        targetVirtualMachine.PrimaryNetworkInterface.InboundNatRules.Add(targetInboundNatRule);
+                                TreeNode virtualMachineNode = new TreeNode(targetVirtualMachine.SourceName);
+                                virtualMachineNode.Name = targetVirtualMachine.SourceName;
+                                virtualMachineNode.Tag = targetVirtualMachine;
+                                cloudServiceNode.Nodes.Add(virtualMachineNode);
+                                cloudServiceNode.Expand();
+                            }
+
+                            Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer();
+                            targetLoadBalancer.Name = asmCloudService.Name;
+                            targetLoadBalancer.SourceName = asmCloudService.Name + "-LB";
+
+                            TreeNode loadBalancerNode = new TreeNode(targetLoadBalancer.SourceName);
+                            loadBalancerNode.Name = targetLoadBalancer.SourceName;
+                            loadBalancerNode.Tag = targetLoadBalancer;
+                            cloudServiceNode.Nodes.Add(loadBalancerNode);
+                            cloudServiceNode.Expand();
+
+                            Azure.MigrationTarget.FrontEndIpConfiguration frontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration(targetLoadBalancer);
+
+                            Azure.MigrationTarget.BackEndAddressPool backEndAddressPool = new Azure.MigrationTarget.BackEndAddressPool(targetLoadBalancer);
+
+                            // if internal load balancer
+                            if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/Type").Count > 0)
+                            {
+                                string virtualnetworkname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/VirtualNetworkName").InnerText;
+                                string subnetname = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/SubnetName").InnerText.Replace(" ", "");
+
+                                if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
+                                {
+                                    frontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
+                                    frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
                                 }
-                                else // if it's a load balancing rule
-                                {
-                                    XmlNode probenode = inputendpoint.SelectSingleNode("LoadBalancerProbe");
 
-                                    Azure.MigrationTarget.Probe targetProbe = null;
-                                    foreach (Azure.MigrationTarget.Probe existingProbe in targetLoadBalancer.Probes)
+                                if (cloudServiceTargetVirtualMachines.Count > 0)
+                                {
+                                    if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface != null)
                                     {
-                                        if (existingProbe.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        if (cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                                         {
-                                            targetProbe = existingProbe;
-                                            break;
+                                            frontEndIpConfiguration.TargetVirtualNetwork = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork;
+                                            frontEndIpConfiguration.TargetSubnet = cloudServiceTargetVirtualMachines[0].PrimaryNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet;
                                         }
                                     }
+                                }
+                            }
+                            else // if external load balancer
+                            {
+                                Azure.MigrationTarget.PublicIp loadBalancerPublicIp = new Azure.MigrationTarget.PublicIp();
+                                loadBalancerPublicIp.SourceName = asmCloudService.Name + "-PIP";
+                                loadBalancerPublicIp.Name = asmCloudService.Name;
+                                loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
+                                frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
 
-                                    if (targetProbe == null)
+                                TreeNode publicIPAddressNode = new TreeNode(loadBalancerPublicIp.SourceName);
+                                publicIPAddressNode.Name = loadBalancerPublicIp.SourceName;
+                                publicIPAddressNode.Tag = loadBalancerPublicIp;
+                                cloudServiceNode.Nodes.Add(publicIPAddressNode);
+                                cloudServiceNode.Expand();
+                            }
+
+                            foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)
+                            {
+                                if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                    targetVirtualMachine.PrimaryNetworkInterface.BackEndAddressPool = backEndAddressPool;
+
+                                Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)targetVirtualMachine.Source;
+                                foreach (XmlNode inputendpoint in asmVirtualMachine.ResourceXml.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
+                                {
+                                    if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") == null) // if it's a inbound nat rule
                                     {
-                                        targetProbe = new Azure.MigrationTarget.Probe();
-                                        targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
-                                        targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
-                                        targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                        Azure.MigrationTarget.InboundNatRule targetInboundNatRule = new Azure.MigrationTarget.InboundNatRule(targetLoadBalancer);
+                                        targetInboundNatRule.Name = asmVirtualMachine.RoleName + "-" + inputendpoint.SelectSingleNode("Name").InnerText;
+                                        targetInboundNatRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                        targetInboundNatRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                        targetInboundNatRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                        targetInboundNatRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+
+                                        if (targetVirtualMachine.PrimaryNetworkInterface != null)
+                                            targetVirtualMachine.PrimaryNetworkInterface.InboundNatRules.Add(targetInboundNatRule);
                                     }
-
-                                    Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
-                                    foreach (Azure.MigrationTarget.LoadBalancingRule existingLoadBalancingRule in targetLoadBalancer.LoadBalancingRules)
+                                    else // if it's a load balancing rule
                                     {
-                                        if (existingLoadBalancingRule.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                        XmlNode probenode = inputendpoint.SelectSingleNode("LoadBalancerProbe");
+
+                                        Azure.MigrationTarget.Probe targetProbe = null;
+                                        foreach (Azure.MigrationTarget.Probe existingProbe in targetLoadBalancer.Probes)
                                         {
-                                            targetLoadBalancingRule = existingLoadBalancingRule;
-                                            break;
+                                            if (existingProbe.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                            {
+                                                targetProbe = existingProbe;
+                                                break;
+                                            }
                                         }
-                                    }
 
-                                    if (targetLoadBalancingRule == null)
-                                    {
-                                        targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule(targetLoadBalancer);
-                                        targetLoadBalancingRule.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
-                                        targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
-                                        targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
-                                        targetLoadBalancingRule.Probe = targetProbe;
-                                        targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
-                                        targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
-                                        targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                        if (targetProbe == null)
+                                        {
+                                            targetProbe = new Azure.MigrationTarget.Probe();
+                                            targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                            targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+                                            targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                        }
+
+                                        Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
+                                        foreach (Azure.MigrationTarget.LoadBalancingRule existingLoadBalancingRule in targetLoadBalancer.LoadBalancingRules)
+                                        {
+                                            if (existingLoadBalancingRule.Name == inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText)
+                                            {
+                                                targetLoadBalancingRule = existingLoadBalancingRule;
+                                                break;
+                                            }
+                                        }
+
+                                        if (targetLoadBalancingRule == null)
+                                        {
+                                            targetLoadBalancingRule = new Azure.MigrationTarget.LoadBalancingRule(targetLoadBalancer);
+                                            targetLoadBalancingRule.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+                                            targetLoadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                                            targetLoadBalancingRule.BackEndAddressPool = targetLoadBalancer.BackEndAddressPools[0];
+                                            targetLoadBalancingRule.Probe = targetProbe;
+                                            targetLoadBalancingRule.FrontEndPort = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
+                                            targetLoadBalancingRule.BackEndPort = Int32.Parse(inputendpoint.SelectSingleNode("LocalPort").InnerText);
+                                            targetLoadBalancingRule.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
+                                        }
                                     }
                                 }
                             }
+
                         }
+
+                        subscriptionNodeASM.Expand();
 
                     }
-
-                    subscriptionNodeASM.ExpandAll();
+                    catch (Exception exc)
+                    {
+                        UnhandledExceptionDialog exceptionDialog = new UnhandledExceptionDialog(this.LogProvider, exc);
+                        exceptionDialog.ShowDialog();
+                    }
 
                     #endregion
 
                     #region Bind Source ARM Objects
 
-                    _ArmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
-                    _ArmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
-                    _ArmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
-                    _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
-                    _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
-
-                    TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
-                    subscriptionNodeARM.ImageKey = "Subscription";
-                    subscriptionNodeARM.SelectedImageKey = "Subscription";
-                    treeSourceARM.Nodes.Add(subscriptionNodeARM);
-                    subscriptionNodeARM.Expand();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                    try
                     {
-                        TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+                        _ArmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
+                        _ArmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
+                        _ArmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
+                        _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
+                        _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
 
-                        foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups(armResourceGroup))
+                        TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
+                        subscriptionNodeARM.ImageKey = "Subscription";
+                        subscriptionNodeARM.SelectedImageKey = "Subscription";
+                        treeSourceARM.Nodes.Add(subscriptionNodeARM);
+                        subscriptionNodeARM.Expand();
+                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
                         {
-                            TreeNode networkSecurityGroupParentNode = tnResourceGroup;
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
 
-                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
-                            _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
-
-                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                            tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                            tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                            tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
-                            tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
-                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                            networkSecurityGroupParentNode.Expand();
-                        }
-
-                        foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks(armResourceGroup))
-                        {
-                            TreeNode virtualNetworkParentNode = tnResourceGroup;
-
-                            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork, _ArmTargetNetworkSecurityGroups);
-                            _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
-
-                            TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
-                            tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
-                            tnVirtualNetwork.Tag = targetVirtualNetwork;
-                            tnVirtualNetwork.ImageKey = "VirtualNetwork";
-                            tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
-                            virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
-                            virtualNetworkParentNode.Expand();
-                        }
-
-                        foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts(armResourceGroup))
-                        {
-                            TreeNode storageAccountParentNode = tnResourceGroup;
-
-                            Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
-                            _ArmTargetStorageAccounts.Add(targetStorageAccount);
-
-                            TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
-                            tnStorageAccount.Name = targetStorageAccount.SourceName;
-                            tnStorageAccount.Tag = targetStorageAccount;
-                            tnStorageAccount.ImageKey = "StorageAccount";
-                            tnStorageAccount.SelectedImageKey = "StorageAccount";
-                            storageAccountParentNode.Nodes.Add(tnStorageAccount);
-                            storageAccountParentNode.Expand();
-                        }
-
-                        try
-                        {
-                            foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks(armResourceGroup))
+                            foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMNetworkSecurityGroups(armResourceGroup))
                             {
-                                Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
-                                _ArmTargetManagedDisks.Add(targetManagedDisk);
-                            }
-                        }
-                        catch (Exception exc)
-                        {
-                            // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
-                        }
+                                TreeNode networkSecurityGroupParentNode = tnResourceGroup;
 
-                        foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines(armResourceGroup))
-                        {
-                            TreeNode virtualMachineParentNode = tnResourceGroup;
+                                Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, armNetworkSecurityGroup);
+                                _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
 
-                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
-                            _ArmTargetVirtualMachines.Add(targetVirtualMachine);
-
-                            if (armVirtualMachine.AvailabilitySet != null)
-                            {
-                                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
-                                TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
-                                targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
-                                virtualMachineParentNode = tnAvailabilitySet;
+                                TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
+                                tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
+                                tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
+                                tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
+                                tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
+                                networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                             }
 
-                            TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
-                            tnVirtualMachine.Name = targetVirtualMachine.SourceName;
-                            tnVirtualMachine.Tag = targetVirtualMachine;
-                            tnVirtualMachine.ImageKey = "VirtualMachine";
-                            tnVirtualMachine.SelectedImageKey = "VirtualMachine";
-                            virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
-                            virtualMachineParentNode.Expand();
+                            foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContextSourceASM.AzureRetriever.GetAzureARMVirtualNetworks(armResourceGroup))
+                            {
+                                TreeNode virtualNetworkParentNode = tnResourceGroup;
+
+                                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this.AzureContextTargetARM, armVirtualNetwork, _ArmTargetNetworkSecurityGroups);
+                                _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
+
+                                TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
+                                tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
+                                tnVirtualNetwork.Tag = targetVirtualNetwork;
+                                tnVirtualNetwork.ImageKey = "VirtualNetwork";
+                                tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
+                                virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
+                            }
+
+                            foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContextSourceASM.AzureRetriever.GetAzureARMStorageAccounts(armResourceGroup))
+                            {
+                                TreeNode storageAccountParentNode = tnResourceGroup;
+
+                                Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(_AzureContextTargetARM, armStorageAccount);
+                                _ArmTargetStorageAccounts.Add(targetStorageAccount);
+
+                                TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
+                                tnStorageAccount.Name = targetStorageAccount.SourceName;
+                                tnStorageAccount.Tag = targetStorageAccount;
+                                tnStorageAccount.ImageKey = "StorageAccount";
+                                tnStorageAccount.SelectedImageKey = "StorageAccount";
+                                storageAccountParentNode.Nodes.Add(tnStorageAccount);
+                            }
+
+                            try
+                            {
+                                foreach (Azure.Arm.ManagedDisk armManagedDisk in await _AzureContextSourceASM.AzureRetriever.GetAzureARMManagedDisks(armResourceGroup))
+                                {
+                                    Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
+                                    _ArmTargetManagedDisks.Add(targetManagedDisk);
+                                }
+                            }
+                            catch (Exception exc)
+                            {
+                                // todo, this is being caught, because Managed Disks fail in Azure Government with 404 error (not yet available)
+                            }
+
+                            foreach (Azure.Arm.VirtualMachine armVirtualMachine in await _AzureContextSourceASM.AzureRetriever.GetAzureArmVirtualMachines(armResourceGroup))
+                            {
+                                TreeNode virtualMachineParentNode = tnResourceGroup;
+
+                                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this.AzureContextTargetARM, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
+                                _ArmTargetVirtualMachines.Add(targetVirtualMachine);
+
+                                if (armVirtualMachine.AvailabilitySet != null)
+                                {
+                                    Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
+                                    TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
+                                    targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
+                                    virtualMachineParentNode = tnAvailabilitySet;
+                                }
+
+                                TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
+                                tnVirtualMachine.Name = targetVirtualMachine.SourceName;
+                                tnVirtualMachine.Tag = targetVirtualMachine;
+                                tnVirtualMachine.ImageKey = "VirtualMachine";
+                                tnVirtualMachine.SelectedImageKey = "VirtualMachine";
+                                virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
+                            }
+
+                            foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers(armResourceGroup))
+                            {
+                                TreeNode networkSecurityGroupParentNode = tnResourceGroup;
+
+                                Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                                _ArmTargetLoadBalancers.Add(targetLoadBalancer);
+
+                                TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
+                                tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
+                                tnNetworkSecurityGroup.Tag = targetLoadBalancer;
+                                tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
+                                tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                                networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                            }
                         }
 
-                        foreach (Azure.Arm.LoadBalancer armLoadBalancer in await _AzureContextSourceASM.AzureRetriever.GetAzureARMLoadBalancers(armResourceGroup))
-                        {
-                            TreeNode networkSecurityGroupParentNode = tnResourceGroup;
-
-                            Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
-                            _ArmTargetLoadBalancers.Add(targetLoadBalancer);
-
-                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
-                            tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
-                            tnNetworkSecurityGroup.Tag = targetLoadBalancer;
-                            tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
-                            tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
-                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                            networkSecurityGroupParentNode.Expand();
-                        }
+                        subscriptionNodeARM.Expand();
                     }
-
-
-                    subscriptionNodeARM.Expand();
+                    catch (Exception exc)
+                    {
+                        UnhandledExceptionDialog exceptionDialog = new UnhandledExceptionDialog(this.LogProvider, exc);
+                        exceptionDialog.ShowDialog();
+                    }
 
                     #endregion
 

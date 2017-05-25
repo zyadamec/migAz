@@ -68,7 +68,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeTargetARM);
             this.Name = "TargetTreeView";
-            this.Size = new System.Drawing.Size(539, 349);
+            this.Size = new System.Drawing.Size(132, 123);
             this.Resize += new System.EventHandler(this.TargetTreeView_Resize);
             this.ResumeLayout(false);
 
