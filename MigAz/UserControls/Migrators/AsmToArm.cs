@@ -77,6 +77,13 @@ namespace MigAz.UserControls.Migrators
 
             this._PropertyPanel.LogProvider = this.LogProvider;
             this._PropertyPanel.AzureContext = _AzureContextTargetARM;
+            this._PropertyPanel.PropertyChanged += _PropertyPanel_PropertyChanged;
+        }
+
+        private async Task _PropertyPanel_PropertyChanged()
+        {
+            if (_SourceAsmNode == null && _SourceArmNode == null) // we are not going to update on every property bind during TreeView updates
+                await this.TemplateGenerator.UpdateArtifacts(GetExportArtifacts());
         }
 
         private async Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
@@ -922,12 +929,6 @@ namespace MigAz.UserControls.Migrators
             StatusProvider.UpdateStatus("Ready");
         }
 
-        private async Task Properties_PropertyChanged()
-        {
-            if (_SourceAsmNode == null && _SourceArmNode == null) // we are not going to update on every property bind during TreeView updates
-                await this.TemplateGenerator.UpdateArtifacts(GetExportArtifacts());
-        }
-
         private async Task RemoveASMNodeFromARMTree(IMigrationTarget migrationTarget)
         {
 
@@ -1120,7 +1121,6 @@ namespace MigAz.UserControls.Migrators
             tnResourceGroup.SelectedImageKey = "ResourceGroup";
 
             subscriptionNode.Nodes.Add(tnResourceGroup);
-            tnResourceGroup.Expand();
             return tnResourceGroup;
         }
 

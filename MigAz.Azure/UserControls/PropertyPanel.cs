@@ -13,6 +13,9 @@ namespace MigAz.Azure.UserControls
 {
     public partial class PropertyPanel : UserControl
     {
+        public delegate Task AfterPropertyChanged();
+        public event AfterPropertyChanged PropertyChanged;
+
         public PropertyPanel()
         {
             InitializeComponent();
@@ -200,7 +203,7 @@ namespace MigAz.Azure.UserControls
 
         private Task Properties_PropertyChanged()
         {
-            // todo now asap russell
+            PropertyChanged();
             return null;
         }
     }

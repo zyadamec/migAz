@@ -746,13 +746,13 @@ namespace MigAz.Azure
             return resourceGroupManagedDisks;
         }
 
-        public List<Arm.StorageAccount> GetAzureARMStorageAccounts()
+        public async Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
         {
             List<Arm.StorageAccount> storageAccounts = new List<Arm.StorageAccount>();
 
-            foreach (ResourceGroup resourceGroup in _ArmStorageAccounts.Keys)
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
             {
-                foreach (Arm.StorageAccount storageAccount in _ArmStorageAccounts[resourceGroup])
+                foreach (Arm.StorageAccount storageAccount in await this.GetAzureARMStorageAccounts(resourceGroup))
                 {
                     storageAccounts.Add(storageAccount);
                 }
@@ -795,7 +795,7 @@ namespace MigAz.Azure
             if (_ArmStorageAccounts == null)
                 return null;
 
-            foreach (Arm.StorageAccount armStorageAccount in this.GetAzureARMStorageAccounts())
+            foreach (Arm.StorageAccount armStorageAccount in await this.GetAzureARMStorageAccounts())
             {
                 if (String.Compare(armStorageAccount.Name, name, true) == 0)
                     return armStorageAccount;
