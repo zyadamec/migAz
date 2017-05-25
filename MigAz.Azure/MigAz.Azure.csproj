@@ -224,6 +224,12 @@
     <Compile Include="UserControls\SubnetProperties.Designer.cs">
       <DependentUpon>SubnetProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TargetTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\TargetTreeView.Designer.cs">
+      <DependentUpon>TargetTreeView.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\VirtualMachineProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -284,6 +290,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\SubnetProperties.resx">
       <DependentUpon>SubnetProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\TargetTreeView.resx">
+      <DependentUpon>TargetTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\VirtualMachineProperties.resx">
       <DependentUpon>VirtualMachineProperties.cs</DependentUpon>

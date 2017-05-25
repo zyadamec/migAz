@@ -38,8 +38,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.treeSourceAWS = new System.Windows.Forms.TreeView();
-            this.treeTargetARM = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.treeTargetARM = new MigAz.Azure.UserControls.TargetTreeView();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -127,18 +127,6 @@
             this.treeSourceAWS.TabIndex = 58;
             this.treeSourceAWS.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeSourceAWS_AfterCheck);
             // 
-            // treeTargetARM
-            // 
-            this.treeTargetARM.ImageIndex = 0;
-            this.treeTargetARM.ImageList = this.imageList1;
-            this.treeTargetARM.Location = new System.Drawing.Point(370, 125);
-            this.treeTargetARM.Margin = new System.Windows.Forms.Padding(2);
-            this.treeTargetARM.Name = "treeTargetARM";
-            this.treeTargetARM.SelectedImageIndex = 0;
-            this.treeTargetARM.Size = new System.Drawing.Size(444, 251);
-            this.treeTargetARM.TabIndex = 59;
-            this.treeTargetARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeTargetARM_AfterSelect);
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -154,6 +142,13 @@
             this.imageList1.Images.SetKeyName(8, "Subscription");
             this.imageList1.Images.SetKeyName(9, "ResourceGroup");
             this.imageList1.Images.SetKeyName(10, "AvailabilitySet");
+            // 
+            // treeTargetARM
+            // 
+            this.treeTargetARM.Location = new System.Drawing.Point(370, 125);
+            this.treeTargetARM.Name = "treeTargetARM";
+            this.treeTargetARM.Size = new System.Drawing.Size(447, 300);
+            this.treeTargetARM.TabIndex = 59;
             // 
             // AwsToArm
             // 
@@ -183,7 +178,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TreeView treeSourceAWS;
-        private System.Windows.Forms.TreeView treeTargetARM;
         private System.Windows.Forms.ImageList imageList1;
+        private Azure.UserControls.TargetTreeView treeTargetARM;
     }
 }

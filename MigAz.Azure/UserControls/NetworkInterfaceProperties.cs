@@ -14,6 +14,7 @@ namespace MigAz.Azure.UserControls
     public partial class NetworkInterfaceProperties : UserControl
     {
         private AzureContext _AzureContext;
+        private TargetTreeView _TargetTreeView;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
 
         public delegate Task AfterPropertyChanged();
@@ -24,10 +25,12 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AzureContext azureContext, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
+        internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
             _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _TargetNetworkInterface = targetNetworkInterface;
+
             lblSourceName.Text = _TargetNetworkInterface.SourceName;
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
@@ -117,49 +120,48 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                // todo now asap russell 
-                //TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
 
-                //foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
-                //{
-                //    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                //    {
-                //        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
-                //        cmbExistingArmVNets.Items.Add(targetVirtualNetwork);
-                //    }
-                //}
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
+                {
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                    {
+                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
+                        cmbExistingArmVNets.Items.Add(targetVirtualNetwork);
+                    }
+                }
 
-                //#endregion
+                #endregion
 
-                //#region Seek Target VNet and Subnet as ComboBox SelectedItems
+                #region Seek Target VNet and Subnet as ComboBox SelectedItems
 
-                //if (_TargetNetworkInterface != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
-                //{
-                //    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork != null)
-                //    {
-                //        // Attempt to match target to list items
-                //        foreach (Azure.MigrationTarget.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
-                //        {
-                //            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork.ToString())
-                //            {
-                //                cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
-                //                break;
-                //            }
-                //        }
+                if (_TargetNetworkInterface != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                {
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork != null)
+                    {
+                        // Attempt to match target to list items
+                        foreach (Azure.MigrationTarget.VirtualNetwork listVirtualNetwork in cmbExistingArmVNets.Items)
+                        {
+                            if (listVirtualNetwork.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetVirtualNetwork.ToString())
+                            {
+                                cmbExistingArmVNets.SelectedItem = listVirtualNetwork;
+                                break;
+                            }
+                        }
 
-                //        if (cmbExistingArmVNets.SelectedItem != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet != null)
-                //        {
-                //            foreach (Azure.MigrationTarget.Subnet listSubnet in cmbExistingArmSubnet.Items)
-                //            {
-                //                if (listSubnet.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.ToString())
-                //                {
-                //                    cmbExistingArmSubnet.SelectedItem = listSubnet;
-                //                    break;
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
+                        if (cmbExistingArmVNets.SelectedItem != null && _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet != null)
+                        {
+                            foreach (Azure.MigrationTarget.Subnet listSubnet in cmbExistingArmSubnet.Items)
+                            {
+                                if (listSubnet.ToString() == _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.ToString())
+                                {
+                                    cmbExistingArmSubnet.SelectedItem = listSubnet;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 #endregion
             }

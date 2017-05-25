@@ -15,6 +15,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class DiskProperties : UserControl
     {
+        TargetTreeView _TargetTreeView;
         private AzureContext _AzureContext;
         private Azure.MigrationTarget.Disk _TargetDisk;
 
@@ -54,9 +55,10 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void Bind(AzureContext azureContext, Azure.MigrationTarget.Disk targetDisk)
+        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.Disk targetDisk)
         {
             _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
 
             BindCommon();
@@ -121,43 +123,42 @@ namespace MigAz.Azure.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                // todo now asap russell 
-                //TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
 
-                //foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
-                //{
-                //    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                //    {
-                //        Azure.MigrationTarget.StorageAccount storageAccountTarget = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
-                //        cmbTargetStorage.Items.Add(storageAccountTarget);
-                //    }
-                //}
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
+                {
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                    {
+                        Azure.MigrationTarget.StorageAccount storageAccountTarget = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
+                        cmbTargetStorage.Items.Add(storageAccountTarget);
+                    }
+                }
 
-                //if (_TargetDisk != null)
-                //{
-                //    if (_TargetDisk.TargetStorageAccount != null)
-                //    {
-                //        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
-                //        {
-                //            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
-                //            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
-                //            {
-                //                cmbTargetStorage.SelectedIndex = i;
-                //                break;
-                //            }
-                //        }
+                if (_TargetDisk != null)
+                {
+                    if (_TargetDisk.TargetStorageAccount != null)
+                    {
+                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                        {
+                            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                            {
+                                cmbTargetStorage.SelectedIndex = i;
+                                break;
+                            }
+                        }
 
-                //        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                //        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                //        //{
-                //        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                //        //    {
-                //        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
-                //        //        break;
-                //        //    }
-                //        //}
-                //    }
-                //}
+                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                        //{
+                        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        //    {
+                        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
+                        //        break;
+                        //    }
+                        //}
+                    }
+                }
             }
         }
 
@@ -203,7 +204,7 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            // todo now asap russell _AzureContextTargetARM.StatusProvider.UpdateStatus("Ready");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)

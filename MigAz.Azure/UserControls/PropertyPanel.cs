@@ -13,6 +13,8 @@ namespace MigAz.Azure.UserControls
 {
     public partial class PropertyPanel : UserControl
     {
+        private TargetTreeView _TargetTreeView;
+
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
@@ -25,9 +27,27 @@ namespace MigAz.Azure.UserControls
         {
             get; set;
         }
+
+        public IStatusProvider StatusProvider
+        {
+            get; set;
+        }
+
         public AzureContext AzureContext
         {
             get; set;
+        }
+
+        public TargetTreeView TargetTreeView
+        {
+            get { return _TargetTreeView; }
+            set
+            {
+                _TargetTreeView = value;
+
+                if (_TargetTreeView.PropertyPanel != this)
+                    _TargetTreeView.PropertyPanel = this;
+            }
         }
 
         public Image ResourceImage
@@ -93,7 +113,7 @@ namespace MigAz.Azure.UserControls
 
             if (migrationTargetNode != null && migrationTargetNode.Tag != null)
             {
-                this.ResourceText = migrationTargetNode.ToString();
+                this.ResourceText = migrationTargetNode.Tag.ToString();
 
                 if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
@@ -102,7 +122,7 @@ namespace MigAz.Azure.UserControls
                     VirtualMachineProperties properties = new VirtualMachineProperties();
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(this.AzureContext, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
+                    await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
@@ -150,7 +170,7 @@ namespace MigAz.Azure.UserControls
                     DiskProperties properties = new DiskProperties();
                     properties.AllowManangedDisk = false;
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
+                    properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
@@ -168,7 +188,7 @@ namespace MigAz.Azure.UserControls
 
                     NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(this.AzureContext, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
+                    await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))

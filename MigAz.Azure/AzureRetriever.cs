@@ -712,7 +712,7 @@ namespace MigAz.Azure
                 await armVirtualNetwork.InitializeChildrenAsync(_AzureContext);
                 foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways(resourceGroup))
                 {
-                    // todo now russell, why is this here
+                    // todo now asap, why is this here
                 }
 
                 resourceGroupVirtualNetworks.Add(armVirtualNetwork);

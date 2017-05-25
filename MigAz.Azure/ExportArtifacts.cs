@@ -15,6 +15,7 @@ namespace MigAz.Azure
             LoadBalancers = new List<LoadBalancer>();
         }
 
+        public ResourceGroup ResourceGroup { get; set; }
         public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
         public List<StorageAccount> StorageAccounts { get; }
         public List<VirtualNetwork> VirtualNetworks { get; }

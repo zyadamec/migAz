@@ -7,8 +7,9 @@ namespace MigAz.Azure.UserControls
 {
     public partial class VirtualMachineProperties : UserControl
     {
-        private MigrationTarget.VirtualMachine _VirtualMachine;
         private AzureContext _AzureContext;
+        private TargetTreeView _TargetTreeView;
+        private MigrationTarget.VirtualMachine _VirtualMachine;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -25,9 +26,10 @@ namespace MigAz.Azure.UserControls
             this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
         }
 
-        public async Task Bind(AzureContext azureContext, MigrationTarget.VirtualMachine virtualMachine)
+        public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, MigrationTarget.VirtualMachine virtualMachine)
         {
             _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _VirtualMachine = virtualMachine;
 
             txtTargetName.Text = _VirtualMachine.TargetName;
@@ -51,7 +53,7 @@ namespace MigAz.Azure.UserControls
             }
 
             if (_VirtualMachine.OSVirtualHardDisk != null)
-                this.diskProperties1.Bind(azureContext, _VirtualMachine.OSVirtualHardDisk);
+                this.diskProperties1.Bind(azureContext, _TargetTreeView, _VirtualMachine.OSVirtualHardDisk);
             else
                 this.diskProperties1.Visible = false;
         }
