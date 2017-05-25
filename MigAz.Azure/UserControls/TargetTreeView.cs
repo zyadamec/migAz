@@ -45,8 +45,9 @@ namespace MigAz.Azure.UserControls
             {
                 _PropertyPanel = value;
 
-                if (_PropertyPanel.TargetTreeView != this)
-                    _PropertyPanel.TargetTreeView = this;
+                if (_PropertyPanel != null)
+                    if (_PropertyPanel.TargetTreeView != this)
+                        _PropertyPanel.TargetTreeView = this;
             }
         }
 
@@ -461,8 +462,8 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_Resize(object sender, EventArgs e)
         {
-            treeTargetARM.Width = this.Width;
-            treeTargetARM.Height = this.Height;
+            treeTargetARM.Width = this.Width - 10;
+            treeTargetARM.Height = this.Height - 10;
         }
     }
 }

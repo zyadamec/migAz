@@ -45,8 +45,9 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetTreeView = value;
 
-                if (_TargetTreeView.PropertyPanel != this)
-                    _TargetTreeView.PropertyPanel = this;
+                if (_TargetTreeView != null)
+                    if (_TargetTreeView.PropertyPanel != this)
+                        _TargetTreeView.PropertyPanel = this;
             }
         }
 
