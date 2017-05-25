@@ -201,10 +201,9 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private Task Properties_PropertyChanged()
+        private async Task Properties_PropertyChanged()
         {
-            PropertyChanged();
-            return null;
+            await PropertyChanged();
         }
     }
 }

@@ -492,7 +492,7 @@ namespace MigAz.UserControls.Migrators
                     }
 
 
-                    subscriptionNodeARM.ExpandAll();
+                    subscriptionNodeARM.Expand();
 
                     #endregion
 

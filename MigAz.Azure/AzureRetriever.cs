@@ -667,7 +667,7 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
 
-            foreach (Arm.VirtualNetwork armVirtualNetwork in this.GetAzureARMVirtualNetworks())
+            foreach (Arm.VirtualNetwork armVirtualNetwork in  await this.GetAzureARMVirtualNetworks())
             {
                 if (armVirtualNetwork.Name == virtualNetworkName)
                     return armVirtualNetwork;
@@ -676,13 +676,13 @@ namespace MigAz.Azure
             return null;
         }
 
-        public List<Arm.VirtualNetwork> GetAzureARMVirtualNetworks()
+        public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
         {
             List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();
 
-            foreach (ResourceGroup resourceGroup in _ArmVirtualNetworks.Keys)
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
             {
-                foreach (Arm.VirtualNetwork virtualNetwork in _ArmVirtualNetworks[resourceGroup])
+                foreach (Arm.VirtualNetwork virtualNetwork in  await this.GetAzureARMVirtualNetworks(resourceGroup))
                 {
                     virtualNetworks.Add(virtualNetwork);
                 }
