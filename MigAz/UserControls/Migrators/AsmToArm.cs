@@ -399,6 +399,7 @@ namespace MigAz.UserControls.Migrators
                         subscriptionNodeARM.SelectedImageKey = "Subscription";
                         treeSourceARM.Nodes.Add(subscriptionNodeARM);
                         subscriptionNodeARM.Expand();
+
                         foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
