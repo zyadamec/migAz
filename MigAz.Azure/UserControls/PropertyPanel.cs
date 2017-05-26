@@ -14,6 +14,7 @@ namespace MigAz.Azure.UserControls
     public partial class PropertyPanel : UserControl
     {
         private TargetTreeView _TargetTreeView;
+        private TreeNode _BoundTreeNode;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -85,6 +86,7 @@ namespace MigAz.Azure.UserControls
 
         public void Clear()
         {
+            this._BoundTreeNode = null;
             this.ResourceImage = null;
             this.ResourceText = String.Empty;
             this.pnlProperties.Controls.Clear();
@@ -105,6 +107,7 @@ namespace MigAz.Azure.UserControls
         public async Task Bind(TreeNode migrationTargetNode)
         {
             this.Clear();
+            this._BoundTreeNode = migrationTargetNode;
 
             if (this.AzureContext == null)
                 throw new ArgumentException("AzureContext Property must be set on Property Panel before Binding.");
@@ -224,6 +227,9 @@ namespace MigAz.Azure.UserControls
 
         private async Task Properties_PropertyChanged()
         {
+            if (_BoundTreeNode != null && _BoundTreeNode.Tag != null)
+                _BoundTreeNode.Text = _BoundTreeNode.Tag.ToString();
+
             await PropertyChanged();
         }
     }
