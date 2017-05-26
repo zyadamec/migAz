@@ -18,7 +18,6 @@ namespace MigAz.Azure.Generator.AsmToArm
 {
     public class AzureGenerator : TemplateGenerator
     {
-        private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
         private ExportArtifacts _ExportArtifacts;
@@ -29,19 +28,14 @@ namespace MigAz.Azure.Generator.AsmToArm
         public AzureGenerator(
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
-            Azure.MigrationTarget.ResourceGroup targetResourceGroup,
             ILogProvider logProvider, 
             IStatusProvider statusProvider, 
             ITelemetryProvider telemetryProvider, 
             ISettingsProvider settingsProvider) : base(logProvider, statusProvider, sourceSubscription, targetSubscription)
         {
-            _TargetResourceGroup = targetResourceGroup;
             _telemetryProvider = telemetryProvider;
             _settingsProvider = settingsProvider;
         }
-
-        public Azure.MigrationTarget.ResourceGroup TargetResourceGroup { get { return _TargetResourceGroup; } }
-
 
         // Use of Treeview has been added here with aspect of transitioning full output towards this as authoritative source
         // Thought is that ExportArtifacts phases out, as it is providing limited context availability.
@@ -53,14 +47,16 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             _ExportArtifacts = (ExportArtifacts)artifacts;
 
-            if (_TargetResourceGroup == null)
+            if (_ExportArtifacts.ResourceGroup == null)
             {
-                this.AddAlert(AlertType.Error, "Target Resource Group must be provided for template generation.", _TargetResourceGroup);
+                this.AddAlert(AlertType.Error, "Target Resource Group must be provided for template generation.", _ExportArtifacts.ResourceGroup);
             }
-
-            if (_TargetResourceGroup.TargetLocation == null)
+            else
             {
-                this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _TargetResourceGroup);
+                if (_ExportArtifacts.ResourceGroup.TargetLocation == null)
+                {
+                    this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _ExportArtifacts.ResourceGroup);
+                }
             }
 
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
@@ -96,12 +92,12 @@ namespace MigAz.Azure.Generator.AsmToArm
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
                     if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null && virtualMachine.OSVirtualHardDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
-                        this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
                         if (dataDisk.TargetStorageAccount != null && dataDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
-                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
                     }
                 }
 
@@ -310,12 +306,12 @@ namespace MigAz.Azure.Generator.AsmToArm
             string tenantSwitch = String.Empty;
             string subscriptionSwitch = String.Empty;
 
-            if (_TargetResourceGroup != null)
+            if (_ExportArtifacts != null && _ExportArtifacts.ResourceGroup != null)
             {
-                targetResourceGroupName = _TargetResourceGroup.ToString();
+                targetResourceGroupName = _ExportArtifacts.ResourceGroup.ToString();
 
-                if (_TargetResourceGroup.TargetLocation != null)
-                    resourceGroupLocation = _TargetResourceGroup.TargetLocation.Name;
+                if (_ExportArtifacts.ResourceGroup.TargetLocation != null)
+                    resourceGroupLocation = _ExportArtifacts.ResourceGroup.TargetLocation.Name;
             }
 
             if (this.TargetSubscription != null)

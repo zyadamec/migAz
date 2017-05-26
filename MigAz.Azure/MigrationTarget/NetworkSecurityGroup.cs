@@ -14,7 +14,6 @@ namespace MigAz.Azure.MigrationTarget
         private string _TargetName = String.Empty;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
-
         private NetworkSecurityGroup() { }
 
         public NetworkSecurityGroup(AzureContext azureContext, Asm.NetworkSecurityGroup source)

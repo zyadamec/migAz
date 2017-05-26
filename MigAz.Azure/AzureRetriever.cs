@@ -38,16 +38,17 @@ namespace MigAz.Azure
         private List<AzureTenant> _ArmTenants;
         private List<AzureSubscription> _ArmSubscriptions;
         private List<ResourceGroup> _ArmResourceGroups;
-        private List<Arm.VirtualNetwork> _ArmVirtualNetworks;
-        private List<Arm.StorageAccount> _ArmStorageAccounts;
         private List<MigrationTarget.AvailabilitySet> _MigrationAvailabilitySets;
-        private List<Arm.AvailabilitySet> _ArmAvailabilitySets;
-        private List<Arm.VirtualMachine> _ArmVirtualMachines;
-        private List<Arm.ManagedDisk> _ArmManagedDisks;
-        private List<Arm.NetworkInterface> _ArmNetworkInterfaces;
-        private List<Arm.NetworkSecurityGroup> _ArmNetworkSecurityGroups;
-        private List<Arm.VirtualNetworkGateway> _ArmVirtualNetworkGateways;
-        private List<Arm.LoadBalancer> _ArmLoadBalancers;
+
+        private Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>> _ArmAvailabilitySets = new Dictionary<ResourceGroup, List<Arm.AvailabilitySet>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>> _ArmVirtualMachines = new Dictionary<ResourceGroup, List<Arm.VirtualMachine>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetwork>> _ArmVirtualNetworks = new Dictionary<ResourceGroup, List<Arm.VirtualNetwork>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.NetworkSecurityGroup>> _ArmNetworkSecurityGroups = new Dictionary<ResourceGroup, List<Arm.NetworkSecurityGroup>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.StorageAccount>> _ArmStorageAccounts = new Dictionary<ResourceGroup, List<Arm.StorageAccount>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.ManagedDisk>> _ArmManagedDisks = new Dictionary<ResourceGroup, List<Arm.ManagedDisk>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.LoadBalancer>> _ArmLoadBalancers = new Dictionary<ResourceGroup, List<Arm.LoadBalancer>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>> _ArmNetworkInterfaces = new Dictionary<ResourceGroup, List<Arm.NetworkInterface>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>> _ArmVirtualNetworkGateways = new Dictionary<ResourceGroup, List<Arm.VirtualNetworkGateway>>();
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
@@ -65,18 +66,22 @@ namespace MigAz.Azure
             _ArmTenants = null;
             _ArmSubscriptions = null;
             _ArmResourceGroups = null;
-            _ArmVirtualNetworks = null;
-            _ArmStorageAccounts = null;
-            _ArmAvailabilitySets = null;
-            _ArmNetworkInterfaces = null;
-            _ArmLoadBalancers = null;
-            _ArmNetworkSecurityGroups = null;
             _MigrationAvailabilitySets = null;
-            _ArmManagedDisks = null;
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
-        }
+
+            _ArmVirtualMachines = new Dictionary<ResourceGroup, List<Arm.VirtualMachine>>();
+            _ArmAvailabilitySets = new Dictionary<ResourceGroup, List<Arm.AvailabilitySet>>();
+            _ArmVirtualMachines = new Dictionary<ResourceGroup, List<Arm.VirtualMachine>>();
+            _ArmVirtualNetworks = new Dictionary<ResourceGroup, List<Arm.VirtualNetwork>>();
+            _ArmNetworkSecurityGroups = new Dictionary<ResourceGroup, List<Arm.NetworkSecurityGroup>>();
+            _ArmStorageAccounts = new Dictionary<ResourceGroup, List<Arm.StorageAccount>>();
+            _ArmManagedDisks = new Dictionary<ResourceGroup, List<Arm.ManagedDisk>>();
+            _ArmLoadBalancers = new Dictionary<ResourceGroup, List<Arm.LoadBalancer>>();
+            _ArmNetworkInterfaces = new Dictionary<ResourceGroup, List<Arm.NetworkInterface>>();
+            _ArmVirtualNetworkGateways = new Dictionary<ResourceGroup, List<Arm.VirtualNetworkGateway>>();
+    }
 
         public void SaveRestCache()
         {
@@ -549,10 +554,10 @@ namespace MigAz.Azure
             if (_ArmTenants != null)
                 return _ArmTenants;
 
-            JObject tenantsJson = await this.GetAzureARMResources("Tenants", null);
+            JObject tenantsJson = await this.GetAzureARMResources("Tenants", null, null);
 
             var tenants = from tenant in tenantsJson["value"]
-                                select tenant;
+                          select tenant;
 
             _ArmTenants = new List<AzureTenant>();
 
@@ -573,7 +578,7 @@ namespace MigAz.Azure
             Hashtable info = new Hashtable();
             info.Add("tenantId", azureTenant.TenantId);
 
-            JObject domainsJson = await this.GetAzureARMResources("Domains", info);
+            JObject domainsJson = await this.GetAzureARMResources("Domains", null, info);
 
             var domains = from domain in domainsJson["value"]
                           select domain;
@@ -596,7 +601,7 @@ namespace MigAz.Azure
             if (_ArmSubscriptions != null)
                 return _ArmSubscriptions;
 
-            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", null);
+            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", null, null);
 
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
@@ -619,7 +624,7 @@ namespace MigAz.Azure
             Hashtable info = new Hashtable();
             info.Add("tenantId", azureTenant.TenantId);
 
-            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", info);
+            JObject subscriptionsJson = await this.GetAzureARMResources("Subscriptions", null, info);
 
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
@@ -642,10 +647,10 @@ namespace MigAz.Azure
             if (_ArmResourceGroups != null)
                 return _ArmResourceGroups;
 
-            JObject resourceGroupsJson = await this.GetAzureARMResources("ResourceGroups", null);
+            JObject resourceGroupsJson = await this.GetAzureARMResources("ResourceGroups", null, null);
 
             var resourceGroups = from resourceGroup in resourceGroupsJson["value"]
-                                select resourceGroup;
+                                 select resourceGroup;
 
             _ArmResourceGroups = new List<ResourceGroup>();
 
@@ -658,27 +663,11 @@ namespace MigAz.Azure
             return _ArmResourceGroups;
         }
 
-        public async Task<ResourceGroup> GetAzureARMResourceGroup(string id)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMResourceGroup", "Start");
-
-            string[] idSplit = id.Split('/');
-            string seekResourceGroupId = "/" + idSplit[1] + "/" + idSplit[2] + "/" + idSplit[3] + "/" + idSplit[4];
-
-            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                if (String.Equals(resourceGroup.Id, seekResourceGroupId, StringComparison.OrdinalIgnoreCase))
-                    return resourceGroup;
-            }
-
-            return null;
-        }
-
-        public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName)
+        public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName) // todo now asap, shouldn't this be by resource id?
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
 
-            foreach (Arm.VirtualNetwork armVirtualNetwork in await GetAzureARMVirtualNetworks())
+            foreach (Arm.VirtualNetwork armVirtualNetwork in  await this.GetAzureARMVirtualNetworks())
             {
                 if (armVirtualNetwork.Name == virtualNetworkName)
                     return armVirtualNetwork;
@@ -687,71 +676,104 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
+        public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Start");
+            List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();
 
-            if (_ArmVirtualNetworks != null)
-                return _ArmVirtualNetworks;
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                foreach (Arm.VirtualNetwork virtualNetwork in  await this.GetAzureARMVirtualNetworks(resourceGroup))
+                {
+                    virtualNetworks.Add(virtualNetwork);
+                }
+            }
 
-            JObject virtualNetworksJson = await this.GetAzureARMResources("VirtualNetworks", null);
+            return virtualNetworks;
+        }
+
+        public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (_ArmVirtualNetworks.ContainsKey(resourceGroup))
+                return _ArmVirtualNetworks[resourceGroup];
+
+            JObject virtualNetworksJson = await this.GetAzureARMResources("VirtualNetworks", resourceGroup, null);
 
             var virtualNetworks = from vnet in virtualNetworksJson["value"]
                                   select vnet;
 
-            _ArmVirtualNetworks = new List<Arm.VirtualNetwork>();
+            List<Arm.VirtualNetwork> resourceGroupVirtualNetworks = new List<Arm.VirtualNetwork>();
 
             foreach (var virtualNetwork in virtualNetworks)
             {
                 Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(virtualNetwork);
 
                 await armVirtualNetwork.InitializeChildrenAsync(_AzureContext);
-                foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways())
+                foreach (Arm.VirtualNetworkGateway v in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworkGateways(resourceGroup))
                 {
-
+                    // todo now asap, why is this here
                 }
-                
-                _ArmVirtualNetworks.Add(armVirtualNetwork);
+
+                resourceGroupVirtualNetworks.Add(armVirtualNetwork);
             }
 
-            return _ArmVirtualNetworks;
+            _ArmVirtualNetworks.Add(resourceGroup, resourceGroupVirtualNetworks);
+            return resourceGroupVirtualNetworks;
         }
 
-        public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks()
+        public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMManagedDisks", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMManagedDisks", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmManagedDisks != null)
-                return _ArmManagedDisks;
+            if (_ArmManagedDisks.ContainsKey(resourceGroup))
+                return _ArmManagedDisks[resourceGroup];
 
-            JObject managedDisksJson = await this.GetAzureARMResources("ManagedDisks", null);
+            JObject managedDisksJson = await this.GetAzureARMResources("ManagedDisks", resourceGroup, null);
 
             var managedDisks = from managedDisk in managedDisksJson["value"]
                                   select managedDisk;
 
-            _ArmManagedDisks = new List<Arm.ManagedDisk>();
+            List<Arm.ManagedDisk> resourceGroupManagedDisks = new List<Arm.ManagedDisk>();
 
             foreach (var managedDisk in managedDisks)
             {
                 Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(managedDisk);
-                _ArmManagedDisks.Add(armManagedDisk);
+                resourceGroupManagedDisks.Add(armManagedDisk);
             }
 
-            return _ArmManagedDisks;
+            _ArmManagedDisks.Add(resourceGroup, resourceGroupManagedDisks);
+            return resourceGroupManagedDisks;
         }
-        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
+
+        public async Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts()
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccounts", "Start");
+            List<Arm.StorageAccount> storageAccounts = new List<Arm.StorageAccount>();
 
-            if (_ArmStorageAccounts != null)
-                return _ArmStorageAccounts;
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                foreach (Arm.StorageAccount storageAccount in await this.GetAzureARMStorageAccounts(resourceGroup))
+                {
+                    storageAccounts.Add(storageAccount);
+                }
+            }
 
-            JObject storageAccountsJson = await this.GetAzureARMResources("StorageAccounts", null);
+            return storageAccounts;
+        }
+
+        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccounts", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (_ArmStorageAccounts.ContainsKey(resourceGroup))
+                return _ArmStorageAccounts[resourceGroup];
+
+            JObject storageAccountsJson = await this.GetAzureARMResources("StorageAccounts", resourceGroup, null);
 
             var storageAccounts = from storage in storageAccountsJson["value"]
                                   select storage;
 
-            _ArmStorageAccounts = new List<Arm.StorageAccount>();
+            List<Arm.StorageAccount> resouceGroupStorageAccounts = new List<Arm.StorageAccount>();
 
             foreach (var storageAccount in storageAccounts)
             {
@@ -759,20 +781,21 @@ namespace MigAz.Azure
                 armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
-                _ArmStorageAccounts.Add(armStorageAccount);
+                resouceGroupStorageAccounts.Add(armStorageAccount);
             }
 
-            return _ArmStorageAccounts;
+            _ArmStorageAccounts.Add(resourceGroup, resouceGroupStorageAccounts);
+            return resouceGroupStorageAccounts;
         }
 
-        public async virtual Task<Arm.StorageAccount> GetAzureARMStorageAccount(string name)
+        public async virtual Task<Arm.StorageAccount> GetAzureARMStorageAccount(string name) // todo now asap, shouldn't this be by resource id?
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccount", "Start");
 
             if (_ArmStorageAccounts == null)
                 return null;
 
-            foreach (Arm.StorageAccount armStorageAccount in _ArmStorageAccounts)
+            foreach (Arm.StorageAccount armStorageAccount in await this.GetAzureARMStorageAccounts())
             {
                 if (String.Compare(armStorageAccount.Name, name, true) == 0)
                     return armStorageAccount;
@@ -788,7 +811,7 @@ namespace MigAz.Azure
             if (_ArmLocations != null)
                 return _ArmLocations;
 
-            JObject locationsJson = await this.GetAzureARMResources("Locations", null);
+            JObject locationsJson = await this.GetAzureARMResources("Locations", null, null);
 
             var locations = from location in locationsJson["value"]
                                   select location;
@@ -806,28 +829,29 @@ namespace MigAz.Azure
             return _ArmLocations;
         }
 
-        public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines()
+        public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmVirtualMachines != null)
-                return _ArmVirtualMachines;
+            if (_ArmVirtualMachines.ContainsKey(resourceGroup))
+                return _ArmVirtualMachines[resourceGroup];
 
-            JObject virtualMachineJson = await this.GetAzureARMResources("VirtualMachines", null);
+            JObject virtualMachineJson = await this.GetAzureARMResources("VirtualMachines", resourceGroup, null);
 
             var virtualMachines = from virtualMachine in virtualMachineJson["value"]
                             select virtualMachine;
 
-            _ArmVirtualMachines = new List<Arm.VirtualMachine>();
+            List<Arm.VirtualMachine> resourceGroupVirtualMachines = new List<Arm.VirtualMachine>();
 
             foreach (var virtualMachine in virtualMachines)
             {
                 Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
                 await armVirtualMachine.InitializeChildrenAsync(_AzureContext);
-                _ArmVirtualMachines.Add(armVirtualMachine);
+                resourceGroupVirtualMachines.Add(armVirtualMachine);
             }
 
-            return _ArmVirtualMachines;
+            _ArmVirtualMachines.Add(resourceGroup, resourceGroupVirtualMachines);
+            return resourceGroupVirtualMachines;
         }
 
         internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
@@ -838,7 +862,7 @@ namespace MigAz.Azure
             storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup.Name);
             storageAccountKeyInfo.Add("StorageAccountName", armStorageAccount.Name);
 
-            JObject storageAccountKeysJson = await this.GetAzureARMResources("StorageAccountKeys", storageAccountKeyInfo);
+            JObject storageAccountKeysJson = await this.GetAzureARMResources("StorageAccountKeys", armStorageAccount.ResourceGroup, storageAccountKeyInfo);
 
             var storageAccountKeys = from keys in storageAccountKeysJson["keys"]
                                   select keys;
@@ -853,34 +877,35 @@ namespace MigAz.Azure
             return;
         }
 
-        public async Task<List<Arm.AvailabilitySet>> GetAzureARMAvailabilitySets()
+        public async Task<List<Arm.AvailabilitySet>> GetAzureARMAvailabilitySets(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySets", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySets", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmAvailabilitySets != null)
-                return _ArmAvailabilitySets;
+            if (_ArmAvailabilitySets.ContainsKey(resourceGroup))
+                return _ArmAvailabilitySets[resourceGroup];
 
-            JObject availabilitySetJson = await this.GetAzureARMResources("AvailabilitySets", null);
+            JObject availabilitySetJson = await this.GetAzureARMResources("AvailabilitySets", resourceGroup, null);
 
             var availabilitySets = from availabilitySet in availabilitySetJson["value"]
                                    select availabilitySet;
 
-            _ArmAvailabilitySets = new List<Arm.AvailabilitySet>();
+            List<Arm.AvailabilitySet> resourceGroupAvailabilitySets = new List<Arm.AvailabilitySet>();
 
             foreach (var availabilitySet in availabilitySets)
             {
                 Arm.AvailabilitySet armAvailabilitySet = new Arm.AvailabilitySet(availabilitySet);
-                _ArmAvailabilitySets.Add(armAvailabilitySet);
+                resourceGroupAvailabilitySets.Add(armAvailabilitySet);
             }
 
-            return _ArmAvailabilitySets;
+            _ArmAvailabilitySets.Add(resourceGroup, resourceGroupAvailabilitySets);
+            return resourceGroupAvailabilitySets;
         }
 
         public async Task<Arm.AvailabilitySet> GetAzureARMAvailabilitySet(string availabilitySetId)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySet", "Start");
 
-            foreach (Arm.AvailabilitySet availabilitySet in await this.GetAzureARMAvailabilitySets())
+            foreach (Arm.AvailabilitySet availabilitySet in await this.GetAzureARMAvailabilitySets(await GetAzureARMResourceGroup(availabilitySetId)))
             {
                 if (availabilitySet.Id == availabilitySetId)
                     return availabilitySet;
@@ -889,35 +914,59 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<List<Arm.NetworkInterface>> GetAzureARMNetworkInterfaces()
+        public async Task<ResourceGroup> GetAzureARMResourceGroup(string id)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterfaces", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMResourceGroup", "Start");
 
-            if (_ArmNetworkInterfaces != null)
-                return _ArmNetworkInterfaces;
+            if (id != null && id != String.Empty)
+            {
+                string[] idSplit = id.Split('/');
 
-            JObject networkInterfacesJson = await this.GetAzureARMResources("NetworkInterfaces", null);
+                if (idSplit.Length >= 4)
+                {
+                    string seekResourceGroupId = "/" + idSplit[1] + "/" + idSplit[2] + "/" + idSplit[3] + "/" + idSplit[4];
+
+                    foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+                    {
+                        if (String.Equals(resourceGroup.Id, seekResourceGroupId, StringComparison.OrdinalIgnoreCase))
+                            return resourceGroup;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<List<Arm.NetworkInterface>> GetAzureARMNetworkInterfaces(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterfaces", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (_ArmNetworkInterfaces.ContainsKey(resourceGroup))
+                return _ArmNetworkInterfaces[resourceGroup];
+
+            JObject networkInterfacesJson = await this.GetAzureARMResources("NetworkInterfaces", resourceGroup, null);
 
             var networkInterfaces = from networkInterface in networkInterfacesJson["value"]
                                    select networkInterface;
 
-            _ArmNetworkInterfaces = new List<Arm.NetworkInterface>();
+            List<Arm.NetworkInterface> resourceGroupNetworkInterfaces = new List<Arm.NetworkInterface>();
 
             foreach (var networkInterface in networkInterfaces)
             {
                 Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
                 await armNetworkInterface.InitializeChildrenAsync(_AzureContext);
-                _ArmNetworkInterfaces.Add(armNetworkInterface);
+                resourceGroupNetworkInterfaces.Add(armNetworkInterface);
             }
 
-            return _ArmNetworkInterfaces;
+            _ArmNetworkInterfaces.ContainsKey(resourceGroup);
+            return resourceGroupNetworkInterfaces;
         }
 
         public async Task<Arm.NetworkInterface> GetAzureARMNetworkInterface(string id)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterface", "Start");
 
-            foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces())
+            foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces(await GetAzureARMResourceGroup(id)))
             {
                 if (String.Compare(networkInterface.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
                     return networkInterface;
@@ -926,27 +975,28 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<List<Arm.VirtualNetworkGateway>> GetAzureARMVirtualNetworkGateways()
+        public async Task<List<Arm.VirtualNetworkGateway>> GetAzureARMVirtualNetworkGateways(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworkGateways", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworkGateways", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmVirtualNetworkGateways != null)
-                return _ArmVirtualNetworkGateways;
+            if (_ArmVirtualNetworkGateways.ContainsKey(resourceGroup))
+                return _ArmVirtualNetworkGateways[resourceGroup];
 
-            JObject virtualNetworkGatewaysJson = await this.GetAzureARMResources("VirtualNetworkGateways", null);
+            JObject virtualNetworkGatewaysJson = await this.GetAzureARMResources("VirtualNetworkGateways", resourceGroup, null);
 
             var virtualNetworkGateways = from virtualNetworkGateway in virtualNetworkGatewaysJson["value"]
                                     select virtualNetworkGateway;
 
-            _ArmVirtualNetworkGateways = new List<Arm.VirtualNetworkGateway>();
+            List<Arm.VirtualNetworkGateway> resourceGroupVirtualNetworkGateways = new List<Arm.VirtualNetworkGateway>();
 
             foreach (var virtualNetworkGateway in virtualNetworkGateways)
             {
                 Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(virtualNetworkGateway);
-                _ArmVirtualNetworkGateways.Add(armVirtualNetworkGateway);
+                resourceGroupVirtualNetworkGateways.Add(armVirtualNetworkGateway);
             }
 
-            return _ArmVirtualNetworkGateways;
+            _ArmVirtualNetworkGateways.Add(resourceGroup, resourceGroupVirtualNetworkGateways);
+            return resourceGroupVirtualNetworkGateways;
         }
 
         
@@ -954,7 +1004,7 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroup", "Start");
 
-            foreach (Arm.NetworkSecurityGroup networkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups())
+            foreach (Arm.NetworkSecurityGroup networkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups(await GetAzureARMResourceGroup(id)))
             {
                 if (String.Compare(networkSecurityGroup.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
                     return networkSecurityGroup;
@@ -963,52 +1013,54 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups()
+        public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmNetworkSecurityGroups != null)
-                return _ArmNetworkSecurityGroups;
+            if (_ArmNetworkSecurityGroups.ContainsKey(resourceGroup))
+                return _ArmNetworkSecurityGroups[resourceGroup];
 
-            JObject networkSecurityGroupsJson = await this.GetAzureARMResources("NetworkSecurityGroups", null);
+            JObject networkSecurityGroupsJson = await this.GetAzureARMResources("NetworkSecurityGroups", resourceGroup, null);
 
             var networkSecurityGroups = from networkSecurityGroup in networkSecurityGroupsJson["value"]
                                     select networkSecurityGroup;
 
-            _ArmNetworkSecurityGroups = new List<Arm.NetworkSecurityGroup>();
+            List<Arm.NetworkSecurityGroup> resourceGroupNetworkSecurityGroups = new List<Arm.NetworkSecurityGroup>();
 
             foreach (var networkSecurityGroup in networkSecurityGroups)
             {
                 Arm.NetworkSecurityGroup armNetworkSecurityGroup = new Arm.NetworkSecurityGroup(networkSecurityGroup);
                 await armNetworkSecurityGroup.InitializeChildrenAsync(this._AzureContext);
-                _ArmNetworkSecurityGroups.Add(armNetworkSecurityGroup);
+                resourceGroupNetworkSecurityGroups.Add(armNetworkSecurityGroup);
             }
 
-            return _ArmNetworkSecurityGroups;
+            _ArmNetworkSecurityGroups.Add(resourceGroup, resourceGroupNetworkSecurityGroups);
+            return resourceGroupNetworkSecurityGroups;
         }
 
-        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers()
+        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers(Arm.ResourceGroup resourceGroup)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
-            if (_ArmLoadBalancers != null)
-                return _ArmLoadBalancers;
+            if (_ArmLoadBalancers.ContainsKey(resourceGroup))
+                return _ArmLoadBalancers[resourceGroup];
 
-            JObject loadBalancersJson = await this.GetAzureARMResources("LoadBalancers", null);
+            JObject loadBalancersJson = await this.GetAzureARMResources("LoadBalancers", resourceGroup, null);
 
             var loadBalancers = from networkSecurityGroup in loadBalancersJson["value"]
                                         select networkSecurityGroup;
 
-            _ArmLoadBalancers = new List<Arm.LoadBalancer>();
+            List<Arm.LoadBalancer> resourceGroupLoadBalancers = new List<Arm.LoadBalancer>();
 
             foreach (var loadBalancer in loadBalancers)
             {
                 Arm.LoadBalancer armLoadBalancer = new Arm.LoadBalancer(loadBalancer);
                 await armLoadBalancer.InitializeChildrenAsync(_AzureContext);
-                _ArmLoadBalancers.Add(armLoadBalancer);
+                resourceGroupLoadBalancers.Add(armLoadBalancer);
             }
 
-            return _ArmLoadBalancers;
+            _ArmLoadBalancers.Add(resourceGroup, resourceGroupLoadBalancers);
+            return resourceGroupLoadBalancers;
         }
 
         #endregion
@@ -1109,7 +1161,7 @@ namespace MigAz.Azure
             return RemoveXmlns(azureRestResponse.Response);
         }
 
-        private async Task<JObject> GetAzureARMResources(string resourceType, Hashtable info)
+        private async Task<JObject> GetAzureARMResources(string resourceType, Arm.ResourceGroup resourceGroup, Hashtable info)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start");
 
@@ -1159,55 +1211,55 @@ namespace MigAz.Azure
                     break;
                 case "AvailabilitySets":
                     // https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/availabilitysets-list-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderAvailabilitySets + "?api-version=2017-03-30";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Compute Availability Sets for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderAvailabilitySets + "?api-version=2017-03-30";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Availability Sets for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
                     // https://docs.microsoft.com/en-us/rest/api/network/list-virtual-networks-within-a-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworkGateways":
                     // https://docs.microsoft.com/en-us/rest/api/network/virtualnetworkgateways#VirtualNetworkGateways_List
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualNetworkGateways + "?api-version=2016-12-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=2016-12-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkSecurityGroups":
                     // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderNetworkSecurityGroups + "?api-version=2017-03-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network SecurityGroups for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=2017-03-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Security Groups for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkInterfaces":
                     // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccounts":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_List
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccountKeys":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_ListKeys
                     methodType = "POST";
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + info["ResourceGroupName"] + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Account Key for Subscription ID : " + _AzureSubscription.SubscriptionId + " / Storage Account: " + info["StorageAccountName"] + " ...");
                     break;
                 case "VirtualMachines":
                     // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "LoadBalancers":
                     // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
-                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);

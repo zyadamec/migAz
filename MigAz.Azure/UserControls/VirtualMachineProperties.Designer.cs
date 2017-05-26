@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls
+﻿namespace MigAz.Azure.UserControls
 {
     partial class VirtualMachineProperties
     {
@@ -33,7 +33,7 @@
             this.lblOS = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.diskProperties1 = new MigAz.UserControls.DiskProperties();
+            this.diskProperties1 = new MigAz.Azure.UserControls.DiskProperties();
             this.label12 = new System.Windows.Forms.Label();
             this.lblASMVMName = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -90,7 +90,6 @@
             // 
             this.diskProperties1.AllowManangedDisk = false;
             this.diskProperties1.Location = new System.Drawing.Point(17, 250);
-            this.diskProperties1.LogProvider = null;
             this.diskProperties1.Name = "diskProperties1";
             this.diskProperties1.Size = new System.Drawing.Size(640, 528);
             this.diskProperties1.TabIndex = 19;

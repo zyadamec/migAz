@@ -50,15 +50,6 @@ namespace MigAz.AWS.Generator
 
                 var vpcs = _awsObjectRetriever.Vpcs;
 
-                List<Amazon.EC2.Model.Subnet> subnets = _awsObjectRetriever.GetSubnets(virtualnetworkname.VpcId);
-
-                if (subnets != null)
-                {
-                    var vpc = _awsObjectRetriever.Vpcs.Vpcs.Find(x => x.VpcId == virtualnetworkname.VpcId); // Picking the Subnets selected by the user out of all the available subnets
-                    List<Amazon.EC2.Model.DhcpOptions> dhcpOptions = _awsObjectRetriever.getDhcpOptions(vpc.DhcpOptionsId);
-                    //_awsRetriever.GetAwsResources(ConfigurationManager.AppSettings["endpoint"], "Dhcp Options", virtualnetworksite.SelectSingleNode("dhcpOptionsId").InnerText);
-                    BuildVirtualNetworkObject(vpc, subnets, dhcpOptions);
-                }
                 Application.DoEvents();
             }
             LogProvider.WriteLog("UpdateArtifacts", "End processing selected Vpcs");
@@ -236,10 +227,10 @@ namespace MigAz.AWS.Generator
             //// if internal load balancer
             if (LB.Scheme != "internet-facing")
             {
-                string virtualnetworkname = GetVPCName(LB.VPCId);
+                //string virtualnetworkname = GetVPCName(LB.VPCId);
 
                 var subnet = _awsObjectRetriever.getSubnetbyId(LB.Subnets[0]);
-                string subnetname = GetSubnetName(subnet[0]);
+                string subnetname = "SubnetName";
 
                 frontendipconfiguration_properties.privateIPAllocationMethod = "Static";
                 try
@@ -253,14 +244,10 @@ namespace MigAz.AWS.Generator
                 }
 
                 List<string> dependson = new List<string>();
-                if (ResourceExists(typeof(VirtualNetwork), virtualnetworkname))
-                {
-                    dependson.Add("[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + virtualnetworkname + "')]");
-                }
-                loadbalancer.dependsOn = dependson;
+
 
                 Reference subnet_ref = new Reference();
-                subnet_ref.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + virtualnetworkname + "/subnets/" + subnetname + "')]";
+                subnet_ref.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/virtualNetworks/" + "VNetName" + "/subnets/" + subnetname + "')]";
                 frontendipconfiguration_properties.subnet = subnet_ref;
             }
             //// if external load balancer
@@ -409,125 +396,6 @@ namespace MigAz.AWS.Generator
             }
 
             LogProvider.WriteLog("BuildLoadBalancerRules", "End");
-        }
-
-        private void BuildVirtualNetworkObject(Amazon.EC2.Model.Vpc vpc, List<Amazon.EC2.Model.Subnet> subnetNode, List<Amazon.EC2.Model.DhcpOptions> dhcpNode)
-        {
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "Start");
-
-            List<string> dependson = new List<string>();
-
-            //Address spaces
-            List<string> addressprefixes = new List<string>();
-            addressprefixes.Add(vpc.CidrBlock);
-
-            AddressSpace addressspace = new AddressSpace();
-            addressspace.addressPrefixes = addressprefixes;
-
-            //DnsServers
-            List<string> dnsservers = new List<string>();
-            foreach (var dnsserver in dhcpNode)
-            {
-                foreach (var item in dnsserver.DhcpConfigurations)
-                {
-                    if ((item.Key == "domain-name-servers") && (item.Values[0] != "AmazonProvidedDNS"))
-                    {
-                        foreach (var value in item.Values)
-                            dnsservers.Add(value);
-                    }
-                }
-            }
-
-            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
-            if (dnsservers.Count > 0)
-            {
-                dhcpoptions.dnsServers = dnsservers;
-            }
-            else
-            {
-                dhcpoptions = null;
-            }
-
-            //VirtualNetworks
-            VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
-            virtualnetwork.name = GetVPCName(vpc.VpcId);
-            virtualnetwork.dependsOn = dependson;
-
-            List<Subnet> subnets = new List<Subnet>();
-            foreach (var subnetnode in subnetNode)
-            {
-                Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = subnetnode.CidrBlock;
-
-                Subnet subnet = new Subnet();
-                //subnet.name = subnetnode.SubnetId;
-                subnet.name = GetSubnetName(subnetnode);
-                subnet.properties = properties;
-
-                subnets.Add(subnet);
-
-                //QUES: Single Sec group?
-                // add Network Security Group if exists - 2 subnets - each acl is associated with both
-                List<Amazon.EC2.Model.NetworkAcl> networkAcls = _awsObjectRetriever.getNetworkAcls(subnetnode.SubnetId);
-                List<Amazon.EC2.Model.RouteTable> routeTable = _awsObjectRetriever.getRouteTables(subnetnode.SubnetId);
-
-
-
-                //var nodes = networkAcls.SelectSingleNode("DescribeNetworkAclsResponse ").SelectSingleNode("networkAclSet").SelectNodes("item");
-
-                if (networkAcls.Count > 0)
-                {
-                    NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(networkAcls[0]);
-
-                    //NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(subnet.name);
-
-                    // Add NSG reference to the subnet
-                    Reference networksecuritygroup_ref = new Reference();
-                    networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
-
-                    properties.networkSecurityGroup = networksecuritygroup_ref;
-
-                    // Add NSG dependsOn to the Virtual Network object
-                    if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
-                    {
-                        virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
-                    }
-
-                }
-
-                if (routeTable.Count > 0)
-                {
-                    RouteTable routetable = BuildRouteTable(routeTable[0]);
-
-                    if (routetable.properties != null)
-                    {
-                        // Add Route Table reference to the subnet
-                        Reference routetable_ref = new Reference();
-                        routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
-
-                        properties.routeTable = routetable_ref;
-
-                        // Add Route Table dependsOn to the Virtual Network object
-                        if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
-                        {
-                            virtualnetwork.dependsOn.Add(routetable_ref.id);
-                        }
-                    }
-                }
-
-            }
-
-            VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
-            virtualnetwork_properties.addressSpace = addressspace;
-            virtualnetwork_properties.subnets = subnets;
-            virtualnetwork_properties.dhcpOptions = dhcpoptions;
-
-            virtualnetwork.properties = virtualnetwork_properties;
-
-            this.AddResource(virtualnetwork);
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "Microsoft.Network/virtualNetworks/" + virtualnetwork.name);
-
-            LogProvider.WriteLog("BuildVirtualNetworkObject", "End");
         }
 
         private NetworkSecurityGroup BuildNetworkSecurityGroup(Amazon.EC2.Model.NetworkAcl securitygroup)
@@ -779,7 +647,7 @@ namespace MigAz.AWS.Generator
 
             string virtualmachinename = GetInstanceName(resource);
 
-            string virtualnetworkname = GetVPCName(resource.VpcId);
+            string virtualnetworkname = "VNetName"; //GetVPCName(resource.VpcId);
 
             foreach (var additionalnetworkinterface in resource.NetworkInterfaces)
             {
@@ -792,7 +660,7 @@ namespace MigAz.AWS.Generator
                 string SubnetId = additionalnetworkinterface.SubnetId;
 
                 var Subdetails = _awsObjectRetriever.getSubnetbyId(SubnetId);
-                string subnet_name = GetSubnetName(Subdetails[0]);
+                string subnet_name = "SubnetName";
 
 
                 Reference subnet_ref = new Reference();
@@ -1159,21 +1027,6 @@ namespace MigAz.AWS.Generator
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string GetSubnetName(dynamic Subnet)
-        {
-            string SubName = Subnet.SubnetId.Replace(' ', '-');
-
-            foreach (var tag in Subnet.Tags)
-            {
-                if (tag.Key == "Name")
-                {
-                    SubName = tag.Value;
-                }
-            }
-
-            return SubName;
-        }
-
         private string GetRouteName(dynamic Route)
         {
             //RouteTableId
@@ -1233,23 +1086,6 @@ namespace MigAz.AWS.Generator
             }
 
             return NICName;
-        }
-
-        private string GetVPCName(string VpcId)
-        {
-            var VPC = _awsObjectRetriever.getVPCbyId(VpcId);
-
-            string VPCName = VPC[0].VpcId;
-
-            foreach (var tag in VPC[0].Tags)
-            {
-                if (tag.Key == "Name")
-                {
-                    VPCName = tag.Value.Replace(" ", "-");
-                }
-            }
-
-            return VPCName;
         }
 
         private string GetVMSize(string instancetype)

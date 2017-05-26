@@ -7,18 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.UserControls.Migrators;
 using MigAz.Core.Interface;
 
-namespace MigAz.UserControls
+namespace MigAz.Azure.UserControls
 {
     public partial class NetworkInterfaceProperties : UserControl
     {
-
-        private AsmToArm _AsmToArmForm;
-        private TreeNode _NetworkInterfaceNode;
+        private AzureContext _AzureContext;
+        private TargetTreeView _TargetTreeView;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
-        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -28,10 +25,12 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AsmToArm asmToArmForm, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
+        internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
-            _AsmToArmForm = asmToArmForm;
+            _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _TargetNetworkInterface = targetNetworkInterface;
+
             lblSourceName.Text = _TargetNetworkInterface.SourceName;
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
@@ -57,12 +56,12 @@ namespace MigAz.UserControls
 
             try
             {
-                List<Azure.Arm.VirtualNetwork> a = await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks();
+                List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks();
                 rbExistingARMVNet.Enabled = a.Count() > 0;
             }
             catch (Exception exc)
             {
-                _AsmToArmForm.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
+                _AzureContext.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
                 rbExistingARMVNet.Enabled = false;
             }
 
@@ -79,29 +78,7 @@ namespace MigAz.UserControls
                 rbExistingARMVNet.Checked = true;
             }
         }
-
-        internal void Bind(AsmToArm asmToArmForm, TreeNode networkInterfaceNode)
-        {
-            _AsmToArmForm = asmToArmForm;
-            _NetworkInterfaceNode = networkInterfaceNode;
-            _TargetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)_NetworkInterfaceNode.Tag;
-            lblSourceName.Text = _TargetNetworkInterface.SourceName;
-            txtTargetName.Text = _TargetNetworkInterface.TargetName;
-
-            if (rbExistingARMVNet.Enabled == false ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() == 0 ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet == null ||
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
-                )
-            {
-                rbVNetInMigration.Checked = true;
-            }
-            else
-            {
-                rbExistingARMVNet.Checked = true;
-            }
-        }
-
+        
         private async void cmbExistingArmVNets_SelectedIndexChanged(object sender, EventArgs e)
         {
             cmbExistingArmSubnet.Items.Clear();
@@ -143,7 +120,7 @@ namespace MigAz.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
 
                 foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                 {
@@ -189,7 +166,7 @@ namespace MigAz.UserControls
                 #endregion
             }
 
-            await PropertyChanged();
+            PropertyChanged();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
@@ -204,7 +181,7 @@ namespace MigAz.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMVirtualNetworks())
+                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks())
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);
@@ -283,9 +260,6 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _TargetNetworkInterface.TargetName = txtSender.Text.Trim();
-
-            if (_NetworkInterfaceNode != null)
-                _NetworkInterfaceNode.Text = _TargetNetworkInterface.ToString();
 
             PropertyChanged();
         }

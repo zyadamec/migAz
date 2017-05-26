@@ -59,6 +59,12 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = source.Name;
         }
 
+        public Subnet(ISubnet sourceSubnet)
+        {
+            this._SourceSubnet = sourceSubnet;
+            this.TargetName = sourceSubnet.Name;
+        }
+
         private NetworkSecurityGroup SeekNetworkSecurityGroup(List<NetworkSecurityGroup> networkSecurityGroups, string sourceName)
         {
             if (networkSecurityGroups == null || sourceName == null)
@@ -78,7 +84,7 @@ namespace MigAz.Azure.MigrationTarget
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty).Replace("-", String.Empty); }
         }
 
         public ISubnet SourceSubnet

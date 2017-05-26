@@ -76,6 +76,22 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public VirtualNetwork(IVirtualNetwork virtualNetwork)
+        {
+            this.SourceVirtualNetwork = virtualNetwork;
+            this.TargetName = virtualNetwork.Name;
+            foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
+            {
+                this.AddressPrefixes.Add(addressPrefix);
+            }
+
+            foreach (ISubnet sourceSubnet in virtualNetwork.Subnets)
+            {
+                MigrationTarget.Subnet targetSubnet = new Subnet(sourceSubnet);
+                this.TargetSubnets.Add(targetSubnet);
+            }
+        }
+
         public IVirtualNetwork SourceVirtualNetwork { get; }
 
         public String SourceName
@@ -92,7 +108,7 @@ namespace MigAz.Azure.MigrationTarget
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+            set { _TargetName = value.Trim().Replace(" ", String.Empty).Replace("-", String.Empty); }
         }
 
         public List<VirtualNetworkGateway> TargetVirtualNetworkGateways
@@ -107,7 +123,10 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualNetworkSuffix;
+            if (_AzureContext == null || _AzureContext.SettingsProvider == null)
+                return this.TargetName;
+            else
+                return this.TargetName + _AzureContext.SettingsProvider.VirtualNetworkSuffix;
         }
 
         public string TargetId

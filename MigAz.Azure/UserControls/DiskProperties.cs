@@ -9,17 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
-using MigAz.UserControls.Migrators;
 using MigAz.Core.Interface;
 
-namespace MigAz.UserControls
+namespace MigAz.Azure.UserControls
 {
     public partial class DiskProperties : UserControl
     {
-        private AsmToArm _AsmToArmForm;
-        private TreeNode _DiskTreeNode;
+        TargetTreeView _TargetTreeView;
+        private AzureContext _AzureContext;
         private Azure.MigrationTarget.Disk _TargetDisk;
-        private ILogProvider _LogProvider;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -46,12 +44,6 @@ namespace MigAz.UserControls
             }
         }
 
-        public ILogProvider LogProvider
-        {
-            get { return _LogProvider; }
-            set { _LogProvider = value; }
-        }
-
         public IStorageAccount TargetStorageAccount
         {
             get
@@ -63,19 +55,11 @@ namespace MigAz.UserControls
             }
         }
 
-        internal void Bind(AsmToArm asmToArmForm, Azure.MigrationTarget.Disk targetDisk)
+        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.Disk targetDisk)
         {
-            _AsmToArmForm = asmToArmForm;
+            _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
-
-            BindCommon();
-        }
-
-        internal void Bind(AsmToArm asmToArmForm, TreeNode armDataDiskNode)
-        {
-            _AsmToArmForm = asmToArmForm;
-            _DiskTreeNode = armDataDiskNode;
-            _TargetDisk = (Azure.MigrationTarget.Disk)_DiskTreeNode.Tag;
 
             BindCommon();
         }
@@ -109,12 +93,14 @@ namespace MigAz.UserControls
                     if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk))
                     {
                         Azure.Asm.Disk asmDisk = (Azure.Asm.Disk)_TargetDisk.SourceDisk;
-                        lblAsmStorageAccount.Text = asmDisk.SourceStorageAccount.Name;
+                        if (asmDisk.SourceStorageAccount != null)
+                            lblAsmStorageAccount.Text = asmDisk.SourceStorageAccount.Name;
                     }
                     else if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
                     {
                         Azure.Arm.Disk armDisk = (Azure.Arm.Disk)_TargetDisk.SourceDisk;
-                        lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
+                        if (armDisk.SourceStorageAccount != null)
+                            lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
                     }
                 }
             }
@@ -139,7 +125,7 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                TreeNode targetResourceGroupNode = _AsmToArmForm.SeekARMChildTreeNode(_AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup.ToString(), _AsmToArmForm.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
 
                 foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                 {
@@ -187,7 +173,7 @@ namespace MigAz.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AsmToArmForm.AzureContextTargetARM.AzureRetriever.GetAzureARMStorageAccounts())
+                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
@@ -220,7 +206,7 @@ namespace MigAz.UserControls
                 }
             }
 
-            _AsmToArmForm.AzureContextTargetARM.StatusProvider.UpdateStatus("Ready");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)
@@ -238,7 +224,6 @@ namespace MigAz.UserControls
             }
 
             PropertyChanged();
-            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
         private void txtTargetDiskName_TextChanged(object sender, EventArgs e)
@@ -246,11 +231,8 @@ namespace MigAz.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _TargetDisk.TargetName = txtSender.Text.Trim();
-            if (_DiskTreeNode != null)
-                _DiskTreeNode.Text = _TargetDisk.ToString();
 
             PropertyChanged();
-            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
         private void txtBlobName_TextChanged(object sender, EventArgs e)
@@ -260,7 +242,6 @@ namespace MigAz.UserControls
             _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
 
             PropertyChanged();
-            this._AsmToArmForm.StatusProvider.UpdateStatus("Ready");
         }
 
         private void txtTargetDiskName_KeyPress(object sender, KeyPressEventArgs e)

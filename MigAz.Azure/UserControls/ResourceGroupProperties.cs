@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using MigAz.Azure.Interface;
-using MigAz.UserControls.Migrators;
 
-namespace MigAz.UserControls
+namespace MigAz.Azure.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
-        private AsmToArm _ParentForm;
-        private TreeNode _ResourceGroupNode;
+        private AzureContext _AzureContext;
+        private MigrationTarget.ResourceGroup _ResourceGroup;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -20,19 +19,17 @@ namespace MigAz.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AsmToArm parentForm, TreeNode resourceGroupNode)
+        internal async Task Bind(AzureContext azureContext, MigrationTarget.ResourceGroup resourceGroup)
         {
-            _ParentForm = parentForm;
-            _ResourceGroupNode = resourceGroupNode;
+            _AzureContext = azureContext;
+            _ResourceGroup = resourceGroup;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup) _ResourceGroupNode.Tag;
-
-            txtTargetName.Text = armResourceGroup.TargetName;
+            txtTargetName.Text = resourceGroup.TargetName;
 
             try
             {
                 cboTargetLocation.Items.Clear();
-                foreach (Azure.Arm.Location armLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureARMLocations())
+                foreach (Azure.Arm.Location armLocation in await azureContext.AzureRetriever.GetAzureARMLocations())
                 {
                     cboTargetLocation.Items.Add(armLocation);
                 }
@@ -44,17 +41,17 @@ namespace MigAz.UserControls
                 // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
 
                 cboTargetLocation.Items.Clear();
-                foreach (Azure.Asm.Location asmLocation in await _ParentForm.AzureContextTargetARM.AzureRetriever.GetAzureASMLocations())
+                foreach (Azure.Asm.Location asmLocation in await azureContext.AzureRetriever.GetAzureASMLocations())
                 {
                     cboTargetLocation.Items.Add(asmLocation);
                 }
             }
 
-            if (armResourceGroup.TargetLocation != null)
+            if (resourceGroup.TargetLocation != null)
             {
                 foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
                 {
-                    if (armLocation.Name == armResourceGroup.TargetLocation.Name)
+                    if (armLocation.Name == resourceGroup.TargetLocation.Name)
                         cboTargetLocation.SelectedItem = armLocation;
                 }
             }
@@ -64,11 +61,7 @@ namespace MigAz.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
-
-            armResourceGroup.TargetName = txtSender.Text;
-            _ResourceGroupNode.Text = armResourceGroup.ToString();
-            _ResourceGroupNode.Name = armResourceGroup.ToString();
+            _ResourceGroup.TargetName = txtSender.Text;
 
             PropertyChanged();
         }
@@ -85,8 +78,7 @@ namespace MigAz.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            Azure.MigrationTarget.ResourceGroup armResourceGroup = (Azure.MigrationTarget.ResourceGroup)_ResourceGroupNode.Tag;
-            armResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
+            _ResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
 
             PropertyChanged();
         }
