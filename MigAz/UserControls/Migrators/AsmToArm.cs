@@ -391,6 +391,7 @@ namespace MigAz.UserControls.Migrators
                         _ArmTargetStorageAccounts = new List<Azure.MigrationTarget.StorageAccount>();
                         _ArmTargetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
                         _ArmTargetNetworkSecurityGroups = new List<Azure.MigrationTarget.NetworkSecurityGroup>();
+                        _ArmTargetManagedDisks = new List<Azure.MigrationTarget.Disk>();
                         _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                         _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
 
