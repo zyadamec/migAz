@@ -37,6 +37,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
         private PropertyPanel _PropertyPanel;
+        private ImageList _AzureResourceImageList;
 
         #endregion
 
@@ -81,6 +82,21 @@ namespace MigAz.UserControls.Migrators
             this._PropertyPanel.AzureContext = _AzureContextTargetARM;
             this._PropertyPanel.TargetTreeView = treeTargetARM;
             this._PropertyPanel.PropertyChanged += _PropertyPanel_PropertyChanged;
+        }
+
+        public ImageList AzureResourceImageList
+        {
+            get { return _AzureResourceImageList; }
+            set
+            {
+                _AzureResourceImageList = value;
+
+                if (treeTargetARM != null)
+                    treeTargetARM.ImageList = _AzureResourceImageList;
+
+                if (treeSourceARM != null)
+                    treeSourceARM.ImageList = _AzureResourceImageList;
+            }
         }
 
         private async Task _PropertyPanel_PropertyChanged()
@@ -432,15 +448,19 @@ namespace MigAz.UserControls.Migrators
                         }
                         await Task.WhenAll(armStorageAccountTasks.ToArray());
 
-                        List<Task> armManagedDiskTasks = new List<Task>();
-                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                        try
                         {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+                            List<Task> armManagedDiskTasks = new List<Task>();
+                            foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                            {
+                                TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
 
-                            Task armManagedDiskTask = LoadARMManagedDisks(tnResourceGroup, armResourceGroup);
-                            armManagedDiskTasks.Add(armManagedDiskTask);
+                                Task armManagedDiskTask = LoadARMManagedDisks(tnResourceGroup, armResourceGroup);
+                                armManagedDiskTasks.Add(armManagedDiskTask);
+                            }
+                            await Task.WhenAll(armManagedDiskTasks.ToArray());
                         }
-                        await Task.WhenAll(armManagedDiskTasks.ToArray());
+                        catch (Exception exc) { }
 
                         List<Task> armVirtualMachineTasks = new List<Task>();
                         foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())

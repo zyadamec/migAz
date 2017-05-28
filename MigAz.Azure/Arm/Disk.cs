@@ -18,7 +18,7 @@ namespace MigAz.Azure.Arm
 
         public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = await azureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
+            _SourceStorageAccount = azureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
         }
 
         public string Name => (string)this.ResourceToken["name"];

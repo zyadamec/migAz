@@ -656,21 +656,29 @@ namespace MigAz.Azure
 
             foreach (JObject resourceGroupJson in resourceGroups)
             {
-                ResourceGroup azureSubscription = new ResourceGroup(resourceGroupJson, _AzureContext.AzureEnvironment);
-                _ArmResourceGroups.Add(azureSubscription);
+                ResourceGroup resourceGroup = new ResourceGroup(resourceGroupJson, _AzureContext.AzureEnvironment);
+                _ArmResourceGroups.Add(resourceGroup);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMResourceGroups", "Loaded ARM Resource Group '" + resourceGroup.Name + "'.");
+
             }
 
             return _ArmResourceGroups;
         }
 
-        public async virtual Task<Arm.VirtualNetwork> GetAzureARMVirtualNetwork(string virtualNetworkName) // todo now asap, shouldn't this be by resource id?
+        public virtual Arm.VirtualNetwork GetAzureARMVirtualNetwork(string virtualNetworkName)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
 
-            foreach (Arm.VirtualNetwork armVirtualNetwork in  await this.GetAzureARMVirtualNetworks())
+            if (_ArmVirtualNetworks == null)
+                return null;
+
+            foreach (List<Arm.VirtualNetwork> listVirtualNetworks in _ArmVirtualNetworks.Values)
             {
-                if (armVirtualNetwork.Name == virtualNetworkName)
-                    return armVirtualNetwork;
+                foreach (Arm.VirtualNetwork armVirtualNetwork in listVirtualNetworks)
+                {
+                    if (armVirtualNetwork.Name == virtualNetworkName)
+                        return armVirtualNetwork;
+                }
             }
 
             return null;
@@ -716,6 +724,9 @@ namespace MigAz.Azure
                 }
 
                 resourceGroupVirtualNetworks.Add(armVirtualNetwork);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Loaded ARM Virtual Network '" + armVirtualNetwork.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Virtual Network '" + armVirtualNetwork.Name + "'.");
+
             }
 
             _ArmVirtualNetworks.Add(resourceGroup, resourceGroupVirtualNetworks);
@@ -779,6 +790,10 @@ namespace MigAz.Azure
             {
                 Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(storageAccount, _AzureContext.AzureEnvironment);
                 armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Loaded ARM Storage Account '" + armStorageAccount.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Storage Account '" + armStorageAccount.Name + "'.");
+
+
                 await this.GetAzureARMStorageAccountKeys(armStorageAccount);
 
                 resouceGroupStorageAccounts.Add(armStorageAccount);
@@ -788,17 +803,20 @@ namespace MigAz.Azure
             return resouceGroupStorageAccounts;
         }
 
-        public async virtual Task<Arm.StorageAccount> GetAzureARMStorageAccount(string name) // todo now asap, shouldn't this be by resource id?
+        public virtual Arm.StorageAccount GetAzureARMStorageAccount(string name)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccount", "Start");
 
             if (_ArmStorageAccounts == null)
                 return null;
 
-            foreach (Arm.StorageAccount armStorageAccount in await this.GetAzureARMStorageAccounts())
+            foreach (List<Arm.StorageAccount> listStorageAccounts in _ArmStorageAccounts.Values)
             {
-                if (String.Compare(armStorageAccount.Name, name, true) == 0)
-                    return armStorageAccount;
+                foreach (Arm.StorageAccount armStorageAccount in listStorageAccounts)
+                {
+                    if (String.Compare(armStorageAccount.Name, name, true) == 0)
+                        return armStorageAccount;
+                }
             }
 
             return null;
@@ -848,6 +866,8 @@ namespace MigAz.Azure
                 Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
                 await armVirtualMachine.InitializeChildrenAsync(_AzureContext);
                 resourceGroupVirtualMachines.Add(armVirtualMachine);
+                _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Loaded ARM Virtual Machine '" + armVirtualMachine.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Virtual Machine '" + armVirtualMachine.Name + "'.");
             }
 
             _ArmVirtualMachines.Add(resourceGroup, resourceGroupVirtualMachines);
@@ -856,7 +876,7 @@ namespace MigAz.Azure
 
         internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccountKeys", "Start");
+            _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccountKeys", "Start - ARM Storage Account '" + armStorageAccount.Name + "'.");
 
             Hashtable storageAccountKeyInfo = new Hashtable();
             storageAccountKeyInfo.Add("ResourceGroupName", armStorageAccount.ResourceGroup.Name);
@@ -956,9 +976,10 @@ namespace MigAz.Azure
                 Arm.NetworkInterface armNetworkInterface = new Arm.NetworkInterface(networkInterface);
                 await armNetworkInterface.InitializeChildrenAsync(_AzureContext);
                 resourceGroupNetworkInterfaces.Add(armNetworkInterface);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterfaces", "Loaded ARM Network Interface '" + armNetworkInterface.Name + "'.");
             }
 
-            _ArmNetworkInterfaces.ContainsKey(resourceGroup);
+            _ArmNetworkInterfaces.Add(resourceGroup, resourceGroupNetworkInterfaces);
             return resourceGroupNetworkInterfaces;
         }
 
@@ -1032,6 +1053,8 @@ namespace MigAz.Azure
                 Arm.NetworkSecurityGroup armNetworkSecurityGroup = new Arm.NetworkSecurityGroup(networkSecurityGroup);
                 await armNetworkSecurityGroup.InitializeChildrenAsync(this._AzureContext);
                 resourceGroupNetworkSecurityGroups.Add(armNetworkSecurityGroup);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Loaded ARM Network Security Group '" + armNetworkSecurityGroup.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Network Security Group '" + armNetworkSecurityGroup.Name + "'.");
             }
 
             _ArmNetworkSecurityGroups.Add(resourceGroup, resourceGroupNetworkSecurityGroups);

@@ -21,7 +21,7 @@ namespace MigAz.Azure.Arm
 
         public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _VirtualNetwork = await azureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.VirtualNetworkName);
+            _VirtualNetwork = azureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.VirtualNetworkName);
 
             if (_VirtualNetwork != null)
             {
