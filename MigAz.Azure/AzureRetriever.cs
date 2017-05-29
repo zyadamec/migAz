@@ -924,14 +924,20 @@ namespace MigAz.Azure
             return resourceGroupAvailabilitySets;
         }
 
-        public async Task<Arm.AvailabilitySet> GetAzureARMAvailabilitySet(string availabilitySetId)
+        public Arm.AvailabilitySet GetAzureARMAvailabilitySet(string availabilitySetId)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySet", "Start");
 
-            foreach (Arm.AvailabilitySet availabilitySet in await this.GetAzureARMAvailabilitySets(await GetAzureARMResourceGroup(availabilitySetId)))
+            if (_ArmAvailabilitySets == null)
+                return null;
+
+            foreach (List<Arm.AvailabilitySet> listAvailabilitySet in _ArmAvailabilitySets.Values)
             {
-                if (availabilitySet.Id == availabilitySetId)
-                    return availabilitySet;
+                foreach (Arm.AvailabilitySet armAvailabilitySet in listAvailabilitySet)
+                {
+                    if (String.Compare(armAvailabilitySet.Id, availabilitySetId, true) == 0)
+                        return armAvailabilitySet;
+                }
             }
 
             return null;

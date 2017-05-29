@@ -33,6 +33,7 @@ namespace MigAz.UserControls.Migrators
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts;
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks;
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines;
+        private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets;
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
@@ -410,6 +411,7 @@ namespace MigAz.UserControls.Migrators
                         _ArmTargetManagedDisks = new List<Azure.MigrationTarget.Disk>();
                         _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                         _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
+                        _ArmTargetAvailabilitySets = new List<Azure.MigrationTarget.AvailabilitySet>();
 
                         TreeNode subscriptionNodeARM = new TreeNode(sender.AzureSubscription.Name);
                         subscriptionNodeARM.ImageKey = "Subscription";
@@ -461,6 +463,16 @@ namespace MigAz.UserControls.Migrators
                             await Task.WhenAll(armManagedDiskTasks.ToArray());
                         }
                         catch (Exception exc) { }
+
+                        List<Task> armAvailabilitySetTasks = new List<Task>();
+                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                        {
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+
+                            Task armAvailabilitySetTask = LoadARMAvailabilitySets(tnResourceGroup, armResourceGroup);
+                            armAvailabilitySetTasks.Add(armAvailabilitySetTask);
+                        }
+                        await Task.WhenAll(armAvailabilitySetTasks.ToArray());
 
                         List<Task> armVirtualMachineTasks = new List<Task>();
                         foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
@@ -535,6 +547,23 @@ namespace MigAz.UserControls.Migrators
                 networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
             }
         }
+        private async Task LoadARMAvailabilitySets(TreeNode tnResourceGroup, ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await _AzureContextSourceASM.AzureRetriever.GetAzureARMAvailabilitySets(armResourceGroup))
+            {
+                TreeNode availabilitySetParentNode = tnResourceGroup;
+
+                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(_AzureContextTargetARM, armAvailabilitySet);
+                _ArmTargetAvailabilitySets.Add(targetAvailabilitySet);
+
+                TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.SourceName);
+                tnAvailabilitySet.Name = targetAvailabilitySet.SourceName;
+                tnAvailabilitySet.Tag = targetAvailabilitySet;
+                tnAvailabilitySet.ImageKey = "AvailabilitySet";
+                tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+                availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
+            }
+        }
 
         private async Task LoadARMVirtualMachines(TreeNode tnResourceGroup, ResourceGroup armResourceGroup)
         {
@@ -547,10 +576,21 @@ namespace MigAz.UserControls.Migrators
 
                 if (armVirtualMachine.AvailabilitySet != null)
                 {
-                    Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this.AzureContextTargetARM, armVirtualMachine.AvailabilitySet);
-                    TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
-                    targetVirtualMachine.TargetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)tnAvailabilitySet.Tag;
-                    virtualMachineParentNode = tnAvailabilitySet;
+                    foreach (Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet in _ArmTargetAvailabilitySets)
+                    {
+                        if (targetAvailabilitySet.SourceAvailabilitySet != null)
+                        {
+                            Azure.Arm.AvailabilitySet sourceAvailabilitySet = (Azure.Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet;
+                            if (sourceAvailabilitySet.Id == armVirtualMachine.AvailabilitySet.Id)
+                            {
+                                targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
+
+                                TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetAvailabilitySet);
+                                virtualMachineParentNode = tnAvailabilitySet;
+
+                            }
+                        }
+                    }
                 }
 
                 TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
