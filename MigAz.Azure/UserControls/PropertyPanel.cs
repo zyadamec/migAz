@@ -228,7 +228,12 @@ namespace MigAz.Azure.UserControls
         private async Task Properties_PropertyChanged()
         {
             if (_BoundTreeNode != null && _BoundTreeNode.Tag != null)
+            {
                 _BoundTreeNode.Text = _BoundTreeNode.Tag.ToString();
+
+                if (_BoundTreeNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                    _BoundTreeNode.Name = _BoundTreeNode.Tag.ToString();
+            }
 
             await PropertyChanged();
         }
