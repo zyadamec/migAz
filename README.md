@@ -19,7 +19,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 5. Login credentials at destination Azure subscription
 
 ## Get it
-Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM and ARM to ARM Migration).  Note that Migaz AWS to ARM is not yet integrated into the new v2 project baseline and remains available via the AWS release folders ([AWS Release](aws/release)).
+Download from the [Release](Release) folder to obtain the latest MigAz v2 release (currently ASM to ARM and ARM to ARM Migration).  Note that Migaz AWS to ARM is not yet integrated into the new v2 project baseline and remains available via the AWS release folders ([AWS Release](aws/release)).
 
 ## Instructions
 [Azure ASM to Azure ARM Migration](asm) - MigAz ASM to ARM will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
