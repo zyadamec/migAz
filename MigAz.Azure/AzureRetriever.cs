@@ -665,18 +665,21 @@ namespace MigAz.Azure
             return _ArmResourceGroups;
         }
 
-        public virtual Arm.VirtualNetwork GetAzureARMVirtualNetwork(string virtualNetworkName)
+        public virtual Arm.VirtualNetwork GetAzureARMVirtualNetwork(string virtualNetworkId)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetwork", "Start");
 
             if (_ArmVirtualNetworks == null)
                 return null;
 
+            if (virtualNetworkId.ToLower().Contains("/subnets/"))
+                virtualNetworkId = virtualNetworkId.Substring(0, virtualNetworkId.ToLower().IndexOf("/subnets/"));
+
             foreach (List<Arm.VirtualNetwork> listVirtualNetworks in _ArmVirtualNetworks.Values)
             {
                 foreach (Arm.VirtualNetwork armVirtualNetwork in listVirtualNetworks)
                 {
-                    if (armVirtualNetwork.Name == virtualNetworkName)
+                    if (String.Compare(armVirtualNetwork.Id, virtualNetworkId, true) == 0)
                         return armVirtualNetwork;
                 }
             }

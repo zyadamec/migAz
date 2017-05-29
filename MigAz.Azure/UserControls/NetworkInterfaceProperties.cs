@@ -120,14 +120,17 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.ResourceGroupNode;
 
-                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
+                if (targetResourceGroupNode != null)
                 {
-                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                    foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                     {
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
-                        cmbExistingArmVNets.Items.Add(targetVirtualNetwork);
+                        if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                        {
+                            Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
+                            cmbExistingArmVNets.Items.Add(targetVirtualNetwork);
+                        }
                     }
                 }
 

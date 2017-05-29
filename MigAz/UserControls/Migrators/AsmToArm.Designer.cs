@@ -143,7 +143,6 @@
             this.treeTargetARM.Size = new System.Drawing.Size(447, 262);
             this.treeTargetARM.StatusProvider = null;
             this.treeTargetARM.TabIndex = 66;
-            this.treeTargetARM.TargetResourceGroup = null;
             // 
             // AsmToArm
             // 

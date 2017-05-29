@@ -10,15 +10,11 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class ResourceGroup : IMigrationTarget
     {
-        private AzureContext _AzureContext;
         private String _TargetName = String.Empty;
         private ILocation _TargetLocation;
 
-        private ResourceGroup() { }
-
-        public ResourceGroup(AzureContext azureContext)
+        public ResourceGroup()
         {
-            this._AzureContext = azureContext;
             _TargetName = "NewResourceGroup";
         }
 
@@ -41,10 +37,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            if (this._AzureContext == null || this._AzureContext.SettingsProvider == null)
-                return this.TargetName;
-            else
-                return this.TargetName + this._AzureContext.SettingsProvider.ResourceGroupSuffix;
+            return this.TargetName;
         }
     }
 }

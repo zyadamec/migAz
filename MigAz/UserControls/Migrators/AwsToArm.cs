@@ -47,7 +47,7 @@ namespace MigAz.UserControls.Migrators
 
             this.treeTargetARM.LogProvider = this.LogProvider;
             this.treeTargetARM.StatusProvider = this.StatusProvider;
-            this.treeTargetARM.TargetResourceGroup = new Azure.MigrationTarget.ResourceGroup(_AzureContextTargetARM);
+            this.treeTargetARM.SettingsProvider = _AzureContextARM.SettingsProvider;
 
             this._PropertyPanel.LogProvider = this.LogProvider;
             this._PropertyPanel.StatusProvider = this.StatusProvider;

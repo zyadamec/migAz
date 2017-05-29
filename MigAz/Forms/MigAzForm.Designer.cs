@@ -93,7 +93,7 @@
             this.imageList1.Images.SetKeyName(0, "ResourceGroup");
             this.imageList1.Images.SetKeyName(1, "Disk");
             this.imageList1.Images.SetKeyName(2, "LoadBalancer");
-            this.imageList1.Images.SetKeyName(3, "NetworkInterface.png");
+            this.imageList1.Images.SetKeyName(3, "NetworkInterface");
             this.imageList1.Images.SetKeyName(4, "NetworkSecurityGroup");
             this.imageList1.Images.SetKeyName(5, "PublicIp");
             this.imageList1.Images.SetKeyName(6, "StorageAccount");

@@ -28,13 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PropertyPanel));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pnlProperties = new System.Windows.Forms.Panel();
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.imageList1 = new System.Windows.Forms.ImageList();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -91,7 +90,7 @@
             this.imageList1.Images.SetKeyName(0, "ResourceGroup");
             this.imageList1.Images.SetKeyName(1, "Disk");
             this.imageList1.Images.SetKeyName(2, "LoadBalancer");
-            this.imageList1.Images.SetKeyName(3, "NetworkInterface.png");
+            this.imageList1.Images.SetKeyName(3, "NetworkInterface");
             this.imageList1.Images.SetKeyName(4, "NetworkSecurityGroup");
             this.imageList1.Images.SetKeyName(5, "PublicIp");
             this.imageList1.Images.SetKeyName(6, "StorageAccount");
