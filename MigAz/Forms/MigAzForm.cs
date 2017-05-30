@@ -140,6 +140,8 @@ namespace MigAz.Forms
             await awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
+            splitContainer2_Panel1_Resize(this, null);
+
             newMigrationToolStripMenuItem.Enabled = false ;
             closeMigrationToolStripMenuItem.Enabled = true;
         }
@@ -358,6 +360,9 @@ namespace MigAz.Forms
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
 
+            asmToArm.RemoveArmTab();
+            splitContainer2_Panel1_Resize(this, null);
+
             this.Refresh();
             Application.DoEvents();
             asmToArm.ChangeAzureContext();
@@ -377,7 +382,8 @@ namespace MigAz.Forms
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
 
-            asmToArm.ActivateSourceARMTab();
+            asmToArm.RemoveAsmTab();
+            splitContainer2_Panel1_Resize(this, null);
 
             this.Refresh();
             Application.DoEvents();
