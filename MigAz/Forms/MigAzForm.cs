@@ -351,6 +351,7 @@ namespace MigAz.Forms
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.AzureResourceImageList = this.imageList1;
             asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             parent.Controls.Add(asmToArm);
 
@@ -369,6 +370,7 @@ namespace MigAz.Forms
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            asmToArm.AzureResourceImageList = this.imageList1;
             asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             parent.Controls.Add(asmToArm);
 

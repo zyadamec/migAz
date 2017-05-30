@@ -13,7 +13,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class TargetTreeView : UserControl
     {
-        private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup;
+        private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup = new MigrationTarget.ResourceGroup();
         private TreeNode _EventSourceNode;
         private PropertyPanel _PropertyPanel;
 
@@ -32,10 +32,10 @@ namespace MigAz.Azure.UserControls
             get; set;
         }
 
-        public MigrationTarget.ResourceGroup TargetResourceGroup
+        public ImageList ImageList
         {
-            get { return _TargetResourceGroup; }
-            set { _TargetResourceGroup = value; }
+            get { return this.treeTargetARM.ImageList; }
+            set { this.treeTargetARM.ImageList = value; }
         }
 
         public PropertyPanel PropertyPanel
@@ -66,6 +66,19 @@ namespace MigAz.Azure.UserControls
             get { return this.treeTargetARM.SelectedNode; }
             set { this.treeTargetARM.SelectedNode = value; }
         }
+
+        public TreeNode ResourceGroupNode
+        {
+            get
+            {
+                if (this.Nodes.Count == 1)
+                    return this.Nodes[0];
+                else
+                    return null;
+            }
+        }
+
+        public ISettingsProvider SettingsProvider { get; set; }
 
         private void GetExportArtifactsRecursive(TreeNode parentTreeNode, ref ExportArtifacts exportArtifacts)
         {
@@ -104,7 +117,9 @@ namespace MigAz.Azure.UserControls
         public ExportArtifacts GetExportArtifacts()
         {
             ExportArtifacts exportArtifacts = new ExportArtifacts();
-            exportArtifacts.ResourceGroup = this.TargetResourceGroup;
+
+            if (this.Nodes.Count == 1 && this.Nodes[0].Tag != null)
+                exportArtifacts.ResourceGroup = (MigrationTarget.ResourceGroup)this.Nodes[0].Tag;
 
             foreach (TreeNode treeNode in treeTargetARM.Nodes)
             {

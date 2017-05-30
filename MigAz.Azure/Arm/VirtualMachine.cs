@@ -74,7 +74,7 @@ namespace MigAz.Azure.Arm
             await base.InitializeChildrenAsync(azureContext);
 
             if (this.AvailabilitySetId != String.Empty)
-                this.AvailabilitySet = await azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
+                this.AvailabilitySet = azureContext.AzureRetriever.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
 
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);

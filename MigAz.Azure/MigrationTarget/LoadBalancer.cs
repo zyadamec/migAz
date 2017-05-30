@@ -22,6 +22,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.Source = sourceLoadBalancer;
             this.Name = sourceLoadBalancer.Name;
+
         }
 
         public LoadBalancer()

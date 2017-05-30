@@ -47,7 +47,7 @@ namespace MigAz.UserControls.Migrators
 
             this.treeTargetARM.LogProvider = this.LogProvider;
             this.treeTargetARM.StatusProvider = this.StatusProvider;
-            this.treeTargetARM.TargetResourceGroup = new Azure.MigrationTarget.ResourceGroup(_AzureContextTargetARM);
+            this.treeTargetARM.SettingsProvider = _AzureContextARM.SettingsProvider;
 
             this._PropertyPanel.LogProvider = this.LogProvider;
             this._PropertyPanel.StatusProvider = this.StatusProvider;
@@ -95,7 +95,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.4.0";
+            string currentVersion = "2.2.5.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/AWStoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

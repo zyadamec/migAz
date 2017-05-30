@@ -125,7 +125,7 @@ namespace MigAz.Azure.UserControls
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
 
-                TreeNode targetResourceGroupNode = _TargetTreeView.SeekARMChildTreeNode(_TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup.ToString(), _TargetTreeView.TargetResourceGroup, false);
+                TreeNode targetResourceGroupNode = _TargetTreeView.ResourceGroupNode;
 
                 foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
                 {
