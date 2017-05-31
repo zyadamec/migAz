@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using MigAz.Providers;
 using MigAz.Core.Interface;
 using System.Reflection;
-using MigAz.UserControls.Migrators;
+using MigAz.Migrators;
 using MigAz.Core.Generator;
 using System.Linq;
 using System.IO;
@@ -135,10 +135,12 @@ namespace MigAz.Forms
 
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            MigAz.UserControls.Migrators.AwsToArm awsToArm = new MigAz.UserControls.Migrators.AwsToArm(StatusProvider, LogProvider, propertyPanel1);
+            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
             awsToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
             await awsToArm.Bind();
             parent.Controls.Add(awsToArm);
+
+            splitContainer2_Panel1_Resize(this, null);
 
             newMigrationToolStripMenuItem.Enabled = false ;
             closeMigrationToolStripMenuItem.Enabled = true;
@@ -358,6 +360,9 @@ namespace MigAz.Forms
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
 
+            asmToArm.RemoveArmTab();
+            splitContainer2_Panel1_Resize(this, null);
+
             this.Refresh();
             Application.DoEvents();
             asmToArm.ChangeAzureContext();
@@ -377,7 +382,8 @@ namespace MigAz.Forms
             newMigrationToolStripMenuItem.Enabled = false;
             closeMigrationToolStripMenuItem.Enabled = true;
 
-            asmToArm.ActivateSourceARMTab();
+            asmToArm.RemoveAsmTab();
+            splitContainer2_Panel1_Resize(this, null);
 
             this.Refresh();
             Application.DoEvents();

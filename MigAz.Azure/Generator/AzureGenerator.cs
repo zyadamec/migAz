@@ -988,7 +988,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
 
                 ipconfiguration_properties.privateIPAllocationMethod = ipConfiguration.TargetPrivateIPAllocationMethod;
-                ipconfiguration_properties.privateIPAddress = ipConfiguration.TargetPrivateIpAddress;
+                if (String.Compare(ipConfiguration.TargetPrivateIPAllocationMethod, "Static") == 0)
+                    ipconfiguration_properties.privateIPAddress = ipConfiguration.TargetPrivateIpAddress;
 
                 if (ipConfiguration.TargetVirtualNetwork != null)
                 {

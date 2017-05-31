@@ -11,14 +11,12 @@ using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.AWS.Generator;
 
-namespace MigAz.UserControls.Migrators
+namespace MigAz.Migrators
 {
     public partial class AwsToArm : IMigratorUserControl
     {
-        private AzureContext _AzureContextARM;
         private AwsToArmSaveSelectionProvider _saveSelectionProvider;
         private AwsToArmSaveSelectionProvider _telemetryProvider;
-        //private AwsAppSettingsProvider _appSettingsProvider;
         private PropertyPanel _PropertyPanel;
 
         //private EC2Operation ec2 = null;
@@ -36,7 +34,6 @@ namespace MigAz.UserControls.Migrators
             _PropertyPanel = propertyPanel;
             _saveSelectionProvider = new AwsToArmSaveSelectionProvider();
             _telemetryProvider = new AwsToArmSaveSelectionProvider();
-            //_appSettingsProvider = new AwsAppSettingsProvider();
 
             _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, null); // _appSettingsProvider);
             _AzureContextTargetARM.AfterAzureSubscriptionChange += _AzureContextTargetARM_AfterAzureSubscriptionChange;
@@ -47,7 +44,9 @@ namespace MigAz.UserControls.Migrators
 
             this.treeTargetARM.LogProvider = this.LogProvider;
             this.treeTargetARM.StatusProvider = this.StatusProvider;
-            this.treeTargetARM.SettingsProvider = _AzureContextARM.SettingsProvider;
+
+            if (_AzureContextTargetARM != null && _AzureContextTargetARM.SettingsProvider != null)
+                this.treeTargetARM.SettingsProvider = _AzureContextTargetARM.SettingsProvider;
 
             this._PropertyPanel.LogProvider = this.LogProvider;
             this._PropertyPanel.StatusProvider = this.StatusProvider;
@@ -71,8 +70,8 @@ namespace MigAz.UserControls.Migrators
 
         public async Task Bind()
         {
-            _AzureContextARM = new AzureContext(LogProvider, StatusProvider, null); // todo needs settings provider
-            await azureLoginContextViewer21.Bind(_AzureContextARM);
+            _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, null); // todo needs settings provider
+            await azureLoginContextViewer21.Bind(_AzureContextTargetARM);
 
             //var tokenProvider = new InteractiveTokenProvider();
         }
@@ -95,7 +94,7 @@ namespace MigAz.UserControls.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.5.0";
+            string currentVersion = "2.2.6.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/AWStoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

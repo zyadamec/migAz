@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls.Migrators
+﻿namespace MigAz.Migrators
 {
     partial class AsmToArm
     {
@@ -33,13 +33,13 @@
             this.treeSourceASM = new System.Windows.Forms.TreeView();
             this.azureLoginContextViewerASM = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.tabSourceResources = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPageAsm = new System.Windows.Forms.TabPage();
+            this.tabPageArm = new System.Windows.Forms.TabPage();
             this.treeSourceARM = new System.Windows.Forms.TreeView();
             this.treeTargetARM = new MigAz.Azure.UserControls.TargetTreeView();
             this.tabSourceResources.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabPageAsm.SuspendLayout();
+            this.tabPageArm.SuspendLayout();
             this.SuspendLayout();
             // 
             // azureLoginContextViewerARM
@@ -87,8 +87,8 @@
             // 
             // tabSourceResources
             // 
-            this.tabSourceResources.Controls.Add(this.tabPage1);
-            this.tabSourceResources.Controls.Add(this.tabPage2);
+            this.tabSourceResources.Controls.Add(this.tabPageAsm);
+            this.tabSourceResources.Controls.Add(this.tabPageArm);
             this.tabSourceResources.HotTrack = true;
             this.tabSourceResources.ImeMode = System.Windows.Forms.ImeMode.On;
             this.tabSourceResources.Location = new System.Drawing.Point(2, 109);
@@ -97,30 +97,31 @@
             this.tabSourceResources.SelectedIndex = 0;
             this.tabSourceResources.Size = new System.Drawing.Size(444, 300);
             this.tabSourceResources.TabIndex = 65;
+            this.tabSourceResources.SelectedIndexChanged += new System.EventHandler(this.tabSourceResources_SelectedIndexChanged);
             // 
-            // tabPage1
+            // tabPageAsm
             // 
-            this.tabPage1.Controls.Add(this.treeSourceASM);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(436, 274);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Source ASM Resources";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPageAsm.Controls.Add(this.treeSourceASM);
+            this.tabPageAsm.Location = new System.Drawing.Point(4, 22);
+            this.tabPageAsm.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageAsm.Name = "tabPageAsm";
+            this.tabPageAsm.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPageAsm.Size = new System.Drawing.Size(436, 274);
+            this.tabPageAsm.TabIndex = 0;
+            this.tabPageAsm.Text = "Source ASM Resources";
+            this.tabPageAsm.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // tabPageArm
             // 
-            this.tabPage2.Controls.Add(this.treeSourceARM);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(436, 274);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Source ARM Resources";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPageArm.Controls.Add(this.treeSourceARM);
+            this.tabPageArm.Location = new System.Drawing.Point(4, 22);
+            this.tabPageArm.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageArm.Name = "tabPageArm";
+            this.tabPageArm.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPageArm.Size = new System.Drawing.Size(436, 274);
+            this.tabPageArm.TabIndex = 1;
+            this.tabPageArm.Text = "Source ARM Resources";
+            this.tabPageArm.UseVisualStyleBackColor = true;
             // 
             // treeSourceARM
             // 
@@ -135,11 +136,13 @@
             // 
             // treeTargetARM
             // 
+            this.treeTargetARM.ImageList = null;
             this.treeTargetARM.Location = new System.Drawing.Point(452, 131);
             this.treeTargetARM.LogProvider = null;
             this.treeTargetARM.Name = "treeTargetARM";
             this.treeTargetARM.PropertyPanel = null;
             this.treeTargetARM.SelectedNode = null;
+            this.treeTargetARM.SettingsProvider = null;
             this.treeTargetARM.Size = new System.Drawing.Size(447, 262);
             this.treeTargetARM.StatusProvider = null;
             this.treeTargetARM.TabIndex = 66;
@@ -159,8 +162,8 @@
             this.Load += new System.EventHandler(this.AsmToArmForm_Load);
             this.Resize += new System.EventHandler(this.AsmToArmForm_Resize);
             this.tabSourceResources.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
+            this.tabPageAsm.ResumeLayout(false);
+            this.tabPageArm.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,8 +175,8 @@
         private System.Windows.Forms.TreeView treeSourceASM;
         private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerASM;
         private System.Windows.Forms.TabControl tabSourceResources;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPageAsm;
+        private System.Windows.Forms.TabPage tabPageArm;
         private System.Windows.Forms.TreeView treeSourceARM;
         private Azure.UserControls.TargetTreeView treeTargetARM;
     }
