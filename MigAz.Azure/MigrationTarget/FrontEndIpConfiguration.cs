@@ -28,6 +28,17 @@ namespace MigAz.Azure.MigrationTarget
             loadBalancer.FrontEndIpConfigurations.Add(this);
         }
 
+        public FrontEndIpConfiguration(LoadBalancer loadBalancer, Arm.FrontEndIpConfiguration armFrontEndIpConfiguration)
+        {
+            _ParentLoadBalancer = loadBalancer;
+
+            this.Name = armFrontEndIpConfiguration.Name;
+            this.PrivateIPAllocationMethod = armFrontEndIpConfiguration.PrivateIPAllocationMethod;
+            this.PrivateIPAddress = armFrontEndIpConfiguration.PrivateIPAddress;
+            this.TargetVirtualNetwork = armFrontEndIpConfiguration.VirtualNetwork;
+            this.TargetSubnet = armFrontEndIpConfiguration.Subnet;
+        }
+
         public LoadBalancer LoadBalancer
         {
             get { return _ParentLoadBalancer; }

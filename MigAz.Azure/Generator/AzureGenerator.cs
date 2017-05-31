@@ -541,6 +541,8 @@ namespace MigAz.Azure.Generator.AsmToArm
                 loadbalancingrule_properties.frontendPort = targetLoadBalancingRule.FrontEndPort;
                 loadbalancingrule_properties.backendPort = targetLoadBalancingRule.BackEndPort;
                 loadbalancingrule_properties.protocol = targetLoadBalancingRule.Protocol;
+                loadbalancingrule_properties.enableFloatingIP = targetLoadBalancingRule.EnableFloatingIP;
+                loadbalancingrule_properties.idleTimeoutInMinutes = targetLoadBalancingRule.IdleTimeoutInMinutes;
 
                 LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
                 loadbalancingrule.name = targetLoadBalancingRule.Name;

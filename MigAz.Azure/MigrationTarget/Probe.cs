@@ -8,11 +8,32 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class Probe
     {
+        private LoadBalancer _LoadBalancer;
+
         private String _Name = String.Empty;
         private String _Protocol = "tcp";
         private String _RequestPath = String.Empty;
         private Int32 _NumberOfProbes = 2;
         private Int32 _IntervalInSeconds = 15;
+
+        public Probe() { }
+
+        public Probe(LoadBalancer loadBalancer)
+        {
+            _LoadBalancer = loadBalancer;
+        }
+
+        public Probe(LoadBalancer loadBalancer, Arm.Probe armProbe)
+        {
+            _LoadBalancer = loadBalancer;
+
+            this.Name = armProbe.Name;
+            this.NumberOfProbes = armProbe.NumberOfProbes;
+            this.IntervalInSeconds = armProbe.IntervalInSeconds;
+            this.Port = armProbe.Port;
+            this.Protocol = armProbe.Protocol;
+            this.RequestPath = armProbe.RequestPath;
+        }
 
         public String Name
         {
