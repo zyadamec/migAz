@@ -11,13 +11,12 @@ using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.AWS.Generator;
 
-namespace MigAz.UserControls.Migrators
+namespace MigAz.Migrators
 {
     public partial class AwsToArm : IMigratorUserControl
     {
         private AwsToArmSaveSelectionProvider _saveSelectionProvider;
         private AwsToArmSaveSelectionProvider _telemetryProvider;
-        //private AwsAppSettingsProvider _appSettingsProvider;
         private PropertyPanel _PropertyPanel;
 
         //private EC2Operation ec2 = null;
@@ -35,7 +34,6 @@ namespace MigAz.UserControls.Migrators
             _PropertyPanel = propertyPanel;
             _saveSelectionProvider = new AwsToArmSaveSelectionProvider();
             _telemetryProvider = new AwsToArmSaveSelectionProvider();
-            //_appSettingsProvider = new AwsAppSettingsProvider();
 
             _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, null); // _appSettingsProvider);
             _AzureContextTargetARM.AfterAzureSubscriptionChange += _AzureContextTargetARM_AfterAzureSubscriptionChange;

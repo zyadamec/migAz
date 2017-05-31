@@ -1,4 +1,4 @@
-﻿namespace MigAz.UserControls.Migrators
+﻿namespace MigAz.Migrators
 {
     partial class AsmToArm
     {

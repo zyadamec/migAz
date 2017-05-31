@@ -13,7 +13,7 @@ using MigAz.Forms;
 using MigAz.Azure.UserControls;
 using System.Xml;
 
-namespace MigAz.UserControls.Migrators
+namespace MigAz.Migrators
 {
     public partial class AsmToArm : IMigratorUserControl
     {
