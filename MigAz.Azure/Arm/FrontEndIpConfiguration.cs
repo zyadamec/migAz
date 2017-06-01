@@ -8,23 +8,24 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class FrontEndIpConfiguration
+    public class FrontEndIpConfiguration : ArmResource
     {
-        private JToken _FrontEndIpConfigurationToken;
-
+        private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private VirtualNetwork _VirtualNetwork;
         private Subnet _Subnet;
-
-        //private PublicIp _PublicIp = null;
+        private PublicIP _PublicIP;
 
         private LoadBalancer _ParentLoadBalancer = null;
 
-        private FrontEndIpConfiguration() { }
-
-        public FrontEndIpConfiguration(LoadBalancer loadBalancer, JToken frontEndIpConfigurationToken)
+        public FrontEndIpConfiguration(LoadBalancer loadBalancer, JToken frontEndIpConfigurationToken) : base(frontEndIpConfigurationToken)
         {
             _ParentLoadBalancer = loadBalancer;
-            _FrontEndIpConfigurationToken = frontEndIpConfigurationToken;
+        }
+
+        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        {
+            if (this.PublicIpId != String.Empty)
+                this.PublicIP = await azureContext.AzureRetriever.GetAzureARMPublicIP(this.PublicIpId);
         }
 
         public LoadBalancer LoadBalancer
@@ -33,19 +34,14 @@ namespace MigAz.Azure.Arm
         }
 
 
-        public string Name
-        {
-            get { return (string)_FrontEndIpConfigurationToken["name"]; }
-        }
-
         public string PrivateIPAllocationMethod
         {
-            get { return (string)_FrontEndIpConfigurationToken["properties"]["privateIPAllocationMethod"]; }
+            get { return (string)this.ResourceToken["properties"]["privateIPAllocationMethod"]; }
         }
 
         public string PrivateIPAddress
         {
-            get { return (string)_FrontEndIpConfigurationToken["properties"]["privateIPAddress"]; }
+            get { return (string)this.ResourceToken["properties"]["privateIPAddress"]; }
         }
 
         public VirtualNetwork VirtualNetwork
@@ -60,10 +56,44 @@ namespace MigAz.Azure.Arm
             set { _Subnet = value; }
         }
 
-        //public PublicIp PublicIp
-        //{
-        //    get { return _PublicIp; }
-        //    set { _PublicIp = value; }
-        //}
+        public List<LoadBalancingRule> LoadBalancingRules
+        {
+            get { return _LoadBalancingRules; }
+        }
+
+        internal List<String> LoadBalancingRuleIds
+        {
+            get
+            {
+                List<String> loadBalancingRuleIds = new List<string>();
+
+                if (this.ResourceToken["properties"]["loadBalancingRules"] != null)
+                {
+                    foreach (JToken loadBalancingRuleId in this.ResourceToken["properties"]["loadBalancingRules"])
+                    {
+                        loadBalancingRuleIds.Add((string) loadBalancingRuleId["id"]);
+                    }
+                }
+
+                return loadBalancingRuleIds;
+            }
+        }
+
+        private String PublicIpId
+        {
+            get
+            {
+                if (this.ResourceToken == null || this.ResourceToken["properties"]["publicIPAddress"] == null)
+                    return String.Empty;
+
+                return (string)this.ResourceToken["properties"]["publicIPAddress"];
+            }
+        }
+
+        public PublicIP PublicIP
+        {
+            get { return _PublicIP; }
+            private set { _PublicIP = value; }
+        }
     }
 }

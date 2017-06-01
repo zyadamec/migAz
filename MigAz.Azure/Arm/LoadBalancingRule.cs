@@ -8,19 +8,15 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class LoadBalancingRule
+    public class LoadBalancingRule : ArmResource
     {
-        private JToken _LoadBalancingRuleToken;
         private LoadBalancer _ParentLoadBalancer = null;
-        //private Probe _Probe = null;
+        private Probe _Probe = null;
         private BackEndAddressPool _BackEndAddressPool = null;
 
-        private LoadBalancingRule() { }
-
-        public LoadBalancingRule(LoadBalancer loadBalancer, JToken loadBalancingRuleToken)
+        public LoadBalancingRule(LoadBalancer loadBalancer, JToken loadBalancingRuleToken) : base(loadBalancingRuleToken)
         {
             _ParentLoadBalancer = loadBalancer;
-            _LoadBalancingRuleToken = loadBalancingRuleToken;
         }
 
         public LoadBalancer LoadBalancer
@@ -28,49 +24,47 @@ namespace MigAz.Azure.Arm
             get { return _ParentLoadBalancer; }
         }
 
-        //public Probe Probe
-        //{
-        //    get { return _Probe; }
-        //}
+        public Probe Probe
+        {
+            get { return _Probe; }
+            internal set { _Probe = value; }
+        }
 
         public BackEndAddressPool BackEndAddressPool
         {
             get { return _BackEndAddressPool; }
+            internal set { _BackEndAddressPool = value; }
         }
 
         public bool EnableFloatingIP
         {
-            get { return Convert.ToBoolean((string)_LoadBalancingRuleToken["properties"]["enableFloatingIP"]); }
+            get { return Convert.ToBoolean((string)this.ResourceToken["properties"]["enableFloatingIP"]); }
         }
 
         public Int32 IdleTimeoutInMinutes
         {
-            get { return Convert.ToInt32((string)_LoadBalancingRuleToken["properties"]["idleTimeoutInMinutes"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["idleTimeoutInMinutes"]); }
         }
 
         public Int32 FrontEndPort
         {
-            get { return Convert.ToInt32((string)_LoadBalancingRuleToken["properties"]["frontendPort"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["frontendPort"]); }
         }
 
         public Int32 BackEndPort
         {
-            get { return Convert.ToInt32((string)_LoadBalancingRuleToken["properties"]["backendPort"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["backendPort"]); }
         }
 
         public String Protocol
         {
-            get { return (string)_LoadBalancingRuleToken["properties"]["protocol"]; }
+            get { return (string)this.ResourceToken["properties"]["protocol"]; }
         }
 
         public FrontEndIpConfiguration FrontEndIpConfiguration
         {
             get;
-        }
-
-        public string Name
-        {
-            get { return (string)_LoadBalancingRuleToken["name"]; }
+            internal set;
         }
 
         public override string ToString()

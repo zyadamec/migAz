@@ -17,6 +17,7 @@ namespace MigAz.Azure.Arm
 
         public LoadBalancer(JToken resourceToken) : base(resourceToken)
         {
+            // Create objects
             foreach (JToken frontEndIpConfigurationToken in ResourceToken["properties"]["frontendIPConfigurations"])
             {
                 FrontEndIpConfiguration frontEndIpConfiguration = new FrontEndIpConfiguration(this, frontEndIpConfigurationToken);
@@ -40,7 +41,68 @@ namespace MigAz.Azure.Arm
                 Probe probe = new Probe(this, probeToken);
                 _Probes.Add(probe);
             }
+
+            // Bind object relations
+            foreach (FrontEndIpConfiguration frontEndIpConfiguration in this.FrontEndIpConfigurations)
+            {
+                foreach (String loadBalancingRuleId in frontEndIpConfiguration.LoadBalancingRuleIds)
+                {
+                    foreach (LoadBalancingRule loadBalancingRule in this.LoadBalancingRules)
+                    {
+                        if (String.Compare(loadBalancingRule.Id, loadBalancingRuleId) == 0)
+                        {
+                            frontEndIpConfiguration.LoadBalancingRules.Add(loadBalancingRule);
+                            loadBalancingRule.FrontEndIpConfiguration = frontEndIpConfiguration;
+                        }
+                    }
+                }
+            }
+
+            foreach (BackEndAddressPool backEndAddressPool in this.BackEndAddressPools)
+            {
+                foreach (String loadBalancingRuleId in backEndAddressPool.LoadBalancingRuleIds)
+                {
+                    foreach (LoadBalancingRule loadBalancingRule in this.LoadBalancingRules)
+                    {
+                        if (String.Compare(loadBalancingRule.Id, loadBalancingRuleId) == 0)
+                        {
+                            backEndAddressPool.LoadBalancingRules.Add(loadBalancingRule);
+                            loadBalancingRule.BackEndAddressPool = backEndAddressPool;
+                        }
+                    }
+                }
+            }
+
+            foreach (Probe probe in this.Probes)
+            {
+                foreach (String loadBalancingRuleId in probe.LoadBalancingRuleIds)
+                {
+                    foreach (LoadBalancingRule loadBalancingRule in this.LoadBalancingRules)
+                    {
+                        if (String.Compare(loadBalancingRule.Id, loadBalancingRuleId) == 0)
+                        {
+                            probe.LoadBalancingRules.Add(loadBalancingRule);
+                            loadBalancingRule.Probe = probe;
+                        }
+                    }
+                }
+            }
         }
+
+        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        {
+
+            foreach (FrontEndIpConfiguration frontEndIpConfiguration in this.FrontEndIpConfigurations)
+            {
+                await frontEndIpConfiguration.InitializeChildrenAsync(azureContext);
+            }
+
+            foreach (BackEndAddressPool backEndAddressPool in this.BackEndAddressPools)
+            {
+                await backEndAddressPool.InitializeChildrenAsync(azureContext);
+            }
+        }
+
 
         public List<FrontEndIpConfiguration> FrontEndIpConfigurations
         {

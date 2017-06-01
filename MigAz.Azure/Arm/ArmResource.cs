@@ -25,7 +25,7 @@ namespace MigAz.Azure.Arm
 
         public ResourceGroup ResourceGroup { get; set; }
 
-        internal async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
             return;

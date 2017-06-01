@@ -17,7 +17,26 @@ namespace MigAz.Azure.Arm
         public string PublicIPAddressVersion => (string)this.ResourceToken["properties"]["publicIPAddressVersion"];
         public string PublicIPAllocationMethod => (string)this.ResourceToken["properties"]["publicIPAllocationMethod"];
         public string IdleTimeoutInMinutes => (string)this.ResourceToken["properties"]["idleTimeoutInMinutes"];
-        public string DomainNameLabel => (string)this.ResourceToken["properties"]["dnsSettings"]["domainNameLabel"];
-        public string FQDN => (string)this.ResourceToken["properties"]["dnsSettings"]["fqdn"];
+        public string DomainNameLabel
+        {
+            get
+            {
+                if (this.ResourceToken["properties"]["dnsSettings"] == null || this.ResourceToken["properties"]["dnsSettings"]["domainNameLabel"] == null)
+                    return String.Empty;
+
+                return (string) this.ResourceToken["properties"]["dnsSettings"]["domainNameLabel"];
+            }
+        }
+
+        public string FQDN
+        {
+            get
+            {
+                if (this.ResourceToken["properties"]["dnsSettings"] == null || this.ResourceToken["properties"]["dnsSettings"]["fqdn"] == null)
+                    return String.Empty;
+
+                return (string)this.ResourceToken["properties"]["dnsSettings"]["fqdn"];
+            }
+        }
     }
 }

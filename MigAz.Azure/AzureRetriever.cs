@@ -29,6 +29,7 @@ namespace MigAz.Azure
 
         // ASM Object Cache (Subscription Context Specific)
         private List<Asm.VirtualNetwork> _VirtualNetworks;
+
         private List<Asm.StorageAccount> _StorageAccounts;
         private List<CloudService> _CloudServices;
         private List<ReservedIP> _AsmReservedIPs;
@@ -1070,6 +1071,21 @@ namespace MigAz.Azure
 
             _ArmNetworkSecurityGroups.Add(resourceGroup, resourceGroupNetworkSecurityGroups);
             return resourceGroupNetworkSecurityGroups;
+        }
+
+        public async Task<PublicIP> GetAzureARMPublicIP(string id)
+        {
+            ResourceGroup resourceGroup = await this.GetAzureARMResourceGroup(id);
+            if (resourceGroup == null)
+                return null;
+
+            foreach (PublicIP publicIp in await this.GetAzureARMPublicIPs(resourceGroup))
+            {
+                if (String.Compare(publicIp.Id, id) == 0)
+                    return publicIp;
+            }
+
+            return null;
         }
 
         public async Task<List<Arm.PublicIP>> GetAzureARMPublicIPs(Arm.ResourceGroup resourceGroup)

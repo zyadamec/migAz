@@ -7,47 +7,60 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class Probe
+    public class Probe : ArmResource
     {
-        private JToken _ProbeToken;
         private LoadBalancer _LoadBalancer;
+        private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
 
-        private Probe() { }
-
-        public Probe(LoadBalancer loadBalancer, JToken probeToken)
+        public Probe(LoadBalancer loadBalancer, JToken probeToken) : base(probeToken)
         {
-            _ProbeToken = probeToken;
             _LoadBalancer = loadBalancer;
         }
 
-        public string Name
-        {
-            get { return (string)_ProbeToken["name"]; }
-        }
-
-
         public String Protocol
         {
-            get { return (string)_ProbeToken["properties"]["protocol"]; }
+            get { return (string)this.ResourceToken["properties"]["protocol"]; }
         }
 
         public Int32 IntervalInSeconds
         {
-            get { return Convert.ToInt32((string)_ProbeToken["properties"]["intervalInSeconds"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["intervalInSeconds"]); }
         }
         public Int32 NumberOfProbes
         {
-            get { return Convert.ToInt32((string)_ProbeToken["properties"]["numberOfProbes"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["numberOfProbes"]); }
         }
         public Int32 Port
         {
-            get { return Convert.ToInt32((string)_ProbeToken["properties"]["port"]); }
+            get { return Convert.ToInt32((string)this.ResourceToken["properties"]["port"]); }
         }
 
         public String RequestPath
         {
-            get { return (string)_ProbeToken["properties"]["requestPath"]; }
+            get { return (string)this.ResourceToken["properties"]["requestPath"]; }
         }
 
+        public List<LoadBalancingRule> LoadBalancingRules
+        {
+            get { return _LoadBalancingRules; }
+        }
+
+        internal List<String> LoadBalancingRuleIds
+        {
+            get
+            {
+                List<String> loadBalancingRuleIds = new List<string>();
+
+                if (this.ResourceToken["properties"]["loadBalancingRules"] != null)
+                {
+                    foreach (JToken loadBalancingRuleId in this.ResourceToken["properties"]["loadBalancingRules"])
+                    {
+                        loadBalancingRuleIds.Add((string)loadBalancingRuleId["id"]);
+                    }
+                }
+
+                return loadBalancingRuleIds;
+            }
+        }
     }
 }
