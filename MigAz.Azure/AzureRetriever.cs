@@ -49,6 +49,7 @@ namespace MigAz.Azure
         private Dictionary<Arm.ResourceGroup, List<Arm.LoadBalancer>> _ArmLoadBalancers = new Dictionary<ResourceGroup, List<Arm.LoadBalancer>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>> _ArmNetworkInterfaces = new Dictionary<ResourceGroup, List<Arm.NetworkInterface>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>> _ArmVirtualNetworkGateways = new Dictionary<ResourceGroup, List<Arm.VirtualNetworkGateway>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>> _ArmPublicIPs = new Dictionary<ResourceGroup, List<PublicIP>>();
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
 
@@ -81,6 +82,7 @@ namespace MigAz.Azure
             _ArmLoadBalancers = new Dictionary<ResourceGroup, List<Arm.LoadBalancer>>();
             _ArmNetworkInterfaces = new Dictionary<ResourceGroup, List<Arm.NetworkInterface>>();
             _ArmVirtualNetworkGateways = new Dictionary<ResourceGroup, List<Arm.VirtualNetworkGateway>>();
+            _ArmPublicIPs = new Dictionary<ResourceGroup, List<PublicIP>>();
     }
 
         public void SaveRestCache()
@@ -1070,6 +1072,31 @@ namespace MigAz.Azure
             return resourceGroupNetworkSecurityGroups;
         }
 
+        public async Task<List<Arm.PublicIP>> GetAzureARMPublicIPs(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMPublicIPs", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (_ArmPublicIPs.ContainsKey(resourceGroup))
+                return _ArmPublicIPs[resourceGroup];
+
+            JObject publicIPJson = await this.GetAzureARMResources("PublicIPs", resourceGroup, null);
+
+            var publicIPs = from publicIP in publicIPJson["value"]
+                                select publicIP;
+
+            List<Arm.PublicIP> resourceGroupPublicIPs = new List<Arm.PublicIP>();
+
+            foreach (var publicIP in publicIPs)
+            {
+                Arm.PublicIP armPublicIP = new Arm.PublicIP(publicIP);
+                await armPublicIP.InitializeChildrenAsync(_AzureContext);
+                resourceGroupPublicIPs.Add(armPublicIP);
+            }
+
+            _ArmPublicIPs.Add(resourceGroup, resourceGroupPublicIPs);
+            return resourceGroupPublicIPs;
+        }
+
         public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers(Arm.ResourceGroup resourceGroup)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start - '" + resourceGroup.ToString() + "' Resource Group");
@@ -1079,8 +1106,8 @@ namespace MigAz.Azure
 
             JObject loadBalancersJson = await this.GetAzureARMResources("LoadBalancers", resourceGroup, null);
 
-            var loadBalancers = from networkSecurityGroup in loadBalancersJson["value"]
-                                        select networkSecurityGroup;
+            var loadBalancers = from loadBalancer in loadBalancersJson["value"]
+                                        select loadBalancer;
 
             List<Arm.LoadBalancer> resourceGroupLoadBalancers = new List<Arm.LoadBalancer>();
 
@@ -1292,6 +1319,11 @@ namespace MigAz.Azure
                     // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
                     url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Resource Group '" + resourceGroup.Name + "'.");
+                    break;
+                case "PublicIPs":
+                    // https://docs.microsoft.com/en-us/rest/api/network/virtualnetwork/list-public-ip-addresses-within-a-resource-group
+                    url = AzureServiceUrls.GetARMServiceManagementUrl(this._AzureContext.AzureEnvironment) + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=2016-09-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Public IPs for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);

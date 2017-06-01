@@ -37,6 +37,7 @@ namespace MigAz.Migrators
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
+        private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs;
         private PropertyPanel _PropertyPanel;
         private ImageList _AzureResourceImageList;
         private bool _IsAsmLoaded = false;
@@ -199,6 +200,25 @@ namespace MigAz.Migrators
             {
                 Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
                 _ArmTargetManagedDisks.Add(targetManagedDisk);
+            }
+        }
+        
+
+        private async Task LoadARMPublicIPs(TreeNode tnResourceGroup, ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.PublicIP armPublicIp in await _AzureContextSourceASM.AzureRetriever.GetAzureARMPublicIPs(armResourceGroup))
+            {
+                TreeNode publicIpParentNode = tnResourceGroup;
+
+                Azure.MigrationTarget.PublicIp targetPublicIP = new Azure.MigrationTarget.PublicIp(armPublicIp);
+                _ArmTargetPublicIPs.Add(targetPublicIP);
+
+                TreeNode tnPublicIP = new TreeNode(targetPublicIP.SourceName);
+                tnPublicIP.Name = targetPublicIP.SourceName;
+                tnPublicIP.Tag = targetPublicIP;
+                tnPublicIP.ImageKey = "PublicIp";
+                tnPublicIP.SelectedImageKey = "PublicIp";
+                publicIpParentNode.Nodes.Add(tnPublicIP);
             }
         }
 
@@ -1223,6 +1243,7 @@ namespace MigAz.Migrators
                     _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                     _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
                     _ArmTargetAvailabilitySets = new List<Azure.MigrationTarget.AvailabilitySet>();
+                    _ArmTargetPublicIPs = new List<Azure.MigrationTarget.PublicIp>();
 
                     if (_AzureContextSourceASM != null && _AzureContextSourceASM.AzureSubscription != null)
                     {
@@ -1241,6 +1262,16 @@ namespace MigAz.Migrators
                             armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
                         }
                         await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
+
+                        List<Task> armPublicIPTasks = new List<Task>();
+                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                        {
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+
+                            Task armPublicIPTask = LoadARMPublicIPs(tnResourceGroup, armResourceGroup);
+                            armPublicIPTasks.Add(armPublicIPTask);
+                        }
+                        await Task.WhenAll(armPublicIPTasks.ToArray());
 
 
                         List<Task> armVirtualNetworkTasks = new List<Task>();

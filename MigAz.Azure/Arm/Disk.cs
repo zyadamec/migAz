@@ -21,7 +21,6 @@ namespace MigAz.Azure.Arm
             _SourceStorageAccount = azureContext.AzureRetriever.GetAzureARMStorageAccount(StorageAccountName);
         }
 
-        public string Name => (string)this.ResourceToken["name"];
         public string CreateOption => (string)this.ResourceToken["createOption"];
         public string Caching => (string)this.ResourceToken["caching"];
         public int DiskSizeGb => Convert.ToInt32((string)this.ResourceToken["diskSizeGB"]);
