@@ -570,6 +570,40 @@ namespace MigAz.Migrators
                             }
 
                             #endregion
+
+                            #region Network Interface Card(s)
+
+                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                            {
+                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                {
+                                    if (ipConfiguration.BackEndAddressPool != null && ipConfiguration.BackEndAddressPool.LoadBalancer != null)
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.BackEndAddressPool.LoadBalancer.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+
+                                    if (ipConfiguration.PublicIP != null)
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.PublicIP.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            #endregion
                         }
                     }
                 }
@@ -609,7 +643,34 @@ namespace MigAz.Migrators
                         }
                     }
                 }
-                
+                else if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)selectedNode.Tag;
+
+                    if (targetLoadBalancer.Source != null)
+                    {
+                        if (targetLoadBalancer.Source.GetType() == typeof(Azure.Arm.LoadBalancer))
+                        {
+                            Azure.Arm.LoadBalancer armLoadBalaner = (Azure.Arm.LoadBalancer)targetLoadBalancer.Source;
+
+                            foreach (Azure.Arm.FrontEndIpConfiguration frontEndIpConfiguration in armLoadBalaner.FrontEndIpConfigurations)
+                            {
+                                if (frontEndIpConfiguration.PublicIP != null)
+                                {
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(frontEndIpConfiguration.PublicIP.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 StatusProvider.UpdateStatus("Ready");
             }
         }
