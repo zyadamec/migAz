@@ -427,6 +427,8 @@ namespace MigAz.Migrators
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
+            // todo now asap russell, autoselect load balancers and public IPs
+
             if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
                 if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))

@@ -11,6 +11,8 @@ namespace MigAz.Azure.Arm
     {
         private LoadBalancer _ParentLoadBalancer = null;
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
+        private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
+
 
         public BackEndAddressPool(LoadBalancer loadBalancer, JToken backEndAddressPoolToken) : base(backEndAddressPoolToken)
         {
@@ -19,7 +21,22 @@ namespace MigAz.Azure.Arm
 
         internal override async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            // todo now russell asap load "backendIPConfigurations": 
+            foreach (string backEndIpConfigurationId in this.BackEndIPConfigurationIds)
+            {
+                NetworkInterface networkInterface = await azureContext.AzureRetriever.GetAzureARMNetworkInterface(backEndIpConfigurationId);
+                if (networkInterface != null)
+                {
+                    foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                    {
+                        if (String.Compare(networkInterfaceIpConfiguration.Id, backEndIpConfigurationId) == 0)
+                        {
+                            networkInterfaceIpConfiguration.BackEndAddressPool = this;
+                            this.NetworkInterfaceIpConfigurations.Add(networkInterfaceIpConfiguration);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public LoadBalancer LoadBalancer
@@ -27,9 +44,32 @@ namespace MigAz.Azure.Arm
             get { return _ParentLoadBalancer; }
         }
 
+        public List<NetworkInterfaceIpConfiguration> NetworkInterfaceIpConfigurations
+        {
+            get { return _NetworkInterfaceIpConfigurations; }
+        }
+
         public List<LoadBalancingRule> LoadBalancingRules
         {
             get { return _LoadBalancingRules; }
+        }
+
+        internal List<String> BackEndIPConfigurationIds
+        {
+            get
+            {
+                List<String> backEndIPConfigurationIds = new List<string>();
+
+                if (this.ResourceToken["properties"]["backendIPConfigurations"] != null)
+                {
+                    foreach (JToken backEndIPConfiguration in this.ResourceToken["properties"]["backendIPConfigurations"])
+                    {
+                        backEndIPConfigurationIds.Add((string)backEndIPConfiguration["id"]);
+                    }
+                }
+
+                return backEndIPConfigurationIds;
+            }
         }
 
         internal List<String> LoadBalancingRuleIds
@@ -40,9 +80,9 @@ namespace MigAz.Azure.Arm
 
                 if (this.ResourceToken["properties"]["loadBalancingRules"] != null)
                 {
-                    foreach (JToken loadBalancingRuleId in this.ResourceToken["properties"]["loadBalancingRules"])
+                    foreach (JToken loadBalancingRule in this.ResourceToken["properties"]["loadBalancingRules"])
                     {
-                        loadBalancingRuleIds.Add((string)loadBalancingRuleId["id"]);
+                        loadBalancingRuleIds.Add((string)loadBalancingRule["id"]);
                     }
                 }
 

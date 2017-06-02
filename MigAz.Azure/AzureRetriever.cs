@@ -999,6 +999,11 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterface", "Start");
 
+            int providerIndexOf = id.ToLower().IndexOf(ArmConst.ProviderNetworkInterfaces.ToLower());
+            int postNicSeperatorIndexOf = id.Substring(providerIndexOf + ArmConst.ProviderNetworkInterfaces.Length + 1).IndexOf("/");
+            if (postNicSeperatorIndexOf > -1)
+                id = id.Substring(0, providerIndexOf + ArmConst.ProviderNetworkInterfaces.Length + postNicSeperatorIndexOf + 1);
+
             foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces(await GetAzureARMResourceGroup(id)))
             {
                 if (String.Compare(networkInterface.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)

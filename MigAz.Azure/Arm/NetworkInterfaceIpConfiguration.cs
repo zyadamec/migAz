@@ -14,6 +14,7 @@ namespace MigAz.Azure.Arm
         private VirtualNetwork _VirtualNetwork;
         private Subnet _Subnet;
 
+
         public NetworkInterfaceIpConfiguration(JToken networkInterfaceIpConfiguration)
         {
             _NetworkInterfaceIpConfiguration = networkInterfaceIpConfiguration;
@@ -58,6 +59,11 @@ namespace MigAz.Azure.Arm
 
         public VirtualNetwork VirtualNetwork => _VirtualNetwork;
         public Subnet Subnet => _Subnet;
+        public BackEndAddressPool BackEndAddressPool
+        {
+            get;
+            internal set;
+        }
 
     }
 }

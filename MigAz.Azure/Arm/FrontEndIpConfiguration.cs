@@ -86,7 +86,7 @@ namespace MigAz.Azure.Arm
                 if (this.ResourceToken == null || this.ResourceToken["properties"]["publicIPAddress"] == null)
                     return String.Empty;
 
-                return (string)this.ResourceToken["properties"]["publicIPAddress"];
+                return (string)this.ResourceToken["properties"]["publicIPAddress"]["id"];
             }
         }
 
