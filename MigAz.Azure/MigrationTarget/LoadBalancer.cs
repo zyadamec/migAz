@@ -35,18 +35,17 @@ namespace MigAz.Azure.MigrationTarget
                 _BackEndAddressPools.Add(targetBackendAddressPool);
             }
 
-            foreach (Arm.LoadBalancingRule armLoadBalancingRule in sourceLoadBalancer.LoadBalancingRules)
-            {
-                LoadBalancingRule targetLoadBalancingRule = new LoadBalancingRule(this, armLoadBalancingRule);
-                _LoadBalancingRules.Add(targetLoadBalancingRule);
-            }
-
             foreach (Arm.Probe armProbe in sourceLoadBalancer.Probes)
             {
                 Probe targetProbe = new Probe(this, armProbe);
                 _Probes.Add(targetProbe);
             }
 
+            foreach (Arm.LoadBalancingRule armLoadBalancingRule in sourceLoadBalancer.LoadBalancingRules)
+            {
+                LoadBalancingRule targetLoadBalancingRule = new LoadBalancingRule(this, armLoadBalancingRule);
+                _LoadBalancingRules.Add(targetLoadBalancingRule);
+            }
         }
 
         public LoadBalancer()

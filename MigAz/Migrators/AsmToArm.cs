@@ -239,6 +239,19 @@ namespace MigAz.Migrators
                 TreeNode networkSecurityGroupParentNode = tnResourceGroup;
 
                 Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in targetLoadBalancer.FrontEndIpConfigurations)
+                {
+                    if (targetFrontEndIpConfiguration.Source != null && targetFrontEndIpConfiguration.Source.PublicIP != null)
+                    {
+                        foreach (Azure.MigrationTarget.PublicIp targetPublicIp in _ArmTargetPublicIPs)
+                        {
+                            if (targetPublicIp.SourceName == targetFrontEndIpConfiguration.Source.PublicIP.Name)
+                            {
+                                targetFrontEndIpConfiguration.PublicIp = targetPublicIp;
+                            }
+                        }
+                    }
+                }
                 _ArmTargetLoadBalancers.Add(targetLoadBalancer);
 
                 TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);

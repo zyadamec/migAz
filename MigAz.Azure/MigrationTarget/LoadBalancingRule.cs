@@ -36,8 +36,42 @@ namespace MigAz.Azure.MigrationTarget
             this.Protocol = armLoadBalancingRule.Protocol;
             this.EnableFloatingIP = armLoadBalancingRule.EnableFloatingIP;
             this.IdleTimeoutInMinutes = armLoadBalancingRule.IdleTimeoutInMinutes;
-            // todo now russell this.Probe = armLoadBalancingRule.Probe;
-            // todo now russell this.BackEndAddressPool = armLoadBalancingRule.BackEndAddressPool;
+
+            if (armLoadBalancingRule.FrontEndIpConfiguration != null)
+            {
+                foreach (FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
+                {
+                    if (targetFrontEndIpConfiguration.Name == armLoadBalancingRule.FrontEndIpConfiguration.Name)
+                    {
+                        this.FrontEndIpConfiguration = targetFrontEndIpConfiguration;
+                        break;
+                    }
+                }
+            }
+
+            if (armLoadBalancingRule.BackEndAddressPool != null)
+            {
+                foreach (BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
+                {
+                    if (targetBackEndAddressPool.Name == armLoadBalancingRule.BackEndAddressPool.Name)
+                    {
+                        this.BackEndAddressPool = targetBackEndAddressPool;
+                        break;
+                    }
+                }
+            }
+
+            if (armLoadBalancingRule.Probe != null)
+            {
+                foreach (Probe targetProbe in loadBalancer.Probes)
+                {
+                    if (targetProbe.Name == armLoadBalancingRule.Probe.Name)
+                    {
+                        this.Probe = targetProbe;
+                        break;
+                    }
+                }
+            }
         }
 
         public LoadBalancer LoadBalancer

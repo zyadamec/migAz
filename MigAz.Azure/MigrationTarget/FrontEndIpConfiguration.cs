@@ -19,6 +19,7 @@ namespace MigAz.Azure.MigrationTarget
         private PublicIp _PublicIp = null;
 
         private LoadBalancer _ParentLoadBalancer = null;
+        private Arm.FrontEndIpConfiguration _Source;
 
         private FrontEndIpConfiguration() { }
 
@@ -31,6 +32,7 @@ namespace MigAz.Azure.MigrationTarget
         public FrontEndIpConfiguration(LoadBalancer loadBalancer, Arm.FrontEndIpConfiguration armFrontEndIpConfiguration)
         {
             _ParentLoadBalancer = loadBalancer;
+            _Source = armFrontEndIpConfiguration;
 
             this.Name = armFrontEndIpConfiguration.Name;
             this.PrivateIPAllocationMethod = armFrontEndIpConfiguration.PrivateIPAllocationMethod;
@@ -42,6 +44,11 @@ namespace MigAz.Azure.MigrationTarget
         public LoadBalancer LoadBalancer
         {
             get { return _ParentLoadBalancer; }
+        }
+
+        public Arm.FrontEndIpConfiguration Source
+        {
+            get { return _Source; }
         }
 
         public String Name
