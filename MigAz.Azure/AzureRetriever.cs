@@ -1403,7 +1403,9 @@ namespace MigAz.Azure
 
                         HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
 
-                        if ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        if ((int)exceptionResponse.StatusCode == 429 || // 429 Too Many Requests
+                            ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                            )
                         {
                             DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
                             string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";

@@ -188,11 +188,14 @@ namespace MigAz.Azure.UserControls
                     {
                         for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                         {
-                            Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
-                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                            if (cmbTargetStorage.Items[i].GetType() == typeof(Azure.Arm.StorageAccount))
                             {
-                                cmbTargetStorage.SelectedIndex = i;
-                                break;
+                                Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
+                                if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                                {
+                                    cmbTargetStorage.SelectedIndex = i;
+                                    break;
+                                }
                             }
                         }
 

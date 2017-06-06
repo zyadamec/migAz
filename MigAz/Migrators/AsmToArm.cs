@@ -177,7 +177,17 @@ namespace MigAz.Migrators
                     this.TemplateGenerator.SourceSubscription = _AzureContextSourceASM.AzureSubscription;
                     this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
 
-                    tabSourceResources_SelectedIndexChanged(this, null); // We are calling this to execute the binding of objects in selected tab
+                    switch (tabSourceResources.SelectedTab.Name)
+                    {
+                        case "tabPageAsm":
+                            await BindAsmResources();
+                            break;
+                        case "tabPageArm":
+                            await BindArmResources();
+                            break;
+                        default:
+                            throw new ArgumentException("Unexpected Source Resource Tab: " + tabSourceResources.SelectedTab.Name);
+                    }
 
                     _AzureContextSourceASM.AzureRetriever.SaveRestCache();
                     await ReadSubscriptionSettings(sender.AzureSubscription);
@@ -1039,21 +1049,6 @@ namespace MigAz.Migrators
             _telemetryProvider.PostTelemetryRecord((AzureGenerator) this.TemplateGenerator);
         }
 
-        private async void tabSourceResources_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            switch (tabSourceResources.SelectedTab.Name)
-            {
-                case "tabPageAsm":
-                    await BindAsmResources();
-                    break;
-                case "tabPageArm":
-                    await BindArmResources();
-                    break;
-                default:
-                    break;
-            }
-        }
-
         private async Task BindAsmResources()
         {
             if (!_IsAsmLoaded)
@@ -1078,7 +1073,10 @@ namespace MigAz.Migrators
                         {
                             TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
 
-                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
+                            // Ensure we load the Full Details to get NSG Rules
+                            Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroupFullDetail = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroup(asmNetworkSecurityGroup.Name);
+
+                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroupFullDetail);
                             _AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
 
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
