@@ -1246,6 +1246,7 @@ namespace MigAz.Migrators
                                             targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
                                             targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
                                             targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                            targetLoadBalancer.Probes.Add(targetProbe);
                                         }
 
                                         Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
