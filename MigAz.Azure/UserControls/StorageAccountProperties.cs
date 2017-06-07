@@ -41,6 +41,8 @@ namespace MigAz.Azure.UserControls
                 else
                     txtTargetName.Text = storageAccount.TargetName;
             }
+
+            cmbAccountType.SelectedIndex = cmbAccountType.FindString(storageAccount.AccountType);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -58,6 +60,12 @@ namespace MigAz.Azure.UserControls
             {
                 e.Handled = true;
             }
+        }
+
+        private void cmbAccountType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _StorageAccount.AccountType = cmbAccountType.SelectedItem.ToString();
+            PropertyChanged();
         }
     }
 }

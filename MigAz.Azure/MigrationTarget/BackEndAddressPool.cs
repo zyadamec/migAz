@@ -19,6 +19,13 @@ namespace MigAz.Azure.MigrationTarget
             loadBalancer.BackEndAddressPools.Add(this);
         }
 
+        public BackEndAddressPool(LoadBalancer loadBalancer, Arm.BackEndAddressPool armBackEndAddressPool)
+        {
+            _ParentLoadBalancer = loadBalancer;
+
+            this.Name = armBackEndAddressPool.Name;
+        }
+
         public LoadBalancer LoadBalancer
         {
             get { return _ParentLoadBalancer; }

@@ -13,6 +13,15 @@ namespace MigAz.Azure.MigrationTarget
         private String _Name = String.Empty;
         private String _DomainNameLabel = String.Empty;
 
+        public PublicIp() { }
+
+        public PublicIp(Arm.PublicIP armPublicIP)
+        {
+            this.SourceName = armPublicIP.Name;
+            this.Name = armPublicIP.Name;
+            this.DomainNameLabel = armPublicIP.DomainNameLabel;
+        }
+
         public String DomainNameLabel
         {
             get { return _DomainNameLabel; }

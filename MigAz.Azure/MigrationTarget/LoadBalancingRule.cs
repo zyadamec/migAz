@@ -16,6 +16,8 @@ namespace MigAz.Azure.MigrationTarget
         private Int32 _BackEndPort = 0;
         private String _Protocol = "tcp";
         private LoadBalancer _ParentLoadBalancer = null;
+        private bool _EnableFloatingIP = false;
+        private Int32 _IdleTimeoutInMinutes = 4;
 
         private LoadBalancingRule() { }
 
@@ -23,6 +25,53 @@ namespace MigAz.Azure.MigrationTarget
         {
             _ParentLoadBalancer = loadBalancer;
             loadBalancer.LoadBalancingRules.Add(this);
+        }
+        public LoadBalancingRule(LoadBalancer loadBalancer, Arm.LoadBalancingRule armLoadBalancingRule)
+        {
+            _ParentLoadBalancer = loadBalancer;
+
+            this.Name = armLoadBalancingRule.Name;
+            this.FrontEndPort = armLoadBalancingRule.FrontEndPort;
+            this.BackEndPort = armLoadBalancingRule.BackEndPort;
+            this.Protocol = armLoadBalancingRule.Protocol;
+            this.EnableFloatingIP = armLoadBalancingRule.EnableFloatingIP;
+            this.IdleTimeoutInMinutes = armLoadBalancingRule.IdleTimeoutInMinutes;
+
+            if (armLoadBalancingRule.FrontEndIpConfiguration != null)
+            {
+                foreach (FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
+                {
+                    if (targetFrontEndIpConfiguration.Name == armLoadBalancingRule.FrontEndIpConfiguration.Name)
+                    {
+                        this.FrontEndIpConfiguration = targetFrontEndIpConfiguration;
+                        break;
+                    }
+                }
+            }
+
+            if (armLoadBalancingRule.BackEndAddressPool != null)
+            {
+                foreach (BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
+                {
+                    if (targetBackEndAddressPool.Name == armLoadBalancingRule.BackEndAddressPool.Name)
+                    {
+                        this.BackEndAddressPool = targetBackEndAddressPool;
+                        break;
+                    }
+                }
+            }
+
+            if (armLoadBalancingRule.Probe != null)
+            {
+                foreach (Probe targetProbe in loadBalancer.Probes)
+                {
+                    if (targetProbe.Name == armLoadBalancingRule.Probe.Name)
+                    {
+                        this.Probe = targetProbe;
+                        break;
+                    }
+                }
+            }
         }
 
         public LoadBalancer LoadBalancer
@@ -34,6 +83,18 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _Probe; }
             set { _Probe = value; }
+        }
+
+        public bool EnableFloatingIP
+        {
+            get { return _EnableFloatingIP; }
+            set { _EnableFloatingIP = value; }
+        }
+
+        public Int32 IdleTimeoutInMinutes
+        {
+            get { return _IdleTimeoutInMinutes; }
+            set { _IdleTimeoutInMinutes = value; }
         }
 
         public BackEndAddressPool BackEndAddressPool

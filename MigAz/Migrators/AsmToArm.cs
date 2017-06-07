@@ -37,6 +37,7 @@ namespace MigAz.Migrators
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks;
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers;
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups;
+        private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs;
         private PropertyPanel _PropertyPanel;
         private ImageList _AzureResourceImageList;
         private bool _IsAsmLoaded = false;
@@ -176,7 +177,17 @@ namespace MigAz.Migrators
                     this.TemplateGenerator.SourceSubscription = _AzureContextSourceASM.AzureSubscription;
                     this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
 
-                    tabSourceResources_SelectedIndexChanged(this, null); // We are calling this to execute the binding of objects in selected tab
+                    switch (tabSourceResources.SelectedTab.Name)
+                    {
+                        case "tabPageAsm":
+                            await BindAsmResources();
+                            break;
+                        case "tabPageArm":
+                            await BindArmResources();
+                            break;
+                        default:
+                            throw new ArgumentException("Unexpected Source Resource Tab: " + tabSourceResources.SelectedTab.Name);
+                    }
 
                     _AzureContextSourceASM.AzureRetriever.SaveRestCache();
                     await ReadSubscriptionSettings(sender.AzureSubscription);
@@ -201,6 +212,25 @@ namespace MigAz.Migrators
                 _ArmTargetManagedDisks.Add(targetManagedDisk);
             }
         }
+        
+
+        private async Task LoadARMPublicIPs(TreeNode tnResourceGroup, ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.PublicIP armPublicIp in await _AzureContextSourceASM.AzureRetriever.GetAzureARMPublicIPs(armResourceGroup))
+            {
+                TreeNode publicIpParentNode = tnResourceGroup;
+
+                Azure.MigrationTarget.PublicIp targetPublicIP = new Azure.MigrationTarget.PublicIp(armPublicIp);
+                _ArmTargetPublicIPs.Add(targetPublicIP);
+
+                TreeNode tnPublicIP = new TreeNode(targetPublicIP.SourceName);
+                tnPublicIP.Name = targetPublicIP.SourceName;
+                tnPublicIP.Tag = targetPublicIP;
+                tnPublicIP.ImageKey = "PublicIp";
+                tnPublicIP.SelectedImageKey = "PublicIp";
+                publicIpParentNode.Nodes.Add(tnPublicIP);
+            }
+        }
 
         private async Task LoadARMLoadBalancers(TreeNode tnResourceGroup, ResourceGroup armResourceGroup)
         {
@@ -209,6 +239,19 @@ namespace MigAz.Migrators
                 TreeNode networkSecurityGroupParentNode = tnResourceGroup;
 
                 Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
+                foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in targetLoadBalancer.FrontEndIpConfigurations)
+                {
+                    if (targetFrontEndIpConfiguration.Source != null && targetFrontEndIpConfiguration.Source.PublicIP != null)
+                    {
+                        foreach (Azure.MigrationTarget.PublicIp targetPublicIp in _ArmTargetPublicIPs)
+                        {
+                            if (targetPublicIp.SourceName == targetFrontEndIpConfiguration.Source.PublicIP.Name)
+                            {
+                                targetFrontEndIpConfiguration.PublicIp = targetPublicIp;
+                            }
+                        }
+                    }
+                }
                 _ArmTargetLoadBalancers.Add(targetLoadBalancer);
 
                 TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
@@ -392,7 +435,7 @@ namespace MigAz.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.6.0";
+            string currentVersion = "2.2.7.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -407,6 +450,8 @@ namespace MigAz.Migrators
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
+            // todo now asap russell, autoselect load balancers and public IPs
+
             if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
                 if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
@@ -548,6 +593,40 @@ namespace MigAz.Migrators
                             }
 
                             #endregion
+
+                            #region Network Interface Card(s)
+
+                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                            {
+                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                {
+                                    if (ipConfiguration.BackEndAddressPool != null && ipConfiguration.BackEndAddressPool.LoadBalancer != null)
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.BackEndAddressPool.LoadBalancer.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+
+                                    if (ipConfiguration.PublicIP != null)
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.PublicIP.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            #endregion
                         }
                     }
                 }
@@ -587,7 +666,34 @@ namespace MigAz.Migrators
                         }
                     }
                 }
-                
+                else if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)selectedNode.Tag;
+
+                    if (targetLoadBalancer.Source != null)
+                    {
+                        if (targetLoadBalancer.Source.GetType() == typeof(Azure.Arm.LoadBalancer))
+                        {
+                            Azure.Arm.LoadBalancer armLoadBalaner = (Azure.Arm.LoadBalancer)targetLoadBalancer.Source;
+
+                            foreach (Azure.Arm.FrontEndIpConfiguration frontEndIpConfiguration in armLoadBalaner.FrontEndIpConfigurations)
+                            {
+                                if (frontEndIpConfiguration.PublicIP != null)
+                                {
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(frontEndIpConfiguration.PublicIP.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 StatusProvider.UpdateStatus("Ready");
             }
         }
@@ -956,21 +1062,6 @@ namespace MigAz.Migrators
             _telemetryProvider.PostTelemetryRecord((AzureGenerator) this.TemplateGenerator);
         }
 
-        private async void tabSourceResources_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            switch (tabSourceResources.SelectedTab.Name)
-            {
-                case "tabPageAsm":
-                    await BindAsmResources();
-                    break;
-                case "tabPageArm":
-                    await BindArmResources();
-                    break;
-                default:
-                    break;
-            }
-        }
-
         private async Task BindAsmResources()
         {
             if (!_IsAsmLoaded)
@@ -995,7 +1086,10 @@ namespace MigAz.Migrators
                         {
                             TreeNode parentNode = GetDataCenterTreeViewNode(subscriptionNodeASM, asmNetworkSecurityGroup.Location, "Network Security Groups");
 
-                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroup);
+                            // Ensure we load the Full Details to get NSG Rules
+                            Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroupFullDetail = await _AzureContextSourceASM.AzureRetriever.GetAzureAsmNetworkSecurityGroup(asmNetworkSecurityGroup.Name);
+
+                            Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this.AzureContextTargetARM, asmNetworkSecurityGroupFullDetail);
                             _AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
 
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
@@ -1165,6 +1259,7 @@ namespace MigAz.Migrators
                                             targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
                                             targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
                                             targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                            targetLoadBalancer.Probes.Add(targetProbe);
                                         }
 
                                         Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule = null;
@@ -1223,6 +1318,7 @@ namespace MigAz.Migrators
                     _ArmTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
                     _ArmTargetLoadBalancers = new List<Azure.MigrationTarget.LoadBalancer>();
                     _ArmTargetAvailabilitySets = new List<Azure.MigrationTarget.AvailabilitySet>();
+                    _ArmTargetPublicIPs = new List<Azure.MigrationTarget.PublicIp>();
 
                     if (_AzureContextSourceASM != null && _AzureContextSourceASM.AzureSubscription != null)
                     {
@@ -1241,6 +1337,16 @@ namespace MigAz.Migrators
                             armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
                         }
                         await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
+
+                        List<Task> armPublicIPTasks = new List<Task>();
+                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await _AzureContextSourceASM.AzureRetriever.GetAzureARMResourceGroups())
+                        {
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, armResourceGroup);
+
+                            Task armPublicIPTask = LoadARMPublicIPs(tnResourceGroup, armResourceGroup);
+                            armPublicIPTasks.Add(armPublicIPTask);
+                        }
+                        await Task.WhenAll(armPublicIPTasks.ToArray());
 
 
                         List<Task> armVirtualNetworkTasks = new List<Task>();

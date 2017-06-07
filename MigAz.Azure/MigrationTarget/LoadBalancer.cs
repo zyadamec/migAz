@@ -23,6 +23,29 @@ namespace MigAz.Azure.MigrationTarget
             this.Source = sourceLoadBalancer;
             this.Name = sourceLoadBalancer.Name;
 
+            foreach (Arm.FrontEndIpConfiguration armFrontEndIpConfiguration in sourceLoadBalancer.FrontEndIpConfigurations)
+            {
+                FrontEndIpConfiguration targetFrontEndIpConfiguration = new FrontEndIpConfiguration(this, armFrontEndIpConfiguration);
+                _FrontEndIpConfiguration.Add(targetFrontEndIpConfiguration);
+            }
+
+            foreach (Arm.BackEndAddressPool armBackendAddressPool in sourceLoadBalancer.BackEndAddressPools)
+            {
+                BackEndAddressPool targetBackendAddressPool = new BackEndAddressPool(this, armBackendAddressPool);
+                _BackEndAddressPools.Add(targetBackendAddressPool);
+            }
+
+            foreach (Arm.Probe armProbe in sourceLoadBalancer.Probes)
+            {
+                Probe targetProbe = new Probe(this, armProbe);
+                _Probes.Add(targetProbe);
+            }
+
+            foreach (Arm.LoadBalancingRule armLoadBalancingRule in sourceLoadBalancer.LoadBalancingRules)
+            {
+                LoadBalancingRule targetLoadBalancingRule = new LoadBalancingRule(this, armLoadBalancingRule);
+                _LoadBalancingRules.Add(targetLoadBalancingRule);
+            }
         }
 
         public LoadBalancer()

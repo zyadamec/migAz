@@ -59,14 +59,18 @@
   <ItemGroup>
     <Compile Include="Arm\ArmResource.cs" />
     <Compile Include="Arm\AvailabilitySet.cs" />
+    <Compile Include="Arm\BackEndAddressPool.cs" />
     <Compile Include="Arm\Disk.cs" />
+    <Compile Include="Arm\FrontEndIpConfiguration.cs" />
     <Compile Include="Arm\LoadBalancer.cs" />
+    <Compile Include="Arm\LoadBalancingRule.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
     <Compile Include="Arm\NetworkInterface.cs" />
     <Compile Include="Arm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
+    <Compile Include="Arm\Probe.cs" />
     <Compile Include="Arm\PublicIP.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
     <Compile Include="Arm\Route.cs" />

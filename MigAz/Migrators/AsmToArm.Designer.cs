@@ -97,7 +97,6 @@
             this.tabSourceResources.SelectedIndex = 0;
             this.tabSourceResources.Size = new System.Drawing.Size(444, 300);
             this.tabSourceResources.TabIndex = 65;
-            this.tabSourceResources.SelectedIndexChanged += new System.EventHandler(this.tabSourceResources_SelectedIndexChanged);
             // 
             // tabPageAsm
             // 
