@@ -551,7 +551,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 probe_properties.intervalInSeconds = targetProbe.IntervalInSeconds;
                 probe_properties.numberOfProbes = targetProbe.NumberOfProbes;
 
-                if (targetProbe.RequestPath != String.Empty)
+                if (targetProbe.RequestPath != null && targetProbe.RequestPath != String.Empty)
                     probe_properties.requestPath = targetProbe.RequestPath;
 
                 Probe probe = new Probe();
