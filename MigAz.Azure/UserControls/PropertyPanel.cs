@@ -210,7 +210,8 @@ namespace MigAz.Azure.UserControls
 
                     LoadBalancerProperties properties = new LoadBalancerProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind((Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag);
+                    await properties.Bind(this.AzureContext, _TargetTreeView);
+                    properties.LoadBalancer = (Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag;
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))

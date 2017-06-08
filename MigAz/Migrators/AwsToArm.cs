@@ -18,6 +18,7 @@ namespace MigAz.Migrators
         private AwsToArmSaveSelectionProvider _saveSelectionProvider;
         private AwsToArmSaveSelectionProvider _telemetryProvider;
         private PropertyPanel _PropertyPanel;
+        private ImageList _AzureResourceImageList;
 
         //private EC2Operation ec2 = null;
         // TODO WHERE?? static IAmazonEC2 service;
@@ -68,6 +69,17 @@ namespace MigAz.Migrators
             throw new NotImplementedException();
         }
 
+        public ImageList AzureResourceImageList
+        {
+            get { return _AzureResourceImageList; }
+            set
+            {
+                _AzureResourceImageList = value;
+
+                if (treeTargetARM != null)
+                    treeTargetARM.ImageList = _AzureResourceImageList;
+            }
+        }
         public async Task Bind()
         {
             _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, null); // todo needs settings provider
@@ -82,11 +94,6 @@ namespace MigAz.Migrators
                 LogProvider.WriteLog("Window_Load", "Program start");
             // TODO instResponse = new DescribeInstancesResponse();
             // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
-
-
-
-
-
             AlertIfNewVersionAvailable();
         }
 
@@ -94,7 +101,7 @@ namespace MigAz.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.8.0";
+            string currentVersion = "2.2.9.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/AWStoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -378,42 +385,6 @@ namespace MigAz.Migrators
             return true;
         }
 
-        private TreeNode GetTargetAvailabilitySetNode(TreeNode subscriptionNode, Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet)
-        {
-            foreach (TreeNode treeNode in subscriptionNode.Nodes)
-            {
-                if (treeNode.Tag != null)
-                {
-                    if (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && treeNode.Text == targetAvailabilitySet.ToString())
-                        return treeNode;
-                }
-            }
-
-            TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.ToString());
-            tnAvailabilitySet.Text = targetAvailabilitySet.ToString();
-            tnAvailabilitySet.Tag = targetAvailabilitySet;
-            tnAvailabilitySet.ImageKey = "AvailabilitySet";
-            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
-
-            subscriptionNode.Nodes.Add(tnAvailabilitySet);
-            tnAvailabilitySet.Expand();
-            return tnAvailabilitySet;
-        }
-
-        private async void treeTargetARM_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            LogProvider.WriteLog("treeARM_AfterSelect", "Start");
-
-            _PropertyPanel.Bind(e.Node);
-
-            LogProvider.WriteLog("treeARM_AfterSelect", "End");
-            StatusProvider.UpdateStatus("Ready");
-        }
-
-        private async Task Properties_PropertyChanged()
-        {
-            if (_SourceAwsNode == null) // we are not going to update on every property bind during TreeView updates
-                await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
-        }
+      
     }
 }

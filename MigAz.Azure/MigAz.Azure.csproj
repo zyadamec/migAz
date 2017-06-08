@@ -99,6 +99,7 @@
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IArmDisk.cs" />
+    <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
@@ -198,6 +199,12 @@
     <Compile Include="UserControls\NetworkSecurityGroupProperties.Designer.cs">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\NetworkSelectionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\NetworkSelectionControl.Designer.cs">
+      <DependentUpon>NetworkSelectionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\PropertyPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -279,6 +286,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkSecurityGroupProperties.resx">
       <DependentUpon>NetworkSecurityGroupProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\NetworkSelectionControl.resx">
+      <DependentUpon>NetworkSelectionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\PropertyPanel.resx">
       <DependentUpon>PropertyPanel.cs</DependentUpon>

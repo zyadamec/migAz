@@ -76,10 +76,35 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
                 else
                 {
-                    if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp == null &&
-                        targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
+                    if (targetLoadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
                     {
-                        this.AddAlert(AlertType.Error, "Load Balancer must have either an internal Subnet association or Public IP association.", targetLoadBalancer);
+                        if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Internal Load Balancer must have an internal Subnet association.", targetLoadBalancer);
+                        }
+                    }
+                    else
+                    {
+                        if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Public Load Balancer must have either a Public IP association.", targetLoadBalancer);
+                        }
+                        else
+                        {
+                            // Ensure the selected Public IP Address is "in the migration" as a target new Public IP Object
+                            bool publicIpExistsInMigration = false;
+                            foreach (Azure.MigrationTarget.PublicIp publicIp in _ExportArtifacts.PublicIPs)
+                            {
+                                if (publicIp.Name == targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.Name)
+                                {
+                                    publicIpExistsInMigration = true;
+                                    break;
+                                }
+                            }
+
+                            if (!publicIpExistsInMigration)
+                                this.AddAlert(AlertType.Error, "Public IP '" + targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.Name + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                        }
                     }
                 }
             }
@@ -447,7 +472,7 @@ namespace MigAz.Azure.Generator.AsmToArm
                 FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
                 frontendipconfiguration.properties = frontendipconfiguration_properties;
 
-                if (targetFrontEndIpConfiguration.PublicIp == null)
+                if (loadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
                 {
                     frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.PrivateIPAllocationMethod;
                     frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.PrivateIPAddress;
@@ -458,20 +483,23 @@ namespace MigAz.Azure.Generator.AsmToArm
                     Reference subnet_ref = new Reference();
                     frontendipconfiguration_properties.subnet = subnet_ref;
 
-                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetSubnet != null)
+                    if (targetFrontEndIpConfiguration.TargetSubnet != null)
                     {
                         subnet_ref.id = targetFrontEndIpConfiguration.TargetSubnet.TargetId;
                     }
                 }
                 else
                 {
-                    await BuildPublicIPAddressObject(targetFrontEndIpConfiguration.PublicIp);
+                    if (targetFrontEndIpConfiguration.PublicIp != null)
+                    {
+                        await BuildPublicIPAddressObject(targetFrontEndIpConfiguration.PublicIp);
 
-                    Reference publicipaddress_ref = new Reference();
-                    publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
-                    frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+                        Reference publicipaddress_ref = new Reference();
+                        publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
+                        frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
 
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                    }
                 }
             }
 
@@ -522,7 +550,9 @@ namespace MigAz.Azure.Generator.AsmToArm
                 probe_properties.protocol = targetProbe.Protocol;
                 probe_properties.intervalInSeconds = targetProbe.IntervalInSeconds;
                 probe_properties.numberOfProbes = targetProbe.NumberOfProbes;
-                probe_properties.requestPath = targetProbe.RequestPath;
+
+                if (targetProbe.RequestPath != String.Empty)
+                    probe_properties.requestPath = targetProbe.RequestPath;
 
                 Probe probe = new Probe();
                 probe.name = targetProbe.Name;
