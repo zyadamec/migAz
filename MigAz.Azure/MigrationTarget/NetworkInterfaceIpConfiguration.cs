@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,11 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkInterfaceIpConfiguration : IMigrationTarget
+    public class NetworkInterfaceIpConfiguration : IVirtualNetworkTarget, IMigrationTarget
     {
         private AzureContext _AzureContext;
         private INetworkInterfaceIpConfiguration _SourceIpConfiguration;
         private string _TargetName = String.Empty;
-        private IMigrationVirtualNetwork _TargetVirtualNetwork;
-        private IMigrationSubnet _TargetSubnet;
         private String _TargetPrivateIPAllocationMethod = "Dynamic";
         private String _TargetStaticIpAddress = String.Empty;
 
@@ -90,17 +89,6 @@ namespace MigAz.Azure.MigrationTarget
         public INetworkInterfaceIpConfiguration SourceIpConfiguration
         {
             get { return _SourceIpConfiguration; }
-        }
-
-        public IMigrationSubnet TargetSubnet
-        {
-            get { return _TargetSubnet; }
-            set { _TargetSubnet = value; }
-        }
-        public IMigrationVirtualNetwork TargetVirtualNetwork
-        {
-            get { return _TargetVirtualNetwork; }
-            set { _TargetVirtualNetwork = value; }
         }
 
         public String TargetPrivateIPAllocationMethod

@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
+    public enum LoadBalancerType
+    {
+        Public,
+        Internal
+    }
+
     public class LoadBalancer : IMigrationTarget
     {
         private String _SourceName = String.Empty;
@@ -17,6 +23,7 @@ namespace MigAz.Azure.MigrationTarget
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private List<Probe> _Probes = new List<Probe>();
+        private LoadBalancerType _LoadBalancerType = LoadBalancerType.Internal;
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer)
         {
@@ -27,6 +34,9 @@ namespace MigAz.Azure.MigrationTarget
             {
                 FrontEndIpConfiguration targetFrontEndIpConfiguration = new FrontEndIpConfiguration(this, armFrontEndIpConfiguration);
                 _FrontEndIpConfiguration.Add(targetFrontEndIpConfiguration);
+
+                if (armFrontEndIpConfiguration.PublicIP != null)
+                    this.LoadBalancerType = LoadBalancerType.Public;
             }
 
             foreach (Arm.BackEndAddressPool armBackendAddressPool in sourceLoadBalancer.BackEndAddressPools)
@@ -50,6 +60,12 @@ namespace MigAz.Azure.MigrationTarget
 
         public LoadBalancer()
         {
+        }
+
+        public LoadBalancerType LoadBalancerType
+        {
+            get { return _LoadBalancerType; }
+            set { _LoadBalancerType = value; }
         }
 
         public ILoadBalancer Source

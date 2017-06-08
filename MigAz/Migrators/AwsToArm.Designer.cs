@@ -145,9 +145,15 @@
             // 
             // treeTargetARM
             // 
+            this.treeTargetARM.ImageList = null;
             this.treeTargetARM.Location = new System.Drawing.Point(370, 125);
+            this.treeTargetARM.LogProvider = null;
             this.treeTargetARM.Name = "treeTargetARM";
+            this.treeTargetARM.PropertyPanel = null;
+            this.treeTargetARM.SelectedNode = null;
+            this.treeTargetARM.SettingsProvider = null;
             this.treeTargetARM.Size = new System.Drawing.Size(447, 300);
+            this.treeTargetARM.StatusProvider = null;
             this.treeTargetARM.TabIndex = 59;
             // 
             // AwsToArm

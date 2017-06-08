@@ -28,13 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.rbExistingARMVNet = new System.Windows.Forms.RadioButton();
-            this.rbVNetInMigration = new System.Windows.Forms.RadioButton();
-            this.cmbExistingArmSubnet = new System.Windows.Forms.ComboBox();
-            this.cmbExistingArmVNets = new System.Windows.Forms.ComboBox();
             this.lblVirtualNetworkName = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblStaticIpAddress = new System.Windows.Forms.Label();
@@ -49,83 +42,8 @@
             this.cmbAllocationMethod = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.txtStaticIp = new System.Windows.Forms.TextBox();
+            this.networkSelectionControl1 = new MigAz.Azure.UserControls.NetworkSelectionControl();
             this.SuspendLayout();
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(4, 227);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
-            this.label8.TabIndex = 29;
-            this.label8.Text = "Target Subnet:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(4, 199);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(68, 13);
-            this.label7.TabIndex = 28;
-            this.label7.Text = "Target VNet:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 147);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(61, 13);
-            this.label2.TabIndex = 27;
-            this.label2.Text = "Migrate To:";
-            // 
-            // rbExistingARMVNet
-            // 
-            this.rbExistingARMVNet.AutoSize = true;
-            this.rbExistingARMVNet.Location = new System.Drawing.Point(89, 170);
-            this.rbExistingARMVNet.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.rbExistingARMVNet.Name = "rbExistingARMVNet";
-            this.rbExistingARMVNet.Size = new System.Drawing.Size(160, 17);
-            this.rbExistingARMVNet.TabIndex = 19;
-            this.rbExistingARMVNet.Text = "Existing ARM VNet in Target";
-            this.rbExistingARMVNet.UseVisualStyleBackColor = true;
-            this.rbExistingARMVNet.CheckedChanged += new System.EventHandler(this.rbExistingARMVNet_CheckedChanged);
-            // 
-            // rbVNetInMigration
-            // 
-            this.rbVNetInMigration.AutoSize = true;
-            this.rbVNetInMigration.Location = new System.Drawing.Point(89, 147);
-            this.rbVNetInMigration.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.rbVNetInMigration.Name = "rbVNetInMigration";
-            this.rbVNetInMigration.Size = new System.Drawing.Size(138, 17);
-            this.rbVNetInMigration.TabIndex = 17;
-            this.rbVNetInMigration.Text = "VNet in MigAz Migration";
-            this.rbVNetInMigration.UseVisualStyleBackColor = true;
-            this.rbVNetInMigration.CheckedChanged += new System.EventHandler(this.rbVNetInMigration_CheckedChanged);
-            // 
-            // cmbExistingArmSubnet
-            // 
-            this.cmbExistingArmSubnet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbExistingArmSubnet.FormattingEnabled = true;
-            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(89, 223);
-            this.cmbExistingArmSubnet.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cmbExistingArmSubnet.Name = "cmbExistingArmSubnet";
-            this.cmbExistingArmSubnet.Size = new System.Drawing.Size(216, 21);
-            this.cmbExistingArmSubnet.TabIndex = 23;
-            this.cmbExistingArmSubnet.SelectedIndexChanged += new System.EventHandler(this.cmbExistingArmSubnet_SelectedIndexChanged);
-            // 
-            // cmbExistingArmVNets
-            // 
-            this.cmbExistingArmVNets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbExistingArmVNets.FormattingEnabled = true;
-            this.cmbExistingArmVNets.Location = new System.Drawing.Point(89, 197);
-            this.cmbExistingArmVNets.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cmbExistingArmVNets.Name = "cmbExistingArmVNets";
-            this.cmbExistingArmVNets.Size = new System.Drawing.Size(216, 21);
-            this.cmbExistingArmVNets.TabIndex = 21;
-            this.cmbExistingArmVNets.SelectedIndexChanged += new System.EventHandler(this.cmbExistingArmVNets_SelectedIndexChanged);
             // 
             // lblVirtualNetworkName
             // 
@@ -200,7 +118,7 @@
             // txtTargetName
             // 
             this.txtTargetName.Location = new System.Drawing.Point(89, 122);
-            this.txtTargetName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtTargetName.Margin = new System.Windows.Forms.Padding(2);
             this.txtTargetName.Name = "txtTargetName";
             this.txtTargetName.Size = new System.Drawing.Size(216, 20);
             this.txtTargetName.TabIndex = 30;
@@ -272,6 +190,13 @@
             this.txtStaticIp.TabIndex = 36;
             this.txtStaticIp.TextChanged += new System.EventHandler(this.txtStaticIp_TextChanged);
             // 
+            // networkSelectionControl1
+            // 
+            this.networkSelectionControl1.Location = new System.Drawing.Point(2, 144);
+            this.networkSelectionControl1.Name = "networkSelectionControl1";
+            this.networkSelectionControl1.Size = new System.Drawing.Size(310, 105);
+            this.networkSelectionControl1.TabIndex = 38;
+            // 
             // NetworkInterfaceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,36 +209,22 @@
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lblARMVirtualNetworkName);
             this.Controls.Add(this.txtTargetName);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.rbExistingARMVNet);
-            this.Controls.Add(this.rbVNetInMigration);
-            this.Controls.Add(this.cmbExistingArmSubnet);
-            this.Controls.Add(this.cmbExistingArmVNets);
             this.Controls.Add(this.lblVirtualNetworkName);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblStaticIpAddress);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblSubnetName);
             this.Controls.Add(this.label4);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Controls.Add(this.networkSelectionControl1);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NetworkInterfaceProperties";
-            this.Size = new System.Drawing.Size(310, 333);
+            this.Size = new System.Drawing.Size(310, 306);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RadioButton rbExistingARMVNet;
-        private System.Windows.Forms.RadioButton rbVNetInMigration;
-        private System.Windows.Forms.ComboBox cmbExistingArmSubnet;
-        private System.Windows.Forms.ComboBox cmbExistingArmVNets;
         private System.Windows.Forms.Label lblVirtualNetworkName;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblStaticIpAddress;
@@ -328,5 +239,6 @@
         private System.Windows.Forms.ComboBox cmbAllocationMethod;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtStaticIp;
+        private NetworkSelectionControl networkSelectionControl1;
     }
 }

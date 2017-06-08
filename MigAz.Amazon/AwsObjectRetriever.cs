@@ -197,7 +197,6 @@ namespace MigAz.AWS
         public DescribeLoadBalancersResponse GetAllLBs()
         {
             _statusProvider.UpdateStatus("BUSY: Getting Loadbalancer details...");
-            //  var x = _LBservice.DescribeLoadBalancers();
             return _LBservice.DescribeLoadBalancers();
         }
 

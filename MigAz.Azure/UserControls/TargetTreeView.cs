@@ -486,5 +486,26 @@ namespace MigAz.Azure.UserControls
             treeTargetARM.Width = this.Width - 10;
             treeTargetARM.Height = this.Height - 10;
         }
+
+        public List<Azure.MigrationTarget.VirtualNetwork> GetVirtualNetworksInMigration()
+        {
+            List<Azure.MigrationTarget.VirtualNetwork> _TargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
+
+            TreeNode targetResourceGroupNode = this.ResourceGroupNode;
+
+            if (targetResourceGroupNode != null)
+            {
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
+                {
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                    {
+                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)treeNode.Tag;
+                        _TargetVirtualNetworks.Add(targetVirtualNetwork);
+                    }
+                }
+            }
+
+            return _TargetVirtualNetworks;
+        }
     }
 }
