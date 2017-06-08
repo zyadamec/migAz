@@ -223,6 +223,14 @@ namespace MigAz.Azure.Generator.AsmToArm
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
 
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+                foreach (MigrationTarget.PublicIp targetPublicIp in _ExportArtifacts.PublicIPs)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Public IP : " + targetPublicIp.ToString());
+                    await BuildPublicIPAddressObject(targetPublicIp);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
+
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Networks");
                 foreach (Azure.MigrationTarget.VirtualNetwork virtualNetwork in _ExportArtifacts.VirtualNetworks)
                 {

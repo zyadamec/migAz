@@ -106,6 +106,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.LoadBalancers.Add((Azure.MigrationTarget.LoadBalancer)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.PublicIp))
+                {
+                    exportArtifacts.PublicIPs.Add((Azure.MigrationTarget.PublicIp)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
