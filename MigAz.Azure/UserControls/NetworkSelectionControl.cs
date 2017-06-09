@@ -64,6 +64,12 @@ namespace MigAz.Azure.UserControls
                 {
                     this.SelectExistingARMVNet();
                 }
+
+
+                if (_NetworkInterfaceTarget != null)
+                {
+                    cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod);
+                }
             }
         }
 
@@ -256,5 +262,38 @@ namespace MigAz.Azure.UserControls
             PropertyChanged();
         }
 
+        private void cmbAllocationMethod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_NetworkInterfaceTarget != null)
+            {
+                _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = cmbAllocationMethod.SelectedItem.ToString();
+                txtStaticIp.Enabled = cmbAllocationMethod.SelectedItem.ToString() == "Static";
+                if (txtStaticIp.Enabled)
+                    txtStaticIp.Text = _NetworkInterfaceTarget.TargetPrivateIpAddress;
+                else
+                    txtStaticIp.Text = String.Empty;
+            }
+
+            PropertyChanged();
+        }
+
+        private void txtStaticIp_TextChanged(object sender, EventArgs e)
+        {
+            if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
+            {
+                if (_NetworkInterfaceTarget != null)
+                    _NetworkInterfaceTarget.TargetPrivateIpAddress = txtStaticIp.Text.Trim();
+
+                PropertyChanged();
+            }
+        }
+
+        private void txtStaticIp_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

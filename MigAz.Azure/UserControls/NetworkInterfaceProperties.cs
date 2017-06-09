@@ -46,12 +46,6 @@ namespace MigAz.Azure.UserControls
             lblSourceName.Text = _TargetNetworkInterface.SourceName;
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
 
-
-            if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
-            {
-                cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPrivateIPAllocationMethod);
-            }
-
             if (_TargetNetworkInterface.SourceNetworkInterface != null)
             {
                 if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
@@ -88,32 +82,6 @@ namespace MigAz.Azure.UserControls
             if (char.IsWhiteSpace(e.KeyChar))
             {
                 e.Handled = true;
-            }
-        }
-
-        private void cmbAllocationMethod_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
-            {
-                _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPrivateIPAllocationMethod = cmbAllocationMethod.SelectedItem.ToString();
-                txtStaticIp.Enabled = cmbAllocationMethod.SelectedItem.ToString() == "Static";
-                if (txtStaticIp.Enabled)
-                    txtStaticIp.Text = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPrivateIpAddress;
-                else
-                    txtStaticIp.Text = String.Empty;
-            }
-
-            PropertyChanged();
-        }
-
-        private void txtStaticIp_TextChanged(object sender, EventArgs e)
-        {
-            if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
-            {
-                if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
-                    _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPrivateIpAddress = txtStaticIp.Text.Trim();
-
-                PropertyChanged();
             }
         }
     }
