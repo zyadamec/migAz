@@ -84,6 +84,7 @@
     <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
+    <Compile Include="AzureSubscriptionResourceCache.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
     <Compile Include="Forms\AzureLoginContextDialog.cs">

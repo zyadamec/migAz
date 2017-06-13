@@ -21,7 +21,7 @@ namespace MigAz.Azure.Arm
 
         internal override async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _VirtualNetwork = azureContext.AzureRetriever.GetAzureARMVirtualNetwork(this.SubnetId);
+            _VirtualNetwork = azureContext.AzureRetriever.GetAzureARMVirtualNetwork(azureContext.AzureSubscription, this.SubnetId);
 
             if (_VirtualNetwork != null)
             {
