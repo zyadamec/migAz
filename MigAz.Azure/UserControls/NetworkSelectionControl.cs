@@ -116,7 +116,8 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            PropertyChanged();
+            if (PropertyChanged != null)
+                PropertyChanged();
         }
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
@@ -170,7 +171,8 @@ namespace MigAz.Azure.UserControls
                 #endregion
             }
 
-            PropertyChanged();
+            if (PropertyChanged != null)
+                PropertyChanged();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
@@ -232,7 +234,8 @@ namespace MigAz.Azure.UserControls
 
             }
 
-            PropertyChanged();
+            if (PropertyChanged != null)
+                PropertyChanged();
         }
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
@@ -259,7 +262,8 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            PropertyChanged();
+            if (PropertyChanged != null)
+                PropertyChanged();
         }
 
         private void cmbAllocationMethod_SelectedIndexChanged(object sender, EventArgs e)
@@ -274,7 +278,8 @@ namespace MigAz.Azure.UserControls
                     txtStaticIp.Text = String.Empty;
             }
 
-            PropertyChanged();
+            if (PropertyChanged != null)
+                PropertyChanged();
         }
 
         private void txtStaticIp_TextChanged(object sender, EventArgs e)
@@ -284,7 +289,8 @@ namespace MigAz.Azure.UserControls
                 if (_NetworkInterfaceTarget != null)
                     _NetworkInterfaceTarget.TargetPrivateIpAddress = txtStaticIp.Text.Trim();
 
-                PropertyChanged();
+                if (PropertyChanged != null)
+                    PropertyChanged();
             }
         }
 

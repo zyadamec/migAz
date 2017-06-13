@@ -23,7 +23,6 @@ namespace MigAz.Azure.UserControls
         public NetworkInterfaceProperties()
         {
             InitializeComponent();
-            networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
         }
 
         private void NetworkSelectionControl1_PropertyChanged()
@@ -36,6 +35,8 @@ namespace MigAz.Azure.UserControls
             _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
             _TargetNetworkInterface = targetNetworkInterface;
+            networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+
 
             if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
             {
