@@ -1,6 +1,7 @@
 ﻿using MigAz.Azure.MigrationTarget;
 using MigAz.Core.Interface;
 using System.Collections.Generic;
+using System;
 
 namespace MigAz.Azure
 {
@@ -30,6 +31,17 @@ namespace MigAz.Azure
             {
                 if (networkSecurityGroup.ToString() == sourceName)
                     return networkSecurityGroup;
+            }
+
+            return null;
+        }
+
+        internal PublicIp SeekPublicIp(string sourceName)
+        {
+            foreach (PublicIp publicIp in PublicIPs)
+            {
+                if (publicIp.ToString() == sourceName)
+                    return publicIp;
             }
 
             return null;

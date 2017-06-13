@@ -308,6 +308,41 @@ namespace MigAz.Migrators
                     }
                 }
 
+                foreach (Azure.MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
+                {
+                    if (networkInterface.SourceNetworkInterface != null)
+                    {
+                        Azure.Arm.NetworkInterface sourceNetworkInterface = (Azure.Arm.NetworkInterface)networkInterface.SourceNetworkInterface;
+                        if (sourceNetworkInterface.NetworkSecurityGroup != null)
+                        {
+                            foreach (Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ArmTargetNetworkSecurityGroups)
+                            {
+                                if (targetNetworkSecurityGroup.TargetName == sourceNetworkInterface.NetworkSecurityGroup.Name)
+                                    networkInterface.TargetNetworkSecurityGroup = targetNetworkSecurityGroup;
+                            }
+                        }
+                    }
+
+                    foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
+                    {
+                        if (networkInterfaceIpConfiguration.SourceIpConfiguration != null)
+                        {
+                            Azure.Arm.NetworkInterfaceIpConfiguration sourceIpConfiguration = (Azure.Arm.NetworkInterfaceIpConfiguration)networkInterfaceIpConfiguration.SourceIpConfiguration;
+
+                            if (sourceIpConfiguration.PublicIP != null)
+                            {
+                                foreach (Azure.MigrationTarget.PublicIp targetPublicIp in _ArmTargetPublicIPs)
+                                {
+                                    if (targetPublicIp.Name == sourceIpConfiguration.PublicIP.Name)
+                                        networkInterfaceIpConfiguration.TargetPublicIp = targetPublicIp;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+
                 TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                 tnVirtualMachine.Name = targetVirtualMachine.SourceName;
                 tnVirtualMachine.Tag = targetVirtualMachine;

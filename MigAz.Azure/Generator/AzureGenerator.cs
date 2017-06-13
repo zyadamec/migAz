@@ -128,6 +128,16 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
+                    if (networkInterface.NetworkSecurityGroup != null)
+                    {
+                        MigrationTarget.NetworkSecurityGroup networkSecurityGroupInMigration = _ExportArtifacts.SeekNetworkSecurityGroup(networkInterface.NetworkSecurityGroup.ToString());
+
+                        if (networkSecurityGroupInMigration == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' utilizes Network Security Group (NSG) '" + networkInterface.NetworkSecurityGroup.ToString() + "', but the NSG resource is not added into the migration template.", networkInterface);
+                        }
+                    }
+
                     foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
                     {
                         if (ipConfiguration.TargetVirtualNetwork == null)
@@ -155,6 +165,16 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                         if (ipConfiguration.TargetSubnet == null)
                             this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+
+                        if (ipConfiguration.TargetPublicIp != null)
+                        {
+                            MigrationTarget.PublicIp publicIpInMigration = _ExportArtifacts.SeekPublicIp(ipConfiguration.TargetPublicIp.ToString());
+
+                            if (publicIpInMigration == null)
+                            {
+                                this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' IP Configuration '" + ipConfiguration.ToString() + "' utilizes Public IP '" + ipConfiguration.TargetPublicIp.ToString() + "', but the Public IP resource is not added into the migration template.", networkInterface);
+                            }
+                        }
                     }
                 }
 
@@ -1067,19 +1087,13 @@ namespace MigAz.Azure.Generator.AsmToArm
 
                 ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
 
-                if (targetNetworkInterface.HasPublicIPs)
+                if (ipConfiguration.TargetPublicIp != null)
                 {
-                    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-                    publicipaddress.name = targetNetworkInterface.ToString();
-                    publicipaddress.location = "[resourceGroup().location]";
-                    publicipaddress.properties = new PublicIPAddress_Properties();
+                    Core.ArmTemplate.Reference publicIPAddressReference = new Core.ArmTemplate.Reference();
+                    publicIPAddressReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + ipConfiguration.TargetPublicIp.ToString() + "')]";
+                    ipconfiguration_properties.publicIPAddress = publicIPAddressReference;
 
-                    Core.ArmTemplate.Reference publicIPAddress = new Core.ArmTemplate.Reference();
-                    publicIPAddress.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
-                    ipconfiguration_properties.publicIPAddress = publicIPAddress;
-
-                    this.AddResource(publicipaddress);
-                    dependson.Add(publicIPAddress.id);
+                    dependson.Add(publicIPAddressReference.id);
                 }
 
                 ipConfigurations.Add(ipconfiguration);
@@ -1101,27 +1115,13 @@ namespace MigAz.Azure.Generator.AsmToArm
 
             if (targetNetworkInterface.NetworkSecurityGroup != null)
             {
-                MigrationTarget.NetworkSecurityGroup networkSecurityGroupInMigration = _ExportArtifacts.SeekNetworkSecurityGroup(targetNetworkInterface.NetworkSecurityGroup.ToString());
+                // Add NSG reference to the network interface
+                Reference networksecuritygroup_ref = new Reference();
+                networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + targetNetworkInterface.NetworkSecurityGroup.ToString() + "')]";
 
-                if (networkSecurityGroupInMigration == null)
-                {
-                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.name + "' utilized ASM Network Security Group (NSG) '" + targetNetworkInterface.NetworkSecurityGroup.ToString() + "', which has not been added to the NIC as the NSG was not included in the ARM Template (was not selected as an included resources for export).", networkSecurityGroupInMigration);
-                }
-                else
-                {
-                    // Add NSG reference to the network interface
-                    Reference networksecuritygroup_ref = new Reference();
-                    networksecuritygroup_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkSecurityGroups + networkSecurityGroupInMigration.ToString() + "')]";
+                networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
 
-                    networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
-                    networkInterface.properties = networkinterface_properties;
-
-                    // Add NSG dependsOn to the Network Interface object
-                    if (!networkInterface.dependsOn.Contains(networksecuritygroup_ref.id))
-                    {
-                        networkInterface.dependsOn.Add(networksecuritygroup_ref.id);
-                    }
-                }
+                networkInterface.dependsOn.Add(networksecuritygroup_ref.id);
             }
 
             networkinterfaces.Add(networkinterface_ref);

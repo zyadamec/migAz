@@ -57,7 +57,9 @@ namespace MigAz.Azure.Arm
                 return (string)this.ResourceToken["properties"]["publicIPAddress"]["id"];
             }
         }
-            
+
+        
+
         public string VirtualNetworkName
         {
             get { return SubnetId.Split('/')[8]; }
@@ -81,6 +83,8 @@ namespace MigAz.Azure.Arm
             get { return _PublicIP; }
             private set { _PublicIP = value; }
         }
+
+
 
     }
 }
