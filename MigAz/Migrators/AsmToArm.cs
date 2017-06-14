@@ -485,8 +485,6 @@ namespace MigAz.Migrators
 
         private async Task AutoSelectDependencies(TreeNode selectedNode)
         {
-            // todo now asap russell, autoselect load balancers and public IPs
-
             if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
                 if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
@@ -633,6 +631,18 @@ namespace MigAz.Migrators
 
                             foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
                             {
+                                if (networkInterface.NetworkSecurityGroup != null)
+                                {
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(networkInterface.NetworkSecurityGroup.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+
                                 foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
                                 {
                                     if (ipConfiguration.BackEndAddressPool != null && ipConfiguration.BackEndAddressPool.LoadBalancer != null)
