@@ -9,5 +9,6 @@ namespace MigAz.Core.Interface
         ISubnet GatewaySubnet { get; }
         List<string> AddressPrefixes { get; }
         string Name { get; }
+        string Location { get; }
     }
 }

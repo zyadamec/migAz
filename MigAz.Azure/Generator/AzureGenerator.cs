@@ -1061,31 +1061,40 @@ namespace MigAz.Azure.Generator.AsmToArm
                     }
                 }
 
-                // If there is at least one endpoint add the reference to the LB backend pool
-                List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
-                ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
-
                 if (targetNetworkInterface.BackEndAddressPool != null)
                 {
-                    Reference loadBalancerBackendAddressPool = new Reference();
-                    loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
+                    if (_ExportArtifacts.ContainsLoadBalancer(targetNetworkInterface.BackEndAddressPool.LoadBalancer))
+                    {
+                        // If there is at least one endpoint add the reference to the LB backend pool
+                        List<Reference> loadBalancerBackendAddressPools = new List<Reference>();
+                        ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
 
-                    loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
+                        Reference loadBalancerBackendAddressPool = new Reference();
+                        loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
 
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
+                        loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
+
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
+                    }
                 }
 
                 // Adds the references to the inboud nat rules
                 List<Reference> loadBalancerInboundNatRules = new List<Reference>();
                 foreach (MigrationTarget.InboundNatRule inboundNatRule in targetNetworkInterface.InboundNatRules)
                 {
-                    Reference loadBalancerInboundNatRule = new Reference();
-                    loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
+                    if (_ExportArtifacts.ContainsLoadBalancer(inboundNatRule.LoadBalancer))
+                    {
+                        Reference loadBalancerInboundNatRule = new Reference();
+                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
 
-                    loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+                        loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
+                    }
                 }
 
-                ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+                if (loadBalancerInboundNatRules.Count > 0)
+                {
+                    ipconfiguration_properties.loadBalancerInboundNatRules = loadBalancerInboundNatRules;
+                }
 
                 if (ipConfiguration.TargetPublicIp != null)
                 {

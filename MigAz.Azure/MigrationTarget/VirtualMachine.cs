@@ -99,8 +99,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _DataDisks; }
         }
 
-        public IVirtualMachine Source
-        { get; set; }
+        public IVirtualMachine Source { get; set; }
 
         public List<NetworkInterface> NetworkInterfaces
         {

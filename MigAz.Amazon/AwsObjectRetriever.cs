@@ -8,6 +8,7 @@ using Amazon.EC2.Model;
 using Amazon.ElasticLoadBalancing;
 using Amazon.ElasticLoadBalancing.Model;
 using MigAz.Core.Interface;
+using System.Windows.Forms;
 
 namespace MigAz.AWS
 {
@@ -43,21 +44,9 @@ namespace MigAz.AWS
 
             _vpcs = GetAllVpcs();
             _instances = GetAllInstances();
-            // _volumes = GetAllVolumes();
-            // Application.DoEvents();
+            _volumes = GetAllVolumes();
+            Application.DoEvents();
             _Loadbalancers = GetAllLBs();
-        }
-
-        AwsObjectRetriever(IAmazonEC2 client)
-        {
-            //_logProvider = logProvider;
-            // _statusProvider = statusProvider;
-            _service = client;
-        }
-
-        AwsObjectRetriever(IAmazonElasticLoadBalancing client)
-        {
-            _LBservice = client;
         }
 
         #endregion

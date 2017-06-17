@@ -46,5 +46,16 @@ namespace MigAz.Azure
 
             return null;
         }
+
+        internal bool ContainsLoadBalancer(LoadBalancer loadBalancer)
+        {
+            foreach (LoadBalancer exportArtifactLoadBalancer in LoadBalancers)
+            {
+                if (exportArtifactLoadBalancer.ToString() == loadBalancer.ToString())
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

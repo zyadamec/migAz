@@ -54,9 +54,8 @@ namespace MigAz.Migrators
             this._PropertyPanel.AzureContext = _AzureContextTargetARM;
             this._PropertyPanel.TargetTreeView = treeTargetARM;
             this._PropertyPanel.PropertyChanged += _PropertyPanel_PropertyChanged;
-
-
         }
+
         private async Task _PropertyPanel_PropertyChanged()
         {
             if (_SourceAwsNode == null) // we are not going to update on every property bind during TreeView updates
@@ -151,8 +150,8 @@ namespace MigAz.Migrators
             TreeNode subscriptionNode = new TreeNode("AWS Subscription");
             treeSourceAWS.Nodes.Add(subscriptionNode);
 
-            AWSRetriever awsRetriever = new AWSRetriever();
-            awsRetriever.toname(accessKeyTextBox.Text.Trim(), secretKeyTextBox.Text.Trim(), subscriptionNode, this.LogProvider, this.StatusProvider);
+            AWSRetriever awsRetriever = new AWSRetriever(this.LogProvider, this.StatusProvider);
+            awsRetriever.toname(accessKeyTextBox.Text.Trim(), secretKeyTextBox.Text.Trim(), subscriptionNode);
 
             subscriptionNode.ExpandAll();
 

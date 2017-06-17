@@ -29,6 +29,8 @@ namespace MigAz.AWS.MigrationSource
             }
         }
 
+        public String Location { get { return "TODO"; } }
+
         public List<String> AddressPrefixes
         {
             get
