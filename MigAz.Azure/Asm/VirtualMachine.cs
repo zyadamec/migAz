@@ -195,7 +195,7 @@ namespace MigAz.Azure.Asm
 
         public String Location
         {
-            get { return "TODO"; }
+            get { return _AsmCloudService.Location; }
         }
 
         public string AvailabilitySetName
