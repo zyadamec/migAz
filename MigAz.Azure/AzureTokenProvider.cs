@@ -30,7 +30,16 @@ namespace MigAz.Azure
             set { _AuthenticationResult = value; }
         }
 
-        public string AccessToken => this.AuthenticationResult.AccessToken;
+        public string AccessToken
+        {
+            get
+            {
+                if (this.AuthenticationResult == null)
+                    return String.Empty;
+
+                return this.AuthenticationResult.AccessToken;
+            }
+        }
 
         public async Task<AuthenticationResult> GetToken(AzureSubscription azureSubscription)
         {

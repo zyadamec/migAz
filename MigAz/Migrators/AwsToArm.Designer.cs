@@ -120,9 +120,12 @@
             // treeSourceAWS
             // 
             this.treeSourceAWS.CheckBoxes = true;
+            this.treeSourceAWS.ImageIndex = 0;
+            this.treeSourceAWS.ImageList = this.imageList1;
             this.treeSourceAWS.Location = new System.Drawing.Point(2, 125);
             this.treeSourceAWS.Margin = new System.Windows.Forms.Padding(2);
             this.treeSourceAWS.Name = "treeSourceAWS";
+            this.treeSourceAWS.SelectedImageIndex = 0;
             this.treeSourceAWS.Size = new System.Drawing.Size(362, 251);
             this.treeSourceAWS.TabIndex = 58;
             this.treeSourceAWS.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeSourceAWS_AfterCheck);

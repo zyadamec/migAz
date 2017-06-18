@@ -96,21 +96,6 @@ namespace MigAz.AWS
             }
         }
 
-        public DescribeLoadBalancersResponse Loadbalancers
-        {
-            get
-            {
-                return _Loadbalancers;
-            }
-            set
-            {
-                if (_Loadbalancers == null)
-                {
-                    _Loadbalancers = GetAllLBs();
-                }
-            }
-        }
-        
 
         public static IAmazonElasticLoadBalancing createLBClient(string accessKeyID, string secretKeyID, Amazon.RegionEndpoint region)
         {
@@ -327,12 +312,6 @@ namespace MigAz.AWS
 
         }
 
-        internal List<LoadBalancerDescription> getLBs(String vpcId)
-        {
-            _statusProvider.UpdateStatus("BUSY: Getting Loadbalancer details...");
-
-            return _Loadbalancers.LoadBalancerDescriptions;
-        }
 
         #endregion
 

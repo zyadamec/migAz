@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using MigAz.Core.Interface;
 using Amazon.ElasticLoadBalancing.Model;
 using Amazon.ElasticLoadBalancing;
+using System.Net;
 
 namespace MigAz.AWS.Generator
 {
@@ -39,13 +40,6 @@ namespace MigAz.AWS.Generator
         private DescribeInstancesResponse getEC2Instances()
         {
             return _awsObjectRetriever.Instances;
-        }
-
-        public DescribeLoadBalancersResponse GetAllLBs()
-        {
-            _StatusProvider.UpdateStatus("BUSY: Getting Loadbalancer details...");
-            //  var x = _LBservice.DescribeLoadBalancers();
-            return _LBservice.DescribeLoadBalancers();
         }
 
         private IAmazonElasticLoadBalancing createLBClient(string accessKeyID, string secretKeyID, Amazon.RegionEndpoint region)
@@ -94,13 +88,111 @@ namespace MigAz.AWS.Generator
 
                         TreeNode vpcTreeNode = new TreeNode(sourceVirtualNetwork.Id + " - " + sourceVirtualNetwork.Name);
                         vpcTreeNode.Tag = targetVirtualNetwork;
+                        vpcTreeNode.ImageKey = "VirtualNetwork";
+                        vpcTreeNode.SelectedImageKey = "VirtualNetwork";
                         amazonRegionNode.Nodes.Add(vpcTreeNode);
 
-                        Application.DoEvents();
+                    //    // todo now russell, this is foreach subnet
+                    //    foreach (Subnet subnet in subnets)
+                    //    {
+                    //        //QUES: Single Sec group?
+                    //        // add Network Security Group if exists - 2 subnets - each acl is associated with both
+                    //        List<Amazon.EC2.Model.NetworkAcl> networkAcls = _awsObjectRetriever.getNetworkAcls(subnetnode.SubnetId);
+                    //        List<Amazon.EC2.Model.RouteTable> routeTable = _awsObjectRetriever.getRouteTables(subnetnode.SubnetId);
+
+
+
+                    //        //var nodes = networkAcls.SelectSingleNode("DescribeNetworkAclsResponse ").SelectSingleNode("networkAclSet").SelectNodes("item");
+
+                    //        if (networkAcls.Count > 0)
+                    //        {
+                    //            NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(networkAcls[0]);
+
+                    //            //NetworkSecurityGroup networksecuritygroup = BuildNetworkSecurityGroup(subnet.name);
+
+                    //            // Add NSG reference to the subnet
+                    //            Reference networksecuritygroup_ref = new Reference();
+                    //            networksecuritygroup_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/networkSecurityGroups/" + networksecuritygroup.name + "')]";
+
+                    //            properties.networkSecurityGroup = networksecuritygroup_ref;
+
+                    //            // Add NSG dependsOn to the Virtual Network object
+                    //            if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                    //            {
+                    //                virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                    //            }
+
+                    //        }
+
+                    //        if (routeTable.Count > 0)
+                    //        {
+                    //            RouteTable routetable = BuildRouteTable(routeTable[0]);
+
+                    //            if (routetable.properties != null)
+                    //            {
+                    //                // Add Route Table reference to the subnet
+                    //                Reference routetable_ref = new Reference();
+                    //                routetable_ref.id = "[concat(resourceGroup().id,'/providers/Microsoft.Network/routeTables/" + routetable.name + "')]";
+
+                    //                properties.routeTable = routetable_ref;
+
+                    //                // Add Route Table dependsOn to the Virtual Network object
+                    //                if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
+                    //                {
+                    //                    virtualnetwork.dependsOn.Add(routetable_ref.id);
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+
+                    //}
+
+                    Application.DoEvents();
                     }
 
                     DescribeInstancesResponse instResponse = getEC2Instances();
                     Application.DoEvents();
+
+                    foreach (LoadBalancerDescription loadBalancerDescription in _awsObjectRetriever.GetAllLBs().LoadBalancerDescriptions)
+                    {
+                        MigAz.AWS.MigrationSource.LoadBalancer sourceLoadBalancer = new MigAz.AWS.MigrationSource.LoadBalancer(loadBalancerDescription);
+
+                        Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer();
+                        targetLoadBalancer.Name = loadBalancerDescription.LoadBalancerName;
+
+                        Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration = new Azure.MigrationTarget.FrontEndIpConfiguration(targetLoadBalancer);
+                        targetFrontEndIpConfiguration.Name = "ipconfig1"; // can this come from Amazon?
+                        
+                        if (loadBalancerDescription.Scheme != "internet-facing") // if internal load balancer
+                        {
+                            // todo now russell, get vnet/subnet
+                            //string virtualnetworkname = GetVPCName(loadBalancerDescription.VPCId);
+
+                            //var subnet = _awsObjectRetriever.getSubnetbyId(loadBalancerDescription.Subnets[0]);
+                            //string subnetname = GetSubnetName(subnet[0]);
+
+                            targetFrontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
+                            try
+                            {
+                                IPHostEntry host = Dns.GetHostEntry(loadBalancerDescription.DNSName);
+                                targetFrontEndIpConfiguration.TargetPrivateIpAddress = host.AddressList[0].ToString();
+                            }
+                            catch
+                            {
+                                targetFrontEndIpConfiguration.PrivateIPAllocationMethod = "Dynamic";
+                            }
+                        }
+                        else // if external (public) load balancer
+                        {
+                            targetFrontEndIpConfiguration.PublicIp = null; // todo now russell, lookup
+                        }
+
+                        TreeNode loadBalancerNode = new TreeNode(targetLoadBalancer.Name);
+                        loadBalancerNode.Tag = targetLoadBalancer;
+                        loadBalancerNode.ImageKey = "LoadBalancer";
+                        loadBalancerNode.SelectedImageKey = "LoadBalancer";
+                        amazonRegionNode.Nodes.Add(loadBalancerNode);
+                    }
 
                     if (instResponse != null)
                     {
@@ -111,6 +203,39 @@ namespace MigAz.AWS.Generator
                             {
                                 foreach (var instance in instanceResp.Instances)
                                 {
+                                    var selectedInstances = _awsObjectRetriever.getInstancebyId(instance.InstanceId);
+
+//                                    List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
+
+                                    String vpcId = selectedInstances.Instances[0].VpcId.ToString();
+
+                                    //Process LBs
+                                    var LBs = _awsObjectRetriever.GetAllLBs().LoadBalancerDescriptions;
+                                    string instanceLBName = "";
+
+                                    foreach (var LB in LBs)
+                                    {
+                                        foreach (var LBInstance in LB.Instances)
+                                        {
+                                            if ((LB.VPCId == vpcId) && (LBInstance.InstanceId == instance.InstanceId))
+                                            {
+                                                if (LB.Scheme == "internet-facing")
+                                                {
+                                                   // BuildPublicIPAddressObject(LB);
+                                                }
+
+                                                instanceLBName = LB.LoadBalancerName;
+                                                //BuildLoadBalancerObject(LB, instance.InstanceId.ToString());
+                                            }
+                                        }
+                                    }
+
+                                    //Process Network Interface
+                                    // todo now BuildNetworkInterfaceObject(selectedInstances.Instances[0], ref networkinterfaces, LBs);
+
+                                    //Process EC2 Instance
+                                    // todo now BuildVirtualMachineObject(selectedInstances.Instances[0], networkinterfaces, storageAccountName, instanceLBName);
+
                                     string name = "";
                                     foreach (var tag in instance.Tags)
                                     {

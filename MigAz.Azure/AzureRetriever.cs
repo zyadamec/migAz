@@ -50,6 +50,11 @@ namespace MigAz.Azure
             _AzureContext = azureContext;
         }
 
+        public AzureSubscription SubscriptionContext
+        {
+            get { return _AzureSubscription; }
+        }
+
         public void ClearCache()
         {
             _RestApiCache = new Dictionary<string, AzureRestResponse>();
@@ -1230,10 +1235,12 @@ namespace MigAz.Azure
             string url = null;
             bool useCached = true;
 
-            _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start REST Request");
-
-            if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.AccessToken == null)
-                throw new ArgumentNullException("TokenProvider Context or AuthenticationResult Context is null.  Unable to call Azure API without AuthenticationResult AccessToken.");
+            if (_AzureContext == null)
+                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
+            if (_AzureContext.TokenProvider == null)
+                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
+            if (_AzureContext.TokenProvider.AccessToken == null)
+                throw new ArgumentNullException("AccessToken Context is null.  Unable to call Azure API without AccessToken.");
 
             String accessToken = _AzureContext.TokenProvider.AccessToken;
 

@@ -84,6 +84,10 @@ namespace MigAz.Azure.MigrationTarget
             {
                 this.AddressPrefixes.Add(addressPrefix);
             }
+            foreach (String dnsServer in virtualNetwork.DnsServers)
+            {
+                this.DnsServers.Add(dnsServer);
+            }
 
             foreach (ISubnet sourceSubnet in virtualNetwork.Subnets)
             {

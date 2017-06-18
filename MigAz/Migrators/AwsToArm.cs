@@ -63,9 +63,9 @@ namespace MigAz.Migrators
         }
 
 
-        private Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
+        private async Task _AzureContextTargetARM_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            throw new NotImplementedException();
+
         }
 
         public ImageList AzureResourceImageList
@@ -79,13 +79,7 @@ namespace MigAz.Migrators
                     treeTargetARM.ImageList = _AzureResourceImageList;
             }
         }
-        public async Task Bind()
-        {
-            _AzureContextTargetARM = new AzureContext(LogProvider, StatusProvider, null); // todo needs settings provider
-            await azureLoginContextViewer21.Bind(_AzureContextTargetARM);
 
-            //var tokenProvider = new InteractiveTokenProvider();
-        }
 
         private void AwsToArm_Load(object sender, EventArgs e)
         {

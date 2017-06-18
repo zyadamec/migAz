@@ -138,7 +138,6 @@ namespace MigAz.Forms
             AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
             awsToArm.AzureResourceImageList = this.imageList1;
             awsToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            await awsToArm.Bind();
             parent.Controls.Add(awsToArm);
 
             splitContainer2_Panel1_Resize(this, null);

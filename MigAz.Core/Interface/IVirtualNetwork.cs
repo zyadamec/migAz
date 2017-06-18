@@ -8,6 +8,7 @@ namespace MigAz.Core.Interface
         List<ISubnet> Subnets { get; }
         ISubnet GatewaySubnet { get; }
         List<string> AddressPrefixes { get; }
+        List<string> DnsServers { get; }
         string Name { get; }
         string Location { get; }
     }
