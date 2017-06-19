@@ -9,6 +9,7 @@ using System.Net;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using MigAz.Azure.Generator;
 
 namespace MigAz.AWS.Generator
 {
@@ -18,9 +19,9 @@ namespace MigAz.AWS.Generator
         private Dictionary<string, string> _storageAccountNames;
         private ISettingsProvider _settingsProvider;
 
-        private AwsGenerator() : base(null, null, null, null) { }
+        private AwsGenerator() : base(null, null, null, null, null, null) { }
 
-        public AwsGenerator(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider, statusProvider, null, null)
+        public AwsGenerator(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider, statusProvider, null, null, null, null)
         {
         }
 

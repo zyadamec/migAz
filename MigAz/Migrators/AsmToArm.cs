@@ -15,7 +15,7 @@ using System.Xml;
 
 namespace MigAz.Migrators
 {
-    public partial class AsmToArm : IMigratorUserControl
+    public partial class AsmToArm : Azure.UserControls.IMigratorUserControl
     {
         #region Variables
 

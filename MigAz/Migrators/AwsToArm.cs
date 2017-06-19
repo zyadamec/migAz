@@ -13,7 +13,7 @@ using MigAz.AWS.Generator;
 
 namespace MigAz.Migrators
 {
-    public partial class AwsToArm : IMigratorUserControl
+    public partial class AwsToArm : Azure.UserControls.IMigratorUserControl
     {
         private AwsToArmSaveSelectionProvider _saveSelectionProvider;
         private AwsToArmSaveSelectionProvider _telemetryProvider;
@@ -41,7 +41,7 @@ namespace MigAz.Migrators
 
             azureLoginContextViewer21.Bind(_AzureContextTargetARM);
 
-            this.TemplateGenerator = new AzureGenerator(_AzureContextTargetARM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, LogProvider, StatusProvider, null, null); // _telemetryProvider, _appSettingsProvider);
+            this.TemplateGenerator = new AwsGenerator(LogProvider, StatusProvider);
 
             this.treeTargetARM.LogProvider = this.LogProvider;
             this.treeTargetARM.StatusProvider = this.StatusProvider;

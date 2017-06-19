@@ -91,6 +91,7 @@
             // 
             // accessKeyTextBox
             // 
+            this.accessKeyTextBox.AllowDrop = true;
             this.accessKeyTextBox.Location = new System.Drawing.Point(150, 24);
             this.accessKeyTextBox.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.accessKeyTextBox.Name = "accessKeyTextBox";

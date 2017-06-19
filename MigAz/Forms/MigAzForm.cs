@@ -9,6 +9,8 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using MigAz.Azure;
+using MigAz.Azure.Generator;
+using MigAz.Azure.UserControls;
 
 namespace MigAz.Forms
 {
