@@ -52,23 +52,25 @@ namespace MigAz.Azure.UserControls
             {
                 _NetworkInterfaceTarget = value;
 
-                if (this.ExistingARMVNetEnabled == false ||
-                    _NetworkInterfaceTarget == null ||
-                    _NetworkInterfaceTarget.TargetSubnet == null ||
-                    _NetworkInterfaceTarget.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
-                    )
-                {
-                    this.SelectVNetInMigration();
-                }
-                else
-                {
-                    this.SelectExistingARMVNet();
-                }
-
-
                 if (_NetworkInterfaceTarget != null)
                 {
-                    cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod);
+                    if (this.ExistingARMVNetEnabled == false ||
+                        _NetworkInterfaceTarget == null ||
+                        _NetworkInterfaceTarget.TargetSubnet == null ||
+                        _NetworkInterfaceTarget.TargetSubnet.GetType() == typeof(Azure.MigrationTarget.Subnet)
+                        )
+                    {
+                        this.SelectVNetInMigration();
+                    }
+                    else
+                    {
+                        this.SelectExistingARMVNet();
+                    }
+
+                    if (_NetworkInterfaceTarget != null)
+                    {
+                        cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod);
+                    }
                 }
             }
         }

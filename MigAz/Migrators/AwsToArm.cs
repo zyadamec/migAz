@@ -228,20 +228,6 @@ namespace MigAz.Migrators
             //    }
         }
 
-        private void cmbRegion_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //Load the Region Items
-            Load_Items();
-
-            // If save selection option is enabled
-            //if (app.Default.SaveSelection)
-            //{
-            //    StatusProvider.UpdateStatus("BUSY: Reading saved selection");
-            //    _saveSelectionProvider.Read(cmbRegion.Text, ref lvwVirtualNetworks, ref lvwVirtualMachines);
-            //}
-
-        }
-
         private void btnLogin_Click(object sender, EventArgs e)
         {
             Load_Items();

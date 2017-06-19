@@ -259,6 +259,9 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureAsmStorageAccount", "Start");
 
+            if (storageAccountName == null)
+                return null;
+
             foreach (Asm.StorageAccount asmStorageAccount in await this.GetAzureAsmStorageAccounts())
             {
                 if (asmStorageAccount.Name == storageAccountName)
@@ -1511,8 +1514,8 @@ namespace MigAz.Azure
 
                             if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
                             {
-                                frontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
-                                frontEndIpConfiguration.PrivateIPAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
+                                frontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Static";
+                                frontEndIpConfiguration.TargetPrivateIpAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
                             }
 
                             if (cloudServiceTargetVirtualMachines.Count > 0)

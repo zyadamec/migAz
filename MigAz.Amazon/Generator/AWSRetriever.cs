@@ -80,11 +80,13 @@ namespace MigAz.AWS.Generator
                     DescribeVpcsResponse vpcResponse = getVPCs();
                     Application.DoEvents();
 
+                    List<Azure.MigrationTarget.VirtualNetwork> targetVirtualNetworks = new List<Azure.MigrationTarget.VirtualNetwork>();
                     _StatusProvider.UpdateStatus("BUSY: Processing VPC");
                     foreach (var vpc in vpcResponse.Vpcs)
                     {
                         MigAz.AWS.MigrationSource.VirtualNetwork sourceVirtualNetwork = new MigrationSource.VirtualNetwork(_awsObjectRetriever, vpc);
                         Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(sourceVirtualNetwork);
+                        targetVirtualNetworks.Add(targetVirtualNetwork);
 
                         TreeNode vpcTreeNode = new TreeNode(sourceVirtualNetwork.Id + " - " + sourceVirtualNetwork.Name);
                         vpcTreeNode.Tag = targetVirtualNetwork;
@@ -165,13 +167,30 @@ namespace MigAz.AWS.Generator
                         
                         if (loadBalancerDescription.Scheme != "internet-facing") // if internal load balancer
                         {
-                            // todo now russell, get vnet/subnet
-                            //string virtualnetworkname = GetVPCName(loadBalancerDescription.VPCId);
+                            foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in targetVirtualNetworks)
+                            {
+                                if (targetVirtualNetwork.SourceVirtualNetwork != null)
+                                {
+                                    AWS.MigrationSource.VirtualNetwork amazonVirtualNetwork = (AWS.MigrationSource.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+                                    if (amazonVirtualNetwork.Id == loadBalancerDescription.VPCId)
+                                    {
+                                        targetFrontEndIpConfiguration.TargetVirtualNetwork = targetVirtualNetwork;
 
-                            //var subnet = _awsObjectRetriever.getSubnetbyId(loadBalancerDescription.Subnets[0]);
-                            //string subnetname = GetSubnetName(subnet[0]);
+                                        foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+                                        {
+                                            if (targetSubnet.SourceSubnet.Id == loadBalancerDescription.Subnets[0])
+                                            {
+                                                targetFrontEndIpConfiguration.TargetSubnet = targetSubnet;
+                                                break;
+                                            }
+                                        }
 
-                            targetFrontEndIpConfiguration.PrivateIPAllocationMethod = "Static";
+                                        break;
+                                    }
+                                }
+                            }
+
+                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Static";
                             try
                             {
                                 IPHostEntry host = Dns.GetHostEntry(loadBalancerDescription.DNSName);
@@ -179,12 +198,23 @@ namespace MigAz.AWS.Generator
                             }
                             catch
                             {
-                                targetFrontEndIpConfiguration.PrivateIPAllocationMethod = "Dynamic";
+                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Dynamic";
                             }
                         }
                         else // if external (public) load balancer
                         {
-                            targetFrontEndIpConfiguration.PublicIp = null; // todo now russell, lookup
+                            Azure.MigrationTarget.PublicIp targetPublicIp = new Azure.MigrationTarget.PublicIp();
+                            targetPublicIp.Name = loadBalancerDescription.LoadBalancerName;
+                            targetPublicIp.DomainNameLabel = loadBalancerDescription.LoadBalancerName;
+
+                            targetLoadBalancer.LoadBalancerType = Azure.MigrationTarget.LoadBalancerType.Public;
+                            targetFrontEndIpConfiguration.PublicIp = targetPublicIp;
+
+                            TreeNode loadBalancerPublicIpNode = new TreeNode(targetPublicIp.Name);
+                            loadBalancerPublicIpNode.Tag = targetPublicIp;
+                            loadBalancerPublicIpNode.ImageKey = "PublicIp";
+                            loadBalancerPublicIpNode.SelectedImageKey = "PublicIp";
+                            amazonRegionNode.Nodes.Add(loadBalancerPublicIpNode);
                         }
 
                         TreeNode loadBalancerNode = new TreeNode(targetLoadBalancer.Name);

@@ -57,8 +57,9 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = source.Name;
         }
 
-        public Subnet(ISubnet sourceSubnet)
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet)
         {
+            this._ParentVirtualNetwork = parentVirtualNetwork;
             this._SourceSubnet = sourceSubnet;
             this.TargetName = sourceSubnet.Name;
             this.AddressPrefix = sourceSubnet.AddressPrefix;

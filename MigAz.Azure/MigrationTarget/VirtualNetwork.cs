@@ -91,7 +91,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (ISubnet sourceSubnet in virtualNetwork.Subnets)
             {
-                MigrationTarget.Subnet targetSubnet = new Subnet(sourceSubnet);
+                MigrationTarget.Subnet targetSubnet = new Subnet(this, sourceSubnet);
                 this.TargetSubnets.Add(targetSubnet);
             }
         }

@@ -12,9 +12,6 @@ namespace MigAz.Azure.MigrationTarget
     {
         private String _Name = "default";
 
-        private String _PrivateIPAllocationMethod = "Dynamic";
-        private String _PrivateIPAddress = String.Empty;
-
         private PublicIp _PublicIp = null;
 
         private LoadBalancer _ParentLoadBalancer = null;
@@ -34,8 +31,8 @@ namespace MigAz.Azure.MigrationTarget
             _Source = armFrontEndIpConfiguration;
 
             this.Name = armFrontEndIpConfiguration.Name;
-            this.PrivateIPAllocationMethod = armFrontEndIpConfiguration.PrivateIPAllocationMethod;
-            this.PrivateIPAddress = armFrontEndIpConfiguration.PrivateIPAddress;
+            this.TargetPrivateIPAllocationMethod = armFrontEndIpConfiguration.PrivateIPAllocationMethod;
+            this.TargetPrivateIpAddress = armFrontEndIpConfiguration.PrivateIPAddress;
             this.TargetVirtualNetwork = armFrontEndIpConfiguration.VirtualNetwork;
             this.TargetSubnet = armFrontEndIpConfiguration.Subnet;
         }
@@ -54,18 +51,6 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _Name; }
             set { _Name = value; }
-        }
-
-        public String PrivateIPAllocationMethod
-        {
-            get { return _PrivateIPAllocationMethod; }
-            set { _PrivateIPAllocationMethod = value; }
-        }
-
-        public String PrivateIPAddress
-        {
-            get { return _PrivateIPAddress; }
-            set { _PrivateIPAddress = value; }
         }
 
         public PublicIp PublicIp
