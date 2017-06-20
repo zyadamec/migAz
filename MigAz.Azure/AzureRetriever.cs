@@ -1537,6 +1537,7 @@ namespace MigAz.Azure
                             loadBalancerPublicIp.Name = asmCloudService.Name;
                             loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
                             frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
+                            targetLoadBalancer.LoadBalancerType = MigrationTarget.LoadBalancerType.Public;
                         }
 
                         foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in cloudServiceTargetVirtualMachines)

@@ -56,7 +56,13 @@ namespace MigAz.Azure.MigrationTarget
         public PublicIp PublicIp
         {
             get { return _PublicIp; }
-            set { _PublicIp = value; }
+            set
+            {
+                _PublicIp = value;
+
+                if (value != null)
+                    this.LoadBalancer.LoadBalancerType = LoadBalancerType.Public;
+            }
         }
     }
 }
