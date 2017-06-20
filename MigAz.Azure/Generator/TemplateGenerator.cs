@@ -255,7 +255,7 @@ namespace MigAz.Azure.Generator
 
                                 foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in _ExportArtifacts.VirtualNetworks)
                                 {
-                                    if (virtualMachineTargetVirtualNetwork.TargetName == virtualMachineTargetVirtualNetwork.TargetName)
+                                    if (targetVirtualNetwork.TargetName == virtualMachineTargetVirtualNetwork.TargetName)
                                     {
                                         targetVNetExists = true;
                                         break;

@@ -1536,7 +1536,9 @@ namespace MigAz.Azure
                             loadBalancerPublicIp.SourceName = asmCloudService.Name + "-PIP";
                             loadBalancerPublicIp.Name = asmCloudService.Name;
                             loadBalancerPublicIp.DomainNameLabel = asmCloudService.Name;
+
                             frontEndIpConfiguration.PublicIp = loadBalancerPublicIp;
+
                             targetLoadBalancer.LoadBalancerType = MigrationTarget.LoadBalancerType.Public;
                         }
 
