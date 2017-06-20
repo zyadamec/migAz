@@ -141,64 +141,64 @@ namespace MigAz.AWS.Generator
         //    LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         //}
 
-        private void BuildPublicIPAddressObject(ref NetworkInterface networkinterface)
-        {
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
+        //private void BuildPublicIPAddressObject(ref NetworkInterface networkinterface)
+        //{
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
-            string publicipaddress_name = networkinterface.name;
-            string publicipallocationmethod = "Dynamic";
+        //    string publicipaddress_name = networkinterface.name;
+        //    string publicipallocationmethod = "Dynamic";
 
-            Hashtable dnssettings = new Hashtable();
-            dnssettings.Add("domainNameLabel", (publicipaddress_name + _settingsProvider.StorageAccountSuffix).ToLower());
+        //    Hashtable dnssettings = new Hashtable();
+        //    dnssettings.Add("domainNameLabel", (publicipaddress_name + _settingsProvider.StorageAccountSuffix).ToLower());
 
-            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-            publicipaddress_properties.dnsSettings = dnssettings;
-            publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
+        //    PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+        //    publicipaddress_properties.dnsSettings = dnssettings;
+        //    publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
 
-            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-            publicipaddress.name = networkinterface.name + "-PIP";
-            // publicipaddress.location = "";
-            publicipaddress.properties = publicipaddress_properties;
+        //    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+        //    publicipaddress.name = networkinterface.name + "-PIP";
+        //    // publicipaddress.location = "";
+        //    publicipaddress.properties = publicipaddress_properties;
 
-            this.AddResource(publicipaddress);
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Microsoft.Network/publicIPAddresses/" + publicipaddress.name);
+        //    this.AddResource(publicipaddress);
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "Microsoft.Network/publicIPAddresses/" + publicipaddress.name);
 
-            NetworkInterface_Properties networkinterface_properties = (NetworkInterface_Properties)networkinterface.properties;
-            networkinterface_properties.ipConfigurations[0].properties.publicIPAddress = new Reference();
-            networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/publicIPAddresses/" + publicipaddress.name + "')]";
-            networkinterface.properties = networkinterface_properties;
+        //    NetworkInterface_Properties networkinterface_properties = (NetworkInterface_Properties)networkinterface.properties;
+        //    networkinterface_properties.ipConfigurations[0].properties.publicIPAddress = new Reference();
+        //    networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id = "[concat(resourceGroup().id, '/providers/Microsoft.Network/publicIPAddresses/" + publicipaddress.name + "')]";
+        //    networkinterface.properties = networkinterface_properties;
 
 
-            networkinterface.dependsOn.Add(networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id);
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
-        }
+        //    networkinterface.dependsOn.Add(networkinterface_properties.ipConfigurations[0].properties.publicIPAddress.id);
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
+        //}
 
-        private void BuildPublicIPAddressObject(dynamic resource)
-        {
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
+        //private void BuildPublicIPAddressObject(dynamic resource)
+        //{
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "Start");
 
-            string publicipaddress_name = resource.LoadBalancerName + "-PIP";
-            string publicipallocationmethod = "Dynamic";
-            char[] delimiterChars = { '.' };
-            string LBDNS = resource.DNSName.Split(delimiterChars)[0].ToLower();
+        //    string publicipaddress_name = resource.LoadBalancerName + "-PIP";
+        //    string publicipallocationmethod = "Dynamic";
+        //    char[] delimiterChars = { '.' };
+        //    string LBDNS = resource.DNSName.Split(delimiterChars)[0].ToLower();
 
-            Hashtable dnssettings = new Hashtable();
-            dnssettings.Add("domainNameLabel", LBDNS);
+        //    Hashtable dnssettings = new Hashtable();
+        //    dnssettings.Add("domainNameLabel", LBDNS);
 
-            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-            publicipaddress_properties.dnsSettings = dnssettings;
-            publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
+        //    PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+        //    publicipaddress_properties.dnsSettings = dnssettings;
+        //    publicipaddress_properties.publicIPAllocationMethod = publicipallocationmethod;
 
-            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-            publicipaddress.name = publicipaddress_name;
-            // publicipaddress.location = "";
-            publicipaddress.properties = publicipaddress_properties;
+        //    PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+        //    publicipaddress.name = publicipaddress_name;
+        //    // publicipaddress.location = "";
+        //    publicipaddress.properties = publicipaddress_properties;
 
-            this.AddResource(publicipaddress);
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "Microsoft.Network/publicIPAddresses/" + publicipaddress.name);
+        //    this.AddResource(publicipaddress);
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "Microsoft.Network/publicIPAddresses/" + publicipaddress.name);
 
-            LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
-        }
+        //    LogProvider.WriteLog("BuildPublicIPAddressObject", "End");
+        //}
 
 
         // convert an hex string into byte array

@@ -31,11 +31,6 @@ namespace MigAz.Azure.Generator.AsmToArm
         {
         }
 
-       
-
-
-
-
         public override string GetVMSize(string vmsize)
         {
             Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();

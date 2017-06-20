@@ -26,16 +26,23 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\test.json");
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
             await azureContextUSCommercial.AzureRetriever.BindAsmResources();
-            //List<MigAz.Azure.Asm.StorageAccount> asdf = await azureContextUSCommercial.AzureRetriever.GetAzureAsmStorageAccounts();
 
-            //AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
+            AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            //var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts();
+            artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
+            foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.AsmTargetStorageAccounts)
+            {
+                artifacts.StorageAccounts.Add(s);
+            }
             //// todo artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
-            //templateGenerator.UpdateArtifacts(artifacts);
+            await templateGenerator.UpdateArtifacts(artifacts);
+            Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 
-            //JObject templateJson = templateGenerator.GetTemplate();
-            //Assert.AreEqual(1, templateJson["resources"].Children().Count());
+            JObject templateJson = JObject.Parse(await templateGenerator.GetTemplateString());
+
+            Assert.AreEqual(1, templateJson["resources"].Children().Count());
+
             //var resource = templateJson["resources"].Single();
             //Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
             //Assert.AreEqual("mystoragev2", resource["name"].Value<string>());

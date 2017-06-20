@@ -1356,6 +1356,10 @@ namespace MigAz.Azure.Generator
             virtualmachine.dependsOn = dependson;
             virtualmachine.resources = new List<ArmResource>();
 
+            // Virtual Machine Plan Attributes (i.e. VM is an Azure Marketplace item that has a Marketplace plan associated
+            virtualmachine.plan = virtualMachine.PlanAttributes;
+
+
             // Diagnostics Extension
             Extension extension_iaasdiagnostics = null;
             if (extension_iaasdiagnostics != null) { virtualmachine.resources.Add(extension_iaasdiagnostics); }
@@ -1530,7 +1534,7 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("UpdateArtifacts", "End export.json stream");
         }
 
-        private async Task<string> GetTemplateString()
+        public async Task<string> GetTemplateString()
         {
             Template template = new Template()
             {
