@@ -336,6 +336,33 @@ namespace MigAz.Forms
                     }
                 }
 
+                if (tabOutputResults.TabPages.Count != migrator.TemplateGenerator.TemplateStreams.Count)
+                    throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + migrator.TemplateGenerator.TemplateStreams.Count);
+
+                // Ensure Tabs are in same order as output streams
+                int streamIndex = 0;
+                foreach (string templateStreamKey in migrator.TemplateGenerator.TemplateStreams.Keys)
+                {
+                    int rotationCounter = 0;
+
+                    // This while loop is to bubble the tab to the end, as to rotate the tab sequence to ensure they match the order returned from the stream outputs
+                    // The addition/removal of Streams may result in order of existing tabPages being "out of order" to the streams generated, so we may need to consider reordering
+                    while (tabOutputResults.TabPages[streamIndex].Name != templateStreamKey)
+                    {
+                        TabPage currentTabpage = tabOutputResults.TabPages[streamIndex];
+                        tabOutputResults.TabPages.Remove(currentTabpage);
+                        tabOutputResults.TabPages.Add(currentTabpage);
+
+                        rotationCounter++;
+
+                        if (rotationCounter > migrator.TemplateGenerator.TemplateStreams.Count)
+                            throw new ArgumentException("Rotated through all tabs, unabled to locate tab '" + templateStreamKey + "' while ensuring tab order/sequencing.");
+                    }
+
+                    streamIndex++;
+                }
+
+
                 lblLastOutputRefresh.Text = "Last Refresh Completed: " + DateTime.Now.ToString();
                 btnRefreshOutput.Enabled = false;
 

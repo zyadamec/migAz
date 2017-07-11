@@ -17,6 +17,7 @@ namespace MigAz.Azure.UserControls
         private IVirtualNetworkTarget _NetworkInterfaceTarget;
         private AzureContext _AzureContext;
         private List<Azure.MigrationTarget.VirtualNetwork> _TargetVirualNetworksInMigration = new List<MigrationTarget.VirtualNetwork>();
+        private Azure.UserControls.TargetTreeView _TargetTreeView = null;
 
         public delegate void AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,15 +27,19 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(AzureContext azureContext, List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
+        public async Task Bind(AzureContext azureContext, Azure.UserControls.TargetTreeView targetTreeView,  List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
         {
             _AzureContext = azureContext;
+            _TargetTreeView = targetTreeView;
             _TargetVirualNetworksInMigration = virtualNetworks;
 
             try
             {
-                List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks();
-                this.ExistingARMVNetEnabled = a.Count() > 0;
+                if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
+                {
+                    List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation);
+                    this.ExistingARMVNetEnabled = a.Count() > 0;
+                }
             }
             catch (Exception exc)
             {
@@ -189,9 +194,9 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                if (_AzureContext != null && _AzureContext.AzureRetriever != null)
+                if (_AzureContext != null && _AzureContext.AzureRetriever != null && _TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks())
+                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation))
                     {
                         if (armVirtualNetwork.HasNonGatewaySubnet)
                             cmbExistingArmVNets.Items.Add(armVirtualNetwork);

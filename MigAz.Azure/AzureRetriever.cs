@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure
 {
@@ -687,6 +688,22 @@ namespace MigAz.Azure
                 foreach (Arm.VirtualNetwork virtualNetwork in  await this.GetAzureARMVirtualNetworks(resourceGroup))
                 {
                     virtualNetworks.Add(virtualNetwork);
+                }
+            }
+
+            return virtualNetworks;
+        }
+
+        public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(ILocation azureLocation)
+        {
+            List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();
+
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                foreach (Arm.VirtualNetwork virtualNetwork in await this.GetAzureARMVirtualNetworks(resourceGroup))
+                {
+                    if (virtualNetwork.Location == azureLocation.Name)
+                        virtualNetworks.Add(virtualNetwork);
                 }
             }
 
@@ -1401,8 +1418,11 @@ namespace MigAz.Azure
 
                         HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
 
-                        if ((int)exceptionResponse.StatusCode == 429 || // 429 Too Many Requests
-                            ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                        if ((exceptionResponse != null) &&
+                            (
+                                (int)exceptionResponse.StatusCode == 429 || // 429 Too Many Requests
+                                ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
+                            )
                             )
                         {
                             DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
