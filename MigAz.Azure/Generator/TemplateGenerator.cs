@@ -316,6 +316,9 @@ namespace MigAz.Azure.Generator
 
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
+                    if (dataDisk.DiskSizeInGB == 0)
+                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 1023) is required.", dataDisk);
+
                     if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
                     {
                         Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk)virtualMachine.OSVirtualHardDisk.SourceDisk;
@@ -1305,8 +1308,7 @@ namespace MigAz.Azure.Generator
                     DataDisk datadisk = new DataDisk();
                     datadisk.name = dataDisk.ToString();
                     datadisk.caching = dataDisk.HostCaching;
-                    if (dataDisk.DiskSizeInGB != null)
-                        datadisk.diskSizeGB = dataDisk.DiskSizeInGB.Value;
+                    datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
                     if (dataDisk.Lun.HasValue)
                         datadisk.lun = dataDisk.Lun.Value;
 
@@ -1471,6 +1473,10 @@ namespace MigAz.Azure.Generator
             if (HasNewStorageAccounts && HasBlobCopyDetails) // If there are new storage accounts and we have vhd blobs involved in the migration to copy
             {
                 await SerializeStorageAccounts(); // Serialize a seperate tempalte with just new Storage Accounts to faciliate Blob Copy
+            }
+
+            if (HasBlobCopyDetails)
+            {
                 await SerializeBlobCopyDetails(); // Serialize blob copy details
             }
 

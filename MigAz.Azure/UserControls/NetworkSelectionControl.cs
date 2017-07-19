@@ -37,8 +37,15 @@ namespace MigAz.Azure.UserControls
             {
                 if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
+                    rbExistingARMVNet.Text = "Existing VNet in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
                     List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureRetriever.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation);
                     this.ExistingARMVNetEnabled = a.Count() > 0;
+                }
+                else
+                {
+                    // Cannot use existing ARM VNet without Target Location
+                    rbExistingARMVNet.Enabled = false;
+                    rbExistingARMVNet.Visible = false;
                 }
             }
             catch (Exception exc)

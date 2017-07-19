@@ -783,6 +783,22 @@ namespace MigAz.Azure
             return storageAccounts;
         }
 
+        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(ILocation azureLocation)
+        {
+            List<Arm.StorageAccount> storageAccounts = new List<Arm.StorageAccount>();
+
+            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                foreach (Arm.StorageAccount storageAccount in await this.GetAzureARMStorageAccounts(resourceGroup))
+                {
+                    if (storageAccount.Location == azureLocation.Name)
+                        storageAccounts.Add(storageAccount);
+                }
+            }
+
+            return storageAccounts;
+        }
+
         public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(Arm.ResourceGroup resourceGroup)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccounts", "Start - '" + resourceGroup.ToString() + "' Resource Group");
@@ -1482,6 +1498,8 @@ namespace MigAz.Azure
 
                 if (this._AzureSubscription != null)
                 {
+                    await this.GetAzureARMLocations();
+
                     foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await this.GetAzureAsmNetworkSecurityGroups())
                     {
                         // Ensure we load the Full Details to get NSG Rules
@@ -1806,6 +1824,8 @@ namespace MigAz.Azure
 
                 if (this._AzureSubscription != null)
                 {
+                    await this.GetAzureARMLocations();
+
                     List<Task> armNetworkSecurityGroupTasks = new List<Task>();
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
