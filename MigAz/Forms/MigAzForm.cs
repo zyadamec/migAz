@@ -332,7 +332,16 @@ namespace MigAz.Forms
                     {
                         WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
                         templateStream.Value.Position = 0;
-                        webBrowser.DocumentText = new StreamReader(templateStream.Value).ReadToEnd();
+
+                        if (webBrowser.Document == null)
+                        {
+                            webBrowser.DocumentText = new StreamReader(templateStream.Value).ReadToEnd();
+                        }
+                        else
+                        {
+                            webBrowser.Document.OpenNew(true);
+                            webBrowser.Document.Write(new StreamReader(templateStream.Value).ReadToEnd());
+                        }
                     }
                 }
 

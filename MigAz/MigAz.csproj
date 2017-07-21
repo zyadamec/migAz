@@ -93,6 +93,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.Designer.cs">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MigAzForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,6 +142,9 @@
     <Compile Include="Migrators\AwsToArm.Designer.cs">
       <DependentUpon>AwsToArm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\ASM403ForbiddenExceptionDialog.resx">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>
