@@ -1478,6 +1478,7 @@ namespace MigAz.Azure.Generator
             if (HasBlobCopyDetails)
             {
                 await SerializeBlobCopyDetails(); // Serialize blob copy details
+                await SerializeBlobCopyPowerShell();
             }
 
             await SerializeExportTemplate();
@@ -1545,6 +1546,33 @@ namespace MigAz.Azure.Generator
             TemplateStreams.Add("export.json", templateStream);
 
             LogProvider.WriteLog("SerializeExportTemplate", "End");
+        }
+
+        private async Task SerializeBlobCopyPowerShell()
+        {
+            LogProvider.WriteLog("SerializeBlobCopyPowerShell", "Start");
+
+            ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+
+            StatusProvider.UpdateStatus("BUSY:  Generating BlobCopy.ps1");
+            LogProvider.WriteLog("SerializeStreams", "Start BlobCopy.ps1 stream");
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "MigAz.Azure.Generator.BlobCopy.ps1";
+            string blobCopyPowerShell;
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                blobCopyPowerShell = reader.ReadToEnd();
+            }
+
+            byte[] c = asciiEncoding.GetBytes(blobCopyPowerShell);
+            MemoryStream blobCopyPowerShellStream = new MemoryStream();
+            await blobCopyPowerShellStream.WriteAsync(c, 0, c.Length);
+            TemplateStreams.Add("BlobCopy.ps1", blobCopyPowerShellStream);
+
+            LogProvider.WriteLog("SerializeBlobCopyPowerShell", "End");
         }
 
         private async Task SerializeDeploymentInstructions()

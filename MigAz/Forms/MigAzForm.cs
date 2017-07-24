@@ -305,7 +305,7 @@ namespace MigAz.Forms
                             webBrowser.ScrollBarsEnabled = true;
                             tabPage.Controls.Add(webBrowser);
                         }
-                        else if (templateStream.Key.EndsWith(".json"))
+                        else if (templateStream.Key.EndsWith(".json") || templateStream.Key.EndsWith(".ps1"))
                         {
                             TextBox textBox = new TextBox();
                             textBox.Width = tabOutputResults.Width - 15;

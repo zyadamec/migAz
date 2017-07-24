@@ -261,6 +261,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Generator\BlobCopy.ps1" />
+    <None Include="Generator\BlobCopy_Delete_Snapshots.ps1" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
