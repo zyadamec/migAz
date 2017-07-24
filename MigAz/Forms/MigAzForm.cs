@@ -229,7 +229,7 @@ namespace MigAz.Forms
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
-            if (parent.Controls.Count == 1)
+            if (parent.Controls.Count == 1 && e.RowIndex > -1)
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
                 object alert = dgvMigAzMessages.Rows[e.RowIndex].Cells["SourceObject"].Value;

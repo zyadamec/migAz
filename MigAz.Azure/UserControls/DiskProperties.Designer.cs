@@ -237,6 +237,7 @@
             // rbManagedDisk
             // 
             this.rbManagedDisk.AutoSize = true;
+            this.rbManagedDisk.Enabled = false;
             this.rbManagedDisk.Location = new System.Drawing.Point(103, 249);
             this.rbManagedDisk.Margin = new System.Windows.Forms.Padding(2);
             this.rbManagedDisk.Name = "rbManagedDisk";

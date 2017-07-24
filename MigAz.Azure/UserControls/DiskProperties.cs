@@ -18,7 +18,7 @@ namespace MigAz.Azure.UserControls
         TargetTreeView _TargetTreeView;
         private AzureContext _AzureContext;
         private Azure.MigrationTarget.Disk _TargetDisk;
-
+        private bool _ShowSizeInGb = true;
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
@@ -41,6 +41,21 @@ namespace MigAz.Azure.UserControls
                 //}
 
                 //rbManagedDisk.Enabled = value;
+            }
+        }
+
+        public bool ShowSizeInGb
+        {
+            get
+            {
+                return _ShowSizeInGb;
+            }
+            set
+            {
+                _ShowSizeInGb = value;
+
+                lblSourceSizeGb.Visible = _ShowSizeInGb;
+                txtTargetSize.Visible = _ShowSizeInGb;
             }
         }
 
