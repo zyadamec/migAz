@@ -109,6 +109,7 @@
     <Compile Include="MigrationTarget\InboundNatRule.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
     <Compile Include="MigrationTarget\LoadBalancingRule.cs" />
+    <Compile Include="MigrationTarget\ManagedDisk.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="MigrationTarget\NetworkSecurityGroup.cs" />

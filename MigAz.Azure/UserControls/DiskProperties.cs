@@ -7,8 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
-using MigAz.Azure.Arm;
 using MigAz.Core.Interface;
 
 namespace MigAz.Azure.UserControls
@@ -81,21 +79,15 @@ namespace MigAz.Azure.UserControls
 
         private async Task BindCommon()
         {
-            if (AllowManangedDisk)
-                rbManagedDisk.Checked = true;
-            else
-            {
-                if (_TargetDisk != null)
-                {
-                    if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
-                        rbStorageAccountInMigration.Checked = true;
-                    else if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
-                        rbExistingARMStorageAccount.Checked = true;
-                }
-            }
-
             if (_TargetDisk != null)
             {
+                if (AllowManangedDisk && _TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                    rbManagedDisk.Checked = true;
+                if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                    rbStorageAccountInMigration.Checked = true;
+                else if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                    rbExistingARMStorageAccount.Checked = true;
+
                 lblAsmStorageAccount.Text = String.Empty;
                 lblDiskName.Text = _TargetDisk.TargetName;
                 lblHostCaching.Text = _TargetDisk.HostCaching;
@@ -152,6 +144,11 @@ namespace MigAz.Azure.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = false;
+                if (_TargetDisk != null)
+                {
+                    if (_TargetDisk.TargetStorageAccount == null || _TargetDisk.TargetStorageAccount.GetType() != typeof(Azure.MigrationTarget.ManagedDisk))
+                        _TargetDisk.TargetStorageAccount = new Azure.MigrationTarget.ManagedDisk(_AzureContext);
+                }
             }
         }
 

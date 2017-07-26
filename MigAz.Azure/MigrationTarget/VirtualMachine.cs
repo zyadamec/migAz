@@ -177,5 +177,22 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetAvailabilitySet; }
             set { _TargetAvailabilitySet = value; }
         }
+
+        public bool HasManagedDisks
+        {
+            get
+            {
+                if (this.OSVirtualHardDisk.TargetStorageAccount != null && this.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                    return true;
+
+                foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
+                {
+                    if (dataDisk.TargetStorageAccount != null && dataDisk.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                        return true;
+                }
+
+                return false;
+            }
+        }
     }
 }

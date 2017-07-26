@@ -13,7 +13,7 @@ namespace MigAz.Azure.MigrationTarget
         private string _TargetName = String.Empty;
         private Int32 _DiskSizeInGB = 0;
 
-        private Disk() { }
+        public Disk() { }
 
         public Disk(Asm.Disk sourceDisk)
         {
