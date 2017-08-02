@@ -1216,15 +1216,6 @@ namespace MigAz.Azure.Generator
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
             List<string> dependson = new List<string>();
 
-            string newdiskurl = String.Empty;
-            string osDiskTargetStorageAccountName = String.Empty;
-            if (targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
-            {
-                osDiskTargetStorageAccountName = targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount.ToString();
-                newdiskurl = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
-                storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
-            }
-
             // process network interface
             List<NetworkProfile_NetworkInterface> networkinterfaces = new List<NetworkProfile_NetworkInterface>();
 
@@ -1235,17 +1226,14 @@ namespace MigAz.Azure.Generator
             }
 
             HardwareProfile hardwareprofile = new HardwareProfile();
-            hardwareprofile.vmSize = GetVMSize(targetVirtualMachine.TargetSize);
+            hardwareprofile.vmSize = targetVirtualMachine.TargetSize.ToString();
 
             NetworkProfile networkprofile = new NetworkProfile();
             networkprofile.networkInterfaces = networkinterfaces;
 
-            Vhd vhd = new Vhd();
-            vhd.uri = newdiskurl;
 
             OsDisk osdisk = new OsDisk();
             osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
-            osdisk.vhd = vhd;
             osdisk.caching = targetVirtualMachine.OSVirtualHardDisk.HostCaching;
 
             ImageReference imagereference = new ImageReference();
@@ -1303,6 +1291,29 @@ namespace MigAz.Azure.Generator
                 osdisk.osType = targetVirtualMachine.OSVirtualHardDiskOS;
 
                 this._CopyBlobDetails.Add(BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk));
+
+                if (!targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
+                {
+                    Vhd vhd = new Vhd();
+                    osdisk.vhd = vhd;
+                    vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
+
+                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                    {
+                        if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount))
+                            storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
+                    }
+                }
+                else
+                {
+                    Azure.MigrationTarget.ManagedDisk targetManagedDisk = (Azure.MigrationTarget.ManagedDisk)targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                    ManagedDisk osManagedDisk = BuildManagedDiskObject(targetManagedDisk);
+
+                    Reference managedDiskReference = new Reference();
+                    managedDiskReference.id = targetManagedDisk.ReferenceId;
+
+                    osdisk.managedDisk = managedDiskReference;
+                }
             }
 
             // process data disks
@@ -1318,8 +1329,6 @@ namespace MigAz.Azure.Generator
                     if (dataDisk.Lun.HasValue)
                         datadisk.lun = dataDisk.Lun.Value;
 
-                    newdiskurl = dataDisk.TargetMediaLink;
-
                     // if the tool is configured to create new VMs with empty data disks
                     if (_settingsProvider.BuildEmpty)
                     {
@@ -1330,17 +1339,31 @@ namespace MigAz.Azure.Generator
                     {
                         datadisk.createOption = "Attach";
 
-                        // Block of code to help copying the blobs to the new storage accounts
                         this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk));
-                        // end of block of code to help copying the blobs to the new storage accounts
                     }
 
-                    vhd = new Vhd();
-                    vhd.uri = newdiskurl;
-                    datadisk.vhd = vhd;
+                    if (!dataDisk.IsManagedDisk)
+                    {
+                        Vhd vhd = new Vhd();
+                        vhd.uri = dataDisk.TargetMediaLink;
+                        datadisk.vhd = vhd;
 
-                    if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
-                        storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
+                        if (dataDisk.TargetStorageAccount != null)
+                        {
+                            if (!storageaccountdependencies.Contains(dataDisk.TargetStorageAccount))
+                                storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
+                        }
+                    }
+                    else
+                    {
+                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = (Azure.MigrationTarget.ManagedDisk)targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                        ManagedDisk datadiskManagedDisk = BuildManagedDiskObject(targetManagedDisk);
+
+                        Reference managedDiskReference = new Reference();
+                        managedDiskReference.id = targetManagedDisk.ReferenceId;
+
+                        datadisk.managedDisk = managedDiskReference;
+                    }
 
                     datadisks.Add(datadisk);
                 }
@@ -1392,7 +1415,25 @@ namespace MigAz.Azure.Generator
 
             this.AddResource(templateVirtualMachine);
 
-            LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
+            LogProvider.WriteLog("BuildVirtualMachineObject", "End Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
+        }
+
+        private ManagedDisk BuildManagedDiskObject(Azure.MigrationTarget.ManagedDisk targetManagedDisk)
+        {
+            LogProvider.WriteLog("BuildManagedDiskObject", "Start Microsoft.Compute/disks/" + targetManagedDisk.ToString());
+
+            ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid);
+            templateManagedDisk.name = targetManagedDisk.ToString();
+            templateManagedDisk.location = "[resourceGroup().location]";
+
+            ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties();
+            templateManagedDisk.properties = templateManagedDiskProperties;
+
+            this.AddResource(templateManagedDisk);
+
+            LogProvider.WriteLog("BuildManagedDiskObject", "End Microsoft.Compute/disks/" + targetManagedDisk.ToString());
+
+            return templateManagedDisk;
         }
 
         private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk)
@@ -1734,10 +1775,5 @@ namespace MigAz.Azure.Generator
         //        handler(this, null);
         //    }
         //}
-
-        public virtual string GetVMSize(string vmsize)
-        {
-            return String.Empty;
-        }
     }
 }

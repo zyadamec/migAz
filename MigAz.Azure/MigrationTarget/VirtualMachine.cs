@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MigAz.Azure.Arm;
 
 namespace MigAz.Azure.MigrationTarget
 {
@@ -14,7 +15,7 @@ namespace MigAz.Azure.MigrationTarget
         private AvailabilitySet _TargetAvailabilitySet = null;
         private string _TargetName = String.Empty;
         private AzureContext _AzureContext;
-        private String _TargetSize = String.Empty;
+        private Arm.VMSize _TargetSize;
         private List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
         private List<Disk> _DataDisks = new List<Disk>();
         private Dictionary<string, string> _PlanAttributes;
@@ -26,7 +27,7 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
-            this._TargetSize = virtualMachine.RoleSize;
+            this.TargetSize = ConvertAsmToArmSize(virtualMachine.RoleSize);
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
             this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
@@ -45,12 +46,40 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        private VMSize ConvertAsmToArmSize(string roleSize)
+        {
+            Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
+            VMSizeTable.Add("ExtraSmall", "Standard_A0");
+            VMSizeTable.Add("Small", "Standard_A1");
+            VMSizeTable.Add("Medium", "Standard_A2");
+            VMSizeTable.Add("Large", "Standard_A3");
+            VMSizeTable.Add("ExtraLarge", "Standard_A4");
+            VMSizeTable.Add("A5", "Standard_A5");
+            VMSizeTable.Add("A6", "Standard_A6");
+            VMSizeTable.Add("A7", "Standard_A7");
+            VMSizeTable.Add("A8", "Standard_A8");
+            VMSizeTable.Add("A9", "Standard_A9");
+            VMSizeTable.Add("A10", "Standard_A10");
+            VMSizeTable.Add("A11", "Standard_A11");
+
+            if (VMSizeTable.ContainsKey(roleSize))
+            {
+                return null;
+                //return VMSizeTable[roleSize];
+            }
+            else
+            {
+                return null;
+                //return roleSize;
+            }
+        }
+
         public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.Name;
-            this._TargetSize = virtualMachine.VmSize;
+            this.TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
 
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
@@ -132,10 +161,10 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public String TargetSize
+        public Arm.VMSize TargetSize
         {
             get { return _TargetSize; }
-            set { _TargetSize = value.Trim(); }
+            set { _TargetSize = value; }
         }
 
 
@@ -182,12 +211,12 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                if (this.OSVirtualHardDisk.TargetStorageAccount != null && this.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                if (this.OSVirtualHardDisk.IsManagedDisk)
                     return true;
 
                 foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
                 {
-                    if (dataDisk.TargetStorageAccount != null && dataDisk.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                    if (dataDisk.IsManagedDisk)
                         return true;
                 }
 

@@ -81,7 +81,9 @@
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
     <Compile Include="Arm\VirtualNetworkGateway.cs" />
+    <Compile Include="Arm\VMSize.cs" />
     <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
+    <Compile Include="Asm\RoleSize.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="AzureSubscriptionResourceCache.cs" />
@@ -171,7 +173,6 @@
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
     <Compile Include="Generator\AzureGenerator.cs" />
-    <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
     <Compile Include="Models\CopyBlobDetail.cs" />

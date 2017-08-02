@@ -85,7 +85,7 @@ namespace MigAz.Azure.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            _ResourceGroup.TargetLocation = (ILocation) cmbSender.SelectedItem;
+            _ResourceGroup.TargetLocation = (Arm.Location) cmbSender.SelectedItem;
 
             PropertyChanged();
         }

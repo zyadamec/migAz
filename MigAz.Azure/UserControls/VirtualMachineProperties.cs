@@ -48,7 +48,9 @@ namespace MigAz.Azure.UserControls
                 {
                     Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)_VirtualMachine.Source;
 
-                    lblRoleSize.Text = armVirtualMachine.VmSize;
+                    if (armVirtualMachine.VmSize != null)
+                        lblRoleSize.Text = armVirtualMachine.VmSize.ToString();
+
                     lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 }
             }
@@ -57,6 +59,21 @@ namespace MigAz.Azure.UserControls
                 this.diskProperties1.Bind(azureContext, _TargetTreeView, _VirtualMachine.OSVirtualHardDisk);
             else
                 this.diskProperties1.Visible = false;
+
+            cbRoleSizes.Items.Clear();
+            if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)
+            {
+                foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
+                {
+                    cbRoleSizes.Items.Add(vmSize);
+                }
+
+                if (_VirtualMachine.TargetSize != null)
+                {
+                    int sizeIndex = cbRoleSizes.FindStringExact(_VirtualMachine.TargetSize.ToString());
+                    cbRoleSizes.SelectedIndex = sizeIndex;
+                }
+            }
         }
 
         private async Task Properties1_PropertyChanged()
@@ -77,6 +94,22 @@ namespace MigAz.Azure.UserControls
             {
                 e.Handled = true;
             }
+        }
+
+        private void cbRoleSizes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbRoleSizes.SelectedItem != null)
+            {
+                Arm.VMSize selectedSize = (Arm.VMSize)cbRoleSizes.SelectedItem;
+
+                lblNumberOfCores.Text = selectedSize.NumberOfCores.ToString();
+                lblMemory.Text = ((double)selectedSize.memoryInMB / 1024).ToString();
+                lblMaxDataDisks.Text = selectedSize.maxDataDiskCount.ToString();
+
+                _VirtualMachine.TargetSize = selectedSize;
+            }
+            else
+                _VirtualMachine.TargetSize = null;
         }
     }
 }

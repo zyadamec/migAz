@@ -129,6 +129,14 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public bool IsManagedDisk
+        {
+            get
+            {
+                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk);
+            }
+        }
+
         public override string ToString()
         {
             return this.TargetName;
