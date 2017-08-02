@@ -11,6 +11,7 @@ using System.Collections;
 using MigAz.Azure.Models;
 using Newtonsoft.Json;
 using System.Reflection;
+using System.Linq;
 
 namespace MigAz.Azure.Generator
 {
@@ -227,6 +228,29 @@ namespace MigAz.Azure.Generator
                     {
                         if (dataDisk.TargetStorageAccount != null && dataDisk.TargetStorageAccount.StorageAccountType != StorageAccountType.Premium)
                             this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                    }
+                }
+
+                if (virtualMachine.TargetSize == null)
+                {
+                    this.AddAlert(AlertType.Error, "Target Size for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
+                }
+                else
+                {
+                    // Ensure that the selected target size is available in the target Azure Location
+                    if (_ExportArtifacts.ResourceGroup != null && _ExportArtifacts.ResourceGroup.TargetLocation != null)
+                    {
+                        if (_ExportArtifacts.ResourceGroup.TargetLocation.VMSizes == null || _ExportArtifacts.ResourceGroup.TargetLocation.VMSizes.Count == 0)
+                        {
+                            this.AddAlert(AlertType.Error, "No ARM VM Sizes are available for Azure Location '" + _ExportArtifacts.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
+                        }
+                        else
+                        {
+                            // Ensure selected target VM Size is available in the Target Azure Location
+                            Arm.VMSize matchedVmSize = _ExportArtifacts.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == virtualMachine.TargetSize.Name).FirstOrDefault();
+                            if (matchedVmSize == null)
+                                this.AddAlert(AlertType.Error, "Specified VM Size '" + virtualMachine.TargetSize.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' is invalid as it is not available in Azure Location '" + _ExportArtifacts.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
+                        }
                     }
                 }
 

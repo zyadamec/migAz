@@ -47,6 +47,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.lblMaxDataDisks = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.lblTargetLocationRequired = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblRoleSize
@@ -238,10 +239,21 @@
             this.label7.TabIndex = 32;
             this.label7.Text = "Target";
             // 
+            // lblTargetLocationRequired
+            // 
+            this.lblTargetLocationRequired.AutoSize = true;
+            this.lblTargetLocationRequired.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTargetLocationRequired.Location = new System.Drawing.Point(104, 124);
+            this.lblTargetLocationRequired.Name = "lblTargetLocationRequired";
+            this.lblTargetLocationRequired.Size = new System.Drawing.Size(189, 13);
+            this.lblTargetLocationRequired.TabIndex = 33;
+            this.lblTargetLocationRequired.Text = "<Set Resource Group Location>";
+            // 
             // VirtualMachineProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblTargetLocationRequired);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblMaxDataDisks);
@@ -289,5 +301,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblMaxDataDisks;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lblTargetLocationRequired;
     }
 }

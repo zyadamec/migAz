@@ -27,7 +27,6 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
-            this.TargetSize = ConvertAsmToArmSize(virtualMachine.RoleSize);
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
             this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
@@ -44,34 +43,45 @@ namespace MigAz.Azure.MigrationTarget
                 Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, virtualMachine, asmNetworkInterface, targetVirtualNetworks, networkSecurityGroups);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
-        }
 
-        private VMSize ConvertAsmToArmSize(string roleSize)
-        {
-            Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
-            VMSizeTable.Add("ExtraSmall", "Standard_A0");
-            VMSizeTable.Add("Small", "Standard_A1");
-            VMSizeTable.Add("Medium", "Standard_A2");
-            VMSizeTable.Add("Large", "Standard_A3");
-            VMSizeTable.Add("ExtraLarge", "Standard_A4");
-            VMSizeTable.Add("A5", "Standard_A5");
-            VMSizeTable.Add("A6", "Standard_A6");
-            VMSizeTable.Add("A7", "Standard_A7");
-            VMSizeTable.Add("A8", "Standard_A8");
-            VMSizeTable.Add("A9", "Standard_A9");
-            VMSizeTable.Add("A10", "Standard_A10");
-            VMSizeTable.Add("A11", "Standard_A11");
+            #region Seek ARM Target Size
 
-            if (VMSizeTable.ContainsKey(roleSize))
+            // Get ARM Based Location (that matches location of Source ASM VM
+            Arm.Location armLocation = _AzureContext.AzureRetriever.GetAzureARMLocation(virtualMachine.Location).Result;
+            if (armLocation != null)
             {
-                return null;
-                //return VMSizeTable[roleSize];
+                // First, try to seek matching ARM VM Size by name
+                if (armLocation.VMSizes != null)
+                {
+                    this.TargetSize = armLocation.VMSizes.Where(a => a.Name == virtualMachine.RoleSize).FirstOrDefault();
+
+                    if (this.TargetSize == null)
+                    {
+                        // if not found, defer to alternate matching options
+
+                        Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
+                        VMSizeTable.Add("ExtraSmall", "Standard_A0");
+                        VMSizeTable.Add("Small", "Standard_A1");
+                        VMSizeTable.Add("Medium", "Standard_A2");
+                        VMSizeTable.Add("Large", "Standard_A3");
+                        VMSizeTable.Add("ExtraLarge", "Standard_A4");
+                        VMSizeTable.Add("A5", "Standard_A5");
+                        VMSizeTable.Add("A6", "Standard_A6");
+                        VMSizeTable.Add("A7", "Standard_A7");
+                        VMSizeTable.Add("A8", "Standard_A8");
+                        VMSizeTable.Add("A9", "Standard_A9");
+                        VMSizeTable.Add("A10", "Standard_A10");
+                        VMSizeTable.Add("A11", "Standard_A11");
+
+                        if (VMSizeTable.ContainsKey(virtualMachine.RoleSize))
+                        {
+                            this.TargetSize = armLocation.VMSizes.Where(a => a.Name == VMSizeTable[virtualMachine.RoleSize]).FirstOrDefault();
+                        }
+                    }
+                }
             }
-            else
-            {
-                return null;
-                //return roleSize;
-            }
+
+            #endregion
         }
 
         public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)

@@ -63,9 +63,17 @@ namespace MigAz.Azure.UserControls
             cbRoleSizes.Items.Clear();
             if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)
             {
-                foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
+                cbRoleSizes.Enabled = true;
+                cbRoleSizes.Visible = true;
+                lblTargetLocationRequired.Enabled = false;
+                lblTargetLocationRequired.Visible = false;
+
+                if (targetTreeView.TargetResourceGroup.TargetLocation.VMSizes != null)
                 {
-                    cbRoleSizes.Items.Add(vmSize);
+                    foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
+                    {
+                        cbRoleSizes.Items.Add(vmSize);
+                    }
                 }
 
                 if (_VirtualMachine.TargetSize != null)
@@ -73,6 +81,13 @@ namespace MigAz.Azure.UserControls
                     int sizeIndex = cbRoleSizes.FindStringExact(_VirtualMachine.TargetSize.ToString());
                     cbRoleSizes.SelectedIndex = sizeIndex;
                 }
+            }
+            else
+            {
+                cbRoleSizes.Enabled = false;
+                cbRoleSizes.Visible = false;
+                lblTargetLocationRequired.Enabled = true;
+                lblTargetLocationRequired.Visible = true;
             }
         }
 
@@ -110,6 +125,8 @@ namespace MigAz.Azure.UserControls
             }
             else
                 _VirtualMachine.TargetSize = null;
+
+            PropertyChanged();
         }
     }
 }

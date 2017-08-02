@@ -10,7 +10,7 @@ namespace MigAz.Azure.Arm
     {
         private AzureContext _AzureContext;
         private JToken _LocationToken;
-        private List<VMSize> _VMSizes = new List<VMSize>();
+        private List<VMSize> _VMSizes;
 
         #region Constructors
 
@@ -59,6 +59,7 @@ namespace MigAz.Azure.Arm
         public List<VMSize> VMSizes
         {
             get { return _VMSizes; }
+            set { _VMSizes = value; }
         }
 
         #endregion

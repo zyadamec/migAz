@@ -210,7 +210,7 @@ namespace MigAz.Azure
                 azureLocations.Add(new Asm.Location(_AzureContext, locationXml));
             }
 
-            return azureLocations;
+            return azureLocations.OrderBy(a => a.DisplayName).ToList();
         }
 
         public async virtual Task<List<ReservedIP>> GetAzureAsmReservedIPs()
@@ -854,7 +854,12 @@ namespace MigAz.Azure
         public async Task<Arm.Location> GetAzureARMLocation(string location)
         {
             List<Arm.Location> armLocations = await this.GetAzureARMLocations();
-            return armLocations.Where(a => a.Name == location).FirstOrDefault();
+            Arm.Location matchedLocation = armLocations.Where(a => a.DisplayName == location).FirstOrDefault();
+
+            if (matchedLocation == null)
+                matchedLocation = armLocations.Where(a => a.Name == location).FirstOrDefault();
+
+            return matchedLocation;
         }
 
         public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
@@ -915,13 +920,14 @@ namespace MigAz.Azure
             var VMSizes = from VMSize in locationsVMSizesJson["value"]
                             select VMSize;
 
-            location.VMSizes.Clear();
-
+            List<VMSize> vmSizes = new List<VMSize>();
             foreach (var VMSize in VMSizes)
             {
                 Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                location.VMSizes.Add(armVMSize);
+                vmSizes.Add(armVMSize);
             }
+
+            location.VMSizes = vmSizes.OrderBy(a => a.Name).ToList();
 
             return;
         }
