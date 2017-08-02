@@ -53,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
                 // First, try to seek matching ARM VM Size by name
                 if (armLocation.VMSizes != null)
                 {
-                    this.TargetSize = armLocation.VMSizes.Where(a => a.Name == virtualMachine.RoleSize).FirstOrDefault();
+                    this.TargetSize = armLocation.VMSizes.Where(a => a.Name == virtualMachine.RoleSize.Name).FirstOrDefault();
 
                     if (this.TargetSize == null)
                     {
@@ -73,9 +73,9 @@ namespace MigAz.Azure.MigrationTarget
                         VMSizeTable.Add("A10", "Standard_A10");
                         VMSizeTable.Add("A11", "Standard_A11");
 
-                        if (VMSizeTable.ContainsKey(virtualMachine.RoleSize))
+                        if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
                         {
-                            this.TargetSize = armLocation.VMSizes.Where(a => a.Name == VMSizeTable[virtualMachine.RoleSize]).FirstOrDefault();
+                            this.TargetSize = armLocation.VMSizes.Where(a => a.Name == VMSizeTable[virtualMachine.RoleSize.Name]).FirstOrDefault();
                         }
                     }
                 }

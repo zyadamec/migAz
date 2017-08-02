@@ -30,7 +30,7 @@ namespace MigAz.Azure
 
         // ASM Object Cache (Subscription Context Specific)
         private List<Asm.VirtualNetwork> _VirtualNetworks;
-
+        private List<Asm.RoleSize> _AsmRoleSizes;
         private List<Asm.StorageAccount> _StorageAccounts;
         private List<CloudService> _CloudServices;
         private List<ReservedIP> _AsmReservedIPs;
@@ -175,6 +175,12 @@ namespace MigAz.Azure
             return vmlbmapping;
         }
 
+        internal async Task<RoleSize> GetAzureASMRoleSize(string roleSize)
+        {
+            List<Asm.RoleSize> asmRoleSizes = await this.GetAzureASMRoleSizes();
+            return asmRoleSizes.Where(a => a.Name == roleSize).FirstOrDefault();
+        }
+
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             _AzureSubscription = azureSubscription;
@@ -287,6 +293,22 @@ namespace MigAz.Azure
                 _VirtualNetworks.Add(asmVirtualNetwork);
             }
             return _VirtualNetworks;
+        }
+
+        public async virtual Task<List<Asm.RoleSize>> GetAzureASMRoleSizes()
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureASMRoleSizes", "Start");
+
+            if (_AsmRoleSizes != null)
+                return _AsmRoleSizes;
+
+            _AsmRoleSizes = new List<Asm.RoleSize>();
+            foreach (XmlNode roleSizeNode in (await this.GetAzureAsmResources("RoleSize", null)).SelectNodes("//RoleSize"))
+            {
+                Asm.RoleSize asmRoleSize = new Asm.RoleSize(_AzureContext, roleSizeNode);
+                _AsmRoleSizes.Add(asmRoleSize);
+            }
+            return _AsmRoleSizes;
         }
 
         public async Task<Asm.VirtualNetwork> GetAzureAsmVirtualNetwork(string virtualNetworkName)
@@ -1245,7 +1267,7 @@ namespace MigAz.Azure
                 // https://msdn.microsoft.com/en-us/library/azure/dn469422.aspx
                 case "RoleSize":
                     url = _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl() + _AzureSubscription.SubscriptionId + "/rolesizes";
-                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Virtual Networks for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Role Sizes for Subscription ID : " + _AzureSubscription.SubscriptionId + "...");
                     break;
                 case "ClientRootCertificates":
                     url = _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl() + _AzureSubscription.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates";
@@ -1562,6 +1584,7 @@ namespace MigAz.Azure
                 if (this._AzureSubscription != null)
                 {
                     await this.GetAzureARMLocations();
+                    await this.GetAzureASMRoleSizes();
 
                     foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await this.GetAzureAsmNetworkSecurityGroups())
                     {

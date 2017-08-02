@@ -27,25 +27,25 @@ namespace MigAz.Azure.Asm
         {
             get { return _XmlNode.SelectSingleNode("Label").InnerText; }
         }
-        public string Cores
+        public Int32 Cores
         {
-            get { return _XmlNode.SelectSingleNode("Cores").InnerText; }
+            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("Cores").InnerText); }
         }
-        public string MemoryInMb
+        public Int32 MemoryInMb
         {
-            get { return _XmlNode.SelectSingleNode("MemoryInMb").InnerText; }
+            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MemoryInMb").InnerText); }
         }
-        public string SupportedByWebWorkerRoles
+        public bool SupportedByWebWorkerRoles
         {
-            get { return _XmlNode.SelectSingleNode("SupportedByWebWorkerRoles").InnerText; }
+            get { return Convert.ToBoolean(_XmlNode.SelectSingleNode("SupportedByWebWorkerRoles").InnerText); }
         }
-        public string SupportedByVirtualMachines
+        public bool SupportedByVirtualMachines
         {
-            get { return _XmlNode.SelectSingleNode("SupportedByVirtualMachines").InnerText; }
+            get { return Convert.ToBoolean(_XmlNode.SelectSingleNode("SupportedByVirtualMachines").InnerText); }
         }
-        public string MaxDataDiskCount
+        public Int32 MaxDataDiskCount
         {
-            get { return _XmlNode.SelectSingleNode("MaxDataDiskCount").InnerText; }
+            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxDataDiskCount").InnerText); }
         }
         public string WebWorkerResourceDiskSizeInMb
         {
@@ -54,6 +54,11 @@ namespace MigAz.Azure.Asm
         public string VirtualMachineResourceDiskSizeInMb
         {
             get { return _XmlNode.SelectSingleNode("VirtualMachineResourceDiskSizeInMb").InnerText; }
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }

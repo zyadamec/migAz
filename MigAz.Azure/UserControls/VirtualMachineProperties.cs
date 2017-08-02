@@ -41,7 +41,14 @@ namespace MigAz.Azure.UserControls
                 {
                     Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)_VirtualMachine.Source;
 
-                    lblRoleSize.Text = asmVirtualMachine.RoleSize;
+                    if (asmVirtualMachine.RoleSize != null)
+                    {
+                        lblRoleSize.Text = asmVirtualMachine.RoleSize.Name;
+                        lblSourceCPUCores.Text = asmVirtualMachine.RoleSize.Cores.ToString();
+                        lblSourceMemoryInGb.Text = ((double)asmVirtualMachine.RoleSize.MemoryInMb / 1024).ToString();
+                        lblSourceMaxDataDisks.Text = asmVirtualMachine.RoleSize.MaxDataDiskCount.ToString();
+                    }
+
                     lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
                 }
                 else if (_VirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
@@ -117,9 +124,9 @@ namespace MigAz.Azure.UserControls
             {
                 Arm.VMSize selectedSize = (Arm.VMSize)cbRoleSizes.SelectedItem;
 
-                lblNumberOfCores.Text = selectedSize.NumberOfCores.ToString();
-                lblMemory.Text = ((double)selectedSize.memoryInMB / 1024).ToString();
-                lblMaxDataDisks.Text = selectedSize.maxDataDiskCount.ToString();
+                lblTargetNumberOfCores.Text = selectedSize.NumberOfCores.ToString();
+                lblTargetMemoryInGb.Text = ((double)selectedSize.memoryInMB / 1024).ToString();
+                lblTargetMaxDataDisks.Text = selectedSize.maxDataDiskCount.ToString();
 
                 _VirtualMachine.TargetSize = selectedSize;
             }
