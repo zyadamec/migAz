@@ -56,7 +56,12 @@ namespace MigAz.Azure.UserControls
                     Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)_VirtualMachine.Source;
 
                     if (armVirtualMachine.VmSize != null)
+                    {
                         lblRoleSize.Text = armVirtualMachine.VmSize.ToString();
+                        lblSourceCPUCores.Text = armVirtualMachine.VmSize.NumberOfCores.ToString();
+                        lblSourceMemoryInGb.Text = ((double)armVirtualMachine.VmSize.memoryInMB / 1024).ToString();
+                        lblSourceMaxDataDisks.Text = armVirtualMachine.VmSize.maxDataDiskCount.ToString();
+                    }
 
                     lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 }

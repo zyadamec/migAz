@@ -336,6 +336,17 @@ namespace MigAz.Azure.Generator
                         if (!targetAsmStorageExists)
                             this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it is not included in the migration / template.", virtualMachine);
                     }
+                    else if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                    {
+                        this.AddAlert(AlertType.Error, "Managed Disk support is in development and can not yet be utilized.  This feature will be available soon.  Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid.", virtualMachine);
+                    }
+
+                    if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
+                        virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                    {
+                        if (!virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
+                            this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it must end with '.vhd'.", virtualMachine);
+                    }
                 }
 
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
@@ -375,6 +386,18 @@ namespace MigAz.Azure.Generator
                             if (!targetStorageExists)
                                 this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid, as it is not included in the migration / template.", dataDisk);
                         }
+                        else if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                        {
+                            this.AddAlert(AlertType.Error, "Managed Disk support is in development and can not yet be utilized.  This feature will be available soon.  Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid.", dataDisk);
+                        }
+
+                        if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
+                            dataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        {
+                            if (!dataDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
+                                this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + dataDisk.TargetStorageAccountBlob + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it must end with '.vhd'.", dataDisk);
+                        }
+
                     }
                 }
             }

@@ -115,25 +115,17 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            try
+            if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
             {
-                if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
-                {
-                    rbExistingARMStorageAccount.Text = "Existing Storage in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                    List<Azure.Arm.StorageAccount> a = await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation);
-                    rbExistingARMStorageAccount.Enabled = a.Count() > 0;
-                }
-                else
-                {
-                    // Cannot use existing ARM Storage without Target Location
-                    rbExistingARMStorageAccount.Enabled = false;
-                    rbExistingARMStorageAccount.Visible = false;
-                }
+                rbExistingARMStorageAccount.Text = "Existing Storage in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
+                List<Azure.Arm.StorageAccount> a = await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation);
+                rbExistingARMStorageAccount.Enabled = a.Count() > 0;
             }
-            catch (Exception exc)
+            else
             {
-                _AzureContext.LogProvider.WriteLog("DiskProperties.BindCommon", exc.Message);
+                // Cannot use existing ARM Storage without Target Location
                 rbExistingARMStorageAccount.Enabled = false;
+                rbExistingARMStorageAccount.Text = "<Set Resource Group Location>";
             }
         }
 
@@ -144,10 +136,15 @@ namespace MigAz.Azure.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = false;
+                txtBlobName.Enabled = false;
+                txtBlobName.Text = String.Empty;
+
                 if (_TargetDisk != null)
                 {
                     if (_TargetDisk.TargetStorageAccount == null || _TargetDisk.TargetStorageAccount.GetType() != typeof(Azure.MigrationTarget.ManagedDisk))
                         _TargetDisk.TargetStorageAccount = new Azure.MigrationTarget.ManagedDisk(_AzureContext);
+
+                    PropertyChanged();
                 }
             }
         }
@@ -160,6 +157,8 @@ namespace MigAz.Azure.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
+                txtBlobName.Enabled = true;
+                txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
                 TreeNode targetResourceGroupNode = _TargetTreeView.ResourceGroupNode;
 
@@ -176,25 +175,33 @@ namespace MigAz.Azure.UserControls
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                     {
-                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                        if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
                         {
-                            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
-                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
-                            {
-                                cmbTargetStorage.SelectedIndex = i;
-                                break;
-                            }
+                            _TargetDisk.TargetStorageAccount = null;
+                            PropertyChanged();
                         }
+                        else
+                        {
+                            for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                            {
+                                Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
+                                if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                                {
+                                    cmbTargetStorage.SelectedIndex = i;
+                                    break;
+                                }
+                            }
 
-                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                        //{
-                        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                        //    {
-                        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
-                        //        break;
-                        //    }
-                        //}
+                            // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                            //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                            //{
+                            //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                            //    {
+                            //        cmbTargetStorage.SelectedItem = asmStorageAccount;
+                            //        break;
+                            //    }
+                            //}
+                        }
                     }
                 }
             }
@@ -208,6 +215,8 @@ namespace MigAz.Azure.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
+                txtBlobName.Enabled = true;
+                txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
                 foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts())
                 {
@@ -216,31 +225,35 @@ namespace MigAz.Azure.UserControls
 
                 if (_TargetDisk != null)
                 {
-                    if ((_TargetDisk.TargetStorageAccount == null) || (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Asm.StorageAccount)))
+                    if (_TargetDisk.TargetStorageAccount != null)
                     {
-
-                    }
-                    else
-                    {
-                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                        if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
                         {
-                            if (cmbTargetStorage.Items[i].GetType() == typeof(Azure.Arm.StorageAccount))
+                            _TargetDisk.TargetStorageAccount = null;
+                            PropertyChanged();
+                        }
+                        else if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        {
+                            for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                             {
-                                Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
-                                if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                                if (cmbTargetStorage.Items[i].GetType() == typeof(Azure.Arm.StorageAccount))
                                 {
-                                    cmbTargetStorage.SelectedIndex = i;
-                                    break;
+                                    Azure.Arm.StorageAccount cmbStorageAccount = (Azure.Arm.StorageAccount)cmbTargetStorage.Items[i];
+                                    if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                                    {
+                                        cmbTargetStorage.SelectedIndex = i;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                        //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
-                        //{
-                        //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                        //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
-                        //}
+                            // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                            //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
+                            //{
+                            //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                            //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
+                            //}
+                        }
                     }
                 }
             }
@@ -278,9 +291,11 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
-
-            PropertyChanged();
+            if (rbExistingARMStorageAccount.Checked || rbStorageAccountInMigration.Checked) // We don't want to call / save text change on a Managed Disk, specifically when set to String.Empty would loose text value
+            {
+                _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
+                PropertyChanged();
+            }
         }
 
         private void txtTargetDiskName_KeyPress(object sender, KeyPressEventArgs e)

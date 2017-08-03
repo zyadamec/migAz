@@ -115,7 +115,7 @@
             this.diskProperties1.Name = "diskProperties1";
             this.diskProperties1.ShowSizeInGb = true;
             this.diskProperties1.Size = new System.Drawing.Size(320, 350);
-            this.diskProperties1.TabIndex = 19;
+            this.diskProperties1.TabIndex = 2;
             // 
             // label12
             // 
@@ -153,7 +153,7 @@
             this.txtTargetName.Margin = new System.Windows.Forms.Padding(2);
             this.txtTargetName.Name = "txtTargetName";
             this.txtTargetName.Size = new System.Drawing.Size(204, 20);
-            this.txtTargetName.TabIndex = 23;
+            this.txtTargetName.TabIndex = 0;
             this.txtTargetName.TextChanged += new System.EventHandler(this.txtTargetName_TextChanged);
             this.txtTargetName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetName_KeyPress);
             // 
@@ -163,8 +163,8 @@
             this.cbRoleSizes.FormattingEnabled = true;
             this.cbRoleSizes.Location = new System.Drawing.Point(105, 158);
             this.cbRoleSizes.Name = "cbRoleSizes";
-            this.cbRoleSizes.Size = new System.Drawing.Size(121, 21);
-            this.cbRoleSizes.TabIndex = 24;
+            this.cbRoleSizes.Size = new System.Drawing.Size(203, 21);
+            this.cbRoleSizes.TabIndex = 1;
             this.cbRoleSizes.SelectedIndexChanged += new System.EventHandler(this.cbRoleSizes_SelectedIndexChanged);
             // 
             // lblTargetNumberOfCores

@@ -840,6 +840,7 @@ namespace MigAz.Azure
             foreach (var storageAccount in storageAccounts)
             {
                 Arm.StorageAccount armStorageAccount = new Arm.StorageAccount(storageAccount, _AzureContext);
+                await armStorageAccount.InitializeChildrenAsync(_AzureContext);
                 armStorageAccount.ResourceGroup = await this.GetAzureARMResourceGroup(armStorageAccount.Id);
                 _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Loaded ARM Storage Account '" + armStorageAccount.Name + "'.");
                 _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Storage Account '" + armStorageAccount.Name + "'.");
@@ -904,13 +905,13 @@ namespace MigAz.Azure
                 _ArmLocations.Add(armLocation);
             }
 
-            foreach (Arm.Location armLocation in _ArmLocations)
+            List<Task> armLocationChildTasks = new List<Task>();
+            foreach (Azure.Arm.Location armLocation in _ArmLocations)
             {
-                // todo, thread 
-                await armLocation.InitializeChildrenAsync();
+                Task armLocationChildTask = armLocation.InitializeChildrenAsync();
+                armLocationChildTasks.Add(armLocationChildTask);
             }
-
-            _ArmLocations = _ArmLocations.OrderBy(x => x.DisplayName).ToList();
+            await Task.WhenAll(armLocationChildTasks.ToArray());
 
             return _ArmLocations;
         }
@@ -938,6 +939,8 @@ namespace MigAz.Azure
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, accessToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await GetAzureRestResponse(azureRestRequest);
             JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
+
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Subscription ID : " + _AzureSubscription.SubscriptionId + " Location : " + location);
 
             var VMSizes = from VMSize in locationsVMSizesJson["value"]
                             select VMSize;

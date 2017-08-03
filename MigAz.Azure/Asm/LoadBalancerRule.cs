@@ -26,6 +26,24 @@ namespace MigAz.Azure.Asm
 
         #region Properties
 
+        public Int64 ProbePort
+        {
+            get
+            {
+                XmlNode probenode = _XmlNode.SelectSingleNode("LoadBalancerProbe");
+                return Int64.Parse(probenode.SelectSingleNode("Port").InnerText);
+            }
+        }
+
+        public string ProbeProtocol
+        {
+            get
+            {
+                XmlNode probenode = _XmlNode.SelectSingleNode("LoadBalancerProbe");
+                return probenode.SelectSingleNode("Protocol").InnerText;
+            }
+        }
+
         public Int64 Port
         {
             get { return Int64.Parse(_XmlNode.SelectSingleNode("Port").InnerText); }
