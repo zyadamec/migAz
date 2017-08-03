@@ -17,7 +17,12 @@ namespace MigAz.Azure.Arm
         internal ArmResource(JToken resourceToken)
         {
             _ResourceToken = resourceToken;
-            // todo now load Location
+        }
+        internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
+        {
+            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
+            this.Location = await azureContext.AzureRetriever.GetAzureARMLocation(this.LocationString);
+            return;
         }
 
         public JToken ResourceToken => _ResourceToken;
@@ -37,14 +42,6 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public ResourceGroup ResourceGroup { get; set; }
-
-        internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
-        {
-            this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
-            this.Location = await azureContext.AzureRetriever.GetAzureARMLocation(this.LocationString);
-            return;
-        }
-
+        public ResourceGroup ResourceGroup { get; internal set; }
     }
 }

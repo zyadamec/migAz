@@ -35,21 +35,21 @@ namespace MigAz.Tests
             {
                 artifacts.StorageAccounts.Add(s);
             }
-            //// todo artifacts.StorageAccounts.Add(await azureContextUSCommercialRetriever.GetAzureAsmStorageAccount("mystorage"));
+
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 
+            await templateGenerator.GenerateStreams();
+
             JObject templateJson = JObject.Parse(await templateGenerator.GetTemplateString());
 
+            Assert.AreEqual(1, templateJson["resources"].Children().Count());
 
-//            Assert.AreEqual(1, templateJson["resources"].Children().Count());
-
-            //var resource = templateJson["resources"].Single();
-            //Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
-            //Assert.AreEqual("mystoragev2", resource["name"].Value<string>());
-            //Assert.AreEqual((await azureContextUSCommercialRetriever.GetAzureASMLocations())[0].Name, resource["location"].Value<string>());
-            //Assert.AreEqual("Standard_LRS", resource["properties"]["accountType"].Value<string>());
-
+            var resource = templateJson["resources"].Single();
+            Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
+            Assert.AreEqual("asmtest8155v2", resource["name"].Value<string>());
+            Assert.AreEqual("[resourceGroup().location]", resource["location"].Value<string>());
+            Assert.AreEqual("Standard_LRS", resource["properties"]["accountType"].Value<string>());
         }
     }
 }

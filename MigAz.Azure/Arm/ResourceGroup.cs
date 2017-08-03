@@ -18,7 +18,6 @@ namespace MigAz.Azure.Arm
             _ResourceGroupJson = resourceGroupJson;
             _AzureEnvironment = azureEnvironment;
             _AzureSubscription = azureSubscription;
-            // todo now russell load location
         }
 
         public async Task InitializeChildrenAsync(AzureContext azureContext)
