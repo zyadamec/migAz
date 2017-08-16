@@ -319,7 +319,15 @@ namespace MigAz.Azure.Generator
                         }
                     }
 
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                    if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                    {
+                        Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
+                        if (armStorageAccount.Location.Name != _ExportArtifacts.ResourceGroup.TargetLocation.Name)
+                        {
+                            this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", virtualMachine);
+                        }
+                    }
+                    else if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                     {
                         Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
                         bool targetAsmStorageExists = false;
@@ -369,7 +377,15 @@ namespace MigAz.Azure.Generator
                     }
                     else
                     {
-                        if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                        if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        {
+                            Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorageAccount;
+                            if (armStorageAccount.Location.Name != _ExportArtifacts.ResourceGroup.TargetLocation.Name)
+                            {
+                                this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", dataDisk);
+                            }
+                        }
+                        else if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                         {
                             Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorageAccount;
                             bool targetStorageExists = false;
@@ -1337,7 +1353,7 @@ namespace MigAz.Azure.Generator
                 osdisk.createOption = "Attach";
                 osdisk.osType = targetVirtualMachine.OSVirtualHardDiskOS;
 
-                this._CopyBlobDetails.Add(BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk));
+                this._CopyBlobDetails.Add(BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, _ExportArtifacts.ResourceGroup));
 
                 if (!targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
@@ -1386,7 +1402,7 @@ namespace MigAz.Azure.Generator
                     {
                         datadisk.createOption = "Attach";
 
-                        this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk));
+                        this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk, _ExportArtifacts.ResourceGroup));
                     }
 
                     if (!dataDisk.IsManagedDisk)
@@ -1483,7 +1499,7 @@ namespace MigAz.Azure.Generator
             return templateManagedDisk;
         }
 
-        private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk)
+        private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk, MigrationTarget.ResourceGroup resourceGroup)
         {
             if (disk.SourceDisk == null)
                 return null;
@@ -1514,6 +1530,17 @@ namespace MigAz.Azure.Generator
                 if (armDataDisk.SourceStorageAccount != null && armDataDisk.SourceStorageAccount.Keys != null)
                     copyblobdetail.SourceKey = armDataDisk.SourceStorageAccount.Keys[0].Value;
             }
+
+            if (disk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+            {
+                Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)disk.TargetStorageAccount;
+                copyblobdetail.DestinationSAResourceGroup = armStorageAccount.ResourceGroup.Name;
+            }
+            else
+            {
+                copyblobdetail.DestinationSAResourceGroup = resourceGroup.ToString();
+            }
+
             copyblobdetail.DestinationSA = disk.TargetStorageAccount.ToString();
             copyblobdetail.DestinationContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.DestinationBlob = disk.TargetStorageAccountBlob;
@@ -1713,6 +1740,7 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{resourceGroupName}", this.TargetResourceGroupName);
             instructionContent = instructionContent.Replace("{location}", this.TargetResourceGroupLocation);
             instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
+            instructionContent = instructionContent.Replace("{exportPath}", _OutputDirectory);
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
 
             byte[] c = asciiEncoding.GetBytes(instructionContent);
