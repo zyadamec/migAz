@@ -68,6 +68,7 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.diskProperties1 = new MigAz.Azure.UserControls.DiskProperties();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -142,6 +143,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.diskProperties1);
             this.splitContainer1.Panel2.Controls.Add(this.propertyPanel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
@@ -475,6 +477,16 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
             // 
+            // diskProperties1
+            // 
+            this.diskProperties1.AllowManangedDisk = true;
+            this.diskProperties1.Location = new System.Drawing.Point(19, 47);
+            this.diskProperties1.Margin = new System.Windows.Forms.Padding(2);
+            this.diskProperties1.Name = "diskProperties1";
+            this.diskProperties1.ShowSizeInGb = true;
+            this.diskProperties1.Size = new System.Drawing.Size(320, 334);
+            this.diskProperties1.TabIndex = 9;
+            // 
             // MigAzForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -560,6 +572,7 @@
         private System.Windows.Forms.ToolStripMenuItem aRMToARMToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private Azure.UserControls.PropertyPanel propertyPanel1;
+        private Azure.UserControls.DiskProperties diskProperties1;
     }
 }
 

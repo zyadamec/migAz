@@ -87,8 +87,9 @@ namespace MigAz.Azure.MigrationTarget
                 if (value < 0)
                     throw new ArgumentException("DiskSizeInGB cannot be negative.");
 
-                if (value > 1023)
-                    throw new ArgumentException("DiskSizeInGB cannot be greater than 1023.");
+                // https://azure.microsoft.com/en-us/blog/azure-introduces-new-disks-sizes-up-to-4tb/
+                if (value > 4095)
+                    throw new ArgumentException("DiskSizeInGB cannot be greater than 4095 GB.");
                 
                 _DiskSizeInGB = value;
             }

@@ -360,7 +360,7 @@ namespace MigAz.Azure.Generator
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
                     if (dataDisk.DiskSizeInGB == 0)
-                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 1023) is required.", dataDisk);
+                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", dataDisk);
 
                     if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
                     {

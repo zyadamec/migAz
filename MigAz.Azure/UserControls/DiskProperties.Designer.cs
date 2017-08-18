@@ -292,9 +292,9 @@
             this.label11.Location = new System.Drawing.Point(11, 306);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(54, 13);
+            this.label11.Size = new System.Drawing.Size(30, 13);
             this.label11.TabIndex = 31;
-            this.label11.Text = "Size (GB):";
+            this.label11.Text = "Size:";
             // 
             // txtTargetSize
             // 
@@ -305,6 +305,7 @@
             this.txtTargetSize.Size = new System.Drawing.Size(53, 20);
             this.txtTargetSize.TabIndex = 6;
             this.txtTargetSize.TextChanged += new System.EventHandler(this.txtTargetSize_TextChanged);
+            this.txtTargetSize.Validating += new System.ComponentModel.CancelEventHandler(this.txtTargetSize_Validating);
             // 
             // DiskProperties
             // 
