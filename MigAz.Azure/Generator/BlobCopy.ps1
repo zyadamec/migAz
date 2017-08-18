@@ -1,9 +1,6 @@
 ﻿# Parameters
 param (
     [Parameter(Mandatory = $true)] 
-    $ResourcegroupName,
-
-    [Parameter(Mandatory = $true)] 
     $DetailsFilePath,
 
     [ValidateSet("StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy")]
@@ -42,7 +39,7 @@ If ($StartType -eq "StartBlobCopy")
         $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
     
         # Create destination storage account context
-        $copyblobdetail.DestinationKey = (Get-AzureRmStorageAccount -ResourceGroupName $resourcegroupname -Name $copyblobdetail.DestinationSA | Get-AzureRmStorageAccountKey).Value[0]
+        $copyblobdetail.DestinationKey = (Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.DestinationSAResourceGroup -Name $copyblobdetail.DestinationSA | Get-AzureRmStorageAccountKey).Value[0]
         $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.DestinationSA -StorageAccountKey $copyblobdetail.DestinationKey
 
         # Create destination container if it does not exist
