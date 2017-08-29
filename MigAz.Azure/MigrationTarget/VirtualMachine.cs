@@ -214,23 +214,53 @@ namespace MigAz.Azure.MigrationTarget
         public AvailabilitySet TargetAvailabilitySet
         {
             get { return _TargetAvailabilitySet; }
-            set { _TargetAvailabilitySet = value; }
+            set
+            {
+                if (_TargetAvailabilitySet != null)
+                {
+                    _TargetAvailabilitySet.TargetVirtualMachines.Remove(this);
+                }
+
+                _TargetAvailabilitySet = value;
+
+                if (_TargetAvailabilitySet != null)
+                {
+                    _TargetAvailabilitySet.TargetVirtualMachines.Add(this);
+                }
+            }
         }
 
-        public bool HasManagedDisks
+        public bool IsManagedDisks
         {
             get
             {
-                if (this.OSVirtualHardDisk.IsManagedDisk)
-                    return true;
+                if (!this.OSVirtualHardDisk.IsManagedDisk)
+                    return false;
 
                 foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
                 {
-                    if (dataDisk.IsManagedDisk)
-                        return true;
+                    if (!dataDisk.IsManagedDisk)
+                        return false;
                 }
 
-                return false;
+                return true;
+            }
+        }
+
+        public bool IsUnmanagedDisks
+        {
+            get
+            {
+                if (!this.OSVirtualHardDisk.IsUnmanagedDisk)
+                    return false;
+
+                foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
+                {
+                    if (dataDisk.IsUnmanagedDisk)
+                        return false;
+                }
+
+                return true;
             }
         }
     }

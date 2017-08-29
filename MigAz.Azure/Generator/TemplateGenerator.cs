@@ -214,6 +214,14 @@ namespace MigAz.Azure.Generator
                 }
             }
 
+            foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in _ExportArtifacts.AvailablitySets)
+            {
+                if (!availablitySet.IsManagedDisks && !availablitySet.IsUnmanagedDisks)
+                {
+                    this.AddAlert(AlertType.Error, "All OS and Data Disks for Virtual Machines contained within Availablity Set '" + availablitySet.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", availablitySet);
+                }
+            }
+
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
             {
                 if (virtualMachine.TargetName == string.Empty)
@@ -306,6 +314,12 @@ namespace MigAz.Azure.Generator
                     }
                 }
 
+
+                if (!virtualMachine.IsManagedDisks && !virtualMachine.IsUnmanagedDisks)
+                {
+                    this.AddAlert(AlertType.Error, "All OS and Data Disks for Virtual Machine '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                }
+
                 if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                     this.AddAlert(AlertType.Error, "Target Storage Account for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk must be specified.", virtualMachine);
                 else
@@ -346,7 +360,6 @@ namespace MigAz.Azure.Generator
                     }
                     else if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
                     {
-                        this.AddAlert(AlertType.Error, "Managed Disk support is in development and can not yet be utilized.  This feature will be available soon.  Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid.", virtualMachine);
                     }
 
                     if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
@@ -404,7 +417,6 @@ namespace MigAz.Azure.Generator
                         }
                         else if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
                         {
-                            this.AddAlert(AlertType.Error, "Managed Disk support is in development and can not yet be utilized.  This feature will be available soon.  Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid.", dataDisk);
                         }
 
                         if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
@@ -488,6 +500,15 @@ namespace MigAz.Azure.Generator
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Availablity Sets");
+                foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in _ExportArtifacts.AvailablitySets)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Availablity Set : " + availablitySet.ToString());
+                    BuildAvailabilitySetObject(availablitySet);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Availablity Sets");
+
+
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
                 foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
                 {
@@ -547,20 +568,35 @@ namespace MigAz.Azure.Generator
             return sbMigAzMessageResult.ToString();
         }
 
-        private AvailabilitySet BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet availabilitySet)
+        private AvailabilitySet BuildAvailabilitySetObject(Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet)
         {
             LogProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
-            AvailabilitySet availabilityset = new AvailabilitySet(this.ExecutionGuid);
+            AvailabilitySet availabilitySet = new AvailabilitySet(this.ExecutionGuid);
 
-            availabilityset.name = availabilitySet.ToString();
-            availabilityset.location = "[resourceGroup().location]";
+            availabilitySet.name = targetAvailabilitySet.ToString();
+            availabilitySet.location = "[resourceGroup().location]";
 
-            this.AddResource(availabilityset);
+            // todo Add Properties - PlatformUpdateDomainCount
+            // todo Add Properties - PlatformFaultDomainCount
+
+            if (targetAvailabilitySet.IsManagedDisks)
+            {
+                // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/using-managed-disks-template-deployments
+                // see "Create managed availability sets with VMs using managed disks"
+
+                availabilitySet.apiVersion = "2017-03-30";
+
+                Dictionary<string, string> availabilitySetSku = new Dictionary<string, string>();
+                availabilitySet.sku = availabilitySetSku;
+                availabilitySetSku.Add("name", "Aligned");
+            }
+
+            this.AddResource(availabilitySet);
 
             LogProvider.WriteLog("BuildAvailabilitySetObject", "End");
 
-            return availabilityset;
+            return availabilitySet;
         }
 
         private async Task BuildPublicIPAddressObject(Azure.MigrationTarget.PublicIp publicIp)
@@ -1270,7 +1306,7 @@ namespace MigAz.Azure.Generator
             templateVirtualMachine.name = targetVirtualMachine.ToString();
             templateVirtualMachine.location = "[resourceGroup().location]";
 
-            if (targetVirtualMachine.HasManagedDisks)
+            if (targetVirtualMachine.IsManagedDisks)
             {
                 // using API Version "2016-04-30-preview" per current documentation at https://docs.microsoft.com/en-us/azure/storage/storage-using-managed-disks-template-deployments
                 templateVirtualMachine.apiVersion = "2016-04-30-preview";
@@ -1446,16 +1482,10 @@ namespace MigAz.Azure.Generator
             // process availability set
             if (targetVirtualMachine.TargetAvailabilitySet != null)
             {
-                AvailabilitySet availabilitySet = BuildAvailabilitySetObject(targetVirtualMachine.TargetAvailabilitySet);
-
-                // Availability Set
-                if (availabilitySet != null)
-                {
-                    Reference availabilitySetReference = new Reference();
-                    virtualmachine_properties.availabilitySet = availabilitySetReference;
-                    availabilitySetReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + availabilitySet.name + "')]";
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + availabilitySet.name + "')]");
-                }
+                Reference availabilitySetReference = new Reference();
+                virtualmachine_properties.availabilitySet = availabilitySetReference;
+                availabilitySetReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetVirtualMachine.TargetAvailabilitySet.ToString() + "')]";
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetVirtualMachine.TargetAvailabilitySet.ToString() + "')]");
             }
 
             foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)

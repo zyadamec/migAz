@@ -12,6 +12,7 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext;
         private IAvailabilitySetSource _SourceAvailabilitySet;
         private string _TargetName = String.Empty;
+        private List<VirtualMachine> _TargetVirtualMachines = new List<VirtualMachine>();
 
         private AvailabilitySet() { }
 
@@ -56,6 +57,12 @@ namespace MigAz.Azure.MigrationTarget
                     return this.SourceAvailabilitySet.ToString();
             }
         }
+
+        public List<VirtualMachine> TargetVirtualMachines
+        {
+            get { return _TargetVirtualMachines; }
+        }
+
         public string TargetName
         {
             get { return _TargetName; }
@@ -65,6 +72,34 @@ namespace MigAz.Azure.MigrationTarget
         public override string ToString()
         {
             return this.TargetName + this._AzureContext.SettingsProvider.AvailabilitySetSuffix;
+        }
+
+        internal bool IsManagedDisks
+        {
+            get
+            {
+                foreach (VirtualMachine targetVirtualMachine in _TargetVirtualMachines)
+                {
+                    if (!targetVirtualMachine.IsManagedDisks)
+                        return false;
+                }
+
+                return true;
+            }
+        }
+
+        internal bool IsUnmanagedDisks
+        {
+            get
+            {
+                foreach (VirtualMachine targetVirtualMachine in _TargetVirtualMachines)
+                {
+                    if (!targetVirtualMachine.IsUnmanagedDisks)
+                        return false;
+                }
+
+                return true;
+            }
         }
     }
 }

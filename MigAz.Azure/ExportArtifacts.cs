@@ -12,6 +12,7 @@ namespace MigAz.Azure
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             StorageAccounts = new List<StorageAccount>();
             VirtualNetworks = new List<VirtualNetwork>();
+            AvailablitySets = new List<AvailabilitySet>();
             VirtualMachines = new List<VirtualMachine>();
             LoadBalancers = new List<LoadBalancer>();
             PublicIPs = new List<PublicIp>();
@@ -21,6 +22,7 @@ namespace MigAz.Azure
         public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
         public List<StorageAccount> StorageAccounts { get; }
         public List<VirtualNetwork> VirtualNetworks { get; }
+        public List<AvailabilitySet> AvailablitySets { get; }
         public List<VirtualMachine> VirtualMachines { get; }
         public List<LoadBalancer> LoadBalancers { get; }
         public List<PublicIp> PublicIPs { get; }

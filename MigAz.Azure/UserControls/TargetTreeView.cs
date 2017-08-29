@@ -103,6 +103,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.AvailabilitySet))
+                {
+                    exportArtifacts.AvailablitySets.Add((Azure.MigrationTarget.AvailabilitySet)selectedNode.Tag);
+                }
                 else if (tagType == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
                     exportArtifacts.VirtualMachines.Add((Azure.MigrationTarget.VirtualMachine)selectedNode.Tag);
