@@ -256,7 +256,7 @@ namespace MigAz.Azure.MigrationTarget
 
                 foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
                 {
-                    if (dataDisk.IsUnmanagedDisk)
+                    if (!dataDisk.IsUnmanagedDisk)
                         return false;
                 }
 

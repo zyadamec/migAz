@@ -382,6 +382,61 @@ namespace MigAz.Migrators
 
                             #endregion
 
+                            #region process virtual network
+
+                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                            {
+                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                                {
+                                    if (ipConfiguration.VirtualNetwork != null)
+                                    {
+                                        foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                                        {
+                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                                            {
+                                                if (!treeNode.Checked)
+                                                    treeNode.Checked = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region process managed disks
+
+                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+                            {
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.ManagedDisk)armVirtualMachine.OSVirtualHardDisk).Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.ManagedDisk)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            foreach (Azure.Interface.IArmDisk dataDisk in armVirtualMachine.DataDisks)
+                            {
+                                if (dataDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+                                {
+                                    Azure.Arm.ManagedDisk managedDisk = (Azure.Arm.ManagedDisk)dataDisk;
+
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(managedDisk.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.ManagedDisk)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            #endregion
+
                             #region OS Disk Storage Account
 
                             if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.Disk)) // Disk in a Storage Account, not a Managed Disk
@@ -1146,6 +1201,7 @@ namespace MigAz.Migrators
                         }
 
                         subscriptionNodeARM.Expand();
+                        treeSourceARM.Sort();
                         treeSourceARM.Enabled = true;
                     }
                 }
@@ -1156,7 +1212,5 @@ namespace MigAz.Migrators
                 }
             }
         }
-
-
     }
 }
