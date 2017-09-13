@@ -109,7 +109,6 @@
             // 
             // diskProperties1
             // 
-            this.diskProperties1.AllowManangedDisk = true;
             this.diskProperties1.Location = new System.Drawing.Point(8, 273);
             this.diskProperties1.Margin = new System.Windows.Forms.Padding(1);
             this.diskProperties1.Name = "diskProperties1";

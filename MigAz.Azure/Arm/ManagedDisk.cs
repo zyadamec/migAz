@@ -55,6 +55,17 @@ namespace MigAz.Azure.Arm
         {
             get { return (string)ResourceToken["properties"]["accountType"]; }
         }
+
+        public string CreateOption
+        {
+            get { return (string)ResourceToken["properties"]["creationData"]["createOption"]; }
+        }
+
+        public string SourceUri
+        {
+            get { return (string)ResourceToken["properties"]["creationData"]["sourceUri"]; }
+        }
+
         #endregion
 
     }

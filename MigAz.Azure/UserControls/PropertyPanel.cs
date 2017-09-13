@@ -127,7 +127,6 @@ namespace MigAz.Azure.UserControls
                         this.ResourceImage = imageList1.Images["VirtualMachine"];
 
                         VirtualMachineProperties properties = new VirtualMachineProperties();
-                        properties.AllowManangedDisk = false;
                         properties.PropertyChanged += Properties_PropertyChanged;
                         await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;
@@ -175,7 +174,6 @@ namespace MigAz.Azure.UserControls
                         this.ResourceImage = imageList1.Images["Disk"];
 
                         DiskProperties properties = new DiskProperties();
-                        properties.AllowManangedDisk = false;
                         properties.PropertyChanged += Properties_PropertyChanged;
                         properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;

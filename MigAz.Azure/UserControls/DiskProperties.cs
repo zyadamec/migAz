@@ -25,23 +25,6 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public bool AllowManangedDisk
-        {
-            get { return rbManagedDisk.Enabled; }
-            set
-            {
-                //if (!value)
-                //{
-                //    if (rbManagedDisk.Checked)
-                //    {
-                //        rbManagedDisk.Checked = false;
-                //    }
-                //}
-
-                //rbManagedDisk.Enabled = value;
-            }
-        }
-
         public bool ShowSizeInGb
         {
             get
@@ -82,7 +65,7 @@ namespace MigAz.Azure.UserControls
             if (_TargetDisk == null)
                 throw new ArgumentException("MigrationTarget Disk object cannot be null.");
 
-            if (AllowManangedDisk && _TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+            if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
                 rbManagedDisk.Checked = true;
             if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
                 rbStorageAccountInMigration.Checked = true;

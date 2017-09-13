@@ -11,16 +11,24 @@ namespace MigAz.Azure.Arm
     public class Disk : ArmResource, IArmDisk
     {
         private StorageAccount _SourceStorageAccount = null;
+        private Arm.VirtualMachine _ParentVirtualMachine = null;
 
-        public Disk(JToken resourceToken) : base(resourceToken)
+        public Disk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
         {
+            _ParentVirtualMachine = virtualMachine;
         }
 
         private Disk() : base(null) { }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
             _SourceStorageAccount = azureContext.AzureRetriever.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
+            this.SourceManagedDisk = await azureContext.AzureRetriever.GetAzureARMManagedDisk(this.ParentVirtualMachine, this.Name);
+        }
+
+        public Arm.VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
         }
 
         public string CreateOption => (string)this.ResourceToken["createOption"];
@@ -184,6 +192,8 @@ namespace MigAz.Azure.Arm
                 return (string)this.ResourceToken["encryptionSettings"]["keyEncryptionKey"]["keyUrl"];
             }
         }
+
+        public ManagedDisk SourceManagedDisk { get; internal set; }
 
         public override string ToString()
         {

@@ -44,6 +44,36 @@ namespace MigAz.Azure
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
         private Dictionary<AzureSubscription, AzureSubscriptionResourceCache> _AzureSubscriptionResourceCaches = new Dictionary<AzureSubscription, AzureSubscriptionResourceCache>();
 
+        private List<Azure.MigrationTarget.NetworkSecurityGroup> _AsmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
+        private List<Azure.MigrationTarget.StorageAccount> _AsmTargetStorageAccounts = new List<MigrationTarget.StorageAccount>();
+        private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
+        private List<Azure.MigrationTarget.VirtualMachine> _AsmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
+        private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts = new List<MigrationTarget.StorageAccount>();
+        private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
+        private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
+        private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
+        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks = new List<MigrationTarget.ManagedDisk>();
+        private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers = new List<MigrationTarget.LoadBalancer>();
+        private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
+        private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs = new List<MigrationTarget.PublicIp>();
+        private bool _IsAsmLoaded = false;
+        private bool _IsArmLoaded = false;
+
+        public List<Azure.MigrationTarget.NetworkSecurityGroup> AsmTargetNetworkSecurityGroups { get { return _AsmTargetNetworkSecurityGroups; } }
+
+        public List<Azure.MigrationTarget.StorageAccount> AsmTargetStorageAccounts { get { return _AsmTargetStorageAccounts; } }
+        public List<Azure.MigrationTarget.VirtualNetwork> AsmTargetVirtualNetworks { get { return _AsmTargetVirtualNetworks; } }
+        public List<Azure.MigrationTarget.VirtualMachine> AsmTargetVirtualMachines { get { return _AsmTargetVirtualMachines; } }
+        public List<Azure.MigrationTarget.StorageAccount> ArmTargetStorageAccounts { get { return _ArmTargetStorageAccounts; } }
+        public List<Azure.MigrationTarget.VirtualNetwork> ArmTargetVirtualNetworks { get { return _ArmTargetVirtualNetworks; } }
+        public List<Azure.MigrationTarget.VirtualMachine> ArmTargetVirtualMachines { get { return _ArmTargetVirtualMachines; } }
+        public List<Azure.MigrationTarget.AvailabilitySet> ArmTargetAvailabilitySets { get { return _ArmTargetAvailabilitySets; } }
+        public List<Azure.MigrationTarget.ManagedDisk> ArmTargetManagedDisks { get { return _ArmTargetManagedDisks; } }
+        public List<Azure.MigrationTarget.LoadBalancer> ArmTargetLoadBalancers { get { return _ArmTargetLoadBalancers; } }
+        public List<Azure.MigrationTarget.NetworkSecurityGroup> ArmTargetNetworkSecurityGroups { get { return _ArmTargetNetworkSecurityGroups; } }
+        public List<Azure.MigrationTarget.PublicIp> ArmTargetPublicIPs { get { return _ArmTargetPublicIPs; } }
+
+
         private AzureRetriever() { }
 
         public AzureRetriever(AzureContext azureContext)
@@ -765,6 +795,17 @@ namespace MigAz.Azure
 
             resourceGroup.AzureSubscription.ArmVirtualNetworks.Add(resourceGroup, resourceGroupVirtualNetworks);
             return resourceGroupVirtualNetworks;
+        }
+
+        internal async Task<Arm.ManagedDisk> GetAzureARMManagedDisk(Arm.VirtualMachine virtualMachine, string name)
+        {
+            foreach (Arm.ManagedDisk managedDisk in await this.GetAzureARMManagedDisks(virtualMachine.ResourceGroup))
+            {
+                if (String.Compare(managedDisk.OwnerId, virtualMachine.Id, true) == 0 && String.Compare(managedDisk.Name, name, true) == 0)
+                    return managedDisk;
+            }
+
+            return null;
         }
 
         public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks(Arm.ResourceGroup resourceGroup)
@@ -1742,34 +1783,6 @@ namespace MigAz.Azure
             }
         }
 
-        private List<Azure.MigrationTarget.NetworkSecurityGroup> _AsmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
-        private List<Azure.MigrationTarget.StorageAccount> _AsmTargetStorageAccounts = new List<MigrationTarget.StorageAccount>();
-        private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
-        private List<Azure.MigrationTarget.VirtualMachine> _AsmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
-        private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts = new List<MigrationTarget.StorageAccount>();
-        private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
-        private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
-        private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
-        private List<Azure.MigrationTarget.ManagedDisk> _ArmTargetManagedDisks = new List<MigrationTarget.ManagedDisk>();
-        private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers = new List<MigrationTarget.LoadBalancer>();
-        private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
-        private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs = new List<MigrationTarget.PublicIp>();
-        private bool _IsAsmLoaded = false;
-        private bool _IsArmLoaded = false;
-
-        public List<Azure.MigrationTarget.NetworkSecurityGroup> AsmTargetNetworkSecurityGroups { get { return _AsmTargetNetworkSecurityGroups; } }
-        public List<Azure.MigrationTarget.StorageAccount> AsmTargetStorageAccounts { get { return _AsmTargetStorageAccounts; } }
-        public List<Azure.MigrationTarget.VirtualNetwork> AsmTargetVirtualNetworks { get { return _AsmTargetVirtualNetworks; } }
-        public List<Azure.MigrationTarget.VirtualMachine> AsmTargetVirtualMachines { get { return _AsmTargetVirtualMachines; } }
-        public List<Azure.MigrationTarget.StorageAccount> ArmTargetStorageAccounts { get { return _ArmTargetStorageAccounts; } }
-        public List<Azure.MigrationTarget.VirtualNetwork> ArmTargetVirtualNetworks { get { return _ArmTargetVirtualNetworks; } }
-        public List<Azure.MigrationTarget.VirtualMachine> ArmTargetVirtualMachines { get { return _ArmTargetVirtualMachines; } }
-        public List<Azure.MigrationTarget.AvailabilitySet> ArmTargetAvailabilitySets { get { return _ArmTargetAvailabilitySets; } }
-        public List<Azure.MigrationTarget.ManagedDisk> ArmTargetManagedDisks { get { return _ArmTargetManagedDisks; } }
-        public List<Azure.MigrationTarget.LoadBalancer> ArmTargetLoadBalancers { get { return _ArmTargetLoadBalancers; } }
-        public List<Azure.MigrationTarget.NetworkSecurityGroup> ArmTargetNetworkSecurityGroups { get { return _ArmTargetNetworkSecurityGroups; } }
-        public List<Azure.MigrationTarget.PublicIp> ArmTargetPublicIPs { get { return _ArmTargetPublicIPs; } }
-
         private async Task LoadARMManagedDisks(ResourceGroup armResourceGroup)
         {
             foreach (Azure.Arm.ManagedDisk armManagedDisk in await this.GetAzureARMManagedDisks(armResourceGroup))
@@ -1906,7 +1919,6 @@ namespace MigAz.Azure
 
         public async Task BindArmResources()
         {
-
             if (!_IsArmLoaded)
             {
                 _IsArmLoaded = true;
@@ -1948,17 +1960,13 @@ namespace MigAz.Azure
                     }
                     await Task.WhenAll(armStorageAccountTasks.ToArray());
 
-                    try
+                    List<Task> armManagedDiskTasks = new List<Task>();
+                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
-                        List<Task> armManagedDiskTasks = new List<Task>();
-                        foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                        {
-                            Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup);
-                            armManagedDiskTasks.Add(armManagedDiskTask);
-                        }
-                        await Task.WhenAll(armManagedDiskTasks.ToArray());
+                        Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup);
+                        armManagedDiskTasks.Add(armManagedDiskTask);
                     }
-                    catch (Exception exc) { }
+                    await Task.WhenAll(armManagedDiskTasks.ToArray());
 
                     List<Task> armAvailabilitySetTasks = new List<Task>();
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
@@ -1984,9 +1992,7 @@ namespace MigAz.Azure
                     }
                     await Task.WhenAll(armLoadBalancerTasks.ToArray());
                 }
-
             }
         }
-
     }
 }

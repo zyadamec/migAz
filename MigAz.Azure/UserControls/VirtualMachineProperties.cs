@@ -14,12 +14,6 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
-        public bool AllowManangedDisk
-        {
-            get { return this.diskProperties1.AllowManangedDisk; }
-            set { this.diskProperties1.AllowManangedDisk = value; }
-        }
-
         public VirtualMachineProperties()
         {
             InitializeComponent();
