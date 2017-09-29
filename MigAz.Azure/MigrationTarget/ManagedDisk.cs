@@ -13,6 +13,7 @@ namespace MigAz.Azure.MigrationTarget
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium;
         private string _TargetName = "todo"; // String.Empty;
         private Azure.Arm.ManagedDisk _SourceManagedDisk;
+        private Int32 _DiskSizeGb = 0;
 
         private ManagedDisk() { }
 
@@ -25,6 +26,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             _SourceManagedDisk = sourceManagedDisk;
             this.TargetName = sourceManagedDisk.Name;
+            _DiskSizeGb = sourceManagedDisk.DiskSizeGb;
         }
 
         public Azure.Arm.ManagedDisk SourceManagedDisk
@@ -56,6 +58,14 @@ namespace MigAz.Azure.MigrationTarget
                 return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
             }
         }
+
+
+        public Int32 DiskSizeGb
+        {
+            get { return _DiskSizeGb; }
+            set { DiskSizeGb = value; }
+        }
+
         public string TargetName
         {
             get { return _TargetName; }

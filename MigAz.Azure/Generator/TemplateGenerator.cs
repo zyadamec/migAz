@@ -1513,6 +1513,9 @@ namespace MigAz.Azure.Generator
 
         private ManagedDisk BuildManagedDiskObject(Azure.MigrationTarget.ManagedDisk targetManagedDisk)
         {
+            // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/using-managed-disks-template-deployments
+            // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/template-description
+
             LogProvider.WriteLog("BuildManagedDiskObject", "Start Microsoft.Compute/disks/" + targetManagedDisk.ToString());
 
             ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid);
@@ -1521,6 +1524,18 @@ namespace MigAz.Azure.Generator
 
             ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties();
             templateManagedDisk.properties = templateManagedDiskProperties;
+
+            templateManagedDiskProperties.diskSizeGb = targetManagedDisk.DiskSizeGb;
+            templateManagedDiskProperties.accountType = targetManagedDisk.StorageAccountType.ToString();
+
+            ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
+            templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
+
+            templateManageDiskCreationDataProperties.createOption = "Import";
+            templateManageDiskCreationDataProperties.sourceUri = "todo-bloburlhere";
+
+            // sample json with encryption
+            // https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-create-encrypted-managed-disk/CreateEncryptedManagedDisk-kek.json
 
             this.AddResource(templateManagedDisk);
 

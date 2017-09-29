@@ -464,9 +464,15 @@ namespace MigAz.Core.ArmTemplate
 
     public class ManagedDisk_Properties
     {
-        public string creationData = "Empty";
-        public string storageAccountType = "Standard_LRS";
-        public int diskSizeGb = 128;
+        public ManagedDiskCreationData_Properties creationData;
+        public string accountType = "Standard_LRS";
+        public int diskSizeGb;
+    }
+
+    public class ManagedDiskCreationData_Properties
+    {
+        public string createOption = "Empty";
+        public string sourceUri ;
     }
 
     public class Snapshot : Disk
