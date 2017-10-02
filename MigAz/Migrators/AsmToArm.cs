@@ -410,7 +410,7 @@ namespace MigAz.Migrators
                             {
                                 foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.ManagedDisk)armVirtualMachine.OSVirtualHardDisk).Name, true))
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.ManagedDisk)))
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk)))
                                     {
                                         if (!treeNode.Checked)
                                             treeNode.Checked = true;
@@ -426,7 +426,7 @@ namespace MigAz.Migrators
 
                                     foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(managedDisk.Name, true))
                                     {
-                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.ManagedDisk)))
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk)))
                                         {
                                             if (!treeNode.Checked)
                                                 treeNode.Checked = true;
@@ -1143,7 +1143,7 @@ namespace MigAz.Migrators
                             storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         }
 
-                        foreach (Azure.MigrationTarget.ManagedDisk targetManagedDisk in _AzureContextSourceASM.AzureRetriever.ArmTargetManagedDisks)
+                        foreach (Azure.MigrationTarget.Disk targetManagedDisk in _AzureContextSourceASM.AzureRetriever.ArmTargetManagedDisks)
                         {
                             Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk) targetManagedDisk.SourceManagedDisk;
                             TreeNode managedDiskParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, armManagedDisk.ResourceGroup);

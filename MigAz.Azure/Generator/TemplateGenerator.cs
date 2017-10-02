@@ -108,7 +108,7 @@ namespace MigAz.Azure.Generator
             return this.Resources.Contains(resource);
         }
 
-        public void AddResource(ArmResource resource)
+        private void AddResource(ArmResource resource)
         {
             if (!IsProcessed(resource))
             {
@@ -321,7 +321,9 @@ namespace MigAz.Azure.Generator
                 }
 
                 if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
-                    this.AddAlert(AlertType.Error, "Target Storage Account for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk must be specified.", virtualMachine);
+                {
+                    // Migrate as Managed Disk
+                }
                 else
                 {
                     if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
@@ -358,9 +360,7 @@ namespace MigAz.Azure.Generator
                         if (!targetAsmStorageExists)
                             this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it is not included in the migration / template.", virtualMachine);
                     }
-                    else if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
-                    {
-                    }
+                    
 
                     if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
                         virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
@@ -386,7 +386,7 @@ namespace MigAz.Azure.Generator
 
                     if (dataDisk.TargetStorageAccount == null)
                     {
-                        this.AddAlert(AlertType.Error, "Target Storage Account for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' must be specified.", dataDisk);
+                        // Migrate as Managed Disk
                     }
                     else
                     {
@@ -414,9 +414,6 @@ namespace MigAz.Azure.Generator
 
                             if (!targetStorageExists)
                                 this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid, as it is not included in the migration / template.", dataDisk);
-                        }
-                        else if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
-                        {
                         }
 
                         if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
@@ -1391,7 +1388,7 @@ namespace MigAz.Azure.Generator
 
                 this._CopyBlobDetails.Add(BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, _ExportArtifacts.ResourceGroup));
 
-                if (!targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
+                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
                     Vhd vhd = new Vhd();
                     osdisk.vhd = vhd;
@@ -1403,13 +1400,12 @@ namespace MigAz.Azure.Generator
                             storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount);
                     }
                 }
-                else
+                else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    Azure.MigrationTarget.ManagedDisk targetManagedDisk = (Azure.MigrationTarget.ManagedDisk)targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                    ManagedDisk osManagedDisk = BuildManagedDiskObject(targetManagedDisk);
+                    ManagedDisk osManagedDisk = BuildManagedDiskObject(targetVirtualMachine.OSVirtualHardDisk);
 
                     Reference managedDiskReference = new Reference();
-                    managedDiskReference.id = targetManagedDisk.ReferenceId;
+                    managedDiskReference.id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId;
 
                     osdisk.managedDisk = managedDiskReference;
                 }
@@ -1441,7 +1437,7 @@ namespace MigAz.Azure.Generator
                         this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk, _ExportArtifacts.ResourceGroup));
                     }
 
-                    if (!dataDisk.IsManagedDisk)
+                    if (dataDisk.IsUnmanagedDisk)
                     {
                         Vhd vhd = new Vhd();
                         vhd.uri = dataDisk.TargetMediaLink;
@@ -1453,13 +1449,12 @@ namespace MigAz.Azure.Generator
                                 storageaccountdependencies.Add(dataDisk.TargetStorageAccount);
                         }
                     }
-                    else
+                    else if (dataDisk.IsManagedDisk)
                     {
-                        Azure.MigrationTarget.ManagedDisk targetManagedDisk = (Azure.MigrationTarget.ManagedDisk)targetVirtualMachine.OSVirtualHardDisk.TargetStorageAccount;
-                        ManagedDisk datadiskManagedDisk = BuildManagedDiskObject(targetManagedDisk);
+                        ManagedDisk datadiskManagedDisk = BuildManagedDiskObject(dataDisk);
 
                         Reference managedDiskReference = new Reference();
-                        managedDiskReference.id = targetManagedDisk.ReferenceId;
+                        managedDiskReference.id = dataDisk.ReferenceId;
 
                         datadisk.managedDisk = managedDiskReference;
                     }
@@ -1511,7 +1506,7 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("BuildVirtualMachineObject", "End Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
         }
 
-        private ManagedDisk BuildManagedDiskObject(Azure.MigrationTarget.ManagedDisk targetManagedDisk)
+        private ManagedDisk BuildManagedDiskObject(Azure.MigrationTarget.Disk targetManagedDisk)
         {
             // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/using-managed-disks-template-deployments
             // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/template-description
@@ -1525,7 +1520,7 @@ namespace MigAz.Azure.Generator
             ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties();
             templateManagedDisk.properties = templateManagedDiskProperties;
 
-            templateManagedDiskProperties.diskSizeGb = targetManagedDisk.DiskSizeGb;
+            templateManagedDiskProperties.diskSizeGb = targetManagedDisk.DiskSizeInGB;
             templateManagedDiskProperties.accountType = targetManagedDisk.StorageAccountType.ToString();
 
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();

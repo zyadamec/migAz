@@ -45,8 +45,12 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
+                this.TargetName = armManagedDisk.Name;
+                this.Lun = armManagedDisk.Lun;
+                this.HostCaching = armManagedDisk.Caching;
+                this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
+                this.TargetStorageAccountBlob = armManagedDisk.StorageAccountBlob;
             }
-
         }
 
 
@@ -106,6 +110,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             get;set;
         }
+        
+        public Arm.ManagedDisk SourceManagedDisk
+        {
+            get;set;
+        }
 
         public string TargetStorageAccountContainer
         {
@@ -134,7 +143,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk);
+                return this.TargetStorageAccount == null;
             }
         }
 
@@ -142,9 +151,20 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() != typeof(Azure.MigrationTarget.ManagedDisk);
+                return this.TargetStorageAccount != null;
             }
         }
+        public string ReferenceId
+        {
+            get
+            {
+                if (this.TargetStorageAccount == null)
+                    return "[resourceId('Microsoft.Compute/disks/', '" + this.ToString() + "')]";
+                else return 
+                        String.Empty;
+            }
+        }
+
         public override string ToString()
         {
             return this.TargetName;

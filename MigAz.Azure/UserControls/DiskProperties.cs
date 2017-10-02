@@ -65,9 +65,9 @@ namespace MigAz.Azure.UserControls
             if (_TargetDisk == null)
                 throw new ArgumentException("MigrationTarget Disk object cannot be null.");
 
-            if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+            if (_TargetDisk.TargetStorageAccount == null)
                 rbManagedDisk.Checked = true;
-            if (_TargetDisk.TargetStorageAccount == null || (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+            if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                 rbStorageAccountInMigration.Checked = true;
             else if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
                 rbExistingARMStorageAccount.Checked = true;
@@ -125,8 +125,8 @@ namespace MigAz.Azure.UserControls
 
                 if (_TargetDisk != null)
                 {
-                    if (_TargetDisk.TargetStorageAccount == null || _TargetDisk.TargetStorageAccount.GetType() != typeof(Azure.MigrationTarget.ManagedDisk))
-                        _TargetDisk.TargetStorageAccount = new Azure.MigrationTarget.ManagedDisk(_AzureContext);
+                    if (_TargetDisk.TargetStorageAccount != null)
+                        _TargetDisk.TargetStorageAccount = null;
 
                     PropertyChanged?.Invoke();
                 }
@@ -159,33 +159,25 @@ namespace MigAz.Azure.UserControls
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                     {
-                        if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
+                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                         {
-                            _TargetDisk.TargetStorageAccount = null;
-                            PropertyChanged?.Invoke();
-                        }
-                        else
-                        {
-                            for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
                             {
-                                Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
-                                if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
-                                {
-                                    cmbTargetStorage.SelectedIndex = i;
-                                    break;
-                                }
+                                cmbTargetStorage.SelectedIndex = i;
+                                break;
                             }
-
-                            // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                            //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                            //{
-                            //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                            //    {
-                            //        cmbTargetStorage.SelectedItem = asmStorageAccount;
-                            //        break;
-                            //    }
-                            //}
                         }
+
+                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
+                        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
+                        //{
+                        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
+                        //    {
+                        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
+                        //        break;
+                        //    }
+                        //}
                     }
                 }
             }
@@ -211,12 +203,7 @@ namespace MigAz.Azure.UserControls
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                     {
-                        if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk))
-                        {
-                            _TargetDisk.TargetStorageAccount = null;
-                            PropertyChanged?.Invoke();
-                        }
-                        else if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
+                        if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
                         {
                             for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
                             {
