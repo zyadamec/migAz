@@ -87,6 +87,9 @@
     <Content Include="TestDocs\NewTest1\ArmObjectsOffline.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="TestDocs\NewTest1\temp.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">

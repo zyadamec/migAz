@@ -18,7 +18,7 @@ namespace MigAz.Azure.UserControls
         {
             InitializeComponent();
             this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
-            this.diskProperties1.ShowSizeInGb = false;
+            this.diskProperties1.ShowSizeInGb = true;
         }
 
         public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, MigrationTarget.VirtualMachine virtualMachine)

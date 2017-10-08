@@ -103,6 +103,17 @@ namespace MigAz.Azure.Generator
             }
         }
 
+        public MigAzGeneratorAlert SeekAlert(string alertMessage)
+        {
+            foreach (MigAzGeneratorAlert alert in this.Alerts)
+            {
+                if (alert.Message.Contains(alertMessage))
+                    return alert;
+            }
+
+            return null;
+        }
+
         public bool IsProcessed(ArmResource resource)
         {
             return this.Resources.Contains(resource);
@@ -319,6 +330,9 @@ namespace MigAz.Azure.Generator
                 {
                     this.AddAlert(AlertType.Error, "All OS and Data Disks for Virtual Machine '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
                 }
+
+                if (virtualMachine.OSVirtualHardDisk.DiskSizeInGB == 0)
+                    this.AddAlert(AlertType.Error, "OS Disk '" + virtualMachine.OSVirtualHardDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", virtualMachine);
 
                 if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
                 {
@@ -1329,7 +1343,6 @@ namespace MigAz.Azure.Generator
 
 
             OsDisk osdisk = new OsDisk();
-            osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
             osdisk.caching = targetVirtualMachine.OSVirtualHardDisk.HostCaching;
 
             ImageReference imagereference = new ImageReference();
@@ -1338,6 +1351,7 @@ namespace MigAz.Azure.Generator
             // if the tool is configured to create new VMs with empty data disks
             if (_settingsProvider.BuildEmpty)
             {
+                osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
                 osdisk.createOption = "FromImage";
 
                 osprofile.computerName = targetVirtualMachine.ToString();
@@ -1390,6 +1404,8 @@ namespace MigAz.Azure.Generator
 
                 if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
+                    osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
+
                     Vhd vhd = new Vhd();
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
@@ -1526,8 +1542,17 @@ namespace MigAz.Azure.Generator
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
             templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
 
+            string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
+
             templateManageDiskCreationDataProperties.createOption = "Import";
-            templateManageDiskCreationDataProperties.sourceUri = "todo-bloburlhere";
+            templateManageDiskCreationDataProperties.sourceUri = "[parameters('" + managedDiskSourceUriParameterName + "')]";
+
+            if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
+            {
+                Parameter parameter = new Parameter();
+                parameter.type = "string";
+                this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
+            }
 
             // sample json with encryption
             // https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-create-encrypted-managed-disk/CreateEncryptedManagedDisk-kek.json
@@ -1571,17 +1596,19 @@ namespace MigAz.Azure.Generator
                     copyblobdetail.SourceKey = armDataDisk.SourceStorageAccount.Keys[0].Value;
             }
 
-            if (disk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+            copyblobdetail.DestinationSAResourceGroup = resourceGroup.ToString();
+
+            if (disk.TargetStorageAccount != null)
             {
-                Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)disk.TargetStorageAccount;
-                copyblobdetail.DestinationSAResourceGroup = armStorageAccount.ResourceGroup.Name;
-            }
-            else
-            {
-                copyblobdetail.DestinationSAResourceGroup = resourceGroup.ToString();
+                if (disk.TargetStorageAccount.GetType() == typeof(Arm.StorageAccount))
+                {
+                    Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)disk.TargetStorageAccount;
+                    copyblobdetail.DestinationSAResourceGroup = armStorageAccount.ResourceGroup.Name;
+                }
+
+                copyblobdetail.DestinationSA = disk.TargetStorageAccount.ToString();
             }
 
-            copyblobdetail.DestinationSA = disk.TargetStorageAccount.ToString();
             copyblobdetail.DestinationContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.DestinationBlob = disk.TargetStorageAccountBlob;
 

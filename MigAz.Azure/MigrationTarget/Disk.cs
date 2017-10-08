@@ -46,10 +46,10 @@ namespace MigAz.Azure.MigrationTarget
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
                 this.TargetName = armManagedDisk.Name;
-                this.Lun = armManagedDisk.Lun;
-                this.HostCaching = armManagedDisk.Caching;
+                //this.Lun = armManagedDisk.Lun;
+                //this.HostCaching = armManagedDisk.Caching;
                 this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
-                this.TargetStorageAccountBlob = armManagedDisk.StorageAccountBlob;
+                //this.TargetStorageAccountBlob = armManagedDisk.StorageAccountBlob;
             }
         }
 
@@ -111,11 +111,6 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
         
-        public Arm.ManagedDisk SourceManagedDisk
-        {
-            get;set;
-        }
-
         public string TargetStorageAccountContainer
         {
             get { return "vhds"; }
@@ -128,7 +123,12 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType
         {
-            get { return this.TargetStorageAccount.StorageAccountType; }
+            get {
+                if (this.TargetStorageAccount != null)
+                    return this.TargetStorageAccount.StorageAccountType;
+
+                return StorageAccountType.Premium; // TODO Russell
+            }
         }
 
         public string TargetMediaLink

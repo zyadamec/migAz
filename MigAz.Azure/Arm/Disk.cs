@@ -33,7 +33,16 @@ namespace MigAz.Azure.Arm
 
         public string CreateOption => (string)this.ResourceToken["createOption"];
         public string Caching => (string)this.ResourceToken["caching"];
-        public int DiskSizeGb => Convert.ToInt32((string)this.ResourceToken["diskSizeGB"]);
+        public int DiskSizeGb
+        {
+            get
+            {
+                Int32 diskSizeGb = 0;
+                Int32.TryParse((string)this.ResourceToken["diskSizeGB"], out diskSizeGb);
+                
+                return diskSizeGb;
+            }
+        }
 
         public int Lun => Convert.ToInt32((string)ResourceToken["lun"]);
 

@@ -1145,7 +1145,7 @@ namespace MigAz.Migrators
 
                         foreach (Azure.MigrationTarget.Disk targetManagedDisk in _AzureContextSourceASM.AzureRetriever.ArmTargetManagedDisks)
                         {
-                            Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk) targetManagedDisk.SourceManagedDisk;
+                            Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk) targetManagedDisk.SourceDisk;
                             TreeNode managedDiskParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, armManagedDisk.ResourceGroup);
 
                             TreeNode tnDisk = new TreeNode(targetManagedDisk.SourceName);
