@@ -32,7 +32,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.lblOS = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.lblOSDisk = new System.Windows.Forms.Label();
             this.diskProperties1 = new MigAz.Azure.UserControls.DiskProperties();
             this.label12 = new System.Windows.Forms.Label();
             this.lblASMVMName = new System.Windows.Forms.Label();
@@ -96,16 +96,16 @@
             this.label6.TabIndex = 6;
             this.label6.Text = "OS:";
             // 
-            // label10
+            // lblOSDisk
             // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(10, 252);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(53, 13);
-            this.label10.TabIndex = 18;
-            this.label10.Text = "OS Disk";
+            this.lblOSDisk.AutoSize = true;
+            this.lblOSDisk.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOSDisk.Location = new System.Drawing.Point(10, 252);
+            this.lblOSDisk.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblOSDisk.Name = "lblOSDisk";
+            this.lblOSDisk.Size = new System.Drawing.Size(53, 13);
+            this.lblOSDisk.TabIndex = 18;
+            this.lblOSDisk.Text = "OS Disk";
             // 
             // diskProperties1
             // 
@@ -339,7 +339,7 @@
             this.Controls.Add(this.lblASMVMName);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.diskProperties1);
-            this.Controls.Add(this.label10);
+            this.Controls.Add(this.lblOSDisk);
             this.Controls.Add(this.lblOS);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lblRoleSize);
@@ -357,7 +357,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblOS;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblOSDisk;
         private DiskProperties diskProperties1;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label lblASMVMName;

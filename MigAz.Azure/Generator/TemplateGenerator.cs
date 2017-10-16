@@ -334,21 +334,22 @@ namespace MigAz.Azure.Generator
                 if (virtualMachine.OSVirtualHardDisk.DiskSizeInGB == 0)
                     this.AddAlert(AlertType.Error, "OS Disk '" + virtualMachine.OSVirtualHardDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", virtualMachine);
 
-                if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount == null)
+                if (virtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    // Migrate as Managed Disk
+                    this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
                 }
-                else
-                {
-                    if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
-                    {
-                        Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk) virtualMachine.OSVirtualHardDisk.SourceDisk;
-                        if (sourceDisk.IsEncrypted)
-                        {
-                            this.AddAlert(AlertType.Error, "OS Disk for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", virtualMachine);
-                        }
-                    }
 
+                if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
+                {
+                    Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk) virtualMachine.OSVirtualHardDisk.SourceDisk;
+                    if (sourceDisk.IsEncrypted)
+                    {
+                        this.AddAlert(AlertType.Error, "OS Disk for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", virtualMachine);
+                    }
+                }
+
+                if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount != null)
+                {
                     if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
                     {
                         Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorageAccount;
@@ -374,7 +375,7 @@ namespace MigAz.Azure.Generator
                         if (!targetAsmStorageExists)
                             this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it is not included in the migration / template.", virtualMachine);
                     }
-                    
+
 
                     if (virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
                         virtualMachine.OSVirtualHardDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
@@ -389,6 +390,11 @@ namespace MigAz.Azure.Generator
                     if (dataDisk.DiskSizeInGB == 0)
                         this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", dataDisk);
 
+                    if (dataDisk.IsManagedDisk)
+                    {
+                        this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                    }
+
                     if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
                     {
                         Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk)virtualMachine.OSVirtualHardDisk.SourceDisk;
@@ -398,11 +404,7 @@ namespace MigAz.Azure.Generator
                         }
                     }
 
-                    if (dataDisk.TargetStorageAccount == null)
-                    {
-                        // Migrate as Managed Disk
-                    }
-                    else
+                    if (dataDisk.TargetStorageAccount != null)
                     {
                         if (dataDisk.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount))
                         {
@@ -436,8 +438,8 @@ namespace MigAz.Azure.Generator
                             if (!dataDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
                                 this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + dataDisk.TargetStorageAccountBlob + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it must end with '.vhd'.", dataDisk);
                         }
-
                     }
+
                 }
             }
 

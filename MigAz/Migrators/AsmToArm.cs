@@ -639,6 +639,7 @@ namespace MigAz.Migrators
                     (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
+                    (tagType == typeof(Azure.MigrationTarget.Disk)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                 {
                     if (e.Node.Checked)

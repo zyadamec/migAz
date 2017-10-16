@@ -348,7 +348,10 @@ namespace MigAz.Azure.UserControls
 
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    if (targetDisk.IsUnmanagedDisk)
+                    {
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    }
                 }
 
                 foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in targetVirtualMachine.NetworkInterfaces)
@@ -358,6 +361,14 @@ namespace MigAz.Azure.UserControls
 
                 targetResourceGroupNode.ExpandAll();
                 return virtualMachineNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.Disk))
+            {
+                Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)parentNode;
+                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.SourceName, targetDisk.ToString(), targetDisk, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetDiskNode;
             }
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());

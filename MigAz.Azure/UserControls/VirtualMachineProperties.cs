@@ -61,10 +61,13 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (_VirtualMachine.OSVirtualHardDisk != null)
+            if (_VirtualMachine.OSVirtualHardDisk != null && _VirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 this.diskProperties1.Bind(azureContext, _TargetTreeView, _VirtualMachine.OSVirtualHardDisk);
             else
+            {
+                lblOSDisk.Visible = false;
                 this.diskProperties1.Visible = false;
+            }
 
             cbRoleSizes.Items.Clear();
             if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)

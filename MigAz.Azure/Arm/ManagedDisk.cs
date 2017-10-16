@@ -68,5 +68,9 @@ namespace MigAz.Azure.Arm
 
         #endregion
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
