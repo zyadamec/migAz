@@ -339,13 +339,13 @@ namespace MigAz.Azure.Generator
                     bool targetDiskInExport = false;
                     foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
                     {
-                        if (targetDisk.SourceName == virtualMachine.OSVirtualHardDisk.SourceName)
+                        if (targetDisk.SourceName == virtualMachine.OSVirtualHardDisk.SourceName) // todo, also check that this is the same VM, not just by name?
                             targetDiskInExport = true;
                     }
 
                     if (!targetDiskInExport)
                     {
-                        this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.OSVirtualHardDisk.SourceName + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                        this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.SourceName + "' references Managed Disk '" + virtualMachine.OSVirtualHardDisk.SourceName + "' which has not been added as an export resource.", virtualMachine);
                     }
                 }
 
@@ -411,7 +411,7 @@ namespace MigAz.Azure.Generator
 
                         if (!targetDiskInExport)
                         {
-                            this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + dataDisk.SourceName + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.SourceName + "' references Managed Disk '" + dataDisk.SourceName + "' which has not been added as an export resource.", virtualMachine);
                         }
                     }
 

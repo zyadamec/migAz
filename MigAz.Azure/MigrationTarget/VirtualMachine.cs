@@ -92,7 +92,27 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
 
-            this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
+            if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+            {
+                Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)virtualMachine.OSVirtualHardDisk;
+
+                foreach (Disk targetDisk in azureContext.AzureRetriever.ArmTargetManagedDisks)
+                {
+                    if ((targetDisk.SourceDisk != null) && (targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk)))
+                    {
+                        Azure.Arm.ManagedDisk targetDiskSourceDisk = (Azure.Arm.ManagedDisk)targetDisk.SourceDisk;
+                        if (String.Compare(targetDiskSourceDisk.Name, sourceManagedDisk.Name, true) == 0)
+                        {
+                            this.OSVirtualHardDisk = targetDisk;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
+            }
 
             if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
@@ -102,11 +122,29 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
             {
-                Disk targetDataDisk = new Disk(dataDisk);
-                this.DataDisks.Add(targetDataDisk);
 
-                if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                if (dataDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
                 {
+                    Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)dataDisk;
+
+                    foreach (Disk targetDisk in azureContext.AzureRetriever.ArmTargetManagedDisks)
+                    {
+                        if ((targetDisk.SourceDisk != null) && (targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk)))
+                        {
+                            Azure.Arm.ManagedDisk targetDiskSourceDisk = (Azure.Arm.ManagedDisk)targetDisk.SourceDisk;
+                            if (String.Compare(targetDiskSourceDisk.Name, sourceManagedDisk.Name, true) == 0)
+                            {
+                                this.DataDisks.Add(targetDisk);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if(dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                {
+                    Disk targetDataDisk = new Disk(dataDisk);
+                    this.DataDisks.Add(targetDataDisk);
+
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
                     targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDisk.StorageAccountName);
                 }
