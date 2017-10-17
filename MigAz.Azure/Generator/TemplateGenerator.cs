@@ -336,12 +336,22 @@ namespace MigAz.Azure.Generator
 
                 if (virtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                    bool targetDiskInExport = false;
+                    foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
+                    {
+                        if (targetDisk.SourceName == virtualMachine.OSVirtualHardDisk.SourceName)
+                            targetDiskInExport = true;
+                    }
+
+                    if (!targetDiskInExport)
+                    {
+                        this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.OSVirtualHardDisk.SourceName + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                    }
                 }
 
-                if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
+                if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                 {
-                    Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk) virtualMachine.OSVirtualHardDisk.SourceDisk;
+                    Azure.Arm.ClassicDisk sourceDisk = (Azure.Arm.ClassicDisk) virtualMachine.OSVirtualHardDisk.SourceDisk;
                     if (sourceDisk.IsEncrypted)
                     {
                         this.AddAlert(AlertType.Error, "OS Disk for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", virtualMachine);
@@ -392,13 +402,23 @@ namespace MigAz.Azure.Generator
 
                     if (dataDisk.IsManagedDisk)
                     {
-                        this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                        bool targetDiskInExport = false;
+                        foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
+                        {
+                            if (targetDisk.SourceName == dataDisk.SourceName)
+                                targetDiskInExport = true;
+                        }
+
+                        if (!targetDiskInExport)
+                        {
+                            this.AddAlert(AlertType.Error, "TODO, ensure disk is added to export resources. '" + dataDisk.SourceName + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
+                        }
                     }
 
-                    if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
+
+                    if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                     {
-                        Azure.Arm.Disk sourceDisk = (Azure.Arm.Disk)virtualMachine.OSVirtualHardDisk.SourceDisk;
-                        if (sourceDisk.IsEncrypted)
+                        if (dataDisk.SourceDisk.IsEncrypted)
                         {
                             this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", dataDisk);
                         }
@@ -1586,9 +1606,9 @@ namespace MigAz.Azure.Generator
                 if (asmDataDisk.SourceStorageAccount != null && asmDataDisk.SourceStorageAccount.Keys != null)
                     copyblobdetail.SourceKey = asmDataDisk.SourceStorageAccount.Keys.Primary;
             }
-            else if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Arm.Disk))
+            else if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Arm.ClassicDisk))
             {
-                Arm.Disk armDataDisk = (Arm.Disk)disk.SourceDisk;
+                Arm.ClassicDisk armDataDisk = (Arm.ClassicDisk)disk.SourceDisk;
 
                 copyblobdetail.SourceSA = armDataDisk.StorageAccountName;
                 copyblobdetail.SourceContainer = armDataDisk.StorageAccountContainer;

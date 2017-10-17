@@ -91,9 +91,9 @@ namespace MigAz.Azure.UserControls
                     if (asmDisk.SourceStorageAccount != null)
                         lblAsmStorageAccount.Text = asmDisk.SourceStorageAccount.Name;
                 }
-                else if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Arm.Disk))
+                else if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                 {
-                    Azure.Arm.Disk armDisk = (Azure.Arm.Disk)_TargetDisk.SourceDisk;
+                    Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)_TargetDisk.SourceDisk;
                     if (armDisk.SourceStorageAccount != null)
                         lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
                 }

@@ -10,8 +10,14 @@ namespace MigAz.Azure.Arm
 {
     public class ManagedDisk : ArmResource, IArmDisk
     {
+        private VirtualMachine _VirtualMachine = null;
+
         private ManagedDisk() : base(null) { }
 
+        public ManagedDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
+        {
+            _VirtualMachine = virtualMachine;
+        }
         public ManagedDisk(JToken resourceToken) : base(resourceToken)
         {
         }
@@ -23,6 +29,11 @@ namespace MigAz.Azure.Arm
 
         #region Properties
 
+        public VirtualMachine ParentVirtualMachine
+        {
+            get { return _VirtualMachine; }
+        }
+
         public string Type
         {
             get { return (string)ResourceToken["type"]; }
@@ -30,7 +41,20 @@ namespace MigAz.Azure.Arm
 
         public Int32 DiskSizeGb
         {
-            get { return Convert.ToInt32((string)ResourceToken["properties"]["diskSizeGB"]); }
+            get
+            {
+                try
+                {
+                    Int32 diskSizeGb = 0;
+                    Int32.TryParse((string)this.ResourceToken["properties"]["diskSizeGB"], out diskSizeGb);
+
+                    return diskSizeGb;
+                }
+                catch (System.NullReferenceException)
+                {
+                    return 0;
+                }
+            }
         }
 
         public string OwnerId
@@ -64,6 +88,21 @@ namespace MigAz.Azure.Arm
         public string SourceUri
         {
             get { return (string)ResourceToken["properties"]["creationData"]["sourceUri"]; }
+        }
+
+        public bool IsEncrypted
+        {
+            get
+            {
+                // todo now russell, this is not verified, only copied code
+                if (this.ResourceToken["encryptionSettings"] == null)
+                    return false;
+
+                if (this.ResourceToken["encryptionSettings"]["enabled"] == null)
+                    return false;
+
+                return Convert.ToBoolean((string)this.ResourceToken["encryptionSettings"]["enabled"]);
+            }
         }
 
         #endregion

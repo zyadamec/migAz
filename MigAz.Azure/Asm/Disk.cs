@@ -107,6 +107,11 @@ namespace MigAz.Azure.Asm
             }
         }
 
+        public bool IsEncrypted
+        {
+            get { return false; }
+        }
+
         #endregion
 
         public override string ToString()

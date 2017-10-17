@@ -16,6 +16,7 @@ namespace MigAz.Azure
             VirtualMachines = new List<VirtualMachine>();
             LoadBalancers = new List<LoadBalancer>();
             PublicIPs = new List<PublicIp>();
+            Disks = new List<Disk>();
         }
 
         public ResourceGroup ResourceGroup { get; set; }
@@ -26,6 +27,7 @@ namespace MigAz.Azure
         public List<VirtualMachine> VirtualMachines { get; }
         public List<LoadBalancer> LoadBalancers { get; }
         public List<PublicIp> PublicIPs { get; }
+        public List<Disk> Disks { get; }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {

@@ -8,17 +8,17 @@ using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class Disk : ArmResource, IArmDisk
+    public class ClassicDisk : ArmResource, IArmDisk
     {
         private StorageAccount _SourceStorageAccount = null;
         private Arm.VirtualMachine _ParentVirtualMachine = null;
 
-        public Disk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
+        public ClassicDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
         {
             _ParentVirtualMachine = virtualMachine;
         }
 
-        private Disk() : base(null) { }
+        private ClassicDisk() : base(null) { }
 
         public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
@@ -37,10 +37,17 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                Int32 diskSizeGb = 0;
-                Int32.TryParse((string)this.ResourceToken["diskSizeGB"], out diskSizeGb);
-                
-                return diskSizeGb;
+                try
+                {
+                    Int32 diskSizeGb = 0;
+                    Int32.TryParse((string)this.ResourceToken["diskSizeGB"], out diskSizeGb);
+
+                    return diskSizeGb;
+                }
+                catch (System.NullReferenceException)
+                {
+                    return 0;
+                }
             }
         }
 

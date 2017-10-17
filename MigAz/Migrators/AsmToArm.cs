@@ -439,9 +439,9 @@ namespace MigAz.Migrators
 
                             #region OS Disk Storage Account
 
-                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.Disk)) // Disk in a Storage Account, not a Managed Disk
+                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ClassicDisk)) // Disk in a Storage Account, not a Managed Disk
                             { 
-                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.Disk)armVirtualMachine.OSVirtualHardDisk).StorageAccountName, true))
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(((Azure.Arm.ClassicDisk)armVirtualMachine.OSVirtualHardDisk).StorageAccountName, true))
                                 {
                                     if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
                                     {
@@ -455,7 +455,7 @@ namespace MigAz.Migrators
 
                             #region Data Disk(s) Storage Account(s)
 
-                            foreach (Azure.Arm.Disk dataDisk in armVirtualMachine.DataDisks)
+                            foreach (Azure.Arm.ClassicDisk dataDisk in armVirtualMachine.DataDisks)
                             {
                                 foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(dataDisk.StorageAccountName, true))
                                 {

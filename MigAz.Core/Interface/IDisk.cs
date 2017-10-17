@@ -9,6 +9,7 @@ namespace MigAz.Core.Interface
     public interface IDisk
     {
         Int32 DiskSizeGb { get; }
+        bool IsEncrypted { get; }
         //String MediaLink { get; }
         //String StorageAccountBlob { get; }
         //String StorageAccountContainer { get; }

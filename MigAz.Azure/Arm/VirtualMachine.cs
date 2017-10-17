@@ -21,10 +21,25 @@ namespace MigAz.Azure.Arm
 
         public VirtualMachine(JToken resourceToken) : base(resourceToken)
         {
-            _OSVirtualHardDisk = new Disk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
+            {
+                _OSVirtualHardDisk = new ManagedDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            }
+            else
+            {
+                _OSVirtualHardDisk = new ClassicDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            }
+
             foreach (JToken dataDiskToken in ResourceToken["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new Disk(this, dataDiskToken));
+                if (dataDiskToken["vhd"] == null)
+                {
+                    _DataDisks.Add(new ManagedDisk(this, dataDiskToken));
+                }
+                else
+                {
+                    _DataDisks.Add(new ClassicDisk(this, dataDiskToken));
+                }
             }
         }
 
@@ -98,9 +113,13 @@ namespace MigAz.Azure.Arm
 
             await this.OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
 
-            foreach (Disk dataDisk in this.DataDisks)
+            foreach (IArmDisk dataDisk in this.DataDisks)
             {
-                await dataDisk.InitializeChildrenAsync(azureContext);
+                if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                {
+                    ClassicDisk classicDisk = (Arm.ClassicDisk)dataDisk;
+                    await classicDisk.InitializeChildrenAsync(azureContext);
+                }
             }
 
             foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])

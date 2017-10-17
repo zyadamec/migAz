@@ -119,6 +119,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.PublicIPs.Add((Azure.MigrationTarget.PublicIp)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.Disk))
+                {
+                    exportArtifacts.Disks.Add((Azure.MigrationTarget.Disk)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)

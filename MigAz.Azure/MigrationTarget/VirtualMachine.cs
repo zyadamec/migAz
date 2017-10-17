@@ -94,9 +94,9 @@ namespace MigAz.Azure.MigrationTarget
 
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
 
-            if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.Disk))
+            if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
-                Arm.Disk armDisk = (Arm.Disk)virtualMachine.OSVirtualHardDisk;
+                Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
                 this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDisk.StorageAccountName);
             }
 
@@ -105,9 +105,9 @@ namespace MigAz.Azure.MigrationTarget
                 Disk targetDataDisk = new Disk(dataDisk);
                 this.DataDisks.Add(targetDataDisk);
 
-                if (dataDisk.GetType() == typeof(Arm.Disk))
+                if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
                 {
-                    Arm.Disk armDisk = (Arm.Disk)dataDisk;
+                    Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
                     targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDisk.StorageAccountName);
                 }
             }

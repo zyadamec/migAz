@@ -30,9 +30,9 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.SourceDisk = (IDisk)sourceDisk;
 
-            if (sourceDisk.GetType() == typeof(Azure.Arm.Disk))
+            if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {
-                Azure.Arm.Disk armDisk = (Azure.Arm.Disk)sourceDisk;
+                Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)sourceDisk;
 
                 this.TargetName = armDisk.Name;
                 this.Lun = armDisk.Lun;
@@ -46,9 +46,11 @@ namespace MigAz.Azure.MigrationTarget
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
                 this.TargetName = armManagedDisk.Name;
+                this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
+
+                // todo now russell, so these seem to come from the VM itself, not the Managed Disk JSON?  ... or vice verse - review
                 //this.Lun = armManagedDisk.Lun;
                 //this.HostCaching = armManagedDisk.Caching;
-                this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
                 //this.TargetStorageAccountBlob = armManagedDisk.StorageAccountBlob;
             }
         }
