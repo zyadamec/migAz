@@ -350,6 +350,11 @@ namespace MigAz.Azure.UserControls
 
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
+                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                {
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                }
+
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
                     if (targetDisk.IsUnmanagedDisk)

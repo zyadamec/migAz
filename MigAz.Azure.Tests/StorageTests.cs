@@ -121,6 +121,16 @@ namespace MigAz.Tests
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' IP Configuration 'ipconfig1' utilizes Public IP 'ManagedDisk01-ip', but the Public IP resource is not added into the migration template."));
 
+            Assert.IsNotNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDisk01_OsDisk_1_e901d155e5404b6a912afb22e7a804a6' which has not been added as an export resource."));
+            artifacts.Disks.Add(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[1]);
+            await templateGenerator.UpdateArtifacts(artifacts);
+            Assert.IsNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDisk01_OsDisk_1_e901d155e5404b6a912afb22e7a804a6' which has not been added as an export resource."));
+
+            Assert.IsNotNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDataDisk01' which has not been added as an export resource."));
+            artifacts.Disks.Add(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0]);
+            await templateGenerator.UpdateArtifacts(artifacts);
+            Assert.IsNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDataDisk01' which has not been added as an export resource."));
+
             Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 
             await templateGenerator.GenerateStreams();
