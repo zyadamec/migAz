@@ -17,8 +17,6 @@ namespace MigAz.Azure.UserControls
         public VirtualMachineProperties()
         {
             InitializeComponent();
-            this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
-            this.diskProperties1.ShowSizeInGb = true;
         }
 
         public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, MigrationTarget.VirtualMachine virtualMachine)
@@ -59,14 +57,6 @@ namespace MigAz.Azure.UserControls
 
                     lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
                 }
-            }
-
-            if (_VirtualMachine.OSVirtualHardDisk != null && _VirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
-                this.diskProperties1.Bind(azureContext, _TargetTreeView, _VirtualMachine.OSVirtualHardDisk);
-            else
-            {
-                lblOSDisk.Visible = false;
-                this.diskProperties1.Visible = false;
             }
 
             cbRoleSizes.Items.Clear();
