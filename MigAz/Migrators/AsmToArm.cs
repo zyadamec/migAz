@@ -13,6 +13,7 @@ using MigAz.Forms;
 using MigAz.Azure.UserControls;
 using System.Xml;
 using System.Net;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Migrators
 {
@@ -455,14 +456,30 @@ namespace MigAz.Migrators
 
                             #region Data Disk(s) Storage Account(s)
 
-                            foreach (Azure.Arm.ClassicDisk dataDisk in armVirtualMachine.DataDisks)
+                            foreach (IArmDisk dataDisk in armVirtualMachine.DataDisks)
                             {
-                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(dataDisk.StorageAccountName, true))
+                                if (dataDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    Azure.Arm.ClassicDisk classicDisk = (Azure.Arm.ClassicDisk)dataDisk;
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(classicDisk.StorageAccountName, true))
                                     {
-                                        if (!treeNode.Checked)
-                                            treeNode.Checked = true;
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
+                                    }
+                                }
+                                else if (dataDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+                                {
+                                    Azure.Arm.ManagedDisk managedDisk = (Azure.Arm.ManagedDisk)dataDisk;
+                                    foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(managedDisk.Name, true))
+                                    {
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
                                     }
                                 }
                             }
