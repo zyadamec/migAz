@@ -557,6 +557,13 @@ namespace MigAz.Azure.Generator
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Availablity Sets");
 
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Interfaces");
+                foreach (Azure.MigrationTarget.NetworkInterface networkInterface in _ExportArtifacts.NetworkInterfaces)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Network Interface : " + networkInterface.ToString());
+                    BuildNetworkInterfaceObject(networkInterface);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Network Interfaces");
 
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
                 foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
@@ -1227,7 +1234,7 @@ namespace MigAz.Azure.Generator
             return routetable;
         }
 
-        private NetworkInterface BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface, List<NetworkProfile_NetworkInterface> networkinterfaces)
+        private NetworkInterface BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
 
@@ -1320,13 +1327,6 @@ namespace MigAz.Azure.Generator
             networkInterface.properties = networkinterface_properties;
             networkInterface.dependsOn = dependson;
 
-            NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
-            networkinterface_ref_properties.primary = targetNetworkInterface.IsPrimary;
-
-            NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-            networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]";
-            networkinterface_ref.properties = networkinterface_ref_properties;
-
             if (targetNetworkInterface.NetworkSecurityGroup != null)
             {
                 // Add NSG reference to the network interface
@@ -1337,8 +1337,6 @@ namespace MigAz.Azure.Generator
 
                 networkInterface.dependsOn.Add(networksecuritygroup_ref.id);
             }
-
-            networkinterfaces.Add(networkinterface_ref);
 
             this.AddResource(networkInterface);
 
@@ -1369,8 +1367,16 @@ namespace MigAz.Azure.Generator
 
             foreach (MigrationTarget.NetworkInterface targetNetworkInterface in targetVirtualMachine.NetworkInterfaces)
             {
-                NetworkInterface networkInterface = BuildNetworkInterfaceObject(targetNetworkInterface, networkinterfaces);
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + networkInterface.name + "')]");
+                NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
+                networkinterface_ref_properties.primary = targetNetworkInterface.IsPrimary;
+
+                NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
+                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.TargetName + "')]";
+                networkinterface_ref.properties = networkinterface_ref_properties;
+
+                networkinterfaces.Add(networkinterface_ref);
+
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.TargetName + "')]");
             }
 
             HardwareProfile hardwareprofile = new HardwareProfile();
