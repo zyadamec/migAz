@@ -17,6 +17,7 @@ namespace MigAz.Azure
             LoadBalancers = new List<LoadBalancer>();
             PublicIPs = new List<PublicIp>();
             Disks = new List<Disk>();
+            NetworkInterfaces = new List<NetworkInterface>();
         }
 
         public ResourceGroup ResourceGroup { get; set; }
@@ -28,6 +29,7 @@ namespace MigAz.Azure
         public List<LoadBalancer> LoadBalancers { get; }
         public List<PublicIp> PublicIPs { get; }
         public List<Disk> Disks { get; }
+        public List<NetworkInterface> NetworkInterfaces { get; }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {

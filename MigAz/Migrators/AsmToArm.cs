@@ -490,6 +490,15 @@ namespace MigAz.Migrators
 
                             foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
                             {
+                                foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(networkInterface.Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+
                                 if (networkInterface.NetworkSecurityGroup != null)
                                 {
                                     foreach (TreeNode treeNode in treeSourceARM.Nodes.Find(networkInterface.NetworkSecurityGroup.Name, true))
@@ -655,6 +664,7 @@ namespace MigAz.Migrators
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
                     (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
+                    (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
                     (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
                     (tagType == typeof(Azure.MigrationTarget.Disk)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
@@ -1184,6 +1194,18 @@ namespace MigAz.Migrators
                             tnAvailabilitySet.ImageKey = "AvailabilitySet";
                             tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
                             availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
+                        }
+
+                        foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in _AzureContextSourceASM.AzureRetriever.ArmTargetNetworkInterfaces)
+                        {
+                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkInterface)targetNetworkInterface.SourceNetworkInterface).ResourceGroup);
+
+                            TreeNode txNetworkInterface = new TreeNode(targetNetworkInterface.SourceName);
+                            txNetworkInterface.Name = targetNetworkInterface.SourceName;
+                            txNetworkInterface.Tag = targetNetworkInterface;
+                            txNetworkInterface.ImageKey = "NetworkInterface";
+                            txNetworkInterface.SelectedImageKey = "NetworkInterface";
+                            tnResourceGroup.Nodes.Add(txNetworkInterface);
                         }
 
                         foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in _AzureContextSourceASM.AzureRetriever.ArmTargetVirtualMachines)

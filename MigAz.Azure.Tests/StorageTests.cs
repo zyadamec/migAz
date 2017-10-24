@@ -99,10 +99,6 @@ namespace MigAz.Tests
 
             artifacts.VirtualMachines.Add(azureContextUSCommercial.AzureRetriever.ArmTargetVirtualMachines[0]);
             artifacts.VirtualMachines[0].OSVirtualHardDisk.DiskSizeInGB = 128;
-            //foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.ArmTargetStorageAccounts)
-            //{
-            //    artifacts.StorageAccounts.Add(s);
-            //}
 
             await templateGenerator.UpdateArtifacts(artifacts);
 

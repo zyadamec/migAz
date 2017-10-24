@@ -123,6 +123,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.Disks.Add((Azure.MigrationTarget.Disk)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.NetworkInterface))
+                {
+                    exportArtifacts.NetworkInterfaces.Add((Azure.MigrationTarget.NetworkInterface)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
@@ -334,6 +338,14 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return targetPublicIpNode;
             }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+            {
+                Azure.MigrationTarget.NetworkInterface targetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)parentNode;
+                TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetNetworkInterfaceNode;
+            }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
             {
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
@@ -365,7 +377,11 @@ namespace MigAz.Azure.UserControls
 
                 foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in targetVirtualMachine.NetworkInterfaces)
                 {
-                    TreeNode networkInterfaceNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+                    if (targetNetworkInterface.SourceNetworkInterface != null && targetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+                    {
+                        // We are only adding as a child node if it is an ASM Network Interface, otherwise we expect this to follow ARM convention in which NIC is a first class object in the resource group (not embededded under the VM).
+                        TreeNode networkInterfaceNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+                    }
                 }
 
                 targetResourceGroupNode.ExpandAll();
@@ -378,6 +394,14 @@ namespace MigAz.Azure.UserControls
 
                 targetResourceGroupNode.ExpandAll();
                 return targetDiskNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+            {
+                Azure.MigrationTarget.NetworkInterface targetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)parentNode;
+                TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.SourceName, targetNetworkInterface.ToString(), targetNetworkInterface, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetNetworkInterfaceNode;
             }
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());

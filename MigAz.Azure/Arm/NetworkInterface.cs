@@ -25,8 +25,10 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal async override Task InitializeChildrenAsync(AzureContext azureContext)
         {
+            await base.InitializeChildrenAsync(azureContext);
+
             foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in this.NetworkInterfaceIpConfigurations)
             {
                 await networkInterfaceIpConfiguration.InitializeChildrenAsync(azureContext);

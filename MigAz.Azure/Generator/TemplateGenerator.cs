@@ -275,6 +275,22 @@ namespace MigAz.Azure.Generator
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
+
+                    // Seek the inclusion of the Network Interface in the export object
+                    bool networkInterfaceExistsInExport = false;
+                    foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in _ExportArtifacts.NetworkInterfaces)
+                    {
+                        if (String.Compare(networkInterface.SourceName, targetNetworkInterface.SourceName, true) == 0)
+                        {
+                            networkInterfaceExistsInExport = true;
+                            break;
+                        }
+                    }
+                    if (!networkInterfaceExistsInExport)
+                    {
+                        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' is used by Virtual Machine '" + virtualMachine.ToString() + "', but is not included in the exported resources.", virtualMachine);
+                    }
+
                     if (networkInterface.NetworkSecurityGroup != null)
                     {
                         MigrationTarget.NetworkSecurityGroup networkSecurityGroupInMigration = _ExportArtifacts.SeekNetworkSecurityGroup(networkInterface.NetworkSecurityGroup.ToString());

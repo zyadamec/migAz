@@ -84,7 +84,7 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
         }
 
-        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
+        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -117,7 +117,7 @@ namespace MigAz.Azure.MigrationTarget
             if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
                 Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
-                this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDisk.StorageAccountName);
+                this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
             }
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
@@ -146,13 +146,13 @@ namespace MigAz.Azure.MigrationTarget
                     this.DataDisks.Add(targetDataDisk);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
-                    targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, armDisk.StorageAccountName);
+                    targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
                 }
             }
 
             foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface, targetVirtualNetworks, networkSecurityGroups);
+                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface);
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
 

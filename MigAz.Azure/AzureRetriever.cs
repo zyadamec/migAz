@@ -56,6 +56,7 @@ namespace MigAz.Azure
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers = new List<MigrationTarget.LoadBalancer>();
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
         private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs = new List<MigrationTarget.PublicIp>();
+        private List<Azure.MigrationTarget.NetworkInterface> _ArmTargetNetworkInterfaces = new List<MigrationTarget.NetworkInterface>();
         private bool _IsAsmLoaded = false;
         private bool _IsArmLoaded = false;
 
@@ -72,6 +73,7 @@ namespace MigAz.Azure
         public List<Azure.MigrationTarget.LoadBalancer> ArmTargetLoadBalancers { get { return _ArmTargetLoadBalancers; } }
         public List<Azure.MigrationTarget.NetworkSecurityGroup> ArmTargetNetworkSecurityGroups { get { return _ArmTargetNetworkSecurityGroups; } }
         public List<Azure.MigrationTarget.PublicIp> ArmTargetPublicIPs { get { return _ArmTargetPublicIPs; } }
+        public List<Azure.MigrationTarget.NetworkInterface> ArmTargetNetworkInterfaces { get { return _ArmTargetNetworkInterfaces; } }
 
 
         private AzureRetriever() { }
@@ -1801,6 +1803,15 @@ namespace MigAz.Azure
             }
         }
 
+        private async Task LoadARMNetworkInterfaces(ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.NetworkInterface armNetworkInterface in await this.GetAzureARMNetworkInterfaces(armResourceGroup))
+            {
+                Azure.MigrationTarget.NetworkInterface targetNetworkInterface = new Azure.MigrationTarget.NetworkInterface(this._AzureContext, armNetworkInterface);
+                _ArmTargetNetworkInterfaces.Add(targetNetworkInterface);
+            }
+        }
+
         private async Task LoadARMLoadBalancers(ResourceGroup armResourceGroup)
         {
             foreach (Azure.Arm.LoadBalancer armLoadBalancer in await this.GetAzureARMLoadBalancers(armResourceGroup))
@@ -1835,7 +1846,7 @@ namespace MigAz.Azure
         {
             foreach (Azure.Arm.VirtualMachine armVirtualMachine in await this.GetAzureArmVirtualMachines(armResourceGroup))
             {
-                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, armVirtualMachine, _ArmTargetVirtualNetworks, _ArmTargetStorageAccounts, _ArmTargetNetworkSecurityGroups);
+                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, armVirtualMachine);
                 _ArmTargetVirtualMachines.Add(targetVirtualMachine);
 
                 if (armVirtualMachine.AvailabilitySet != null)
@@ -1975,6 +1986,14 @@ namespace MigAz.Azure
                         armAvailabilitySetTasks.Add(armAvailabilitySetTask);
                     }
                     await Task.WhenAll(armAvailabilitySetTasks.ToArray());
+
+                    List<Task> armNetworkInterfaceTasks = new List<Task>();
+                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    {
+                        Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup);
+                        armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
+                    }
+                    await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
 
                     List<Task> armVirtualMachineTasks = new List<Task>();
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
