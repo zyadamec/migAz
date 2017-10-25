@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -362,16 +363,34 @@ namespace MigAz.Azure.UserControls
 
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
-                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                if (targetVirtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                    {
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    }
+                    else
+                    {
+                        // Under Resource Group, as it is a managed Disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    }
                 }
 
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
-                    if (targetDisk.IsUnmanagedDisk)
+                    if (targetVirtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
                     {
-                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                        if (targetDisk.IsUnmanagedDisk)
+                        {
+                            // Adding under Virtual Machine, as it is not a managed disk
+                            TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                        }
+                        else
+                        {
+                            // Under Resource Group, as it is a managed Disk
+                            TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                        }
                     }
                 }
 
@@ -439,57 +458,47 @@ namespace MigAz.Azure.UserControls
                 TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(migrationTarget.SourceName, true);
                 foreach (TreeNode matchingNode in matchingNodes)
                 {
-                    if (matchingNode.Tag.GetType() == migrationTarget.GetType())
+                    if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                    {
                         await RemoveTreeNodeCascadeUp(matchingNode);
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.StorageAccount))
+
+                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)matchingNode.Tag;
+
+                        // if there are VMs that have originating Classic Disks, we may need to clean them up from the Resource Group if they were being moved to a Managed Disk (not under the VM in the Treeview)
+                        await RemoveClassicDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
+                        foreach (MigrationTarget.Disk disk in targetVirtualMachine.DataDisks)
                         {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.StorageAccount))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.VirtualMachine))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.VirtualMachine))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
+                            await RemoveClassicDiskTurnedManagedDiskFromARMTree(disk);
                         }
                     }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
+                    else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
+                        await RemoveTreeNodeCascadeUp(matchingNode);
                     else if (matchingNode.Tag.GetType() == typeof(TreeNode))
                     {
                         TreeNode childTreeNode = (TreeNode)matchingNode.Tag;
                         if (migrationTarget.GetType() == childTreeNode.Tag.GetType())
                             await RemoveTreeNodeCascadeUp(matchingNode);
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveClassicDiskTurnedManagedDiskFromARMTree(Disk disk)
+        {
+            if (disk.SourceDisk != null && (disk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || disk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            {
+                
+
+                TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                if (targetResourceGroupNode != null)
+                {
+                    TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(disk.TargetName, true);
+                    foreach (TreeNode matchingNode in matchingNodes)
+                    {
+                        if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk) && String.Compare(((Azure.MigrationTarget.Disk)matchingNode.Tag).SourceName, disk.SourceName, true) == 0)
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
                     }
                 }
             }
