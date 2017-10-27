@@ -52,6 +52,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.lblSourceMemoryInGb = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // lblRoleSize
@@ -292,10 +294,19 @@
             this.label16.TabIndex = 36;
             this.label16.Text = "Memory (In GB):";
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(9, 280);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(299, 404);
+            this.dataGridView1.TabIndex = 40;
+            // 
             // VirtualMachineProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.lblSourceMaxDataDisks);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.lblSourceMemoryInGb);
@@ -323,6 +334,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "VirtualMachineProperties";
             this.Size = new System.Drawing.Size(312, 687);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -353,5 +365,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label lblSourceMemoryInGb;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }

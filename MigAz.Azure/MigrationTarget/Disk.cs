@@ -12,23 +12,28 @@ namespace MigAz.Azure.MigrationTarget
     {
         private string _TargetName = String.Empty;
         private Int32 _DiskSizeInGB = 0;
+        private VirtualMachine _ParentVirtualMachine;
 
-        public Disk() { }
+        private Disk() { }
 
-        public Disk(Asm.Disk sourceDisk)
+        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine)
         {
             this.SourceDisk = sourceDisk;
+            this._ParentVirtualMachine = parentVirtualMachine;
+
             this.TargetName = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
             this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
+
         }
 
-        public Disk(IArmDisk sourceDisk)
+        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine)
         {
             this.SourceDisk = (IDisk)sourceDisk;
+            this._ParentVirtualMachine = parentVirtualMachine;
 
             if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {
@@ -55,6 +60,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
+            set { _ParentVirtualMachine = value; }
+        }
 
         public string TargetName
         {
@@ -110,7 +120,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public IStorageTarget TargetStorageAccount
         {
-            get;set;
+            get;
+            set;
         }
         
         public string TargetStorageAccountContainer

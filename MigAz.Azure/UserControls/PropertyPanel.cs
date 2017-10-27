@@ -175,7 +175,7 @@ namespace MigAz.Azure.UserControls
 
                         DiskProperties properties = new DiskProperties();
                         properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
+                        properties.Bind(this.AzureContext, _TargetTreeView, migrationTargetNode, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;
                     }
                     else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))

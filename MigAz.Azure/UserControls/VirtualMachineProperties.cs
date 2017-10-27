@@ -88,6 +88,9 @@ namespace MigAz.Azure.UserControls
                 lblTargetLocationRequired.Enabled = true;
                 lblTargetLocationRequired.Visible = true;
             }
+
+            // TODO Now Russell
+            //dataGridView1.DataSource = virtualMachine.NetworkInterfaces;
         }
 
         private async Task Properties1_PropertyChanged()

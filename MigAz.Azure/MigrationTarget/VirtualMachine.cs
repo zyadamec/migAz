@@ -27,13 +27,13 @@ namespace MigAz.Azure.MigrationTarget
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
-            this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
+            this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
             this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
-                Disk targetDataDisk = new Disk(asmDataDisk);
+                Disk targetDataDisk = new Disk(asmDataDisk, this);
                 targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
                 this.DataDisks.Add(targetDataDisk);
             }
@@ -104,6 +104,7 @@ namespace MigAz.Azure.MigrationTarget
                         if (String.Compare(targetDiskSourceDisk.Name, sourceManagedDisk.Name, true) == 0)
                         {
                             this.OSVirtualHardDisk = targetDisk;
+                            targetDisk.ParentVirtualMachine = this;
                             break;
                         }
                     }
@@ -111,7 +112,7 @@ namespace MigAz.Azure.MigrationTarget
             }
             else
             {
-                this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk);
+                this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this);
             }
 
             if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
@@ -135,6 +136,7 @@ namespace MigAz.Azure.MigrationTarget
                             if (String.Compare(targetDiskSourceDisk.Name, sourceManagedDisk.Name, true) == 0)
                             {
                                 this.DataDisks.Add(targetDisk);
+                                targetDisk.ParentVirtualMachine = this;
                                 break;
                             }
                         }
@@ -142,7 +144,7 @@ namespace MigAz.Azure.MigrationTarget
                 }
                 else if(dataDisk.GetType() == typeof(Arm.ClassicDisk))
                 {
-                    Disk targetDataDisk = new Disk(dataDisk);
+                    Disk targetDataDisk = new Disk(dataDisk, this);
                     this.DataDisks.Add(targetDataDisk);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;

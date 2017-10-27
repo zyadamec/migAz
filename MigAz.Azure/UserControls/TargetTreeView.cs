@@ -151,6 +151,57 @@ namespace MigAz.Azure.UserControls
             return exportArtifacts;
         }
 
+        internal void TransitionToManagedDisk(TreeNode targetTreeNode)
+        {
+            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+                throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
+
+            Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
+
+            if (targetDisk.SourceDisk != null && (targetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            {
+                TreeNode diskParentNode = targetTreeNode.Parent;
+
+                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
+                if (targetTreeNode.Parent.Tag != null && targetTreeNode.Parent.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                {
+                    if (diskParentNode.Parent != null)
+                    {
+                        treeTargetARM.Nodes.Remove(targetTreeNode);
+                        diskParentNode.Parent.Nodes.Add(targetTreeNode);
+                        treeTargetARM.SelectedNode = targetTreeNode;
+                    }
+                }
+            }
+        }
+
+        internal void TransitionToClassicDisk(TreeNode targetTreeNode)
+        {
+            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+                throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
+
+            Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
+
+            if (targetDisk.SourceDisk != null && (targetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            {
+                TreeNode diskParentNode = targetTreeNode.Parent;
+
+                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
+                if (targetTreeNode.Parent.Tag != null && targetTreeNode.Parent.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                {
+                    // Seek the Virtual Machine Tree Node
+                    TreeNode virtualMachineNode = SeekARMChildTreeNode(targetTreeNode.Parent.Nodes, targetDisk.ParentVirtualMachine.ToString(), targetDisk.ParentVirtualMachine.ToString(), targetDisk.ParentVirtualMachine, false);
+
+                    if (virtualMachineNode != null)
+                    {
+                        treeTargetARM.Nodes.Remove(targetTreeNode);
+                        virtualMachineNode.Nodes.Add(targetTreeNode);
+                        treeTargetARM.SelectedNode = targetTreeNode;
+                    }
+                }
+            }
+        }
+
         private void SeekAlertSourceRecursive(object sourceObject, TreeNodeCollection nodes)
         {
             foreach (TreeNode treeNode in nodes)
@@ -187,6 +238,7 @@ namespace MigAz.Azure.UserControls
                         }
                     }
                 }
+
                 SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);
             }
         }

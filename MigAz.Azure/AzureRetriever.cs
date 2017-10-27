@@ -1789,7 +1789,7 @@ namespace MigAz.Azure
         {
             foreach (Azure.Arm.ManagedDisk armManagedDisk in await this.GetAzureARMManagedDisks(armResourceGroup))
             {
-                Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk);
+                Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk, null);
                 _ArmTargetManagedDisks.Add(targetManagedDisk);
             }
         }

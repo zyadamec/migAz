@@ -16,7 +16,9 @@ namespace MigAz.Azure.UserControls
         TargetTreeView _TargetTreeView;
         private AzureContext _AzureContext;
         private Azure.MigrationTarget.Disk _TargetDisk;
+        private TreeNode _TargetTreeNode;
         private bool _ShowSizeInGb = true;
+        private bool _IsBinding = false;
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
@@ -51,11 +53,12 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.Disk targetDisk)
+        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, TreeNode targetDiskTreeNode, Azure.MigrationTarget.Disk targetDisk)
         {
             _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
+            _TargetTreeNode = targetDiskTreeNode;
 
             BindCommon();
         }
@@ -64,6 +67,8 @@ namespace MigAz.Azure.UserControls
         {
             if (_TargetDisk == null)
                 throw new ArgumentException("MigrationTarget Disk object cannot be null.");
+
+            _IsBinding = true;
 
             if (_TargetDisk.TargetStorageAccount == null)
                 rbManagedDisk.Checked = true;
@@ -111,6 +116,8 @@ namespace MigAz.Azure.UserControls
                 rbExistingARMStorageAccount.Enabled = false;
                 rbExistingARMStorageAccount.Text = "<Set Resource Group Location>";
             }
+
+            _IsBinding = false;
         }
 
         private void rbManagedDIsk_CheckedChanged(object sender, EventArgs e)
@@ -123,10 +130,12 @@ namespace MigAz.Azure.UserControls
                 txtBlobName.Enabled = false;
                 txtBlobName.Text = String.Empty;
 
-                if (_TargetDisk != null)
+                if (!_IsBinding && _TargetDisk != null)
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                         _TargetDisk.TargetStorageAccount = null;
+
+                    _TargetTreeView.TransitionToManagedDisk(_TargetTreeNode);
 
                     PropertyChanged?.Invoke();
                 }
@@ -155,7 +164,7 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                if (_TargetDisk != null)
+                if (_IsBinding)
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                     {
@@ -168,17 +177,43 @@ namespace MigAz.Azure.UserControls
                                 break;
                             }
                         }
-
-                        // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                        //foreach (Azure.Asm.StorageAccount asmStorageAccount in cmbTargetStorage.Items)
-                        //{
-                        //    if (asmStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                        //    {
-                        //        cmbTargetStorage.SelectedItem = asmStorageAccount;
-                        //        break;
-                        //    }
-                        //}
                     }
+                }
+                else if (_TargetDisk != null)
+                {
+                    if (_TargetDisk.TargetStorageAccount != null)
+                    {
+                        for (int i = 0; i < cmbTargetStorage.Items.Count; i++)
+                        {
+                            Azure.MigrationTarget.StorageAccount cmbStorageAccount = (Azure.MigrationTarget.StorageAccount)cmbTargetStorage.Items[i];
+                            if (cmbStorageAccount.ToString() == _TargetDisk.TargetStorageAccount.ToString())
+                            {
+                                cmbTargetStorage.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Default
+                        if (_TargetDisk.SourceStorageAccount != null)
+                        {
+                            foreach (Azure.MigrationTarget.StorageAccount targetStorageAccount in cmbTargetStorage.Items)
+                            {
+                                if (targetStorageAccount.SourceName == _TargetDisk.SourceStorageAccount.Name)
+                                {
+                                    cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(targetStorageAccount);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (cmbTargetStorage.SelectedIndex == -1 && cmbTargetStorage.Items.Count > 0)
+                            cmbTargetStorage.SelectedIndex = 0;
+                    }
+
+                    _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
+                    PropertyChanged?.Invoke();
                 }
             }
         }
@@ -199,7 +234,7 @@ namespace MigAz.Azure.UserControls
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
 
-                if (_TargetDisk != null)
+                if (_IsBinding)
                 {
                     if (_TargetDisk.TargetStorageAccount != null)
                     {
@@ -217,15 +252,13 @@ namespace MigAz.Azure.UserControls
                                     }
                                 }
                             }
-
-                            // Using a for loop above, because this was always selecting Index 0, even when matched on a higher ( > 0) indexed item
-                            //foreach (Azure.Arm.StorageAccount armStorageAccount in cmbTargetStorage.Items)
-                            //{
-                            //    if (armStorageAccount.Id == _AsmDataDisk.TargetStorageAccount.Id)
-                            //        cmbTargetStorage.SelectedIndex = cmbTargetStorage.Items.IndexOf(armStorageAccount);
-                            //}
                         }
                     }
+                }
+                else if (_TargetDisk != null)
+                {
+                    _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
+                    PropertyChanged?.Invoke();
                 }
             }
 
