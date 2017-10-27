@@ -229,6 +229,12 @@
     <Compile Include="UserControls\ResourceGroupProperties.Designer.cs">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ResourceSummary.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ResourceSummary.Designer.cs">
+      <DependentUpon>ResourceSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\StorageAccountProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -306,6 +312,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceGroupProperties.resx">
       <DependentUpon>ResourceGroupProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ResourceSummary.resx">
+      <DependentUpon>ResourceSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\StorageAccountProperties.resx">
       <DependentUpon>StorageAccountProperties.cs</DependentUpon>

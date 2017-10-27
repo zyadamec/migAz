@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using System.Collections.Generic;
 
 namespace MigAz.Azure.UserControls
 {
@@ -90,7 +91,25 @@ namespace MigAz.Azure.UserControls
             }
 
             // TODO Now Russell
-            //dataGridView1.DataSource = virtualMachine.NetworkInterfaces;
+            AddResourceSummary(new ResourceSummary(virtualMachine.OSVirtualHardDisk, targetTreeView));
+            foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
+            {
+                AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
+            }
+            foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
+            {
+                AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
+            }
+        }
+
+        private void AddResourceSummary(ResourceSummary resourceSummary)
+        {
+            if (pictureBox1.Controls.Count > 0)
+            {
+                resourceSummary.Top = pictureBox1.Controls[pictureBox1.Controls.Count - 1].Top + pictureBox1.Controls[pictureBox1.Controls.Count - 1].Height;
+            }
+
+            pictureBox1.Controls.Add(resourceSummary);
         }
 
         private async Task Properties1_PropertyChanged()

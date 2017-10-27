@@ -162,15 +162,17 @@ namespace MigAz.Azure.UserControls
             {
                 TreeNode diskParentNode = targetTreeNode.Parent;
 
-                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
-                if (targetTreeNode.Parent.Tag != null && targetTreeNode.Parent.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                while (diskParentNode != null && diskParentNode.Tag != null && diskParentNode.Tag.GetType() != typeof(Azure.MigrationTarget.ResourceGroup))
                 {
-                    if (diskParentNode.Parent != null)
-                    {
-                        treeTargetARM.Nodes.Remove(targetTreeNode);
-                        diskParentNode.Parent.Nodes.Add(targetTreeNode);
-                        treeTargetARM.SelectedNode = targetTreeNode;
-                    }
+                    diskParentNode = diskParentNode.Parent;
+                }
+
+                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
+                if (diskParentNode != null)
+                {
+                    treeTargetARM.Nodes.Remove(targetTreeNode);
+                    diskParentNode.Nodes.Add(targetTreeNode);
+                    treeTargetARM.SelectedNode = targetTreeNode;
                 }
             }
         }
@@ -250,7 +252,7 @@ namespace MigAz.Azure.UserControls
 
         public TreeNode SeekARMChildTreeNode(TreeNodeCollection nodeCollection, string name, string text, object tag, bool allowCreated = false)
         {
-            TreeNode[] childNodeMatch = nodeCollection.Find(name, false);
+            TreeNode[] childNodeMatch = nodeCollection.Find(name, true);
 
             foreach (TreeNode matchedNode in childNodeMatch)
             {
@@ -415,34 +417,28 @@ namespace MigAz.Azure.UserControls
 
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
-                if (targetVirtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
+                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
-                    if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
-                    {
-                        // Adding under Virtual Machine, as it is not a managed disk
-                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
-                    }
-                    else
-                    {
-                        // Under Resource Group, as it is a managed Disk
-                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
-                    }
+                    // Adding under Virtual Machine, as it is not a managed disk
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                }
+                else
+                {
+                    // Under Resource Group, as it is a managed Disk
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
                 }
 
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
-                    if (targetVirtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
+                    if (targetDisk.IsUnmanagedDisk)
                     {
-                        if (targetDisk.IsUnmanagedDisk)
-                        {
-                            // Adding under Virtual Machine, as it is not a managed disk
-                            TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
-                        }
-                        else
-                        {
-                            // Under Resource Group, as it is a managed Disk
-                            TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
-                        }
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    }
+                    else
+                    {
+                        // Under Resource Group, as it is a managed Disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
                     }
                 }
 
@@ -451,7 +447,7 @@ namespace MigAz.Azure.UserControls
                     if (targetNetworkInterface.SourceNetworkInterface != null && targetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
                     {
                         // We are only adding as a child node if it is an ASM Network Interface, otherwise we expect this to follow ARM convention in which NIC is a first class object in the resource group (not embededded under the VM).
-                        TreeNode networkInterfaceNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+                        TreeNode networkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
                     }
                 }
 
