@@ -41,6 +41,7 @@ namespace MigAz.Azure.MigrationTarget
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
             {
                 Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, virtualMachine, asmNetworkInterface, targetVirtualNetworks, networkSecurityGroups);
+                migrationNetworkInterface.ParentVirtualMachine = this;
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
 
@@ -154,8 +155,21 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                Azure.MigrationTarget.NetworkInterface migrationNetworkInterface = new Azure.MigrationTarget.NetworkInterface(_AzureContext, armNetworkInterface);
-                this.NetworkInterfaces.Add(migrationNetworkInterface);
+                foreach (NetworkInterface targetNetworkInterface in azureContext.AzureRetriever.ArmTargetNetworkInterfaces)
+                {
+                    if ((targetNetworkInterface.SourceNetworkInterface != null) && (targetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterface)))
+                    {
+                        Azure.Arm.NetworkInterface targetNetworkInterfaceSourceInterface = (Azure.Arm.NetworkInterface)targetNetworkInterface.SourceNetworkInterface;
+                        if (String.Compare(targetNetworkInterfaceSourceInterface.Name, armNetworkInterface.Name, true) == 0)
+                        {
+                            this.NetworkInterfaces.Add(targetNetworkInterface);
+                            targetNetworkInterface.ParentVirtualMachine = this;
+                            break;
+                        }
+                    }
+                }
+
+                
             }
 
             if (virtualMachine.HasPlan)

@@ -16,6 +16,7 @@ namespace MigAz.Azure.MigrationTarget
         private BackEndAddressPool _BackEndAddressPool = null;
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private string _TargetName = String.Empty;
+        private VirtualMachine _ParentVirtualMachine;
 
         private NetworkInterface() { }
 
@@ -25,6 +26,7 @@ namespace MigAz.Azure.MigrationTarget
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+            this.EnableIPForwarding = networkInterface.EnableIpForwarding;
 
             foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
@@ -45,6 +47,7 @@ namespace MigAz.Azure.MigrationTarget
 
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+            this.EnableIPForwarding = networkInterface.EnableIPForwarding;
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
@@ -67,6 +70,12 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _EnableIPForwarding; }
             set { _EnableIPForwarding = value; }
+        }
+
+        public VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
+            set { _ParentVirtualMachine = value; }
         }
 
         public string TargetName
