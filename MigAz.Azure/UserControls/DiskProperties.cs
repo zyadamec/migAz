@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -70,7 +71,7 @@ namespace MigAz.Azure.UserControls
 
             _IsBinding = true;
 
-            if (_TargetDisk.TargetStorageAccount == null)
+            if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
                 rbManagedDisk.Checked = true;
             if (_TargetDisk.TargetStorageAccount != null && _TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                 rbStorageAccountInMigration.Checked = true;
@@ -126,15 +127,22 @@ namespace MigAz.Azure.UserControls
             if (senderButton.Checked)
             {
                 cmbTargetStorage.Items.Clear();
-                cmbTargetStorage.Enabled = false;
+                cmbTargetStorage.Enabled = true;
+                cmbTargetStorage.Items.Add("Standard");
+                cmbTargetStorage.Items.Add("Premium");
+
                 txtBlobName.Enabled = false;
                 txtBlobName.Text = String.Empty;
 
-                if (!_IsBinding && _TargetDisk != null)
+                if (_IsBinding)
                 {
-                    if (_TargetDisk.TargetStorageAccount != null)
-                        _TargetDisk.TargetStorageAccount = null;
-
+                    int comboBoxIndex = cmbTargetStorage.Items.IndexOf(_TargetDisk.TargetStorageAccount.StorageAccountType.ToString());
+                    if (comboBoxIndex >= 0)
+                        cmbTargetStorage.SelectedIndex = comboBoxIndex;
+                }
+                else
+                {
+                    _TargetDisk.TargetStorageAccount = new ManagedDiskStorage();
                     _TargetTreeView.TransitionToManagedDisk(_TargetTreeNode);
 
                     PropertyChanged?.Invoke();
@@ -269,17 +277,29 @@ namespace MigAz.Azure.UserControls
         {
             ComboBox cmbSender = (ComboBox)sender;
 
-            if (_TargetDisk != null)
-                _TargetDisk.TargetStorageAccount = null;
-
-            if (cmbSender.SelectedItem != null)
+            if (_TargetDisk != null && _TargetDisk.TargetStorageAccount != null)
             {
-                IStorageTarget targetStorageAccount = (IStorageTarget)cmbSender.SelectedItem;
-                if (_TargetDisk != null)
-                    _TargetDisk.TargetStorageAccount = targetStorageAccount;
-            }
+                if (_TargetDisk.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
+                {
+                    ManagedDiskStorage managedDiskStorage = (ManagedDiskStorage)_TargetDisk.TargetStorageAccount;
+                    if (cmbSender.SelectedItem.ToString() == "Premium")
+                        managedDiskStorage.StorageAccountType = StorageAccountType.Premium;
+                    else
+                        managedDiskStorage.StorageAccountType = StorageAccountType.Standard;
+                }
+                else
+                {
+                    if (cmbSender.SelectedItem != null)
+                    {
+                        IStorageTarget targetStorageAccount = (IStorageTarget)cmbSender.SelectedItem;
+                        _TargetDisk.TargetStorageAccount = targetStorageAccount;
+                    }
+                    else
+                        _TargetDisk.TargetStorageAccount = null;
+                }
 
-            PropertyChanged?.Invoke();
+                PropertyChanged?.Invoke();
+            }
         }
 
         private void txtTargetDiskName_TextChanged(object sender, EventArgs e)

@@ -32,7 +32,7 @@ namespace MigAz.Azure.Asm
 
         public string MediaLink
         {
-            get { return _DataDiskNode.SelectSingleNode("MediaLink").InnerText; }
+            get { return _DataDiskNode.SelectSingleNode("MediaLink").InnerText.Replace("/vhds/", "/asdfasdf/"); }
         }
 
         public string DiskName

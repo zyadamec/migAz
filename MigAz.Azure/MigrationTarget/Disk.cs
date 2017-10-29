@@ -156,7 +156,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount == null;
+                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage);
             }
         }
 
@@ -164,7 +164,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null;
+                return this.TargetStorageAccount != null && (this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) || this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount));
             }
         }
         public string ReferenceId
