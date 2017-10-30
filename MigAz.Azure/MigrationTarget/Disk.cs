@@ -111,14 +111,12 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-
-
         public IStorageAccount SourceStorageAccount
         {
             get; private set;
         }
 
-        public IStorageTarget TargetStorageAccount
+        public IStorageTarget TargetStorage
         {
             get;
             set;
@@ -137,8 +135,8 @@ namespace MigAz.Azure.MigrationTarget
         public StorageAccountType StorageAccountType
         {
             get {
-                if (this.TargetStorageAccount != null)
-                    return this.TargetStorageAccount.StorageAccountType;
+                if (this.TargetStorage != null)
+                    return this.TargetStorage.StorageAccountType;
 
                 return StorageAccountType.Premium; // TODO Russell
             }
@@ -148,7 +146,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return "https://" + TargetStorageAccount.ToString() + "." + TargetStorageAccount.BlobStorageNamespace + "/vhds/" + this.TargetStorageAccountBlob;
+                return "https://" + TargetStorage.ToString() + "." + TargetStorage.BlobStorageNamespace + "/vhds/" + this.TargetStorageAccountBlob;
             }
         }
 
@@ -156,7 +154,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage);
+                return this.TargetStorage != null && this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage);
             }
         }
 
@@ -164,14 +162,14 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null && (this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.StorageAccount) || this.TargetStorageAccount.GetType() == typeof(Azure.Arm.StorageAccount));
+                return this.TargetStorage != null && (this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) || this.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount));
             }
         }
         public string ReferenceId
         {
             get
             {
-                if (this.TargetStorageAccount == null)
+                if (this.TargetStorage == null)
                     return "[resourceId('Microsoft.Compute/disks/', '" + this.ToString() + "')]";
                 else return 
                         String.Empty;

@@ -29,12 +29,12 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = virtualMachine.RoleName;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
-            this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
+            this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
                 Disk targetDataDisk = new Disk(asmDataDisk, this);
-                targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
+                targetDataDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
                 this.DataDisks.Add(targetDataDisk);
             }
 
@@ -119,7 +119,7 @@ namespace MigAz.Azure.MigrationTarget
             if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
                 Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
-                this.OSVirtualHardDisk.TargetStorageAccount = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
             }
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
@@ -149,7 +149,7 @@ namespace MigAz.Azure.MigrationTarget
                     this.DataDisks.Add(targetDataDisk);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
-                    targetDataDisk.TargetStorageAccount = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                    targetDataDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
                 }
             }
 
