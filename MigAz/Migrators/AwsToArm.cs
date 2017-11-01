@@ -94,7 +94,7 @@ namespace MigAz.Migrators
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.2.15.0";
+            string currentVersion = "2.3.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version/AWStoARM", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

@@ -341,141 +341,10 @@ namespace MigAz.Azure.Generator
                     }
                 }
 
-                if (virtualMachine.OSVirtualHardDisk.TargetStorage == null)
-                    this.AddAlert(AlertType.Error, "OS Disk '" + virtualMachine.OSVirtualHardDisk.ToString() + "' Target Storage must be specified.", virtualMachine.OSVirtualHardDisk);
-
-                if (virtualMachine.OSVirtualHardDisk.DiskSizeInGB == 0)
-                    this.AddAlert(AlertType.Error, "OS Disk '" + virtualMachine.OSVirtualHardDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", virtualMachine.OSVirtualHardDisk);
-
-                if (virtualMachine.OSVirtualHardDisk.IsManagedDisk)
-                {
-                    bool targetDiskInExport = false;
-                    foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
-                    {
-                        if (targetDisk.SourceName == virtualMachine.OSVirtualHardDisk.SourceName) // todo, also check that this is the same VM, not just by name?
-                            targetDiskInExport = true;
-                    }
-
-                    if (!targetDiskInExport)
-                    {
-                        this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.SourceName + "' references Managed Disk '" + virtualMachine.OSVirtualHardDisk.SourceName + "' which has not been added as an export resource.", virtualMachine);
-                    }
-                }
-
-                if (virtualMachine.OSVirtualHardDisk.SourceDisk != null && virtualMachine.OSVirtualHardDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
-                {
-                    Azure.Arm.ClassicDisk sourceDisk = (Azure.Arm.ClassicDisk) virtualMachine.OSVirtualHardDisk.SourceDisk;
-                    if (sourceDisk.IsEncrypted)
-                    {
-                        this.AddAlert(AlertType.Error, "OS Disk for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", virtualMachine);
-                    }
-                }
-
-                if (virtualMachine.OSVirtualHardDisk.TargetStorage != null)
-                {
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
-                    {
-                        Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorage;
-                        if (armStorageAccount.Location.Name != _ExportArtifacts.ResourceGroup.TargetLocation.Name)
-                        {
-                            this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", virtualMachine);
-                        }
-                    }
-                    else if (virtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                    {
-                        Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)virtualMachine.OSVirtualHardDisk.TargetStorage;
-                        bool targetAsmStorageExists = false;
-
-                        foreach (Azure.MigrationTarget.StorageAccount asmStorageAccount in _ExportArtifacts.StorageAccounts)
-                        {
-                            if (asmStorageAccount.ToString() == targetStorageAccount.ToString())
-                            {
-                                targetAsmStorageExists = true;
-                                break;
-                            }
-                        }
-
-                        if (!targetAsmStorageExists)
-                            this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it is not included in the migration / template.", virtualMachine);
-                    }
-
-
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
-                        virtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
-                    {
-                        if (!virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
-                            this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + virtualMachine.OSVirtualHardDisk.TargetStorageAccountBlob + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it must end with '.vhd'.", virtualMachine);
-                    }
-                }
-
+                ValidateDisk(virtualMachine.OSVirtualHardDisk);
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
-                    if (dataDisk.TargetStorage == null)
-                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' Target Storage must be specified.", dataDisk);
-
-                    if (dataDisk.DiskSizeInGB == 0)
-                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' does not have a Disk Size (in GB) defined.  Disk Size (not to exceed 4095) is required.", dataDisk);
-
-                    if (dataDisk.IsManagedDisk)
-                    {
-                        bool targetDiskInExport = false;
-                        foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
-                        {
-                            if (targetDisk.SourceName == dataDisk.SourceName)
-                                targetDiskInExport = true;
-                        }
-
-                        if (!targetDiskInExport)
-                        {
-                            this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.SourceName + "' references Managed Disk '" + dataDisk.SourceName + "' which has not been added as an export resource.", virtualMachine);
-                        }
-                    }
-
-
-                    if (dataDisk.SourceDisk != null && dataDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
-                    {
-                        if (dataDisk.SourceDisk.IsEncrypted)
-                        {
-                            this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", dataDisk);
-                        }
-                    }
-
-                    if (dataDisk.TargetStorage != null)
-                    {
-                        if (dataDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
-                        {
-                            Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)dataDisk.TargetStorage;
-                            if (armStorageAccount.Location.Name != _ExportArtifacts.ResourceGroup.TargetLocation.Name)
-                            {
-                                this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", dataDisk);
-                            }
-                        }
-                        else if (dataDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                        {
-                            Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)dataDisk.TargetStorage;
-                            bool targetStorageExists = false;
-
-                            foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                            {
-                                if (storageAccount.ToString() == targetStorageAccount.ToString())
-                                {
-                                    targetStorageExists = true;
-                                    break;
-                                }
-                            }
-
-                            if (!targetStorageExists)
-                                this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Data Disk '" + dataDisk.ToString() + "' is invalid, as it is not included in the migration / template.", dataDisk);
-                        }
-
-                        if (dataDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
-                            dataDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
-                        {
-                            if (!dataDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
-                                this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + dataDisk.TargetStorageAccountBlob + "' for Virtual Machine '" + virtualMachine.ToString() + "' OS Disk is invalid, as it must end with '.vhd'.", dataDisk);
-                        }
-                    }
-
+                    ValidateDisk(dataDisk);
                 }
 
                 if (!virtualMachine.IsManagedDisks && !virtualMachine.IsUnmanagedDisks)
@@ -502,6 +371,94 @@ namespace MigAz.Azure.Generator
             StatusProvider.UpdateStatus("Ready");
 
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
+        }
+
+        private void ValidateDisk(MigrationTarget.Disk targetDisk)
+        {
+            if (targetDisk.DiskSizeInGB == 0)
+                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' does not have a Disk Size defined.  Disk Size (not to exceed 4095 GB) is required.", targetDisk);
+
+            if (targetDisk.IsSmallerThanSourceDisk)
+                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Size of " + targetDisk.DiskSizeInGB.ToString() + " GB cannot be smaller than the source Disk Size of " + targetDisk.SourceDisk.DiskSizeGb.ToString() + " GB.", targetDisk);
+
+            if (targetDisk.IsManagedDisk)
+            {
+                bool targetDiskInExport = false;
+                foreach (Azure.MigrationTarget.Disk exportDisk in _ExportArtifacts.Disks)
+                {
+                    if (targetDisk.SourceName == exportDisk.SourceName)
+                        targetDiskInExport = true;
+                }
+
+                if (!targetDiskInExport && targetDisk.ParentVirtualMachine != null)
+                {
+                    this.AddAlert(AlertType.Error, "Virtual Machine '" + targetDisk.ParentVirtualMachine.SourceName + "' references Managed Disk '" + targetDisk.SourceName + "' which has not been added as an export resource.", targetDisk.ParentVirtualMachine);
+                }
+            }
+
+            if (targetDisk.SourceDisk != null && targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
+            {
+                if (targetDisk.SourceDisk.IsEncrypted)
+                {
+                    this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' is encrypted.  MigAz does not contain support for moving encrypted Azure Compute VMs.", targetDisk);
+                }
+            }
+
+            if (targetDisk.TargetStorage == null)
+                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Target Storage must be specified.", targetDisk);
+            else
+            {
+                if (targetDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
+                {
+                    Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)targetDisk.TargetStorage;
+                    if (armStorageAccount.Location.Name != _ExportArtifacts.ResourceGroup.TargetLocation.Name)
+                    {
+                        this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", targetDisk);
+                    }
+                }
+                else if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)targetDisk.TargetStorage;
+                    bool targetStorageExists = false;
+
+                    foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                    {
+                        if (storageAccount.ToString() == targetStorageAccount.ToString())
+                        {
+                            targetStorageExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!targetStorageExists)
+                        this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Disk '" + targetDisk.ToString() + "' is invalid, as it is not included in the migration / template.", targetDisk);
+                }
+
+                if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
+                    targetDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
+                {
+                    if (!targetDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
+                        this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + targetDisk.TargetStorageAccountBlob + "' for Disk is invalid, as it must end with '.vhd'.", targetDisk);
+                }
+
+                if (targetDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium)
+                {
+                    if (targetDisk.DiskSizeInGB > 0 && targetDisk.DiskSizeInGB < 32)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 32GB (P4), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 32 && targetDisk.DiskSizeInGB < 64)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 64GB (P6), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 64 && targetDisk.DiskSizeInGB < 128)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 128GB (P10), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 128 && targetDisk.DiskSizeInGB < 512)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 512GB (P20), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 512 && targetDisk.DiskSizeInGB < 1024)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 1024GB (P30), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 1024 && targetDisk.DiskSizeInGB < 2048)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 2048GB (P40), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 2048 && targetDisk.DiskSizeInGB < 4095)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 4095GB (P50), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                }
+            }
         }
 
         public async Task GenerateStreams()

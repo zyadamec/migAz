@@ -826,7 +826,7 @@ namespace MigAz.Azure
 
             foreach (var managedDisk in managedDisks)
             {
-                Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(managedDisk);
+                Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(this._AzureContext, managedDisk);
                 await armManagedDisk.InitializeChildrenAsync(_AzureContext);
                 resourceGroupManagedDisks.Add(armManagedDisk);
             }
@@ -1016,7 +1016,7 @@ namespace MigAz.Azure
 
             foreach (var virtualMachine in virtualMachines)
             {
-                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(virtualMachine);
+                Arm.VirtualMachine armVirtualMachine = new Arm.VirtualMachine(this._AzureContext, virtualMachine);
                 await armVirtualMachine.InitializeChildrenAsync(_AzureContext);
                 resourceGroupVirtualMachines.Add(armVirtualMachine);
                 _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Loaded ARM Virtual Machine '" + armVirtualMachine.Name + "'.");
@@ -1517,7 +1517,7 @@ namespace MigAz.Azure
             return JObject.Parse(azureRestResponse.Response);
         }
 
-        private async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
+        public async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Url: " + azureRestRequest.Url);
 

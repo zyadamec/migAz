@@ -176,6 +176,20 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public bool IsSmallerThanSourceDisk
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return false;
+
+                if (this.DiskSizeInGB < this.SourceDisk.DiskSizeGb)
+                    return true;
+
+                return false;
+            }
+        }
+
         public override string ToString()
         {
             return this.TargetName;
