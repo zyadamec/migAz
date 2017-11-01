@@ -52,6 +52,8 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.txtTargetSize = new System.Windows.Forms.TextBox();
+            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.label13 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -307,10 +309,30 @@
             this.txtTargetSize.TextChanged += new System.EventHandler(this.txtTargetSize_TextChanged);
             this.txtTargetSize.Validating += new System.ComponentModel.CancelEventHandler(this.txtTargetSize_Validating);
             // 
+            // virtualMachineSummary
+            // 
+            this.virtualMachineSummary.AutoSize = true;
+            this.virtualMachineSummary.Location = new System.Drawing.Point(103, 329);
+            this.virtualMachineSummary.Name = "virtualMachineSummary";
+            this.virtualMachineSummary.Size = new System.Drawing.Size(71, 28);
+            this.virtualMachineSummary.TabIndex = 32;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(11, 329);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(83, 13);
+            this.label13.TabIndex = 33;
+            this.label13.Text = "Virtual Machine:";
+            // 
             // DiskProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.virtualMachineSummary);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.txtTargetSize);
             this.Controls.Add(this.lblSourceSizeGb);
@@ -337,7 +359,7 @@
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DiskProperties";
-            this.Size = new System.Drawing.Size(320, 334);
+            this.Size = new System.Drawing.Size(320, 388);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -369,5 +391,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtTargetSize;
+        private ResourceSummary virtualMachineSummary;
+        private System.Windows.Forms.Label label13;
     }
 }

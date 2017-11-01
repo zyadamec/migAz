@@ -38,11 +38,13 @@
             this.txtTargetName = new System.Windows.Forms.TextBox();
             this.lblSourceName = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.networkSelectionControl1 = new MigAz.Azure.UserControls.NetworkSelectionControl();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.rbIPForwardingDisabled = new System.Windows.Forms.RadioButton();
             this.rbIPForwardingEnabled = new System.Windows.Forms.RadioButton();
+            this.label13 = new System.Windows.Forms.Label();
+            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.networkSelectionControl1 = new MigAz.Azure.UserControls.NetworkSelectionControl();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,15 +148,6 @@
             this.label6.TabIndex = 32;
             this.label6.Text = "Source Name:";
             // 
-            // networkSelectionControl1
-            // 
-            this.networkSelectionControl1.ExistingARMVNetEnabled = true;
-            this.networkSelectionControl1.Location = new System.Drawing.Point(2, 144);
-            this.networkSelectionControl1.Name = "networkSelectionControl1";
-            this.networkSelectionControl1.Size = new System.Drawing.Size(310, 150);
-            this.networkSelectionControl1.TabIndex = 38;
-            this.networkSelectionControl1.VirtualNetworkTarget = null;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -196,10 +189,39 @@
             this.rbIPForwardingEnabled.UseVisualStyleBackColor = true;
             this.rbIPForwardingEnabled.CheckedChanged += new System.EventHandler(this.rbIPForwardingEnabled_CheckedChanged);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(2, 327);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(83, 13);
+            this.label13.TabIndex = 44;
+            this.label13.Text = "Virtual Machine:";
+            // 
+            // virtualMachineSummary
+            // 
+            this.virtualMachineSummary.AutoSize = true;
+            this.virtualMachineSummary.Location = new System.Drawing.Point(94, 327);
+            this.virtualMachineSummary.Name = "virtualMachineSummary";
+            this.virtualMachineSummary.Size = new System.Drawing.Size(71, 28);
+            this.virtualMachineSummary.TabIndex = 43;
+            // 
+            // networkSelectionControl1
+            // 
+            this.networkSelectionControl1.ExistingARMVNetEnabled = true;
+            this.networkSelectionControl1.Location = new System.Drawing.Point(2, 144);
+            this.networkSelectionControl1.Name = "networkSelectionControl1";
+            this.networkSelectionControl1.Size = new System.Drawing.Size(310, 150);
+            this.networkSelectionControl1.TabIndex = 38;
+            this.networkSelectionControl1.VirtualNetworkTarget = null;
+            // 
             // NetworkInterfaceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.virtualMachineSummary);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblSourceName);
@@ -239,5 +261,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton rbIPForwardingDisabled;
         private System.Windows.Forms.RadioButton rbIPForwardingEnabled;
+        private System.Windows.Forms.Label label13;
+        private ResourceSummary virtualMachineSummary;
     }
 }

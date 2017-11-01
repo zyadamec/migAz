@@ -70,6 +70,8 @@ namespace MigAz.Azure.UserControls
                     lblStaticIpAddress.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
                 }
             }
+
+            virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
         }
         
        

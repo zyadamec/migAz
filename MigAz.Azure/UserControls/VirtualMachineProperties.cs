@@ -90,7 +90,8 @@ namespace MigAz.Azure.UserControls
                 lblTargetLocationRequired.Visible = true;
             }
 
-            // TODO Now Russell
+            availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
+
             AddResourceSummary(new ResourceSummary(virtualMachine.OSVirtualHardDisk, targetTreeView));
             foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
             {

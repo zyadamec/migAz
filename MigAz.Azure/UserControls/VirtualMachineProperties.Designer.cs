@@ -53,6 +53,8 @@
             this.lblSourceMemoryInGb = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.availabilitySetSummary = new MigAz.Azure.UserControls.ResourceSummary();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -149,7 +151,7 @@
             // lblTargetNumberOfCores
             // 
             this.lblTargetNumberOfCores.AutoSize = true;
-            this.lblTargetNumberOfCores.Location = new System.Drawing.Point(104, 187);
+            this.lblTargetNumberOfCores.Location = new System.Drawing.Point(104, 216);
             this.lblTargetNumberOfCores.Name = "lblTargetNumberOfCores";
             this.lblTargetNumberOfCores.Size = new System.Drawing.Size(13, 13);
             this.lblTargetNumberOfCores.TabIndex = 25;
@@ -158,7 +160,7 @@
             // lblTargetMemoryInGb
             // 
             this.lblTargetMemoryInGb.AutoSize = true;
-            this.lblTargetMemoryInGb.Location = new System.Drawing.Point(104, 207);
+            this.lblTargetMemoryInGb.Location = new System.Drawing.Point(104, 236);
             this.lblTargetMemoryInGb.Name = "lblTargetMemoryInGb";
             this.lblTargetMemoryInGb.Size = new System.Drawing.Size(13, 13);
             this.lblTargetMemoryInGb.TabIndex = 26;
@@ -177,7 +179,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(20, 187);
+            this.label2.Location = new System.Drawing.Point(20, 216);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
@@ -187,7 +189,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 207);
+            this.label3.Location = new System.Drawing.Point(20, 236);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 13);
@@ -197,7 +199,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 227);
+            this.label5.Location = new System.Drawing.Point(20, 256);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
@@ -207,7 +209,7 @@
             // lblTargetMaxDataDisks
             // 
             this.lblTargetMaxDataDisks.AutoSize = true;
-            this.lblTargetMaxDataDisks.Location = new System.Drawing.Point(104, 227);
+            this.lblTargetMaxDataDisks.Location = new System.Drawing.Point(104, 256);
             this.lblTargetMaxDataDisks.Name = "lblTargetMaxDataDisks";
             this.lblTargetMaxDataDisks.Size = new System.Drawing.Size(13, 13);
             this.lblTargetMaxDataDisks.TabIndex = 30;
@@ -296,16 +298,38 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(9, 266);
+            this.pictureBox1.Location = new System.Drawing.Point(9, 277);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(299, 418);
+            this.pictureBox1.Size = new System.Drawing.Size(299, 401);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 40;
             this.pictureBox1.TabStop = false;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(20, 189);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 41;
+            this.label8.Text = "Availability Set:";
+            // 
+            // availabilitySetSummary
+            // 
+            this.availabilitySetSummary.AutoSize = true;
+            this.availabilitySetSummary.Location = new System.Drawing.Point(105, 188);
+            this.availabilitySetSummary.Name = "availabilitySetSummary";
+            this.availabilitySetSummary.Size = new System.Drawing.Size(71, 28);
+            this.availabilitySetSummary.TabIndex = 42;
             // 
             // VirtualMachineProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.Controls.Add(this.availabilitySetSummary);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblSourceMaxDataDisks);
             this.Controls.Add(this.label13);
@@ -366,5 +390,7 @@
         private System.Windows.Forms.Label lblSourceMemoryInGb;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label8;
+        private ResourceSummary availabilitySetSummary;
     }
 }

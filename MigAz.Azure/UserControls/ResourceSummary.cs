@@ -16,7 +16,7 @@ namespace MigAz.Azure.UserControls
         private IMigrationTarget _MigrationTarget;
         private TargetTreeView _TargetTreeView;
 
-        private ResourceSummary()
+        public ResourceSummary()
         {
             InitializeComponent();
         }
@@ -24,20 +24,38 @@ namespace MigAz.Azure.UserControls
         public ResourceSummary(IMigrationTarget migrationTarget, TargetTreeView targetTreeView)
         {
             InitializeComponent();
+            Bind(migrationTarget, targetTreeView);
+        }
+
+        public void Bind(IMigrationTarget migrationTarget, TargetTreeView targetTreeView)
+        {
             _MigrationTarget = migrationTarget;
             _TargetTreeView = targetTreeView;
 
-            if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.Disk))
-                pictureBox1.Image = _TargetTreeView.ImageList.Images["Disk"];
-            else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkInterface"];
+            if (_MigrationTarget != null && _TargetTreeView != null)
+            {
+                if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.Disk))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["Disk"];
+                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkInterface"];
+                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["VirtualMachine"];
+                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["AvailabilitySet"];
 
-            label1.Text = _MigrationTarget.ToString();
+                label1.Text = _MigrationTarget.ToString();
+            }
+            else
+            {
+                pictureBox1.Visible = false;
+                label1.Visible = false;
+            }
         }
 
         private void ResourceSummary_Click(object sender, EventArgs e)
         {
-            _TargetTreeView.SeekAlertSource(_MigrationTarget);
+            if (_TargetTreeView != null && _MigrationTarget != null)
+                _TargetTreeView.SeekAlertSource(_MigrationTarget);
         }
     }
 }

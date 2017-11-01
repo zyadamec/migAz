@@ -260,6 +260,8 @@ namespace MigAz.Azure.UserControls
                         {
                             if (sourceObject.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
                                 treeTargetARM.SelectedNode = treeNode;
+                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && sourceObject.ToString() == nodeObject.ToString())
+                                treeTargetARM.SelectedNode = treeNode;
                             else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.VirtualMachine) && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
                             else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.Disk) && sourceObject.ToString() == nodeObject.ToString())
