@@ -40,9 +40,8 @@ Select-AzureRmSubscription{subscriptionSwitch}</pre>
 <pre>New-AzureRmResourceGroup -Name "{resourceGroupName}" -Location "{location}"</pre>
             </li>
             <li>
-                <p>Deploy your template to the new Resource Group. Note you will see errors relating to missing VHD files if your 
-                    template contains VMs. This is expected.</p>
-<pre>New-AzureRmResourceGroupDeployment -ResourceGroupName "{resourceGroupName}" -TemplateFile "{templatePath}"</pre>
+                <p>Deploy your storage account template (if generated) to the new Resource Group.</p>
+<pre>New-AzureRmResourceGroupDeployment -ResourceGroupName "{resourceGroupName}" -TemplateFile "{storageTemplatePath}"</pre>
             </li>
             <li>
                 <p>If your template contains VMs, run the script to snapshot and copy the VHDs from your source to your target 

@@ -1809,6 +1809,7 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
             instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
+            instructionContent = instructionContent.Replace("{storageTemplatePath}", GetStorageTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
             instructionContent = instructionContent.Replace("{resourceGroupName}", this.TargetResourceGroupName);
             instructionContent = instructionContent.Replace("{location}", this.TargetResourceGroupLocation);
@@ -1833,6 +1834,11 @@ namespace MigAz.Azure.Generator
         public string GetTemplatePath()
         {
             return Path.Combine(this.OutputDirectory, "export.json");
+        }
+
+        public string GetStorageTemplatePath()
+        {
+            return Path.Combine(this.OutputDirectory, "storageaccounts.json");
         }
 
         public string GetInstructionPath()
