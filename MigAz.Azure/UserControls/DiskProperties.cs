@@ -118,6 +118,10 @@ namespace MigAz.Azure.UserControls
                 rbExistingARMStorageAccount.Text = "<Set Resource Group Location>";
             }
 
+            if (!_TargetTreeView.HasStorageAccount)
+            {
+                rbStorageAccountInMigration.Enabled = false;
+            }
             _IsBinding = false;
         }
 
@@ -142,8 +146,12 @@ namespace MigAz.Azure.UserControls
                 }
                 else
                 {
-                    _TargetDisk.TargetStorage = new ManagedDiskStorage();
+                    _TargetDisk.TargetStorage = new ManagedDiskStorage(_TargetDisk);
                     _TargetTreeView.TransitionToManagedDisk(_TargetTreeNode);
+
+                    int comboBoxIndex = cmbTargetStorage.Items.IndexOf(_TargetDisk.TargetStorage.StorageAccountType.ToString());
+                    if (comboBoxIndex >= 0)
+                        cmbTargetStorage.SelectedIndex = comboBoxIndex;
 
                     PropertyChanged?.Invoke();
                 }

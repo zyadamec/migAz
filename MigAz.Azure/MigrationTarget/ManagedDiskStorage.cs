@@ -11,6 +11,14 @@ namespace MigAz.Azure.MigrationTarget
     {
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium;
 
+        public ManagedDiskStorage(Disk targetDisk)
+        {
+            if (targetDisk != null)
+            {
+                _StorageAccountType = targetDisk.StorageAccountType;
+            }
+        }
+
         public string BlobStorageNamespace
         {
             get

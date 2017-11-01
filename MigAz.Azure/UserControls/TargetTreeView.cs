@@ -85,7 +85,38 @@ namespace MigAz.Azure.UserControls
         }
 
         public ISettingsProvider SettingsProvider { get; set; }
+        public bool HasStorageAccount
+        {
+            get
+            {
+                bool exists = false;
 
+                foreach (TreeNode treeNode in treeTargetARM.Nodes)
+                {
+                    exists = this.ContainTagTypeRecursive(treeNode, typeof(StorageAccount));
+                    if (exists)
+                        return true;
+                }
+
+                return exists;
+            }
+        }
+
+        private bool ContainTagTypeRecursive(TreeNode parentTreeNode, System.Type tagType)
+        {
+            if (parentTreeNode.Tag != null && parentTreeNode.Tag.GetType() == tagType)
+                return true;
+            else
+            {
+                foreach (TreeNode selectedNode in parentTreeNode.Nodes)
+                {
+                    if (ContainTagTypeRecursive(selectedNode, tagType))
+                        return true;
+                }
+
+                return false;
+            }
+        }
         private void GetExportArtifactsRecursive(TreeNode parentTreeNode, ref ExportArtifacts exportArtifacts)
         {
             foreach (TreeNode selectedNode in parentTreeNode.Nodes)
