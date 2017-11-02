@@ -341,16 +341,21 @@ namespace MigAz.Azure.Generator
                     }
                 }
 
-                ValidateDisk(virtualMachine.OSVirtualHardDisk);
+                ValidateVMDisk(virtualMachine.OSVirtualHardDisk);
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
-                    ValidateDisk(dataDisk);
+                    ValidateVMDisk(dataDisk);
                 }
 
                 if (!virtualMachine.IsManagedDisks && !virtualMachine.IsUnmanagedDisks)
                 {
                     this.AddAlert(AlertType.Error, "All OS and Data Disks for Virtual Machine '" + virtualMachine.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", virtualMachine);
                 }
+            }
+
+            foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
+            {
+                ValidateDiskStandards(targetDisk);
             }
 
             // todo now asap - Add test for NSGs being present in Migration
@@ -373,16 +378,14 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
-        private void ValidateDisk(MigrationTarget.Disk targetDisk)
+        private void ValidateVMDisk(MigrationTarget.Disk targetDisk)
         {
-            if (targetDisk.DiskSizeInGB == 0)
-                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' does not have a Disk Size defined.  Disk Size (not to exceed 4095 GB) is required.", targetDisk);
-
-            if (targetDisk.IsSmallerThanSourceDisk)
-                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Size of " + targetDisk.DiskSizeInGB.ToString() + " GB cannot be smaller than the source Disk Size of " + targetDisk.SourceDisk.DiskSizeGb.ToString() + " GB.", targetDisk);
-
             if (targetDisk.IsManagedDisk)
             {
+                // All Managed Disks are included in the Export Artifacts, so we aren't including a call here to ValidateDiskStandards for Managed Disks.  
+                // Only non Managed Disks are validated against Disk Standards below.
+
+                // VM References a managed disk, ensure it is included in the Export Artifacts
                 bool targetDiskInExport = false;
                 foreach (Azure.MigrationTarget.Disk exportDisk in _ExportArtifacts.Disks)
                 {
@@ -395,6 +398,21 @@ namespace MigAz.Azure.Generator
                     this.AddAlert(AlertType.Error, "Virtual Machine '" + targetDisk.ParentVirtualMachine.SourceName + "' references Managed Disk '" + targetDisk.SourceName + "' which has not been added as an export resource.", targetDisk.ParentVirtualMachine);
                 }
             }
+            else
+            {
+                // We are calling Validate Disk Standards here (only for non-managed disks, as noted above) as all Managed Disks are validated for Disk Standards through the ExportArtifacts.Disks Collection
+                ValidateDiskStandards(targetDisk);
+            }
+
+        }
+
+        private void ValidateDiskStandards(MigrationTarget.Disk targetDisk)
+        {
+            if (targetDisk.DiskSizeInGB == 0)
+                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' does not have a Disk Size defined.  Disk Size (not to exceed 4095 GB) is required.", targetDisk);
+
+            if (targetDisk.IsSmallerThanSourceDisk)
+                this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Size of " + targetDisk.DiskSizeInGB.ToString() + " GB cannot be smaller than the source Disk Size of " + targetDisk.SourceDisk.DiskSizeGb.ToString() + " GB.", targetDisk);
 
             if (targetDisk.SourceDisk != null && targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {

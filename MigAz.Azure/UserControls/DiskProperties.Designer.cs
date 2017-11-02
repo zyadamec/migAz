@@ -129,7 +129,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 158);
+            this.label5.Location = new System.Drawing.Point(11, 177);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(61, 13);
@@ -140,7 +140,7 @@
             // 
             this.rbExistingARMStorageAccount.AutoSize = true;
             this.rbExistingARMStorageAccount.Enabled = false;
-            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(103, 201);
+            this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(103, 220);
             this.rbExistingARMStorageAccount.Margin = new System.Windows.Forms.Padding(2);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
             this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(173, 17);
@@ -152,7 +152,7 @@
             // rbStorageAccountInMigration
             // 
             this.rbStorageAccountInMigration.AutoSize = true;
-            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(103, 179);
+            this.rbStorageAccountInMigration.Location = new System.Drawing.Point(103, 198);
             this.rbStorageAccountInMigration.Margin = new System.Windows.Forms.Padding(2);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
             this.rbStorageAccountInMigration.Size = new System.Drawing.Size(151, 17);
@@ -164,7 +164,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(11, 225);
+            this.label7.Location = new System.Drawing.Point(11, 244);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(81, 13);
@@ -176,7 +176,7 @@
             this.cmbTargetStorage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTargetStorage.Enabled = false;
             this.cmbTargetStorage.FormattingEnabled = true;
-            this.cmbTargetStorage.Location = new System.Drawing.Point(103, 223);
+            this.cmbTargetStorage.Location = new System.Drawing.Point(103, 242);
             this.cmbTargetStorage.Margin = new System.Windows.Forms.Padding(2);
             this.cmbTargetStorage.Name = "cmbTargetStorage";
             this.cmbTargetStorage.Size = new System.Drawing.Size(198, 21);
@@ -201,24 +201,24 @@
             this.label6.Location = new System.Drawing.Point(2, 0);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(76, 13);
+            this.label6.Size = new System.Drawing.Size(47, 13);
             this.label6.TabIndex = 21;
-            this.label6.Text = "Source Disk";
+            this.label6.Text = "Source";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(5, 131);
+            this.label8.Location = new System.Drawing.Point(5, 123);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(73, 13);
+            this.label8.Size = new System.Drawing.Size(44, 13);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Target Disk";
+            this.label8.Text = "Target";
             // 
             // txtTargetDiskName
             // 
-            this.txtTargetDiskName.Location = new System.Drawing.Point(103, 258);
+            this.txtTargetDiskName.Location = new System.Drawing.Point(103, 277);
             this.txtTargetDiskName.Margin = new System.Windows.Forms.Padding(2);
             this.txtTargetDiskName.Name = "txtTargetDiskName";
             this.txtTargetDiskName.Size = new System.Drawing.Size(196, 20);
@@ -229,7 +229,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(11, 259);
+            this.label9.Location = new System.Drawing.Point(11, 278);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(62, 13);
@@ -239,7 +239,7 @@
             // rbManagedDisk
             // 
             this.rbManagedDisk.AutoSize = true;
-            this.rbManagedDisk.Location = new System.Drawing.Point(103, 157);
+            this.rbManagedDisk.Location = new System.Drawing.Point(103, 176);
             this.rbManagedDisk.Margin = new System.Windows.Forms.Padding(2);
             this.rbManagedDisk.Name = "rbManagedDisk";
             this.rbManagedDisk.Size = new System.Drawing.Size(94, 17);
@@ -251,7 +251,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(11, 282);
+            this.label10.Location = new System.Drawing.Point(11, 301);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 13);
@@ -260,7 +260,7 @@
             // 
             // txtBlobName
             // 
-            this.txtBlobName.Location = new System.Drawing.Point(103, 280);
+            this.txtBlobName.Location = new System.Drawing.Point(103, 299);
             this.txtBlobName.Margin = new System.Windows.Forms.Padding(2);
             this.txtBlobName.Name = "txtBlobName";
             this.txtBlobName.Size = new System.Drawing.Size(196, 20);
@@ -291,7 +291,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(11, 306);
+            this.label11.Location = new System.Drawing.Point(11, 325);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(30, 13);
@@ -300,7 +300,7 @@
             // 
             // txtTargetSize
             // 
-            this.txtTargetSize.Location = new System.Drawing.Point(103, 304);
+            this.txtTargetSize.Location = new System.Drawing.Point(103, 323);
             this.txtTargetSize.Margin = new System.Windows.Forms.Padding(2);
             this.txtTargetSize.MaxLength = 4;
             this.txtTargetSize.Name = "txtTargetSize";
@@ -312,7 +312,7 @@
             // virtualMachineSummary
             // 
             this.virtualMachineSummary.AutoSize = true;
-            this.virtualMachineSummary.Location = new System.Drawing.Point(103, 329);
+            this.virtualMachineSummary.Location = new System.Drawing.Point(103, 148);
             this.virtualMachineSummary.Name = "virtualMachineSummary";
             this.virtualMachineSummary.Size = new System.Drawing.Size(71, 28);
             this.virtualMachineSummary.TabIndex = 32;
@@ -320,7 +320,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(11, 329);
+            this.label13.Location = new System.Drawing.Point(11, 148);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(83, 13);

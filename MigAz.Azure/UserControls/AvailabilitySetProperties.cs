@@ -14,6 +14,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class AvailabilitySetProperties : UserControl
     {
+        TargetTreeView _TargetTreeView;
         TreeNode _armAvailabilitySetNode;
 
         public delegate Task AfterPropertyChanged();
@@ -24,12 +25,28 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TreeNode availabilitySetNode)
+        internal void Bind(TargetTreeView targetTreeView, TreeNode availabilitySetNode)
         {
+            _TargetTreeView = targetTreeView;
             _armAvailabilitySetNode = availabilitySetNode;
-
+            
             Azure.MigrationTarget.AvailabilitySet armAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
             txtTargetName.Text = armAvailabilitySet.TargetName;
+
+            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in armAvailabilitySet.TargetVirtualMachines)
+            {
+                AddResourceSummary(new ResourceSummary(virtualMachine, _TargetTreeView));
+            }
+        }
+
+        private void AddResourceSummary(ResourceSummary resourceSummary)
+        {
+            if (pictureBox1.Controls.Count > 0)
+            {
+                resourceSummary.Top = pictureBox1.Controls[pictureBox1.Controls.Count - 1].Top + pictureBox1.Controls[pictureBox1.Controls.Count - 1].Height;
+            }
+
+            pictureBox1.Controls.Add(resourceSummary);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)

@@ -184,7 +184,7 @@ namespace MigAz.Azure.UserControls
 
                         AvailabilitySetProperties properties = new AvailabilitySetProperties();
                         properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(migrationTargetNode);
+                        properties.Bind(_TargetTreeView, migrationTargetNode);
                         this.PropertyDetailControl = properties;
                     }
                     else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
