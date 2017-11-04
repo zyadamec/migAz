@@ -80,7 +80,7 @@
     <Compile Include="Arm\ArmResource.cs" />
     <Compile Include="Arm\AvailabilitySet.cs" />
     <Compile Include="Arm\BackEndAddressPool.cs" />
-    <Compile Include="Arm\Disk.cs" />
+    <Compile Include="Arm\ClassicDisk.cs" />
     <Compile Include="Arm\FrontEndIpConfiguration.cs" />
     <Compile Include="Arm\LoadBalancer.cs" />
     <Compile Include="Arm\LoadBalancingRule.cs" />
@@ -256,6 +256,12 @@
     <Compile Include="UserControls\ResourceSummary.Designer.cs">
       <DependentUpon>ResourceSummary.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\RouteTableProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\RouteTableProperties.Designer.cs">
+      <DependentUpon>RouteTableProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\StorageAccountProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -336,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\ResourceSummary.resx">
       <DependentUpon>ResourceSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\RouteTableProperties.resx">
+      <DependentUpon>RouteTableProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\StorageAccountProperties.resx">
       <DependentUpon>StorageAccountProperties.cs</DependentUpon>

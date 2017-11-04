@@ -25,7 +25,7 @@ namespace MigAz.Azure
         private Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>> _ArmNetworkInterfaces = new Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>> _ArmVirtualNetworkGateways = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>> _ArmPublicIPs = new Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>>();
-
+        private Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>> _ArmRouteTables = new Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>>();
 
         private AzureSubscription() { }
 
@@ -266,6 +266,7 @@ namespace MigAz.Azure
             _ArmVirtualNetworkGateways = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>>();
             _ArmPublicIPs = new Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>>();
             _ArmResourceGroups = new List<Arm.ResourceGroup>();
+            _ArmRouteTables = new Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>>();
         }
 
         internal Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>> ArmVirtualMachines
@@ -311,6 +312,10 @@ namespace MigAz.Azure
         internal List<Arm.ResourceGroup> ArmResourceGroups
         {
             get { return _ArmResourceGroups; }
+        }
+        internal Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>> ArmRouteTables
+        {
+            get { return _ArmRouteTables; }
         }
     }
 }

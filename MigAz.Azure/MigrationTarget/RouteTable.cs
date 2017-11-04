@@ -33,9 +33,20 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
+        public IRouteTable Source
+        {
+            get { return _SourceRouteTable; }
+        }
+
         public String SourceName
         {
-            get { return String.Empty; }
+            get
+            {
+                if (_SourceRouteTable == null)
+                    return String.Empty;
+
+                return _SourceRouteTable.Name;
+            }
         }
 
         public override string ToString()

@@ -44,6 +44,8 @@ namespace MigAz.Azure.UserControls
                     pictureBox1.Image = _TargetTreeView.ImageList.Images["AvailabilitySet"];
                 else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                     pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkSecurityGroup"];
+                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["RouteTable"];
 
                 label1.Text = _MigrationTarget.ToString();
             }

@@ -37,6 +37,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary();
             this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.routeTable = new MigAz.Azure.UserControls.ResourceSummary();
             this.SuspendLayout();
             // 
             // label2
@@ -128,10 +130,30 @@
             this.label7.TabIndex = 50;
             this.label7.Text = "Target";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(4, 110);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 13);
+            this.label5.TabIndex = 52;
+            this.label5.Text = "Route Table:";
+            // 
+            // routeTable
+            // 
+            this.routeTable.AutoSize = true;
+            this.routeTable.Location = new System.Drawing.Point(128, 108);
+            this.routeTable.Name = "routeTable";
+            this.routeTable.Size = new System.Drawing.Size(71, 28);
+            this.routeTable.TabIndex = 51;
+            // 
             // SubnetProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.routeTable);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.networkSecurityGroup);
@@ -143,7 +165,7 @@
             this.Controls.Add(this.txtTargetName);
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "SubnetProperties";
-            this.Size = new System.Drawing.Size(312, 116);
+            this.Size = new System.Drawing.Size(312, 156);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -160,5 +182,7 @@
         private System.Windows.Forms.Label label4;
         private ResourceSummary networkSecurityGroup;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label5;
+        private ResourceSummary routeTable;
     }
 }

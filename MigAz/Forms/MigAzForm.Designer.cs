@@ -100,6 +100,7 @@
             this.imageList1.Images.SetKeyName(7, "VirtualMachine");
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(10, "RouteTable");
             // 
             // statusStrip1
             // 

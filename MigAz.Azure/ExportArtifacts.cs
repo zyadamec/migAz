@@ -10,6 +10,7 @@ namespace MigAz.Azure
         public ExportArtifacts()
         {
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
+            RouteTables = new List<RouteTable>();
             StorageAccounts = new List<StorageAccount>();
             VirtualNetworks = new List<VirtualNetwork>();
             AvailablitySets = new List<AvailabilitySet>();
@@ -18,6 +19,7 @@ namespace MigAz.Azure
             PublicIPs = new List<PublicIp>();
             Disks = new List<Disk>();
             NetworkInterfaces = new List<NetworkInterface>();
+            RouteTables = new List<RouteTable>();
         }
 
         public ResourceGroup ResourceGroup { get; set; }
@@ -30,6 +32,7 @@ namespace MigAz.Azure
         public List<PublicIp> PublicIPs { get; }
         public List<Disk> Disks { get; }
         public List<NetworkInterface> NetworkInterfaces { get; }
+        public List<RouteTable> RouteTables { get; }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {

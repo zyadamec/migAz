@@ -19,7 +19,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualNetwork() { }
 
-        public VirtualNetwork(AzureContext azureContext, Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups)
+        public VirtualNetwork(AzureContext azureContext, Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables)
         {
             this._AzureContext = azureContext;
             this.SourceVirtualNetwork = virtualNetwork;
@@ -35,7 +35,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Asm.Subnet subnet in virtualNetwork.Subnets)
             {
-                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet, networkSecurityGroups));
+                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet, networkSecurityGroups, routeTables));
             }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
@@ -49,7 +49,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public VirtualNetwork(AzureContext azureContext, Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups)
+        public VirtualNetwork(AzureContext azureContext, Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables)
         {
             this._AzureContext = azureContext;
             this.SourceVirtualNetwork = virtualNetwork;
@@ -62,7 +62,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.Subnet subnet in virtualNetwork.Subnets)
             {
-                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet, networkSecurityGroups));
+                this.TargetSubnets.Add(new Subnet(azureContext, this, subnet, networkSecurityGroups, routeTables));
             }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)

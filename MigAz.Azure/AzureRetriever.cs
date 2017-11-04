@@ -53,6 +53,7 @@ namespace MigAz.Azure
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
         private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks = new List<MigrationTarget.Disk>();
+        private List<Azure.MigrationTarget.RouteTable> _ArmTargetRouteTables = new List<MigrationTarget.RouteTable>();
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers = new List<MigrationTarget.LoadBalancer>();
         private List<Azure.MigrationTarget.NetworkSecurityGroup> _ArmTargetNetworkSecurityGroups = new List<MigrationTarget.NetworkSecurityGroup>();
         private List<Azure.MigrationTarget.PublicIp> _ArmTargetPublicIPs = new List<MigrationTarget.PublicIp>();
@@ -70,6 +71,7 @@ namespace MigAz.Azure
         public List<Azure.MigrationTarget.VirtualMachine> ArmTargetVirtualMachines { get { return _ArmTargetVirtualMachines; } }
         public List<Azure.MigrationTarget.AvailabilitySet> ArmTargetAvailabilitySets { get { return _ArmTargetAvailabilitySets; } }
         public List<Azure.MigrationTarget.Disk> ArmTargetManagedDisks { get { return _ArmTargetManagedDisks; } }
+        public List<Azure.MigrationTarget.RouteTable> ArmTargetRouteTables { get { return _ArmTargetRouteTables; } }
         public List<Azure.MigrationTarget.LoadBalancer> ArmTargetLoadBalancers { get { return _ArmTargetLoadBalancers; } }
         public List<Azure.MigrationTarget.NetworkSecurityGroup> ArmTargetNetworkSecurityGroups { get { return _ArmTargetNetworkSecurityGroups; } }
         public List<Azure.MigrationTarget.PublicIp> ArmTargetPublicIPs { get { return _ArmTargetPublicIPs; } }
@@ -1185,7 +1187,7 @@ namespace MigAz.Azure
             return resourceGroupVirtualNetworkGateways;
         }
 
-        
+
         public async Task<Arm.NetworkSecurityGroup> GetAzureARMNetworkSecurityGroup(string id)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroup", "Start");
@@ -1198,7 +1200,19 @@ namespace MigAz.Azure
 
             return null;
         }
+        public async Task<Arm.RouteTable> GetAzureARMRouteTable(string id)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMRouteTable", "Start");
 
+            foreach (Arm.RouteTable routeTable in await this.GetAzureARMRouteTables(await GetAzureARMResourceGroup(id)))
+            {
+                if (String.Compare(routeTable.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    return routeTable;
+            }
+
+            return null;
+        }
+        
         public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups(Arm.ResourceGroup resourceGroup)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start - '" + resourceGroup.ToString() + "' Resource Group");
@@ -1224,6 +1238,33 @@ namespace MigAz.Azure
 
             resourceGroup.AzureSubscription.ArmNetworkSecurityGroups.Add(resourceGroup, resourceGroupNetworkSecurityGroups);
             return resourceGroupNetworkSecurityGroups;
+        }
+
+        public async Task<List<Arm.RouteTable>> GetAzureARMRouteTables(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureARMRouteTables", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (resourceGroup.AzureSubscription.ArmRouteTables.ContainsKey(resourceGroup))
+                return resourceGroup.AzureSubscription.ArmRouteTables[resourceGroup];
+
+            JObject routeTableJson = await this.GetAzureARMResources("RouteTables", resourceGroup, null);
+
+            var routeTables = from routeTable in routeTableJson["value"]
+                                        select routeTable;
+
+            List<Arm.RouteTable> resourceGroupRouteTables = new List<Arm.RouteTable>();
+
+            foreach (var routeTable in routeTables)
+            {
+                Arm.RouteTable armRouteTable = new Arm.RouteTable(routeTable);
+                await armRouteTable.InitializeChildrenAsync(this._AzureContext);
+                resourceGroupRouteTables.Add(armRouteTable);
+                _AzureContext.LogProvider.WriteLog("GetAzureARMRouteTables", "Loaded ARM Route Table'" + armRouteTable.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Route Table '" + armRouteTable.Name + "'.");
+            }
+
+            resourceGroup.AzureSubscription.ArmRouteTables.Add(resourceGroup, resourceGroupRouteTables);
+            return resourceGroupRouteTables;
         }
 
         public async Task<PublicIP> GetAzureARMPublicIP(string id)
@@ -1508,6 +1549,11 @@ namespace MigAz.Azure
                     url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Public IPs for Resource Group '" + resourceGroup.Name + "'.");
                     break;
+                case "RouteTables":
+                    // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/routetables/list
+                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderRouteTables + "?api-version=2017-09-01";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Route Tables for Resource Group '" + resourceGroup.Name + "'.");
+                    break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
@@ -1644,7 +1690,7 @@ namespace MigAz.Azure
                     List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await this.GetAzureAsmVirtualNetworks();
                     foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                     {
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this._AzureContext, asmVirtualNetwork, _AsmTargetNetworkSecurityGroups);
+                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this._AzureContext, asmVirtualNetwork, _AsmTargetNetworkSecurityGroups, _ArmTargetRouteTables);
                         _AsmTargetVirtualNetworks.Add(targetVirtualNetwork);
                     }
 
@@ -1914,7 +1960,7 @@ namespace MigAz.Azure
         {
             foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await this.GetAzureARMVirtualNetworks(armResourceGroup))
             {
-                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this._AzureContext, armVirtualNetwork, _ArmTargetNetworkSecurityGroups);
+                Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this._AzureContext, armVirtualNetwork, _ArmTargetNetworkSecurityGroups, _ArmTargetRouteTables);
                 _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
             }
         }
@@ -1925,6 +1971,14 @@ namespace MigAz.Azure
             {
                 Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this._AzureContext, armNetworkSecurityGroup);
                 _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
+            }
+        }
+        private async Task LoadARMRouteTables(ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.RouteTable armRouteTable in await this.GetAzureARMRouteTables(armResourceGroup))
+            {
+                Azure.MigrationTarget.RouteTable targetRouteTable = new Azure.MigrationTarget.RouteTable(this._AzureContext, armRouteTable);
+                _ArmTargetRouteTables.Add(targetRouteTable);
             }
         }
 
@@ -1945,6 +1999,14 @@ namespace MigAz.Azure
                         armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
                     }
                     await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
+
+                    List<Task> armRouteTableTasks = new List<Task>();
+                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    {
+                        Task armRouteTableTask = LoadARMRouteTables(armResourceGroup);
+                        armRouteTableTasks.Add(armRouteTableTask);
+                    }
+                    await Task.WhenAll(armRouteTableTasks.ToArray());
 
                     List<Task> armPublicIPTasks = new List<Task>();
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())

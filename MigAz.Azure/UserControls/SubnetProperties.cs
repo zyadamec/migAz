@@ -57,6 +57,7 @@ namespace MigAz.Azure.UserControls
             }
 
             networkSecurityGroup.Bind(_Subnet.NetworkSecurityGroup, _TargetTreeView);
+            routeTable.Bind(_Subnet.RouteTable, _TargetTreeView);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)

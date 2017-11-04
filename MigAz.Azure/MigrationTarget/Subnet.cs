@@ -17,7 +17,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private Subnet() { }
 
-        public Subnet(AzureContext azureContext, MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups)
+        public Subnet(AzureContext azureContext, MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables)
         {
             _AzureContext = azureContext;
             _ParentVirtualNetwork = parentVirtualNetwork;
@@ -34,7 +34,7 @@ namespace MigAz.Azure.MigrationTarget
 
                 if (asmSubnet.RouteTable != null)
                 {
-                    this.RouteTable = new RouteTable(azureContext, asmSubnet.RouteTable);
+                    this.RouteTable = SeekRouteTable(routeTables, asmSubnet.RouteTable.ToString());
                 }
             }
             else if (source.GetType() == typeof(Arm.Subnet))
@@ -48,7 +48,7 @@ namespace MigAz.Azure.MigrationTarget
 
                 if (armSubnet.RouteTable != null)
                 {
-                    this.RouteTable = new RouteTable(azureContext, armSubnet.RouteTable);
+                    this.RouteTable = SeekRouteTable(routeTables, armSubnet.RouteTable.ToString());
                 }
 
             }
@@ -74,6 +74,19 @@ namespace MigAz.Azure.MigrationTarget
             {
                 if (networkSecurityGroup.SourceName == sourceName)
                     return networkSecurityGroup;
+            }
+
+            return null;
+        }
+        private RouteTable SeekRouteTable(List<RouteTable> routeTables, string sourceName)
+        {
+            if (routeTables == null || sourceName == null)
+                return null;
+
+            foreach (RouteTable routeTable in routeTables)
+            {
+                if (routeTable.SourceName == sourceName)
+                    return routeTable;
             }
 
             return null;

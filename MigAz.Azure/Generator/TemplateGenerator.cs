@@ -496,6 +496,14 @@ namespace MigAz.Azure.Generator
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Network Security Groups");
 
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Route Tables");
+                foreach (MigrationTarget.RouteTable targetRouteTable in _ExportArtifacts.RouteTables)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Route Tables : " + targetRouteTable.ToString());
+                    await BuildRouteTable(targetRouteTable);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Route Tables");
+
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
                 foreach (MigrationTarget.PublicIp targetPublicIp in _ExportArtifacts.PublicIPs)
                 {

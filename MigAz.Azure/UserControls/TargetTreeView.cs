@@ -165,6 +165,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.NetworkInterfaces.Add((Azure.MigrationTarget.NetworkInterface)selectedNode.Tag);
                 }
+                else if (tagType == typeof(Azure.MigrationTarget.RouteTable))
+                {
+                    exportArtifacts.RouteTables.Add((Azure.MigrationTarget.RouteTable)selectedNode.Tag);
+                }
             }
 
             foreach (TreeNode treeNode in parentTreeNode.Nodes)
@@ -278,6 +282,8 @@ namespace MigAz.Azure.UserControls
                                 treeTargetARM.SelectedNode = treeNode;
                             else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup) && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
+                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.RouteTable) && sourceObject.ToString() == nodeObject.ToString())
+                                treeTargetARM.SelectedNode = treeNode;
                         }
                     }
                 }
@@ -364,6 +370,11 @@ namespace MigAz.Azure.UserControls
                 {
                     childNode.ImageKey = "PublicIp";
                     childNode.SelectedImageKey = "PublicIp";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+                {
+                    childNode.ImageKey = "RouteTable";
+                    childNode.SelectedImageKey = "RouteTable";
                 }
                 else
                     throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
@@ -510,6 +521,14 @@ namespace MigAz.Azure.UserControls
 
                 targetResourceGroupNode.ExpandAll();
                 return targetNetworkInterfaceNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+            {
+                Azure.MigrationTarget.RouteTable targetRouteTable = (Azure.MigrationTarget.RouteTable)parentNode;
+                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.SourceName, targetRouteTable.ToString(), targetRouteTable, true);
+
+                targetRouteTableNode.ExpandAll();
+                return targetRouteTableNode;
             }
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());

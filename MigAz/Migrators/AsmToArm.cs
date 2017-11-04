@@ -666,6 +666,7 @@ namespace MigAz.Migrators
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
                     (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
+                    (tagType == typeof(Azure.MigrationTarget.RouteTable)) ||
                     (tagType == typeof(Azure.MigrationTarget.Disk)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                 {
@@ -1145,6 +1146,18 @@ namespace MigAz.Migrators
                             tnPublicIP.ImageKey = "PublicIp";
                             tnPublicIP.SelectedImageKey = "PublicIp";
                             publicIpParentNode.Nodes.Add(tnPublicIP);
+                        }
+
+                        foreach (Azure.MigrationTarget.RouteTable targetRouteTable in _AzureContextSourceASM.AzureRetriever.ArmTargetRouteTables)
+                        {
+                            TreeNode routeTableParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.RouteTable)targetRouteTable.Source).ResourceGroup);
+
+                            TreeNode tnRouteTable = new TreeNode(targetRouteTable.SourceName);
+                            tnRouteTable.Name = targetRouteTable.SourceName;
+                            tnRouteTable.Tag = targetRouteTable;
+                            tnRouteTable.ImageKey = "RouteTable";
+                            tnRouteTable.SelectedImageKey = "RouteTable";
+                            routeTableParentNode.Nodes.Add(tnRouteTable);
                         }
 
                         foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in _AzureContextSourceASM.AzureRetriever.ArmTargetVirtualNetworks)

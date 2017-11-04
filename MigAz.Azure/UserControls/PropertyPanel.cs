@@ -224,6 +224,15 @@ namespace MigAz.Azure.UserControls
                         properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;
                     }
+                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+                    {
+                        this.ResourceImage = imageList1.Images["RouteTable"];
+
+                        RouteTableProperties properties = new RouteTableProperties();
+                        properties.PropertyChanged += Properties_PropertyChanged;
+                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.RouteTable)migrationTargetNode.Tag);
+                        this.PropertyDetailControl = properties;
+                    }
                 }
             }
 
