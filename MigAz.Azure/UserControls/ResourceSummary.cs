@@ -42,6 +42,8 @@ namespace MigAz.Azure.UserControls
                     pictureBox1.Image = _TargetTreeView.ImageList.Images["VirtualMachine"];
                 else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
                     pictureBox1.Image = _TargetTreeView.ImageList.Images["AvailabilitySet"];
+                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkSecurityGroup"];
 
                 label1.Text = _MigrationTarget.ToString();
             }

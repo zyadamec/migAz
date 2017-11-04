@@ -155,7 +155,7 @@ namespace MigAz.Azure.UserControls
 
                         SubnetProperties properties = new SubnetProperties();
                         properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind((Azure.MigrationTarget.Subnet)migrationTargetNode.Tag);
+                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.Subnet)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;
                     }
                     else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))

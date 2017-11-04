@@ -153,7 +153,13 @@ namespace MigAz.Azure.UserControls
                 }
                 else if (tagType == typeof(Azure.MigrationTarget.Disk))
                 {
-                    exportArtifacts.Disks.Add((Azure.MigrationTarget.Disk)selectedNode.Tag);
+                    Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)selectedNode.Tag;
+                    if (targetDisk.TargetStorage != null && targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
+                    {
+                        // We are only adding the Target Disk into the Export Artifacts as a Disk object if the Target Disk is targeted as a Managed Disk.
+                        // Otherwise, it is a Classic Disk and will be generated as part of the Virtual Machine JSON (does not have a stand alone Disk object).
+                        exportArtifacts.Disks.Add((Azure.MigrationTarget.Disk)selectedNode.Tag);
+                    }
                 }
                 else if (tagType == typeof(Azure.MigrationTarget.NetworkInterface))
                 {
@@ -269,6 +275,8 @@ namespace MigAz.Azure.UserControls
                             else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
                             else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.LoadBalancer) && sourceObject.ToString() == nodeObject.ToString())
+                                treeTargetARM.SelectedNode = treeNode;
+                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup) && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
                         }
                     }

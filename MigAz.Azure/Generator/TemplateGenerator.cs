@@ -275,7 +275,6 @@ namespace MigAz.Azure.Generator
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
                 {
-
                     // Seek the inclusion of the Network Interface in the export object
                     bool networkInterfaceExistsInExport = false;
                     foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in _ExportArtifacts.NetworkInterfaces)

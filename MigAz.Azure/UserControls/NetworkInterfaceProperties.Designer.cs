@@ -45,6 +45,9 @@
             this.label13 = new System.Windows.Forms.Label();
             this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
             this.networkSelectionControl1 = new MigAz.Azure.UserControls.NetworkSelectionControl();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -114,9 +117,9 @@
             this.lblARMVirtualNetworkName.Location = new System.Drawing.Point(4, 122);
             this.lblARMVirtualNetworkName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblARMVirtualNetworkName.Name = "lblARMVirtualNetworkName";
-            this.lblARMVirtualNetworkName.Size = new System.Drawing.Size(72, 13);
+            this.lblARMVirtualNetworkName.Size = new System.Drawing.Size(38, 13);
             this.lblARMVirtualNetworkName.TabIndex = 31;
-            this.lblARMVirtualNetworkName.Text = "Target Name:";
+            this.lblARMVirtualNetworkName.Text = "Name:";
             // 
             // txtTargetName
             // 
@@ -192,7 +195,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(2, 327);
+            this.label13.Location = new System.Drawing.Point(2, 329);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(83, 13);
@@ -202,7 +205,7 @@
             // virtualMachineSummary
             // 
             this.virtualMachineSummary.AutoSize = true;
-            this.virtualMachineSummary.Location = new System.Drawing.Point(94, 327);
+            this.virtualMachineSummary.Location = new System.Drawing.Point(126, 327);
             this.virtualMachineSummary.Name = "virtualMachineSummary";
             this.virtualMachineSummary.Size = new System.Drawing.Size(71, 28);
             this.virtualMachineSummary.TabIndex = 43;
@@ -216,10 +219,42 @@
             this.networkSelectionControl1.TabIndex = 38;
             this.networkSelectionControl1.VirtualNetworkTarget = null;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(6, 96);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 13);
+            this.label7.TabIndex = 45;
+            this.label7.Text = "Target";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(2, 350);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(123, 13);
+            this.label2.TabIndex = 47;
+            this.label2.Text = "Network Security Group:";
+            // 
+            // networkSecurityGroup
+            // 
+            this.networkSecurityGroup.AutoSize = true;
+            this.networkSecurityGroup.Location = new System.Drawing.Point(126, 348);
+            this.networkSecurityGroup.Name = "networkSecurityGroup";
+            this.networkSecurityGroup.Size = new System.Drawing.Size(71, 28);
+            this.networkSecurityGroup.TabIndex = 46;
+            // 
             // NetworkInterfaceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.networkSecurityGroup);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.virtualMachineSummary);
             this.Controls.Add(this.panel1);
@@ -263,5 +298,8 @@
         private System.Windows.Forms.RadioButton rbIPForwardingEnabled;
         private System.Windows.Forms.Label label13;
         private ResourceSummary virtualMachineSummary;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label2;
+        private ResourceSummary networkSecurityGroup;
     }
 }

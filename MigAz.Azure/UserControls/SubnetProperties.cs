@@ -14,6 +14,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class SubnetProperties : UserControl
     {
+        private TargetTreeView _TargetTreeView;
         private MigrationTarget.Subnet _Subnet;
 
         public delegate Task AfterPropertyChanged();
@@ -24,8 +25,9 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(MigrationTarget.Subnet targetSubnet)
+        internal void Bind(TargetTreeView targetTreeView, MigrationTarget.Subnet targetSubnet)
         {
+            _TargetTreeView = targetTreeView;
             _Subnet = targetSubnet;
 
             txtTargetName.Text = targetSubnet.TargetName;
@@ -53,6 +55,8 @@ namespace MigAz.Azure.UserControls
                 // if gateway subnet, the name can't be changed
                 txtTargetName.Enabled = false;
             }
+
+            networkSecurityGroup.Bind(_Subnet.NetworkSecurityGroup, _TargetTreeView);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
