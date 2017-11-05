@@ -862,11 +862,9 @@ namespace MigAz.Azure.Generator
                 // add Route Table if exists
                 if (targetSubnet.RouteTable != null)
                 {
-                    RouteTable routetable = await BuildRouteTable(targetSubnet.RouteTable);
-
                     // Add Route Table reference to the subnet
                     Reference routetable_ref = new Reference();
-                    routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + routetable.name + "')]";
+                    routetable_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderRouteTables + targetSubnet.RouteTable.ToString() + "')]";
 
                     properties.routeTable = routetable_ref;
 
@@ -1163,44 +1161,7 @@ namespace MigAz.Azure.Generator
             return routetable;
         }
 
-        private Core.ArmTemplate.RouteTable BuildARMRouteTable(MigrationTarget.RouteTable targetRouteTable)
-        {
-            LogProvider.WriteLog("BuildRouteTable", "Start Microsoft.Network/routeTables/" + targetRouteTable.ToString());
-
-            Core.ArmTemplate.RouteTable routetable = new Core.ArmTemplate.RouteTable(this.ExecutionGuid);
-            routetable.name = targetRouteTable.ToString();
-            routetable.location = "[resourceGroup().location]";
-
-            RouteTable_Properties routetable_properties = new RouteTable_Properties();
-            routetable_properties.routes = new List<Core.ArmTemplate.Route>();
-
-            // for each route
-            foreach (MigrationTarget.Route targetRoute in targetRouteTable.Routes)
-            {
-                //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
-                Route_Properties route_properties = new Route_Properties();
-                route_properties.addressPrefix = targetRoute.AddressPrefix;
-                route_properties.nextHopType = targetRoute.NextHopType.ToString();
-
-                if (targetRoute.NextHopType == NextHopTypeEnum.VirtualAppliance)
-                    route_properties.nextHopIpAddress = targetRoute.NextHopIpAddress;
-
-                Core.ArmTemplate.Route route = new Core.ArmTemplate.Route();
-                route.name = targetRoute.ToString();
-                route.properties = route_properties;
-
-                routetable_properties.routes.Add(route);
-            }
-
-            routetable.properties = routetable_properties;
-
-            this.AddResource(routetable);
-
-            LogProvider.WriteLog("BuildRouteTable", "End Microsoft.Network/routeTables/" + targetRouteTable.ToString());
-
-            return routetable;
-        }
-
+       
         private NetworkInterface BuildNetworkInterfaceObject(Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
             LogProvider.WriteLog("BuildNetworkInterfaceObject", "Start " + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString());
