@@ -15,6 +15,7 @@ using MigAz.Core.ArmTemplate;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure
 {
@@ -24,6 +25,7 @@ namespace MigAz.Azure
         private object _lockObject = new object();
         private AzureSubscription _AzureSubscription = null;
         private List<AzureSubscription> _AzureSubscriptions;
+        private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
@@ -88,6 +90,12 @@ namespace MigAz.Azure
         public AzureSubscription SubscriptionContext
         {
             get { return _AzureSubscription; }
+        }
+
+        public ArmDiskType DefaultTargetDiskType
+        {
+            get { return _DefaultTargetDiskType; }
+            set { _DefaultTargetDiskType = value; }
         }
 
         public void ClearCache()
@@ -1661,12 +1669,6 @@ namespace MigAz.Azure
             return azureRestResponse;
         }
 
-
-
-
-
-
-
         public async Task BindAsmResources()
         {
             if (!_IsAsmLoaded)
@@ -1708,7 +1710,7 @@ namespace MigAz.Azure
 
                         foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                         {
-                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, asmVirtualMachine, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
+                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, asmVirtualMachine, _DefaultTargetDiskType, _AsmTargetVirtualNetworks, _AsmTargetStorageAccounts, _AsmTargetNetworkSecurityGroups);
                             targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
                             cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
                             _AsmTargetVirtualMachines.Add(targetVirtualMachine);
@@ -1892,7 +1894,7 @@ namespace MigAz.Azure
         {
             foreach (Azure.Arm.VirtualMachine armVirtualMachine in await this.GetAzureArmVirtualMachines(armResourceGroup))
             {
-                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, armVirtualMachine);
+                Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, armVirtualMachine, _DefaultTargetDiskType);
                 _ArmTargetVirtualMachines.Add(targetVirtualMachine);
 
                 if (armVirtualMachine.AvailabilitySet != null)

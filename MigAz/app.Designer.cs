@@ -253,5 +253,17 @@ namespace MigAz {
                 this["LoadBalancerSuffix"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ManagedDisk")]
+        public global::MigAz.Core.Interface.ArmDiskType DefaultTargetDiskType {
+            get {
+                return ((global::MigAz.Core.Interface.ArmDiskType)(this["DefaultTargetDiskType"]));
+            }
+            set {
+                this["DefaultTargetDiskType"] = value;
+            }
+        }
     }
 }

@@ -62,5 +62,8 @@
     <Setting Name="LoadBalancerSuffix" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="DefaultTargetDiskType" Type="MigAz.Core.Interface.ArmDiskType" Scope="User">
+      <Value Profile="(Default)">ManagedDisk</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

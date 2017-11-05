@@ -59,17 +59,24 @@
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.rbManagedDisk = new System.Windows.Forms.RadioButton();
+            this.rbClassicDisk = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(842, 754);
-            this.btnOK.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.btnOK.Location = new System.Drawing.Point(421, 392);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(149, 44);
+            this.btnOK.Size = new System.Drawing.Size(74, 23);
             this.btnOK.TabIndex = 15;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -78,10 +85,10 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(1016, 754);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCancel.Location = new System.Drawing.Point(508, 392);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(149, 44);
+            this.btnCancel.Size = new System.Drawing.Size(74, 23);
             this.btnCancel.TabIndex = 16;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -110,159 +117,162 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtNetworkInterfaceCardSuffix);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(26, 314);
+            this.groupBox1.Location = new System.Drawing.Point(13, 163);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1139, 416);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(570, 216);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Azure Resource Manager (ARM) Object Naming Suffixes";
             // 
             // txtPublicIPSuffix
             // 
-            this.txtPublicIPSuffix.Location = new System.Drawing.Point(325, 326);
-            this.txtPublicIPSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtPublicIPSuffix.Location = new System.Drawing.Point(162, 170);
+            this.txtPublicIPSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtPublicIPSuffix.MaxLength = 10;
             this.txtPublicIPSuffix.Name = "txtPublicIPSuffix";
-            this.txtPublicIPSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtPublicIPSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtPublicIPSuffix.TabIndex = 9;
             this.txtPublicIPSuffix.Text = "-pip";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(62, 326);
-            this.label9.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label9.Location = new System.Drawing.Point(31, 170);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(102, 25);
+            this.label9.Size = new System.Drawing.Size(52, 13);
             this.label9.TabIndex = 23;
             this.label9.Text = "Public IP:";
             // 
             // txtLoadBalancerSuffix
             // 
-            this.txtLoadBalancerSuffix.Location = new System.Drawing.Point(948, 127);
-            this.txtLoadBalancerSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtLoadBalancerSuffix.Location = new System.Drawing.Point(474, 66);
+            this.txtLoadBalancerSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtLoadBalancerSuffix.MaxLength = 10;
             this.txtLoadBalancerSuffix.Name = "txtLoadBalancerSuffix";
-            this.txtLoadBalancerSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtLoadBalancerSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtLoadBalancerSuffix.TabIndex = 10;
             this.txtLoadBalancerSuffix.Text = "-lb";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(701, 127);
-            this.label8.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label8.Location = new System.Drawing.Point(350, 66);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(157, 25);
+            this.label8.Size = new System.Drawing.Size(79, 13);
             this.label8.TabIndex = 21;
             this.label8.Text = "Load Balancer:";
             // 
             // lblSuffix
             // 
             this.lblSuffix.AutoSize = true;
-            this.lblSuffix.Location = new System.Drawing.Point(62, 285);
-            this.lblSuffix.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lblSuffix.Location = new System.Drawing.Point(31, 148);
+            this.lblSuffix.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSuffix.Name = "lblSuffix";
-            this.lblSuffix.Size = new System.Drawing.Size(177, 25);
+            this.lblSuffix.Size = new System.Drawing.Size(90, 13);
             this.lblSuffix.TabIndex = 19;
             this.lblSuffix.Text = "Storage Account:";
             // 
             // txtStorageAccountSuffix
             // 
             this.txtStorageAccountSuffix.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
-            this.txtStorageAccountSuffix.Location = new System.Drawing.Point(325, 282);
-            this.txtStorageAccountSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtStorageAccountSuffix.Location = new System.Drawing.Point(162, 147);
+            this.txtStorageAccountSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtStorageAccountSuffix.MaxLength = 10;
             this.txtStorageAccountSuffix.Name = "txtStorageAccountSuffix";
-            this.txtStorageAccountSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtStorageAccountSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtStorageAccountSuffix.TabIndex = 8;
             this.txtStorageAccountSuffix.Text = "v2";
             // 
             // txtVirtualNetworkSuffix
             // 
-            this.txtVirtualNetworkSuffix.Location = new System.Drawing.Point(325, 166);
-            this.txtVirtualNetworkSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtVirtualNetworkSuffix.Location = new System.Drawing.Point(162, 86);
+            this.txtVirtualNetworkSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtVirtualNetworkSuffix.MaxLength = 10;
             this.txtVirtualNetworkSuffix.Name = "txtVirtualNetworkSuffix";
-            this.txtVirtualNetworkSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtVirtualNetworkSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtVirtualNetworkSuffix.TabIndex = 5;
             this.txtVirtualNetworkSuffix.Text = "-vnet";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(62, 168);
-            this.label5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label5.Location = new System.Drawing.Point(31, 87);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(163, 25);
+            this.label5.Size = new System.Drawing.Size(82, 13);
             this.label5.TabIndex = 18;
             this.label5.Text = "Virtual Network:";
             // 
             // txtVirtualNetworkGatewaySuffix
             // 
-            this.txtVirtualNetworkGatewaySuffix.Location = new System.Drawing.Point(325, 206);
-            this.txtVirtualNetworkGatewaySuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtVirtualNetworkGatewaySuffix.Location = new System.Drawing.Point(162, 107);
+            this.txtVirtualNetworkGatewaySuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtVirtualNetworkGatewaySuffix.MaxLength = 10;
             this.txtVirtualNetworkGatewaySuffix.Name = "txtVirtualNetworkGatewaySuffix";
-            this.txtVirtualNetworkGatewaySuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtVirtualNetworkGatewaySuffix.Size = new System.Drawing.Size(40, 20);
             this.txtVirtualNetworkGatewaySuffix.TabIndex = 6;
             this.txtVirtualNetworkGatewaySuffix.Text = "-gw";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(62, 206);
-            this.label6.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label6.Location = new System.Drawing.Point(31, 107);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(253, 25);
+            this.label6.Size = new System.Drawing.Size(127, 13);
             this.label6.TabIndex = 16;
             this.label6.Text = "Virtual Network Gateway:";
             // 
             // txtNetworkSecurityGroupSuffix
             // 
-            this.txtNetworkSecurityGroupSuffix.Location = new System.Drawing.Point(325, 244);
-            this.txtNetworkSecurityGroupSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtNetworkSecurityGroupSuffix.Location = new System.Drawing.Point(162, 127);
+            this.txtNetworkSecurityGroupSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtNetworkSecurityGroupSuffix.MaxLength = 10;
             this.txtNetworkSecurityGroupSuffix.Name = "txtNetworkSecurityGroupSuffix";
-            this.txtNetworkSecurityGroupSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtNetworkSecurityGroupSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtNetworkSecurityGroupSuffix.TabIndex = 7;
             this.txtNetworkSecurityGroupSuffix.Text = "-nsg";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(62, 244);
-            this.label7.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label7.Location = new System.Drawing.Point(31, 127);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(245, 25);
+            this.label7.Size = new System.Drawing.Size(123, 13);
             this.label7.TabIndex = 14;
             this.label7.Text = "Network Security Group:";
             // 
             // txtResourceGroupSuffix
             // 
-            this.txtResourceGroupSuffix.Location = new System.Drawing.Point(325, 123);
-            this.txtResourceGroupSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtResourceGroupSuffix.Location = new System.Drawing.Point(162, 64);
+            this.txtResourceGroupSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtResourceGroupSuffix.MaxLength = 10;
             this.txtResourceGroupSuffix.Name = "txtResourceGroupSuffix";
-            this.txtResourceGroupSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtResourceGroupSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtResourceGroupSuffix.TabIndex = 4;
             this.txtResourceGroupSuffix.Text = "-rg";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(60, 128);
-            this.label4.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label4.Location = new System.Drawing.Point(30, 67);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(175, 25);
+            this.label4.Size = new System.Drawing.Size(88, 13);
             this.label4.TabIndex = 11;
             this.label4.Text = "Resource Group:";
             // 
             // btnApplyDefaultNaming
             // 
-            this.btnApplyDefaultNaming.Location = new System.Drawing.Point(706, 339);
+            this.btnApplyDefaultNaming.Location = new System.Drawing.Point(353, 176);
+            this.btnApplyDefaultNaming.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnApplyDefaultNaming.Name = "btnApplyDefaultNaming";
-            this.btnApplyDefaultNaming.Size = new System.Drawing.Size(414, 50);
+            this.btnApplyDefaultNaming.Size = new System.Drawing.Size(207, 26);
             this.btnApplyDefaultNaming.TabIndex = 14;
             this.btnApplyDefaultNaming.Text = "Apply Default Naming Conventions";
             this.btnApplyDefaultNaming.UseVisualStyleBackColor = true;
@@ -271,82 +281,88 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(137, 51);
+            this.linkLabel1.Location = new System.Drawing.Point(68, 27);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(770, 25);
+            this.linkLabel1.Size = new System.Drawing.Size(392, 13);
             this.linkLabel1.TabIndex = 4;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "https://docs.microsoft.com/en-us/azure/guidance/guidance-naming-conventions";
             // 
             // txtAvailabilitySetSuffix
             // 
-            this.txtAvailabilitySetSuffix.Location = new System.Drawing.Point(948, 164);
-            this.txtAvailabilitySetSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtAvailabilitySetSuffix.Location = new System.Drawing.Point(474, 85);
+            this.txtAvailabilitySetSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtAvailabilitySetSuffix.MaxLength = 10;
             this.txtAvailabilitySetSuffix.Name = "txtAvailabilitySetSuffix";
-            this.txtAvailabilitySetSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtAvailabilitySetSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtAvailabilitySetSuffix.TabIndex = 11;
             this.txtAvailabilitySetSuffix.Text = "-as";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(701, 166);
-            this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label3.Location = new System.Drawing.Point(350, 86);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(159, 25);
+            this.label3.Size = new System.Drawing.Size(78, 13);
             this.label3.TabIndex = 10;
             this.label3.Text = "Availability Set:";
             // 
             // txtVirtualMachineSuffix
             // 
-            this.txtVirtualMachineSuffix.Location = new System.Drawing.Point(948, 204);
-            this.txtVirtualMachineSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtVirtualMachineSuffix.Location = new System.Drawing.Point(474, 106);
+            this.txtVirtualMachineSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtVirtualMachineSuffix.MaxLength = 10;
             this.txtVirtualMachineSuffix.Name = "txtVirtualMachineSuffix";
-            this.txtVirtualMachineSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtVirtualMachineSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtVirtualMachineSuffix.TabIndex = 12;
             this.txtVirtualMachineSuffix.Text = "-vm";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(701, 204);
-            this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label2.Location = new System.Drawing.Point(350, 106);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(167, 25);
+            this.label2.Size = new System.Drawing.Size(83, 13);
             this.label2.TabIndex = 8;
             this.label2.Text = "Virtual Machine:";
             // 
             // txtNetworkInterfaceCardSuffix
             // 
-            this.txtNetworkInterfaceCardSuffix.Location = new System.Drawing.Point(948, 244);
-            this.txtNetworkInterfaceCardSuffix.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtNetworkInterfaceCardSuffix.Location = new System.Drawing.Point(474, 127);
+            this.txtNetworkInterfaceCardSuffix.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtNetworkInterfaceCardSuffix.MaxLength = 10;
             this.txtNetworkInterfaceCardSuffix.Name = "txtNetworkInterfaceCardSuffix";
-            this.txtNetworkInterfaceCardSuffix.Size = new System.Drawing.Size(76, 31);
+            this.txtNetworkInterfaceCardSuffix.Size = new System.Drawing.Size(40, 20);
             this.txtNetworkInterfaceCardSuffix.TabIndex = 13;
             this.txtNetworkInterfaceCardSuffix.Text = "-nic";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(701, 244);
-            this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label1.Location = new System.Drawing.Point(350, 127);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(237, 25);
+            this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 6;
             this.label1.Text = "Network Interface Card:";
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.numericUpDown1);
+            this.groupBox2.Controls.Add(this.panel1);
             this.groupBox2.Controls.Add(this.chkSaveSelection);
             this.groupBox2.Controls.Add(this.chkAutoSelectDependencies);
             this.groupBox2.Controls.Add(this.chkBuildEmpty);
             this.groupBox2.Controls.Add(this.chkAllowTelemetry);
-            this.groupBox2.Location = new System.Drawing.Point(26, 32);
+            this.groupBox2.Location = new System.Drawing.Point(13, 17);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1139, 257);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Size = new System.Drawing.Size(569, 134);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
@@ -354,10 +370,10 @@
             // chkSaveSelection
             // 
             this.chkSaveSelection.AutoSize = true;
-            this.chkSaveSelection.Location = new System.Drawing.Point(52, 94);
-            this.chkSaveSelection.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.chkSaveSelection.Location = new System.Drawing.Point(26, 49);
+            this.chkSaveSelection.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.chkSaveSelection.Name = "chkSaveSelection";
-            this.chkSaveSelection.Size = new System.Drawing.Size(185, 29);
+            this.chkSaveSelection.Size = new System.Drawing.Size(96, 17);
             this.chkSaveSelection.TabIndex = 2;
             this.chkSaveSelection.Text = "Save selection";
             this.chkSaveSelection.UseVisualStyleBackColor = true;
@@ -365,10 +381,10 @@
             // chkAutoSelectDependencies
             // 
             this.chkAutoSelectDependencies.AutoSize = true;
-            this.chkAutoSelectDependencies.Location = new System.Drawing.Point(52, 54);
-            this.chkAutoSelectDependencies.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.chkAutoSelectDependencies.Location = new System.Drawing.Point(26, 28);
+            this.chkAutoSelectDependencies.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.chkAutoSelectDependencies.Name = "chkAutoSelectDependencies";
-            this.chkAutoSelectDependencies.Size = new System.Drawing.Size(432, 29);
+            this.chkAutoSelectDependencies.Size = new System.Drawing.Size(216, 17);
             this.chkAutoSelectDependencies.TabIndex = 1;
             this.chkAutoSelectDependencies.Text = "Auto select dependencies (for VMs only)";
             this.chkAutoSelectDependencies.UseVisualStyleBackColor = true;
@@ -378,10 +394,10 @@
             this.chkBuildEmpty.AutoSize = true;
             this.chkBuildEmpty.Checked = true;
             this.chkBuildEmpty.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkBuildEmpty.Location = new System.Drawing.Point(52, 134);
-            this.chkBuildEmpty.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.chkBuildEmpty.Location = new System.Drawing.Point(26, 70);
+            this.chkBuildEmpty.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.chkBuildEmpty.Name = "chkBuildEmpty";
-            this.chkBuildEmpty.Size = new System.Drawing.Size(280, 29);
+            this.chkBuildEmpty.Size = new System.Drawing.Size(141, 17);
             this.chkBuildEmpty.TabIndex = 0;
             this.chkBuildEmpty.Text = "Build empty environment";
             this.chkBuildEmpty.UseVisualStyleBackColor = true;
@@ -391,29 +407,81 @@
             this.chkAllowTelemetry.AutoSize = true;
             this.chkAllowTelemetry.Checked = true;
             this.chkAllowTelemetry.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAllowTelemetry.Location = new System.Drawing.Point(52, 174);
-            this.chkAllowTelemetry.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.chkAllowTelemetry.Location = new System.Drawing.Point(26, 90);
+            this.chkAllowTelemetry.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.chkAllowTelemetry.Name = "chkAllowTelemetry";
-            this.chkAllowTelemetry.Size = new System.Drawing.Size(286, 29);
+            this.chkAllowTelemetry.Size = new System.Drawing.Size(144, 17);
             this.chkAllowTelemetry.TabIndex = 3;
             this.chkAllowTelemetry.Text = "Allow telemetry collection";
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(409, 53);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "Minutes";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(353, 51);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(50, 20);
+            this.numericUpDown1.TabIndex = 6;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.rbManagedDisk);
+            this.panel1.Controls.Add(this.rbClassicDisk);
+            this.panel1.Location = new System.Drawing.Point(353, 21);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(200, 24);
+            this.panel1.TabIndex = 5;
+            // 
+            // rbManagedDisk
+            // 
+            this.rbManagedDisk.AutoSize = true;
+            this.rbManagedDisk.Location = new System.Drawing.Point(3, 3);
+            this.rbManagedDisk.Name = "rbManagedDisk";
+            this.rbManagedDisk.Size = new System.Drawing.Size(94, 17);
+            this.rbManagedDisk.TabIndex = 3;
+            this.rbManagedDisk.TabStop = true;
+            this.rbManagedDisk.Text = "Managed Disk";
+            this.rbManagedDisk.UseVisualStyleBackColor = true;
+            // 
+            // rbClassicDisk
+            // 
+            this.rbClassicDisk.AutoSize = true;
+            this.rbClassicDisk.Location = new System.Drawing.Point(103, 4);
+            this.rbClassicDisk.Name = "rbClassicDisk";
+            this.rbClassicDisk.Size = new System.Drawing.Size(82, 17);
+            this.rbClassicDisk.TabIndex = 2;
+            this.rbClassicDisk.TabStop = true;
+            this.rbClassicDisk.Text = "Classic Disk";
+            this.rbClassicDisk.UseVisualStyleBackColor = true;
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(1180, 822);
+            this.ClientSize = new System.Drawing.Size(590, 427);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "OptionsDialog";
@@ -425,6 +493,9 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -460,5 +531,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtResourceGroupSuffix;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RadioButton rbManagedDisk;
+        private System.Windows.Forms.RadioButton rbClassicDisk;
     }
 }

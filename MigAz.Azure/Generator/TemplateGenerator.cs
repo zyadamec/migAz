@@ -1372,7 +1372,7 @@ namespace MigAz.Azure.Generator
                 osdisk.createOption = "Attach";
                 osdisk.osType = targetVirtualMachine.OSVirtualHardDiskOS;
 
-                this._CopyBlobDetails.Add(BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, _ExportArtifacts.ResourceGroup));
+                this._CopyBlobDetails.Add(await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, _ExportArtifacts.ResourceGroup));
 
                 if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
@@ -1390,7 +1390,7 @@ namespace MigAz.Azure.Generator
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    ManagedDisk osManagedDisk = BuildManagedDiskObject(targetVirtualMachine.OSVirtualHardDisk);
+                    ManagedDisk osManagedDisk = await BuildManagedDiskObject(targetVirtualMachine.OSVirtualHardDisk);
 
                     Reference managedDiskReference = new Reference();
                     managedDiskReference.id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId;
@@ -1422,7 +1422,7 @@ namespace MigAz.Azure.Generator
                     {
                         datadisk.createOption = "Attach";
 
-                        this._CopyBlobDetails.Add(BuildCopyBlob(dataDisk, _ExportArtifacts.ResourceGroup));
+                        this._CopyBlobDetails.Add(await BuildCopyBlob(dataDisk, _ExportArtifacts.ResourceGroup));
                     }
 
                     if (dataDisk.IsUnmanagedDisk)
@@ -1439,7 +1439,7 @@ namespace MigAz.Azure.Generator
                     }
                     else if (dataDisk.IsManagedDisk)
                     {
-                        ManagedDisk datadiskManagedDisk = BuildManagedDiskObject(dataDisk);
+                        ManagedDisk datadiskManagedDisk = await BuildManagedDiskObject(dataDisk);
 
                         Reference managedDiskReference = new Reference();
                         managedDiskReference.id = dataDisk.ReferenceId;
@@ -1494,7 +1494,7 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("BuildVirtualMachineObject", "End Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
         }
 
-        private ManagedDisk BuildManagedDiskObject(Azure.MigrationTarget.Disk targetManagedDisk)
+        private async Task<ManagedDisk> BuildManagedDiskObject(Azure.MigrationTarget.Disk targetManagedDisk)
         {
             // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/using-managed-disks-template-deployments
             // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/template-description
@@ -1514,17 +1514,25 @@ namespace MigAz.Azure.Generator
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
             templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
 
-            string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
-
-            templateManageDiskCreationDataProperties.createOption = "Import";
-            templateManageDiskCreationDataProperties.sourceUri = "[parameters('" + managedDiskSourceUriParameterName + "')]";
-
-            if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
+            if (targetManagedDisk.SourceDisk != null && targetManagedDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
             {
-                Parameter parameter = new Parameter();
-                parameter.type = "string";
-                this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
+                Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
+
+                templateManageDiskCreationDataProperties.createOption = "Import";
+                templateManageDiskCreationDataProperties.sourceUri = await armManagedDisk.GetSASUrlAsync(3600);
             }
+
+            //////////string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
+
+            //////////templateManageDiskCreationDataProperties.createOption = "Import";
+            //////////templateManageDiskCreationDataProperties.sourceUri = targetManagedDisk.SourceDisk. "[parameters('" + managedDiskSourceUriParameterName + "')]";
+
+            //////////if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
+            //////////{
+            //////////    Parameter parameter = new Parameter();
+            //////////    parameter.type = "string";
+            //////////    this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
+            //////////}
 
             // sample json with encryption
             // https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-create-encrypted-managed-disk/CreateEncryptedManagedDisk-kek.json
@@ -1536,7 +1544,7 @@ namespace MigAz.Azure.Generator
             return templateManagedDisk;
         }
 
-        private CopyBlobDetail BuildCopyBlob(MigrationTarget.Disk disk, MigrationTarget.ResourceGroup resourceGroup)
+        private async Task<CopyBlobDetail> BuildCopyBlob(MigrationTarget.Disk disk, MigrationTarget.ResourceGroup resourceGroup)
         {
             if (disk.SourceDisk == null)
                 return null;
@@ -1545,29 +1553,37 @@ namespace MigAz.Azure.Generator
             if (this.SourceSubscription != null)
                 copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
 
-            if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Asm.Disk))
+            if (disk.SourceDisk != null)
             {
-                Asm.Disk asmDataDisk = (Asm.Disk)disk.SourceDisk;
+                if (disk.SourceDisk.GetType() == typeof(Asm.Disk))
+                {
+                    Asm.Disk asmClassicDisk = (Asm.Disk)disk.SourceDisk;
 
-                copyblobdetail.SourceSA = asmDataDisk.StorageAccountName;
-                copyblobdetail.SourceContainer = asmDataDisk.StorageAccountContainer;
-                copyblobdetail.SourceBlob = asmDataDisk.StorageAccountBlob;
+                    copyblobdetail.SourceSA = asmClassicDisk.StorageAccountName;
+                    copyblobdetail.SourceContainer = asmClassicDisk.StorageAccountContainer;
+                    copyblobdetail.SourceBlob = asmClassicDisk.StorageAccountBlob;
 
-                if (asmDataDisk.SourceStorageAccount != null && asmDataDisk.SourceStorageAccount.Keys != null)
-                    copyblobdetail.SourceKey = asmDataDisk.SourceStorageAccount.Keys.Primary;
+                    if (asmClassicDisk.SourceStorageAccount != null && asmClassicDisk.SourceStorageAccount.Keys != null)
+                        copyblobdetail.SourceKey = asmClassicDisk.SourceStorageAccount.Keys.Primary;
+                }
+                else if (disk.SourceDisk.GetType() == typeof(Arm.ClassicDisk))
+                {
+                    Arm.ClassicDisk armClassicDisk = (Arm.ClassicDisk)disk.SourceDisk;
+
+                    copyblobdetail.SourceSA = armClassicDisk.StorageAccountName;
+                    copyblobdetail.SourceContainer = armClassicDisk.StorageAccountContainer;
+                    copyblobdetail.SourceBlob = armClassicDisk.StorageAccountBlob;
+
+                    if (armClassicDisk.SourceStorageAccount != null && armClassicDisk.SourceStorageAccount.Keys != null)
+                        copyblobdetail.SourceKey = armClassicDisk.SourceStorageAccount.Keys[0].Value;
+                }
+                else if (disk.SourceDisk.GetType() == typeof(Arm.ManagedDisk))
+                {
+                    Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
+
+                    copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
+                }
             }
-            else if (disk.SourceDisk != null && disk.SourceDisk.GetType() == typeof(Arm.ClassicDisk))
-            {
-                Arm.ClassicDisk armDataDisk = (Arm.ClassicDisk)disk.SourceDisk;
-
-                copyblobdetail.SourceSA = armDataDisk.StorageAccountName;
-                copyblobdetail.SourceContainer = armDataDisk.StorageAccountContainer;
-                copyblobdetail.SourceBlob = armDataDisk.StorageAccountBlob;
-
-                if (armDataDisk.SourceStorageAccount != null && armDataDisk.SourceStorageAccount.Keys != null)
-                    copyblobdetail.SourceKey = armDataDisk.SourceStorageAccount.Keys[0].Value;
-            }
-
             copyblobdetail.DestinationSAResourceGroup = resourceGroup.ToString();
 
             if (disk.TargetStorage != null)

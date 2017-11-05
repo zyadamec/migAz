@@ -100,7 +100,6 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                // todo now russell, this is not verified, only copied code
                 if (this.ResourceToken["encryptionSettings"] == null)
                     return false;
 
@@ -118,7 +117,7 @@ namespace MigAz.Azure.Arm
             return this.Name;
         }
 
-        public async Task<string> GetSASUrlAsync()
+        public async Task<string> GetSASUrlAsync(int tokenDurationSeconds)
         {
             // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/disks/disks-grant-access
             string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2016-04-30-preview";
@@ -134,7 +133,7 @@ namespace MigAz.Azure.Arm
                         new
                         {
                             access = "Read",
-                            durationInSeconds = "3600"
+                            durationInSeconds = tokenDurationSeconds.ToString()
                         })
                     )
                 {
@@ -142,14 +141,24 @@ namespace MigAz.Azure.Arm
                     response.Headers.TryGetValues("x-ms-request-id", out requestId);
                 }
 
-                string url2 = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/westus/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2016-04-30-preview";
-                using (var response2 = await client.GetAsync(url2))
-                {
-                    response2.EnsureSuccessStatusCode();
-                    string y2 = await response2.Content.ReadAsStringAsync();
-                    JObject j = JObject.Parse(y2);
+                String diskOperationStatus = "InProgress";
 
-                    return j["properties"]["output"]["accessSAS"].ToString();
+                while (diskOperationStatus == "InProgress")
+                { 
+                    string url2 = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.ResourceGroup.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2016-04-30-preview";
+                    using (var response2 = await client.GetAsync(url2))
+                    {
+                        response2.EnsureSuccessStatusCode();
+                        string responseString = await response2.Content.ReadAsStringAsync();
+                        JObject responseJson = JObject.Parse(responseString);
+
+                        diskOperationStatus = responseJson["status"].ToString();
+
+                        if (diskOperationStatus == "InProgress")
+                            System.Threading.Thread.Sleep(1000);
+                        else if (diskOperationStatus == "Succeeded")
+                            return responseJson["properties"]["output"]["accessSAS"].ToString();
+                    }
                 }
             }
 

@@ -20,6 +20,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.SourceDisk = sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
+            this.TargetStorage = new ManagedDiskStorage(this);
 
             this.TargetName = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
@@ -34,6 +35,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.SourceDisk = (IDisk)sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
+            this.TargetStorage = new ManagedDiskStorage(this);
 
             if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {
@@ -138,7 +140,7 @@ namespace MigAz.Azure.MigrationTarget
                 if (this.TargetStorage != null)
                     return this.TargetStorage.StorageAccountType;
 
-                return StorageAccountType.Premium; // TODO Russell
+                return StorageAccountType.Premium;
             }
         }
 

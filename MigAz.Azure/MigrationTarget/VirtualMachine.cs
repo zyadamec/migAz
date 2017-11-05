@@ -22,20 +22,24 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
+        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, ArmDiskType targetDiskType, List<VirtualNetwork> targetVirtualNetworks, List<StorageAccount> targetStorageAccounts, List<NetworkSecurityGroup> networkSecurityGroups)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
             this.TargetName = virtualMachine.RoleName;
             this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
-            this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
+
+            if (targetDiskType == ArmDiskType.ClassicDisk)
+                this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
                 Disk targetDataDisk = new Disk(asmDataDisk, this);
-                targetDataDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
                 this.DataDisks.Add(targetDataDisk);
+
+                if (targetDiskType == ArmDiskType.ClassicDisk)
+                    targetDataDisk.TargetStorage = SeekTargetStorageAccount(targetStorageAccounts, asmDataDisk.StorageAccountName);
             }
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
@@ -85,7 +89,7 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
         }
 
-        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine)
+        public VirtualMachine(AzureContext azureContext, Arm.VirtualMachine virtualMachine, ArmDiskType targetDiskType)
         {
             this._AzureContext = azureContext;
             this.Source = virtualMachine;
@@ -119,7 +123,8 @@ namespace MigAz.Azure.MigrationTarget
             if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
                 Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
-                this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                if (targetDiskType == ArmDiskType.ClassicDisk)
+                    this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
             }
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
@@ -149,7 +154,8 @@ namespace MigAz.Azure.MigrationTarget
                     this.DataDisks.Add(targetDataDisk);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
-                    targetDataDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                    if (targetDiskType == ArmDiskType.ClassicDisk)
+                        targetDataDisk.TargetStorage = SeekTargetStorageAccount(azureContext.AzureRetriever.ArmTargetStorageAccounts, armDisk.StorageAccountName);
                 }
             }
 

@@ -63,6 +63,12 @@ namespace MigAz.Forms
             app.Default.SaveSelection = chkSaveSelection.Checked;
             app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
+
+            if (rbClassicDisk.Checked)
+                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ClassicDisk;
+            else
+                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ManagedDisk;
+
             app.Default.Save();
         }
 
@@ -82,6 +88,11 @@ namespace MigAz.Forms
             chkSaveSelection.Checked = app.Default.SaveSelection;
             chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
+
+            if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
+                rbClassicDisk.Checked = true;
+            else
+                rbManagedDisk.Checked = true;
         }
 
         private void btnApplyDefaultNaming_Click(object sender, EventArgs e)
