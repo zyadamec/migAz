@@ -34,9 +34,17 @@ namespace MigAz.Azure.Asm
             get { return _XmlNode.SelectSingleNode("AddressPrefix").InnerText; }
         }
 
-        public string NextHopType
+        public NextHopTypeEnum NextHopType
         {
-            get { return _XmlNode.SelectSingleNode("NextHopType/Type").InnerText; }
+            get
+            {
+                switch (_XmlNode.SelectSingleNode("NextHopType/Type").InnerText)
+                {
+                    default:
+                        return NextHopTypeEnum.None;
+                        break;
+                }
+            }
         }
         public string NextHopIpAddress
         {

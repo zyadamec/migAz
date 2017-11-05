@@ -10,15 +10,24 @@ namespace MigAz.Azure.Arm
 {
     public class RouteTable : ArmResource, IRouteTable
     {
+        private List<Route> _Routes = new List<Route>();
+
+
         private RouteTable() : base(null) { }
 
         public RouteTable(JToken resourceToken) : base(resourceToken)
         {
+            var routes = from route in ResourceToken["properties"]["routes"]
+                          select route;
+
+            foreach (var route in routes)
+            {
+                Route armRoute = new Route(this, route);
+                _Routes.Add(armRoute);
+            }
         }
 
-        private List<Route> _Routes = new List<Route>();
-
-        public List<Route> Routes => _Routes; // todo  routenode in resource.properties.routes)
+        public List<Route> Routes => _Routes;
 
         public override string ToString()
         {

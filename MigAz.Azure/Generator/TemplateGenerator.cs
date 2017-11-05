@@ -1140,29 +1140,10 @@ namespace MigAz.Azure.Generator
             // for each route
             foreach (MigrationTarget.Route migrationRoute in routeTable.Routes)
             {
-                //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
                 Route_Properties route_properties = new Route_Properties();
                 route_properties.addressPrefix = migrationRoute.AddressPrefix;
+                route_properties.nextHopType = migrationRoute.NextHopType.ToString();
 
-                // convert next hop type string
-                switch (migrationRoute.NextHopType)
-                {
-                    case "VirtualAppliance":
-                        route_properties.nextHopType = "VirtualAppliance";
-                        break;
-                    case "VPNGateway":
-                        route_properties.nextHopType = "VirtualNetworkGateway";
-                        break;
-                    case "Internet":
-                        route_properties.nextHopType = "Internet";
-                        break;
-                    case "VNETLocal":
-                        route_properties.nextHopType = "VnetLocal";
-                        break;
-                    case "Null":
-                        route_properties.nextHopType = "None";
-                        break;
-                }
                 if (route_properties.nextHopType == "VirtualAppliance")
                     route_properties.nextHopIpAddress = migrationRoute.NextHopIpAddress;
 
@@ -1182,31 +1163,30 @@ namespace MigAz.Azure.Generator
             return routetable;
         }
 
-        private Core.ArmTemplate.RouteTable BuildARMRouteTable(Arm.RouteTable routeTable)
+        private Core.ArmTemplate.RouteTable BuildARMRouteTable(MigrationTarget.RouteTable targetRouteTable)
         {
-            LogProvider.WriteLog("BuildRouteTable", "Start Microsoft.Network/routeTables/" + routeTable.Name);
+            LogProvider.WriteLog("BuildRouteTable", "Start Microsoft.Network/routeTables/" + targetRouteTable.ToString());
 
             Core.ArmTemplate.RouteTable routetable = new Core.ArmTemplate.RouteTable(this.ExecutionGuid);
-            routetable.name = routeTable.Name;
+            routetable.name = targetRouteTable.ToString();
             routetable.location = "[resourceGroup().location]";
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Core.ArmTemplate.Route>();
 
             // for each route
-            foreach (Arm.Route armRoute in routeTable.Routes)
+            foreach (MigrationTarget.Route targetRoute in targetRouteTable.Routes)
             {
                 //securityrule_properties.protocol = rule.SelectSingleNode("Protocol").InnerText;
                 Route_Properties route_properties = new Route_Properties();
-                route_properties.addressPrefix = armRoute.AddressPrefix;
-                route_properties.nextHopType = armRoute.NextHopType;
+                route_properties.addressPrefix = targetRoute.AddressPrefix;
+                route_properties.nextHopType = targetRoute.NextHopType.ToString();
 
-
-                if (route_properties.nextHopType == "VirtualAppliance")
-                    route_properties.nextHopIpAddress = armRoute.NextHopIpAddress;
+                if (targetRoute.NextHopType == NextHopTypeEnum.VirtualAppliance)
+                    route_properties.nextHopIpAddress = targetRoute.NextHopIpAddress;
 
                 Core.ArmTemplate.Route route = new Core.ArmTemplate.Route();
-                route.name = armRoute.Name;
+                route.name = targetRoute.ToString();
                 route.properties = route_properties;
 
                 routetable_properties.routes.Add(route);
@@ -1216,7 +1196,7 @@ namespace MigAz.Azure.Generator
 
             this.AddResource(routetable);
 
-            LogProvider.WriteLog("BuildRouteTable", "End Microsoft.Network/routeTables/" + routeTable.Name);
+            LogProvider.WriteLog("BuildRouteTable", "End Microsoft.Network/routeTables/" + targetRouteTable.ToString());
 
             return routetable;
         }

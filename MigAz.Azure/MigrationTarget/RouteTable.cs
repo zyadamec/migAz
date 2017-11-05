@@ -25,6 +25,18 @@ namespace MigAz.Azure.MigrationTarget
             _AzureContext = azureContext;
             _SourceRouteTable = source;
             this.TargetName = source.Name;
+
+        }
+        public RouteTable(AzureContext azureContext, Arm.RouteTable source)
+        {
+            _AzureContext = azureContext;
+            _SourceRouteTable = source;
+            this.TargetName = source.Name;
+
+            foreach (Arm.Route route in source.Routes)
+            {
+                _Routes.Add(new Route(route));
+            }
         }
 
         public string TargetName
