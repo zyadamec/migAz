@@ -14,11 +14,13 @@ namespace MigAz.Azure.Models
         public string SourceBlob;
         public string SourceKey;
         public string SourceAbsoluteUri;
-        public string DestinationSAResourceGroup;
-        public string DestinationSA;
-        public string DestinationContainer;
-        public string DestinationBlob;
-        public string DestinationKey = String.Empty;
+        public string TargetLocation;
+        public string TargetResourceGroup;
+        public string TargetStorageAccount;
+        public string TargetStorageAccountType;
+        public string TargetContainer;
+        public string TargetBlob;
+        public string TargetKey = String.Empty;
         public string Status = String.Empty;
         public long TotalBytes = 0;
         public long BytesCopied = 0;

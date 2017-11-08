@@ -12,9 +12,11 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
-        private string _BlobStorageNamespace = String.Empty;
 
-        private StorageAccount() { }
+        public StorageAccount()
+        {
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+        }
 
         public StorageAccount(AzureContext azureContext, IStorageAccount source)
         {
@@ -22,7 +24,6 @@ namespace MigAz.Azure.MigrationTarget
             _Source = source;
             this.TargetName = source.Name;
             this.AccountType = source.AccountType;
-            this._BlobStorageNamespace = azureContext.AzureServiceUrls.GetBlobEndpointUrl();
         }
 
         public string TargetName
@@ -32,7 +33,17 @@ namespace MigAz.Azure.MigrationTarget
         }
 
         public string AccountType { get; set; }
-        public string BlobStorageNamespace { get { return _BlobStorageNamespace; } }
+        public string BlobStorageNamespace
+        {
+            get
+            {
+                if (_AzureContext == null)
+                    return String.Empty;
+                else
+                    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            }
+        }
+
         public IStorageAccount SourceAccount
         {
             get { return _Source; }
@@ -56,7 +67,9 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
+            if (_AzureContext == null)
+                return this.TargetName;
+            else if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
                 return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;
             else
                 return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;

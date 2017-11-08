@@ -644,6 +644,7 @@ namespace MigAz.Azure.UserControls
                 LogProvider.WriteLog("treeARM_AfterSelect", "Start");
 
             _EventSourceNode = e.Node;
+
             await _PropertyPanel.Bind(e.Node);
             _EventSourceNode = null;
 

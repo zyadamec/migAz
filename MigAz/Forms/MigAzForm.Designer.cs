@@ -337,7 +337,7 @@
             this.btnExport.TabIndex = 9;
             this.btnExport.Text = "&Export Objects";
             this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click_1);
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click_1Async);
             // 
             // txtDestinationFolder
             // 

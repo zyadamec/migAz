@@ -35,40 +35,56 @@ If ($StartType -eq "StartBlobCopy")
     # Initiate the copy of all blobs
     foreach ($copyblobdetail in $copyblobdetails)
     {
-        # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
-    
-        # Create destination storage account context
-        $copyblobdetail.DestinationKey = (Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.DestinationSAResourceGroup -Name $copyblobdetail.DestinationSA | Get-AzureRmStorageAccountKey).Value[0]
-        $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.DestinationSA -StorageAccountKey $copyblobdetail.DestinationKey
-
-        # Create destination container if it does not exist
-        $destination_container = Get-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.DestinationContainer -ErrorAction SilentlyContinue
-        if ($destination_container -eq $null)
-        { 
-            New-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.DestinationContainer
+        # Ensure the Storage Account Exists
+        $targetStorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetails.TargetResourceGroup -Name $copyblobdetails.TargetStorageAccount -ErrorAction SilentlyContinue
+        if ($targetStorageAccount -eq $null)
+        {
+            Write-Host "Target Storage Account '$($copyblobdetails.TargetStorageAccount)' not found.  Attempting to create."
+            New-AzureRmStorageAccount -ResourceGroupName $copyblobdetails.TargetResourceGroup -Name $copyblobdetails.TargetStorageAccount -Location $copyblobdetails.TargetLocation -SkuName $copyblobdetails.TargetStorageAccountType
         }
 
-        #Get a reference to a blob
-        $blob = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Blob $copyblobdetail.SourceBlob
-        #Create a snapshot of the blob
-        $snap = $blob.ICloudBlob.CreateSnapshot()
-        $copyblobdetail.SnapshotTime = $snap.SnapshotTime.DateTime.ToString()
-        # Get just created snapshot
-        $snapshot = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Prefix $copyblobdetail.SourceBlob | Where-Object  { $_.Name -eq $copyblobdetail.SourceBlob -and $_.SnapshotTime -eq $snap.SnapshotTime }
-        # Convert to CloudBlob object type
-        $snapshot = [Microsoft.WindowsAzure.Storage.Blob.CloudBlob] $snapshot.ICloudBlob
-            
-        # Initiate blob snapshot copy job
-        Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot -DestContext $destination_context -DestContainer $copyblobdetail.DestinationContainer -DestBlob $copyblobdetail.DestinationBlob -Verbose
+		# Create destination storage account context
+		$copyblobdetail.TargetKey = (Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount | Get-AzureRmStorageAccountKey).Value[0]
+		$destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
 
-        # Updates $copyblobdetailsout array
-        $copyblobdetail.StartTime = Get-Date -Format u
-        $copyblobdetailsout += $copyblobdetail
+		# Create destination container if it does not exist
+		$destination_container = Get-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer -ErrorAction SilentlyContinue
+		if ($destination_container -eq $null)
+		{ 
+			New-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer
+		}
+
+		if ($copyblobdetail.SourceAbsoluteUri -eq $null)
+		{
+			# Create source storage account context
+			$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+    
+			#Get a reference to a blob
+			$blob = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Blob $copyblobdetail.SourceBlob
+			#Create a snapshot of the blob
+			$snap = $blob.ICloudBlob.CreateSnapshot()
+			$copyblobdetail.SnapshotTime = $snap.SnapshotTime.DateTime.ToString()
+			# Get just created snapshot
+			$snapshot = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Prefix $copyblobdetail.SourceBlob | Where-Object  { $_.Name -eq $copyblobdetail.SourceBlob -and $_.SnapshotTime -eq $snap.SnapshotTime }
+			# Convert to CloudBlob object type
+			$snapshot = [Microsoft.WindowsAzure.Storage.Blob.CloudBlob] $snapshot.ICloudBlob
+            
+			# Initiate blob snapshot copy job
+			Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob -Verbose
+		}
+		else
+		{
+			# Initiate blob snapshot copy job
+			Start-AzureStorageBlobCopy -AbsoluteUri $copyblobdetail.SourceAbsoluteUri -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob -Verbose
+		}
+
+		# Updates $copyblobdetailsout array
+		$copyblobdetail.StartTime = Get-Date -Format u
+		$copyblobdetailsout += $copyblobdetail
 
         # Updates screen table
         # cls
-        $copyblobdetails | select DestinationSA, DestinationContainer, DestinationBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+        $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
     }
 
     # Updates file with data from $copyblobdetailsout
@@ -87,8 +103,8 @@ If ($StartType -eq "MonitorBlobCopy")
         {
             if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
             {
-                $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.DestinationSA -StorageAccountKey $copyblobdetail.DestinationKey
-                $status = Get-AzureStorageBlobCopyState -Context $destination_context -Container $copyblobdetail.DestinationContainer -Blob $copyblobdetail.DestinationBlob
+                $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
+                $status = Get-AzureStorageBlobCopyState -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob
 
                 $copyblobdetail.TotalBytes = "{0:N0} MB" -f ($status.TotalBytes / 1MB)
                 $copyblobdetail.BytesCopied = "{0:N0} MB" -f ($status.BytesCopied / 1MB)
@@ -101,7 +117,7 @@ If ($StartType -eq "MonitorBlobCopy")
 
         $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
         # cls
-        $copyblobdetails | select DestinationSA, DestinationContainer, DestinationBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+        $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
         Start-Sleep -Seconds $refreshinterval
     }
@@ -126,8 +142,8 @@ If ($StartType -eq "CancelBlobCopy")
     {
         if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
         {
-            $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.DestinationSA -StorageAccountKey $copyblobdetail.DestinationKey
-            Stop-AzureStorageBlobCopy -Context $destination_context -Container $copyblobdetail.DestinationContainer -Blob $copyblobdetail.DestinationBlob -Force -Verbose
+            $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
+            Stop-AzureStorageBlobCopy -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob -Force -Verbose
 
             $copyblobdetail.Status = "Canceled"
             $copyblobdetail.EndTime = Get-Date -Format u
@@ -136,7 +152,7 @@ If ($StartType -eq "CancelBlobCopy")
 
     $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
     # cls
-    $copyblobdetails | select DestinationSA, DestinationContainer, DestinationBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+    $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
     # Delete used snapshots
     foreach ($copyblobdetail in $copyblobdetails)

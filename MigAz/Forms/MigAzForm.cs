@@ -199,7 +199,7 @@ namespace MigAz.Forms
             System.Diagnostics.Process.Start("https://aka.ms/migaz");
         }
 
-        private void btnExport_Click_1(object sender, EventArgs e)
+        private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
             if (splitContainer2.Panel1.Controls.Count == 1)
             {
@@ -215,7 +215,7 @@ namespace MigAz.Forms
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
                 // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                btnRefreshOutput_Click(this, null);
+                await RefreshOutput();
 
                 migrator.TemplateGenerator.Write();
 
@@ -265,6 +265,11 @@ namespace MigAz.Forms
         }
 
         private async void btnRefreshOutput_Click(object sender, EventArgs e)
+        {
+            await RefreshOutput();
+        }
+
+        private async Task RefreshOutput()
         {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 

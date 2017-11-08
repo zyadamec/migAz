@@ -21,6 +21,7 @@ namespace MigAz.Azure.Generator
         private List<ArmResource> _Resources = new List<ArmResource>();
         private Dictionary<string, Core.ArmTemplate.Parameter> _Parameters = new Dictionary<string, Core.ArmTemplate.Parameter>();
         private List<MigAzGeneratorAlert> _Alerts = new List<MigAzGeneratorAlert>();
+        private List<MigrationTarget.StorageAccount> _TemporaryStorageAccounts = new List<MigrationTarget.StorageAccount>();
         private ILogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
@@ -160,6 +161,7 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
             Alerts.Clear();
+            _TemporaryStorageAccounts.Clear();
 
             _ExportArtifacts = (ExportArtifacts)artifacts;
 
@@ -454,7 +456,9 @@ namespace MigAz.Azure.Generator
                 if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
                     targetDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
                 {
-                    if (!targetDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
+                    if (targetDisk.TargetStorageAccountBlob == null || targetDisk.TargetStorageAccountBlob.Trim().Length == 0)
+                        this.AddAlert(AlertType.Error, "Target Storage Blob Name is required.", targetDisk);
+                    else if (!targetDisk.TargetStorageAccountBlob.ToLower().EndsWith(".vhd"))
                         this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + targetDisk.TargetStorageAccountBlob + "' for Disk is invalid, as it must end with '.vhd'.", targetDisk);
                 }
 
@@ -483,6 +487,7 @@ namespace MigAz.Azure.Generator
             TemplateStreams.Clear();
             Resources.Clear();
             _CopyBlobDetails.Clear();
+            _TemporaryStorageAccounts.Clear();
 
             LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
@@ -1553,6 +1558,9 @@ namespace MigAz.Azure.Generator
             if (this.SourceSubscription != null)
                 copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
 
+            copyblobdetail.TargetResourceGroup = resourceGroup.ToString();
+            copyblobdetail.TargetLocation = resourceGroup.TargetLocation.Name.ToString();
+
             if (disk.SourceDisk != null)
             {
                 if (disk.SourceDisk.GetType() == typeof(Asm.Disk))
@@ -1582,25 +1590,56 @@ namespace MigAz.Azure.Generator
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
                     copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
+
                 }
             }
-            copyblobdetail.DestinationSAResourceGroup = resourceGroup.ToString();
 
             if (disk.TargetStorage != null)
             {
                 if (disk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
                 {
                     Arm.StorageAccount armStorageAccount = (Arm.StorageAccount)disk.TargetStorage;
-                    copyblobdetail.DestinationSAResourceGroup = armStorageAccount.ResourceGroup.Name;
+                    copyblobdetail.TargetResourceGroup = armStorageAccount.ResourceGroup.Name;
+                    copyblobdetail.TargetLocation = armStorageAccount.ResourceGroup.Location.Name.ToString();
+                    copyblobdetail.TargetStorageAccount = disk.TargetStorage.ToString();
                 }
+                else if (disk.TargetStorage.GetType() == typeof(MigrationTarget.StorageAccount))
+                {
+                    copyblobdetail.TargetStorageAccount = disk.TargetStorage.ToString();
+                    copyblobdetail.TargetStorageAccountType = disk.TargetStorage.StorageAccountType.ToString();
+                }
+                else if (disk.TargetStorage.GetType() == typeof(MigrationTarget.ManagedDiskStorage))
+                {
+                    MigrationTarget.ManagedDiskStorage managedDiskStorage = (MigrationTarget.ManagedDiskStorage)disk.TargetStorage;
 
-                copyblobdetail.DestinationSA = disk.TargetStorage.ToString();
+                    // We are going to use a temporary storage account to stage the VHD file(s), which will then be deleted after Disk Creation
+                    MigrationTarget.StorageAccount targetTemporaryStorageAccount = GetTempStorageAccountName(disk);
+                    copyblobdetail.TargetStorageAccount = targetTemporaryStorageAccount.ToString();
+                    copyblobdetail.TargetStorageAccountType = targetTemporaryStorageAccount.StorageAccountType.ToString();
+                    copyblobdetail.TargetBlob = disk.TargetName + ".vhd";
+                }
             }
 
-            copyblobdetail.DestinationContainer = disk.TargetStorageAccountContainer;
-            copyblobdetail.DestinationBlob = disk.TargetStorageAccountBlob;
+            copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
+            copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
             return copyblobdetail;
+        }
+
+        private MigrationTarget.StorageAccount GetTempStorageAccountName(MigrationTarget.Disk disk)
+        {
+            foreach (MigrationTarget.StorageAccount temporaryStorageAccount in this._TemporaryStorageAccounts)
+            {
+                if (temporaryStorageAccount.AccountType == disk.StorageAccountType.ToString())
+                {
+                    return temporaryStorageAccount;
+                }
+            }
+
+            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount();
+            _TemporaryStorageAccounts.Add(newTemporaryStorageAccount);
+
+            return newTemporaryStorageAccount;
         }
 
         private void BuildStorageAccountObject(MigrationTarget.StorageAccount targetStorageAccount)
@@ -1618,14 +1657,6 @@ namespace MigAz.Azure.Generator
             this.AddResource(storageaccount);
 
             LogProvider.WriteLog("BuildStorageAccountObject", "End");
-        }
-
-        private bool HasNewStorageAccounts
-        {
-            get
-            {
-                return _ExportArtifacts.StorageAccounts.Count > 0;
-            }
         }
 
         private bool HasBlobCopyDetails
@@ -1646,11 +1677,6 @@ namespace MigAz.Azure.Generator
 
             await SerializeDeploymentInstructions();
 
-            if (HasNewStorageAccounts && HasBlobCopyDetails) // If there are new storage accounts and we have vhd blobs involved in the migration to copy
-            {
-                await SerializeStorageAccounts(); // Serialize a seperate tempalte with just new Storage Accounts to faciliate Blob Copy
-            }
-
             if (HasBlobCopyDetails)
             {
                 await SerializeBlobCopyDetails(); // Serialize blob copy details
@@ -1662,26 +1688,6 @@ namespace MigAz.Azure.Generator
             StatusProvider.UpdateStatus("Ready");
 
             LogProvider.WriteLog("SerializeStreams", "End");
-        }
-
-        private async Task SerializeStorageAccounts()
-        {
-            LogProvider.WriteLog("SerializeStorageAccounts", "Start storageaccounts.json");
-
-            if (_ExportArtifacts.StorageAccounts.Count > 0)
-            {
-                StatusProvider.UpdateStatus("BUSY:  Generating storageaccounts.json");
-                LogProvider.WriteLog("SerializeStreams", "Start storageaccounts.json stream");
-
-                String templateString = await GetStorageAccountTemplateString();
-                ASCIIEncoding asciiEncoding = new ASCIIEncoding();
-                byte[] a = asciiEncoding.GetBytes(templateString);
-                MemoryStream templateStream = new MemoryStream();
-                await templateStream.WriteAsync(a, 0, a.Length);
-                TemplateStreams.Add("storageaccounts.json", templateStream);
-            }
-
-            LogProvider.WriteLog("SerializeStorageAccounts", "End storageaccounts.json");
         }
 
         private async Task SerializeBlobCopyDetails()
