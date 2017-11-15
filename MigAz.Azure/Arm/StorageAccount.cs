@@ -112,7 +112,7 @@ namespace MigAz.Azure.Arm
 
         public StorageAccountType StorageAccountType
         {
-            get { return MigrationTarget.StorageAccount.GetStorageAccountType(this.AccountType); }
+            get { return this.StorageAccountType; }
         }
 
         public override string ToString()

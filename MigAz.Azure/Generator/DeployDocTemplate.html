@@ -40,10 +40,6 @@ Select-AzureRmSubscription{subscriptionSwitch}</pre>
 <pre>New-AzureRmResourceGroup -Name "{resourceGroupName}" -Location "{location}"</pre>
             </li>
             <li>
-                <p>Deploy your storage account template (if generated) to the new Resource Group.</p>
-<pre>New-AzureRmResourceGroupDeployment -ResourceGroupName "{resourceGroupName}" -TemplateFile "{storageTemplatePath}"</pre>
-            </li>
-            <li>
                 <p>If your template contains VMs, run the script to snapshot and copy the VHDs from your source to your target 
                     storage accounts</p>
 <pre>&amp; '{exportPath}BlobCopy.ps1' -DetailsFilePath "{blobDetailsPath}" -StartType StartBlobCopy

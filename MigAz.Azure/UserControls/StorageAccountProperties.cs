@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Asm;
 using MigAz.Azure;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.UserControls
 {
@@ -42,7 +43,7 @@ namespace MigAz.Azure.UserControls
                     txtTargetName.Text = storageAccount.TargetName;
             }
 
-            cmbAccountType.SelectedIndex = cmbAccountType.FindString(storageAccount.AccountType);
+            cmbAccountType.SelectedIndex = cmbAccountType.FindString(storageAccount.StorageAccountType.ToString());
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -64,7 +65,11 @@ namespace MigAz.Azure.UserControls
 
         private void cmbAccountType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _StorageAccount.AccountType = cmbAccountType.SelectedItem.ToString();
+            if (cmbAccountType.SelectedItem.ToString() == "Premium_LRS")
+                _StorageAccount.StorageAccountType = StorageAccountType.Premium_LRS;
+            else
+                _StorageAccount.StorageAccountType = StorageAccountType.Standard_LRS;
+
             PropertyChanged();
         }
     }

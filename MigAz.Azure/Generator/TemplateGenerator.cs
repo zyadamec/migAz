@@ -1629,13 +1629,13 @@ namespace MigAz.Azure.Generator
         {
             foreach (MigrationTarget.StorageAccount temporaryStorageAccount in this._TemporaryStorageAccounts)
             {
-                if (temporaryStorageAccount.AccountType == disk.StorageAccountType.ToString())
+                if (temporaryStorageAccount.StorageAccountType == disk.StorageAccountType)
                 {
                     return temporaryStorageAccount;
                 }
             }
 
-            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount();
+            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount(disk.StorageAccountType);
             _TemporaryStorageAccounts.Add(newTemporaryStorageAccount);
 
             return newTemporaryStorageAccount;
@@ -1646,7 +1646,7 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + targetStorageAccount.ToString());
 
             StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
-            storageaccount_properties.accountType = targetStorageAccount.AccountType;
+            storageaccount_properties.accountType = targetStorageAccount.StorageAccountType.ToString();
 
             StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
             storageaccount.name = targetStorageAccount.ToString();
@@ -1796,7 +1796,6 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
             instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
-            instructionContent = instructionContent.Replace("{storageTemplatePath}", GetStorageTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
             instructionContent = instructionContent.Replace("{resourceGroupName}", this.TargetResourceGroupName);
             instructionContent = instructionContent.Replace("{location}", this.TargetResourceGroupLocation);
@@ -1821,11 +1820,6 @@ namespace MigAz.Azure.Generator
         public string GetTemplatePath()
         {
             return Path.Combine(this.OutputDirectory, "export.json");
-        }
-
-        public string GetStorageTemplatePath()
-        {
-            return Path.Combine(this.OutputDirectory, "storageaccounts.json");
         }
 
         public string GetInstructionPath()

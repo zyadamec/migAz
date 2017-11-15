@@ -12,10 +12,16 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
+        private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
         public StorageAccount()
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+        }
+        public StorageAccount(StorageAccountType storageAccountType)
+        {
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            this.StorageAccountType = storageAccountType;
         }
 
         public StorageAccount(AzureContext azureContext, IStorageAccount source)
@@ -23,7 +29,7 @@ namespace MigAz.Azure.MigrationTarget
             _AzureContext = azureContext;
             _Source = source;
             this.TargetName = source.Name;
-            this.AccountType = source.AccountType;
+            this.StorageAccountType = MigrationTarget.StorageAccount.GetStorageAccountType(source.AccountType);
         }
 
         public string TargetName
@@ -32,7 +38,6 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
-        public string AccountType { get; set; }
         public string BlobStorageNamespace
         {
             get
@@ -62,7 +67,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType
         {
-            get { return MigrationTarget.StorageAccount.GetStorageAccountType(this.AccountType); }
+            get { return _StorageAccountType; }
+            set { _StorageAccountType = value; }
         }
 
         public override string ToString()
@@ -75,7 +81,7 @@ namespace MigAz.Azure.MigrationTarget
                 return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;
         }
 
-        public static StorageAccountType GetStorageAccountType(string storageAccountType)
+        private static StorageAccountType GetStorageAccountType(string storageAccountType)
         {
             // https://msdn.microsoft.com/en-us/library/azure/hh264518.aspx
 

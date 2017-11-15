@@ -135,8 +135,8 @@ namespace MigAz.Azure.UserControls
             {
                 cmbTargetStorage.Items.Clear();
                 cmbTargetStorage.Enabled = true;
-                cmbTargetStorage.Items.Add("Standard");
-                cmbTargetStorage.Items.Add("Premium");
+                cmbTargetStorage.Items.Add("Standard_LRS");
+                cmbTargetStorage.Items.Add("Premium_LRS");
 
                 txtBlobName.Enabled = false;
                 txtBlobName.Text = String.Empty;
@@ -310,7 +310,7 @@ namespace MigAz.Azure.UserControls
                 if (_TargetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
                 {
                     ManagedDiskStorage managedDiskStorage = (ManagedDiskStorage)_TargetDisk.TargetStorage;
-                    if (cmbSender.SelectedItem.ToString() == "Premium")
+                    if (cmbSender.SelectedItem.ToString() == "Premium_LRS")
                         managedDiskStorage.StorageAccountType = StorageAccountType.Premium_LRS;
                     else
                         managedDiskStorage.StorageAccountType = StorageAccountType.Standard_LRS;

@@ -39,7 +39,7 @@ If ($StartType -eq "StartBlobCopy")
         $targetStorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -ErrorAction SilentlyContinue
         if ($targetStorageAccount -eq $null)
         {
-            Write-Host "Target Storage Account '$($copyblobdetails.TargetStorageAccount)' not found.  Attempting to create."
+            Write-Host "Target Storage Account '$($copyblobdetail.TargetStorageAccount)' not found.  Attempting to create."
             New-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -Location $copyblobdetail.TargetLocation -SkuName $copyblobdetail.TargetStorageAccountType
         }
 
@@ -146,7 +146,7 @@ If ($StartType -eq "CancelBlobCopy")
         if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
         {
             $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
-            Stop-AzureStorageBlobCopy -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob -Force -Verbose
+            Stop-AzureStorageBlobCopy -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob -Force
 
             $copyblobdetail.Status = "Canceled"
             $copyblobdetail.EndTime = Get-Date -Format u
