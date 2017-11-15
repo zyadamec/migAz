@@ -242,12 +242,12 @@ namespace MigAz.Azure.Generator
 
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium)
+                    if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
                         this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
-                        if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium)
+                        if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
                             this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
                     }
                 }
@@ -462,7 +462,7 @@ namespace MigAz.Azure.Generator
                         this.AddAlert(AlertType.Error, "Target Storage Blob Name '" + targetDisk.TargetStorageAccountBlob + "' for Disk is invalid, as it must end with '.vhd'.", targetDisk);
                 }
 
-                if (targetDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium)
+                if (targetDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS)
                 {
                     if (targetDisk.DiskSizeInGB > 0 && targetDisk.DiskSizeInGB < 32)
                         this.AddAlert(AlertType.Recommendation, "Consider using disk size 32GB (P4), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
@@ -1524,7 +1524,7 @@ namespace MigAz.Azure.Generator
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
 
                 templateManageDiskCreationDataProperties.createOption = "Import";
-                templateManageDiskCreationDataProperties.sourceUri = await armManagedDisk.GetSASUrlAsync(3600);
+                //templateManageDiskCreationDataProperties.sourceUri = await armManagedDisk.GetSASUrlAsync(3600);   TODO NOW RUSSELL
             }
 
             //////////string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
@@ -1567,7 +1567,7 @@ namespace MigAz.Azure.Generator
                 {
                     Asm.Disk asmClassicDisk = (Asm.Disk)disk.SourceDisk;
 
-                    copyblobdetail.SourceSA = asmClassicDisk.StorageAccountName;
+                    copyblobdetail.SourceStorageAccount = asmClassicDisk.StorageAccountName;
                     copyblobdetail.SourceContainer = asmClassicDisk.StorageAccountContainer;
                     copyblobdetail.SourceBlob = asmClassicDisk.StorageAccountBlob;
 
@@ -1578,7 +1578,7 @@ namespace MigAz.Azure.Generator
                 {
                     Arm.ClassicDisk armClassicDisk = (Arm.ClassicDisk)disk.SourceDisk;
 
-                    copyblobdetail.SourceSA = armClassicDisk.StorageAccountName;
+                    copyblobdetail.SourceStorageAccount = armClassicDisk.StorageAccountName;
                     copyblobdetail.SourceContainer = armClassicDisk.StorageAccountContainer;
                     copyblobdetail.SourceBlob = armClassicDisk.StorageAccountBlob;
 
@@ -1590,9 +1590,11 @@ namespace MigAz.Azure.Generator
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
                     copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
-
                 }
             }
+
+            copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
+            copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
             if (disk.TargetStorage != null)
             {
@@ -1619,9 +1621,6 @@ namespace MigAz.Azure.Generator
                     copyblobdetail.TargetBlob = disk.TargetName + ".vhd";
                 }
             }
-
-            copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
-            copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
             return copyblobdetail;
         }

@@ -36,11 +36,11 @@ If ($StartType -eq "StartBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Ensure the Storage Account Exists
-        $targetStorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetails.TargetResourceGroup -Name $copyblobdetails.TargetStorageAccount -ErrorAction SilentlyContinue
+        $targetStorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -ErrorAction SilentlyContinue
         if ($targetStorageAccount -eq $null)
         {
             Write-Host "Target Storage Account '$($copyblobdetails.TargetStorageAccount)' not found.  Attempting to create."
-            New-AzureRmStorageAccount -ResourceGroupName $copyblobdetails.TargetResourceGroup -Name $copyblobdetails.TargetStorageAccount -Location $copyblobdetails.TargetLocation -SkuName $copyblobdetails.TargetStorageAccountType
+            New-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -Location $copyblobdetail.TargetLocation -SkuName $copyblobdetail.TargetStorageAccountType
         }
 
 		# Create destination storage account context
@@ -57,7 +57,7 @@ If ($StartType -eq "StartBlobCopy")
 		if ($copyblobdetail.SourceAbsoluteUri -eq $null)
 		{
 			# Create source storage account context
-			$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+			$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
     
 			#Get a reference to a blob
 			$blob = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Blob $copyblobdetail.SourceBlob
@@ -70,12 +70,12 @@ If ($StartType -eq "StartBlobCopy")
 			$snapshot = [Microsoft.WindowsAzure.Storage.Blob.CloudBlob] $snapshot.ICloudBlob
             
 			# Initiate blob snapshot copy job
-			Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob -Verbose
+			Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
 		}
 		else
 		{
 			# Initiate blob snapshot copy job
-			Start-AzureStorageBlobCopy -AbsoluteUri $copyblobdetail.SourceAbsoluteUri -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob -Verbose
+			Start-AzureStorageBlobCopy -AbsoluteUri $copyblobdetail.SourceAbsoluteUri -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
 		}
 
 		# Updates $copyblobdetailsout array
@@ -126,11 +126,14 @@ If ($StartType -eq "MonitorBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+        if ($copyblobdetail.SourceStorageAccount -ne $null)
+        {
+            $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
-        $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
-        $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
-        $blobs[0].Delete()
+            $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
+            $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
+            $blobs[0].Delete()
+        }
     }
 }
 
@@ -158,7 +161,7 @@ If ($StartType -eq "CancelBlobCopy")
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
         $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
         $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }

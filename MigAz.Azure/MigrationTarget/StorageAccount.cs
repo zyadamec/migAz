@@ -80,9 +80,9 @@ namespace MigAz.Azure.MigrationTarget
             // https://msdn.microsoft.com/en-us/library/azure/hh264518.aspx
 
             if (String.Compare("Premium_LRS", storageAccountType, true) == 0)
-                return StorageAccountType.Premium;
+                return StorageAccountType.Premium_LRS;
 
-            return StorageAccountType.Standard;
+            return StorageAccountType.Standard_LRS;
         }
     }
 }

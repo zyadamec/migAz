@@ -140,7 +140,7 @@ namespace MigAz.Azure.MigrationTarget
                 if (this.TargetStorage != null)
                     return this.TargetStorage.StorageAccountType;
 
-                return StorageAccountType.Premium;
+                return StorageAccountType.Premium_LRS;
             }
         }
 

@@ -119,14 +119,21 @@ namespace MigAz.Azure.Arm
 
         public async Task<string> GetSASUrlAsync(int tokenDurationSeconds)
         {
+            if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Start Disk '" + this.Name + "'");
+
             // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/disks/disks-grant-access
-            string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2016-04-30-preview";
+            string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
+            string strAccessSAS = String.Empty;
 
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _AzureContext.TokenProvider.AccessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.BaseAddress = new Uri(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl());
+
+                if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                    _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' PostAsync " + url + "");
 
                 IEnumerable<string> requestId;
                 using (var response = await client.PostAsJsonAsync(url,
@@ -137,7 +144,7 @@ namespace MigAz.Azure.Arm
                         })
                     )
                 {
-                    response.EnsureSuccessStatusCode();
+                    //response.EnsureSuccessStatusCode();
                     response.Headers.TryGetValues("x-ms-request-id", out requestId);
                 }
 
@@ -145,24 +152,41 @@ namespace MigAz.Azure.Arm
 
                 while (diskOperationStatus == "InProgress")
                 { 
-                    string url2 = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.ResourceGroup.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2016-04-30-preview";
+                    string url2 = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.ResourceGroup.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2017-03-30";
+
+                    if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                        _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' GetAsync " + url2 + "");
+
                     using (var response2 = await client.GetAsync(url2))
                     {
-                        response2.EnsureSuccessStatusCode();
+                        //response2.EnsureSuccessStatusCode();
                         string responseString = await response2.Content.ReadAsStringAsync();
                         JObject responseJson = JObject.Parse(responseString);
 
                         diskOperationStatus = responseJson["status"].ToString();
 
+                        if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                            _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' Disk Operation Status " + diskOperationStatus + "");
+
                         if (diskOperationStatus == "InProgress")
+                        {
                             System.Threading.Thread.Sleep(1000);
+                        }
                         else if (diskOperationStatus == "Succeeded")
-                            return responseJson["properties"]["output"]["accessSAS"].ToString();
+                        {
+                            strAccessSAS = responseJson["properties"]["output"]["accessSAS"].ToString();
+
+                            if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                                _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name +  "' Obtained AccessSAS " + strAccessSAS + "");
+                        }
                     }
                 }
             }
 
-            return string.Empty;
+            if (this._AzureContext != null && this._AzureContext.LogProvider != null)
+                _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "End Disk '" + this.Name + "'");
+
+            return strAccessSAS;
         }
     }
 }

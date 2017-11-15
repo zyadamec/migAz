@@ -311,9 +311,9 @@ namespace MigAz.Azure.UserControls
                 {
                     ManagedDiskStorage managedDiskStorage = (ManagedDiskStorage)_TargetDisk.TargetStorage;
                     if (cmbSender.SelectedItem.ToString() == "Premium")
-                        managedDiskStorage.StorageAccountType = StorageAccountType.Premium;
+                        managedDiskStorage.StorageAccountType = StorageAccountType.Premium_LRS;
                     else
-                        managedDiskStorage.StorageAccountType = StorageAccountType.Standard;
+                        managedDiskStorage.StorageAccountType = StorageAccountType.Standard_LRS;
                 }
                 else
                 {

@@ -9,7 +9,7 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class ManagedDiskStorage : IStorageTarget
     {
-        private StorageAccountType _StorageAccountType = StorageAccountType.Premium;
+        private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
         public ManagedDiskStorage(Disk targetDisk)
         {
