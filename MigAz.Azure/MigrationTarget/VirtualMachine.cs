@@ -110,6 +110,7 @@ namespace MigAz.Azure.MigrationTarget
                         {
                             this.OSVirtualHardDisk = targetDisk;
                             targetDisk.ParentVirtualMachine = this;
+                            targetDisk.HostCaching = sourceManagedDisk.HostCaching;
                             break;
                         }
                     }
@@ -129,7 +130,6 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
             {
-
                 if (dataDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
                 {
                     Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)dataDisk;
@@ -143,6 +143,8 @@ namespace MigAz.Azure.MigrationTarget
                             {
                                 this.DataDisks.Add(targetDisk);
                                 targetDisk.ParentVirtualMachine = this;
+                                targetDisk.Lun = sourceManagedDisk.Lun;
+                                targetDisk.HostCaching = sourceManagedDisk.HostCaching;
                                 break;
                             }
                         }

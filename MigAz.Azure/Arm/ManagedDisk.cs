@@ -63,6 +63,34 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public Int32 Lun
+        {
+            get
+            {
+                try
+                {
+                    Int32 lun = -1;
+                    Int32.TryParse((string)this.ResourceToken["lun"], out lun);
+
+                    return lun;
+                }
+                catch (System.NullReferenceException)
+                {
+                    return -1;
+                }
+            }
+        }
+        public string HostCaching
+        {
+            get
+            {
+                if (this.ResourceToken["caching"] == null)
+                    return String.Empty;
+
+                return (string)this.ResourceToken["caching"];
+            }
+        }
+
         public string OwnerId
         {
             get { return (string)ResourceToken["properties"]["ownerId"]; }

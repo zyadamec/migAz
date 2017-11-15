@@ -1523,21 +1523,18 @@ namespace MigAz.Azure.Generator
             {
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
 
+                string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
+
+                if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
+                {
+                    Parameter parameter = new Parameter();
+                    parameter.type = "string";
+                    this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
+                }
+
                 templateManageDiskCreationDataProperties.createOption = "Import";
-                //templateManageDiskCreationDataProperties.sourceUri = await armManagedDisk.GetSASUrlAsync(3600);   TODO NOW RUSSELL
+                templateManageDiskCreationDataProperties.sourceUri = "[parameters('" + managedDiskSourceUriParameterName + "')]";
             }
-
-            //////////string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
-
-            //////////templateManageDiskCreationDataProperties.createOption = "Import";
-            //////////templateManageDiskCreationDataProperties.sourceUri = targetManagedDisk.SourceDisk. "[parameters('" + managedDiskSourceUriParameterName + "')]";
-
-            //////////if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
-            //////////{
-            //////////    Parameter parameter = new Parameter();
-            //////////    parameter.type = "string";
-            //////////    this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
-            //////////}
 
             // sample json with encryption
             // https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-create-encrypted-managed-disk/CreateEncryptedManagedDisk-kek.json

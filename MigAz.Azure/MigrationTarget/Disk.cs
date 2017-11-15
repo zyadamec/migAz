@@ -54,11 +54,6 @@ namespace MigAz.Azure.MigrationTarget
 
                 this.TargetName = armManagedDisk.Name;
                 this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
-
-                // todo now russell, so these seem to come from the VM itself, not the Managed Disk JSON?  ... or vice verse - review
-                //this.Lun = armManagedDisk.Lun;
-                //this.HostCaching = armManagedDisk.Caching;
-                //this.TargetStorageAccountBlob = armManagedDisk.StorageAccountBlob;
             }
         }
 
