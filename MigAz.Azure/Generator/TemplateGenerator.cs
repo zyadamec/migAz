@@ -1535,7 +1535,7 @@ namespace MigAz.Azure.Generator
                 {
                     Parameter parameter = new Parameter();
                     parameter.type = "string";
-                    parameter.value = "testing";
+                    parameter.value = managedDiskSourceUriParameterName + "_BlobCopyResult";
 
                     this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
                 }
@@ -1595,6 +1595,8 @@ namespace MigAz.Azure.Generator
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
                     copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
+                    copyblobdetail.OutputFilename = "parameters.json";
+                    copyblobdetail.OutputParameterName = disk.ToString() + "_SourceUri_BlobCopyResult";
                 }
             }
 
@@ -1684,7 +1686,7 @@ namespace MigAz.Azure.Generator
             if (HasBlobCopyDetails)
             {
                 await SerializeBlobCopyDetails(); // Serialize blob copy details
-                await SerializeBlobCopyPowerShell();
+                await SerializeMigAzPowerShell();
             }
 
             await SerializeExportTemplate();
@@ -1753,17 +1755,17 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("SerializeParameterTemplate", "End");
         }
 
-        private async Task SerializeBlobCopyPowerShell()
+        private async Task SerializeMigAzPowerShell()
         {
-            LogProvider.WriteLog("SerializeBlobCopyPowerShell", "Start");
+            LogProvider.WriteLog("SerializeMigAzPowerShell", "Start");
 
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
-            StatusProvider.UpdateStatus("BUSY:  Generating BlobCopy.ps1");
-            LogProvider.WriteLog("SerializeStreams", "Start BlobCopy.ps1 stream");
+            StatusProvider.UpdateStatus("BUSY:  Generating MigAz.ps1");
+            LogProvider.WriteLog("SerializeStreams", "Start MigAz.ps1 stream");
 
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "MigAz.Azure.Generator.BlobCopy.ps1";
+            var resourceName = "MigAz.Azure.Generator.MigAz.ps1";
             string blobCopyPowerShell;
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -1775,9 +1777,9 @@ namespace MigAz.Azure.Generator
             byte[] c = asciiEncoding.GetBytes(blobCopyPowerShell);
             MemoryStream blobCopyPowerShellStream = new MemoryStream();
             await blobCopyPowerShellStream.WriteAsync(c, 0, c.Length);
-            TemplateStreams.Add("BlobCopy.ps1", blobCopyPowerShellStream);
+            TemplateStreams.Add("MigAz.ps1", blobCopyPowerShellStream);
 
-            LogProvider.WriteLog("SerializeBlobCopyPowerShell", "End");
+            LogProvider.WriteLog("SerializeMigAzPowerShell", "End");
         }
 
         private async Task SerializeDeploymentInstructions()
@@ -1851,12 +1853,12 @@ namespace MigAz.Azure.Generator
             return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
         }
 
-        private async Task<string> GetTemplateString()
+        public async Task<string> GetTemplateString()
         {
             Template template = new Template()
             {
                 resources = this.Resources,
-                parameters = this.Parameters
+                parameters = GetParamatersWithNoValues(this.Parameters)
             };
 
             // save JSON template
@@ -1864,6 +1866,27 @@ namespace MigAz.Azure.Generator
             jsontext = jsontext.Replace("schemalink", "$schema");
 
             return jsontext;
+        }
+
+        private Dictionary<string, Parameter> GetParamatersWithNoValues(Dictionary<string, Parameter> parameters)
+        {
+            Dictionary<string, Parameter> paramsNoValues = new Dictionary<string, Parameter>();
+
+            foreach (string key in parameters.Keys)
+            {
+                Parameter parameter;
+                parameters.TryGetValue(key, out parameter);
+
+                if (parameter != null)
+                {
+                    Parameter newParameter = new Parameter();
+                    newParameter.type = parameter.type;
+
+                    paramsNoValues.Add(key, newParameter);
+                }
+            }
+
+            return paramsNoValues;
         }
 
         private async Task<string> GetParameterString()

@@ -4,7 +4,7 @@ param (
     $DetailsFilePath,
 
     [ValidateSet("StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy")]
-    [Parameter(Mandatory = $true)] 
+    [Parameter(Mandatory = $false)] 
     $StartType,
 
     $RefreshInterval = 10
@@ -30,7 +30,7 @@ $copyblobdetailsout = @()
 
 
 # If Initiating the copy of all blobs
-If ($StartType -eq "StartBlobCopy")
+If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
 {
     # Initiate the copy of all blobs
     foreach ($copyblobdetail in $copyblobdetails)
@@ -92,7 +92,7 @@ If ($StartType -eq "StartBlobCopy")
 }
 
 # If waiting for all blobs to copy and get statistics
-If ($StartType -eq "MonitorBlobCopy")
+If ($StartType -eq $null -or $StartType -eq "MonitorBlobCopy")
 {
     # Waits for all blobs to copy and get statistics
     $continue = $true
@@ -109,17 +109,33 @@ If ($StartType -eq "MonitorBlobCopy")
                 $copyblobdetail.TotalBytes = "{0:N0} MB" -f ($status.TotalBytes / 1MB)
                 $copyblobdetail.BytesCopied = "{0:N0} MB" -f ($status.BytesCopied / 1MB)
                 $copyblobdetail.Status = $status.Status
-                $copyblobdetail.EndTime = Get-Date -Format u
+
+
+                if ($copyblobdetail.Status -eq "Success" -and $copyblobdetail.OutputFilename -ne $null -and $copyblobdetail.OutputParameterName -ne $null)
+                {
+                    $SourceUri = "$($destination_context.BlobEndPoint)$($copyblobdetail.TargetContainer)/$($copyblobdetail.TargetBlob)"
+                    $scriptPath = Split-Path $script:MyInvocation.MyCommand.Path
+                    $parameterFilePath = "$($scriptPath)\$($copyblobdetail.OutputFilename)"
+                    Write-Host "Blob Completed - Replacing parameter placeholder '$($copyblobdetail.OutputParameterName)' with '$($SourceUri)' in '$($parameterFilePath)'" -ForegroundColor Green
+                    Write-Host ""
+
+                    (Get-Content $parameterFilePath) -replace $copyblobdetail.OutputParameterName,$SourceUri | out-file $parameterFilePath
+                    
+                    $copyblobdetail.EndTime = Get-Date -Format u
+                }
 
                 $continue = $true
             }
+
         }
 
         $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
-        # cls
-        $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+        $copyblobdetails | Sort-Object Status, TargetBlob | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
-        Start-Sleep -Seconds $refreshinterval
+        if ($continue -eq $true)
+        {
+            Start-Sleep -Seconds $refreshinterval
+        }
     }
 
     # Delete used snapshots
@@ -168,3 +184,4 @@ If ($StartType -eq "CancelBlobCopy")
         $blobs[0].Delete()
     }
 }
+
