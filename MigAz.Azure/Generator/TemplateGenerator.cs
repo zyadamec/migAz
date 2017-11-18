@@ -626,15 +626,16 @@ namespace MigAz.Azure.Generator
             availabilitySet.name = targetAvailabilitySet.ToString();
             availabilitySet.location = "[resourceGroup().location]";
 
-            // todo Add Properties - PlatformUpdateDomainCount
-            // todo Add Properties - PlatformFaultDomainCount
+            AvailabilitySet_Properties availabilitySet_Properties = new AvailabilitySet_Properties();
+            availabilitySet.properties = availabilitySet_Properties;
+
+            availabilitySet_Properties.platformFaultDomainCount = targetAvailabilitySet.PlatformFaultDomainCount;
+            availabilitySet_Properties.platformUpdateDomainCount = targetAvailabilitySet.PlatformUpdateDomainCount;
 
             if (targetAvailabilitySet.IsManagedDisks)
             {
                 // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/using-managed-disks-template-deployments
                 // see "Create managed availability sets with VMs using managed disks"
-
-                availabilitySet.apiVersion = "2017-03-30";
 
                 Dictionary<string, string> availabilitySetSku = new Dictionary<string, string>();
                 availabilitySet.sku = availabilitySetSku;

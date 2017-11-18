@@ -30,10 +30,12 @@ namespace MigAz.Azure.UserControls
             _TargetTreeView = targetTreeView;
             _armAvailabilitySetNode = availabilitySetNode;
             
-            Azure.MigrationTarget.AvailabilitySet armAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
-            txtTargetName.Text = armAvailabilitySet.TargetName;
+            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
+            txtTargetName.Text = targetAvailabilitySet.TargetName;
+            upDownFaultDomains.Value = targetAvailabilitySet.PlatformFaultDomainCount;
+            upDownUpdateDomains.Value = targetAvailabilitySet.PlatformUpdateDomainCount;
 
-            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in armAvailabilitySet.TargetVirtualMachines)
+            foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in targetAvailabilitySet.TargetVirtualMachines)
             {
                 AddResourceSummary(new ResourceSummary(virtualMachine, _TargetTreeView));
             }
@@ -58,6 +60,20 @@ namespace MigAz.Azure.UserControls
             targetAvailabilitySet.TargetName = txtSender.Text;
             _armAvailabilitySetNode.Text = targetAvailabilitySet.ToString();
 
+            PropertyChanged();
+        }
+
+        private void upDownFaultDomains_ValueChanged(object sender, EventArgs e)
+        {
+            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
+            targetAvailabilitySet.PlatformFaultDomainCount = Convert.ToInt32(upDownFaultDomains.Value);
+            PropertyChanged();
+        }
+
+        private void upDownUpdateDomains_ValueChanged(object sender, EventArgs e)
+        {
+            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
+            targetAvailabilitySet.PlatformUpdateDomainCount = Convert.ToInt32(upDownUpdateDomains.Value);
             PropertyChanged();
         }
     }

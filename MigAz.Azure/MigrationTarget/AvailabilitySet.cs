@@ -13,6 +13,8 @@ namespace MigAz.Azure.MigrationTarget
         private IAvailabilitySetSource _SourceAvailabilitySet;
         private string _TargetName = String.Empty;
         private List<VirtualMachine> _TargetVirtualMachines = new List<VirtualMachine>();
+        private Int32 _PlatformUpdateDomainCount = 5;
+        private Int32 _PlatformFaultDomainCount = 3;
 
         private AvailabilitySet() { }
 
@@ -40,6 +42,8 @@ namespace MigAz.Azure.MigrationTarget
             _SourceAvailabilitySet = availabilitySet;
 
             this.TargetName = _SourceAvailabilitySet.Name;
+            this.PlatformFaultDomainCount = availabilitySet.PlatformFaultDomainCount;
+            this.PlatformUpdateDomainCount = availabilitySet.PlatformUpdateDomainCount;
         }
 
         public IAvailabilitySetSource SourceAvailabilitySet
@@ -67,6 +71,31 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _TargetName; }
             set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
+        // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability?toc=%2Fazure%2Fvirtual-machines%2Fwindows%2Ftoc.json
+        public Int32 PlatformUpdateDomainCount
+        {
+            get { return _PlatformUpdateDomainCount; }
+            set
+            {
+                if (value >= 5 && value <= 20)
+                    _PlatformUpdateDomainCount = value;
+                else
+                    throw new ArgumentException("Platform Update Domain Count must be between 5 and 20.");
+            }
+        }
+
+        public Int32 PlatformFaultDomainCount
+        {
+            get { return _PlatformFaultDomainCount; }
+            set
+            {
+                if (value >= 2 && value <= 3)
+                    _PlatformFaultDomainCount = value;
+                else
+                    throw new ArgumentException("Platform Fault Domain Count must be between 2 and 3.");
+            }
         }
 
         public override string ToString()
