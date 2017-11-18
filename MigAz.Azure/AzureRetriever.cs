@@ -986,7 +986,7 @@ namespace MigAz.Azure
             String accessToken = _AzureContext.TokenProvider.AccessToken;
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-            string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2016-04-30-preview";
+            string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription ID : " + _AzureSubscription.SubscriptionId + " Location : " + location);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, accessToken, methodType, useCached);
@@ -1544,7 +1544,7 @@ namespace MigAz.Azure
                     break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2016-04-30-preview";
+                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2017-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "LoadBalancers":

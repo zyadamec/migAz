@@ -42,7 +42,7 @@ Select-AzureRmSubscription{subscriptionSwitch}</pre>
             <li>
                 <p>If your template contains VMs, run the script to snapshot and copy the VHDs from your source to your target 
                     storage accounts</p>
-<pre>&amp; '{exportPath}MigAz.ps1' -DetailsFilePath "{blobDetailsPath}"
+<pre>&amp; '{exportPath}MigAz.ps1'{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
 </pre>
             </li>
             <li>

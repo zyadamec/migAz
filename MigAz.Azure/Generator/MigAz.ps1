@@ -1,7 +1,16 @@
 ﻿# Parameters
 param (
     [Parameter(Mandatory = $true)] 
-    $DetailsFilePath,
+    $ResourceGroupName,
+
+    [Parameter(Mandatory = $true)] 
+    $TemplateFile,
+
+    [Parameter(Mandatory = $false)] 
+    $TemplateParameterFile,
+
+    [Parameter(Mandatory = $false)] 
+    $BlobCopyFile,
 
     [ValidateSet("StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy")]
     [Parameter(Mandatory = $false)] 
@@ -25,7 +34,7 @@ if ((get-command Get-AzureRmStorageAccountKey).Version.ToString() -lt '2.0.1')
 }
 
 # Load blob copy details file (ex: copyblobdetails.json)
-$copyblobdetails = Get-Content -Path $DetailsFilePath -Raw | ConvertFrom-Json
+$copyblobdetails = Get-Content -Path $BlobCopyFile -Raw | ConvertFrom-Json
 $copyblobdetailsout = @()
 
 
@@ -88,7 +97,7 @@ If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
     }
 
     # Updates file with data from $copyblobdetailsout
-    $copyblobdetailsout | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
+    $copyblobdetailsout | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
 }
 
 # If waiting for all blobs to copy and get statistics
@@ -129,7 +138,7 @@ If ($StartType -eq $null -or $StartType -eq "MonitorBlobCopy")
 
         }
 
-        $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
+        $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
         $copyblobdetails | Sort-Object Status, TargetBlob | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
         if ($continue -eq $true)
@@ -169,7 +178,7 @@ If ($StartType -eq "CancelBlobCopy")
         }
     }
 
-    $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $DetailsFilePath
+    $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
     # cls
     $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 

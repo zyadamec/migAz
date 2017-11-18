@@ -1289,8 +1289,8 @@ namespace MigAz.Azure.Generator
 
             if (targetVirtualMachine.IsManagedDisks)
             {
-                // using API Version "2016-04-30-preview" per current documentation at https://docs.microsoft.com/en-us/azure/storage/storage-using-managed-disks-template-deployments
-                templateVirtualMachine.apiVersion = "2016-04-30-preview";
+                // using API Version "2017-03-30" per current documentation at https://docs.microsoft.com/en-us/azure/storage/storage-using-managed-disks-template-deployments
+                templateVirtualMachine.apiVersion = "2017-03-30";
             }
 
             List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
@@ -1516,11 +1516,14 @@ namespace MigAz.Azure.Generator
             templateManagedDisk.name = targetManagedDisk.ToString();
             templateManagedDisk.location = "[resourceGroup().location]";
 
+            Dictionary<string, string> managedDiskSku = new Dictionary<string, string>();
+            templateManagedDisk.sku = managedDiskSku;
+            managedDiskSku.Add("name", targetManagedDisk.StorageAccountType.ToString());
+
             ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties();
             templateManagedDisk.properties = templateManagedDiskProperties;
 
             templateManagedDiskProperties.diskSizeGb = targetManagedDisk.DiskSizeInGB;
-            templateManagedDiskProperties.accountType = targetManagedDisk.StorageAccountType.ToString();
 
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
             templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
@@ -1828,6 +1831,10 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{migAzPath}", AppDomain.CurrentDomain.BaseDirectory);
             instructionContent = instructionContent.Replace("{exportPath}", _OutputDirectory);
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
+            instructionContent = instructionContent.Replace("{resourceGroupNameParameter}", " -ResourceGroupName \"" + this.TargetResourceGroupName + "\"");
+            instructionContent = instructionContent.Replace("{templateFileParameter}", " -TemplateFile \"" + GetTemplatePath() + "\"");
+            instructionContent = instructionContent.Replace("{templateParameterFileParameter}", " -TemplateParameterFile \"" + GetTemplateParameterPath() + "\"");
+            instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
 
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
@@ -1846,6 +1853,11 @@ namespace MigAz.Azure.Generator
         public string GetTemplatePath()
         {
             return Path.Combine(this.OutputDirectory, "export.json");
+        }
+
+        public string GetTemplateParameterPath()
+        {
+            return Path.Combine(this.OutputDirectory, "parameters.json");
         }
 
         public string GetInstructionPath()

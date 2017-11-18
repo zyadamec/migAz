@@ -371,7 +371,7 @@ namespace MigAz.Core.ArmTemplate
         public AvailabilitySet(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/availabilitySets";
-            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
@@ -387,7 +387,7 @@ namespace MigAz.Core.ArmTemplate
         public VirtualMachine(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/virtualMachines";
-            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
         public Dictionary<string, string> plan;
     }
@@ -462,10 +462,14 @@ namespace MigAz.Core.ArmTemplate
         }
     }
 
+    public class ManagedDisk_Sku
+    {
+        public string name = "Premium_LRS";
+    }
+
     public class ManagedDisk_Properties
     {
         public ManagedDiskCreationData_Properties creationData;
-        public string accountType = "Standard_LRS";
         public int diskSizeGb;
     }
 
@@ -480,7 +484,7 @@ namespace MigAz.Core.ArmTemplate
         public Snapshot(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/snapshots";
-            apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
@@ -489,7 +493,7 @@ namespace MigAz.Core.ArmTemplate
         public Disk(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/disks";
-            apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
