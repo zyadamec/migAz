@@ -329,12 +329,15 @@ namespace MigAz.Migrators
 
                             #region OS Disk Storage Account
 
-                            foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
+                            if (app.Default.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                             {
-                                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
                                 {
-                                    if (!treeNode.Checked)
-                                        treeNode.Checked = true;
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
                                 }
                             }
 
@@ -342,14 +345,18 @@ namespace MigAz.Migrators
 
                             #region Data Disk(s) Storage Account(s)
 
-                            foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
+                            if (app.Default.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                             {
-                                foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(dataDisk.StorageAccountName, true))
+
+                                foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
                                 {
-                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                    foreach (TreeNode treeNode in treeSourceASM.Nodes.Find(dataDisk.StorageAccountName, true))
                                     {
-                                        if (!treeNode.Checked)
-                                            treeNode.Checked = true;
+                                        if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount)))
+                                        {
+                                            if (!treeNode.Checked)
+                                                treeNode.Checked = true;
+                                        }
                                     }
                                 }
                             }

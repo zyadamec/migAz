@@ -12,7 +12,7 @@ param (
     [Parameter(Mandatory = $false)] 
     $BlobCopyFile,
 
-    [ValidateSet("StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy")]
+    [ValidateSet("StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy", "ResourceGroupDeployment", "DeleteMigAzTempStorage")]
     [Parameter(Mandatory = $false)] 
     $StartType,
 
@@ -118,24 +118,29 @@ If ($StartType -eq $null -or $StartType -eq "MonitorBlobCopy")
                 $copyblobdetail.TotalBytes = "{0:N0} MB" -f ($status.TotalBytes / 1MB)
                 $copyblobdetail.BytesCopied = "{0:N0} MB" -f ($status.BytesCopied / 1MB)
                 $copyblobdetail.Status = $status.Status
-
-
-                if ($copyblobdetail.Status -eq "Success" -and $copyblobdetail.OutputFilename -ne $null -and $copyblobdetail.OutputParameterName -ne $null)
-                {
-                    $SourceUri = "$($destination_context.BlobEndPoint)$($copyblobdetail.TargetContainer)/$($copyblobdetail.TargetBlob)"
-                    $scriptPath = Split-Path $script:MyInvocation.MyCommand.Path
-                    $parameterFilePath = "$($scriptPath)\$($copyblobdetail.OutputFilename)"
-                    Write-Host "Blob Completed - Replacing parameter placeholder '$($copyblobdetail.OutputParameterName)' with '$($SourceUri)' in '$($parameterFilePath)'" -ForegroundColor Green
-                    Write-Host ""
-
-                    (Get-Content $parameterFilePath) -replace $copyblobdetail.OutputParameterName,$SourceUri | out-file $parameterFilePath
-                    
-                    $copyblobdetail.EndTime = Get-Date -Format u
-                }
+				$copyblobdetail.StatusDescription = $status.StatusDescription
 
                 $continue = $true
-            }
 
+                if ($copyblobdetail.Status -eq "Success")
+                {
+                    $copyblobdetail.EndTime = Get-Date -Format u
+
+					if ($TemplateParameterFile -ne $null -and $copyblobdetail.OutputParameterName -ne $null)
+					{
+						$SourceUri = "$($destination_context.BlobEndPoint)$($copyblobdetail.TargetContainer)/$($copyblobdetail.TargetBlob)"
+						Write-Host "Blob Completed - Replacing parameter placeholder '$($copyblobdetail.OutputParameterName)' with '$($SourceUri)' in '$($TemplateParameterFile)'" -ForegroundColor Green
+						Write-Host ""
+
+						(Get-Content $TemplateParameterFile) -replace $copyblobdetail.OutputParameterName,$SourceUri | out-file $TemplateParameterFile
+					}
+                }
+				elseif ($copyblobdetail.Status -eq "Failed")
+				{
+					Write-Host "Blob Copy '$($copyblobdetail.TargetBlob)' Failed - '$($copyblobdetail.StatusDescription)'" -ForegroundColor Red
+					Write-Host ""
+				}
+            }
         }
 
         $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
@@ -179,7 +184,6 @@ If ($StartType -eq "CancelBlobCopy")
     }
 
     $copyblobdetails | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
-    # cls
     $copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
     # Delete used snapshots
@@ -194,3 +198,28 @@ If ($StartType -eq "CancelBlobCopy")
     }
 }
 
+if ($StartType -eq $null -or $StartType -eq "ResourceGroupDeployment")
+{
+	Write-Host "Beginning Azure Resource Group Deployment"
+	Write-Host " - Template File '$($TemplateFile)'"
+
+	if ($TemplateParameterFile -eq $null)
+	{
+		Write-Host ""
+
+		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile
+	}
+	else
+	{
+		Write-Host " - Parameter File '$($TemplateParameterFile)'"
+		Write-Host ""
+
+		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile
+	}
+}
+
+if ($StartType -eq $null -or $StartType -eq "DeleteMigAzTempStorage")
+{
+	Write-Host "Beginning Azure Resource Group Deployment"
+
+}

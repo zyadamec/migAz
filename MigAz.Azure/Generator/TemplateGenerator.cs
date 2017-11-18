@@ -156,7 +156,7 @@ namespace MigAz.Azure.Generator
 
         // Use of Treeview has been added here with aspect of transitioning full output towards this as authoritative source
         // Thought is that ExportArtifacts phases out, as it is providing limited context availability.
-        public new async Task UpdateArtifacts(IExportArtifacts artifacts)
+        public async Task UpdateArtifacts(IExportArtifacts artifacts)
         {
             LogProvider.WriteLog("UpdateArtifacts", "Start - Execution " + this.ExecutionGuid.ToString());
 
@@ -175,6 +175,12 @@ namespace MigAz.Azure.Generator
                 {
                     this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", _ExportArtifacts.ResourceGroup);
                 }
+            }
+
+            foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
+            {
+                if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
+                    this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
             }
 
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
@@ -1626,7 +1632,6 @@ namespace MigAz.Azure.Generator
                     copyblobdetail.TargetStorageAccount = targetTemporaryStorageAccount.ToString();
                     copyblobdetail.TargetStorageAccountType = targetTemporaryStorageAccount.StorageAccountType.ToString();
                     copyblobdetail.TargetBlob = disk.TargetName + ".vhd";
-                    copyblobdetail.OutputFilename = this.GetTemplateParameterFilename();
                     copyblobdetail.OutputParameterName = disk.ToString() + "_SourceUri_BlobCopyResult";
                 }
             }

@@ -460,13 +460,6 @@ namespace MigAz.Azure.UserControls
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
                 TreeNode targetAvailabilitySetNode = null;
 
-                // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability
-                if (targetVirtualMachine.TargetAvailabilitySet != null)
-                {
-                    targetAvailabilitySetNode = GetTargetAvailabilitySetNode(targetResourceGroupNode, targetVirtualMachine.TargetAvailabilitySet);
-                    virtualMachineParentNode = targetAvailabilitySetNode;
-                }
-
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
                 if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
@@ -573,10 +566,14 @@ namespace MigAz.Azure.UserControls
                         Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)matchingNode.Tag;
 
                         // if there are VMs that have originating Classic Disks, we may need to clean them up from the Resource Group if they were being moved to a Managed Disk (not under the VM in the Treeview)
-                        await RemoveClassicDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
+                        await RemoveAsmDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
                         foreach (MigrationTarget.Disk disk in targetVirtualMachine.DataDisks)
                         {
-                            await RemoveClassicDiskTurnedManagedDiskFromARMTree(disk);
+                            await RemoveAsmDiskTurnedManagedDiskFromARMTree(disk);
+                        }
+                        foreach (MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
+                        {
+                            await RemoveAsmNetworkTurnedArmNetworkFromARMTree(networkInterface);
                         }
                     }
                     else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
@@ -591,7 +588,7 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private async Task RemoveClassicDiskTurnedManagedDiskFromARMTree(Disk disk)
+        private async Task RemoveAsmDiskTurnedManagedDiskFromARMTree(Disk disk)
         {
             if (disk.SourceDisk != null && (disk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || disk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
             {
@@ -604,6 +601,25 @@ namespace MigAz.Azure.UserControls
                     foreach (TreeNode matchingNode in matchingNodes)
                     {
                         if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk) && String.Compare(((Azure.MigrationTarget.Disk)matchingNode.Tag).SourceName, disk.SourceName, true) == 0)
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveAsmNetworkTurnedArmNetworkFromARMTree(NetworkInterface networkInterface)
+        {
+            if (networkInterface.SourceNetworkInterface != null && networkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+            {
+                TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                if (targetResourceGroupNode != null)
+                {
+                    TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(networkInterface.ToString(), true);
+                    foreach (TreeNode matchingNode in matchingNodes)
+                    {
+                        if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && String.Compare(((Azure.MigrationTarget.NetworkInterface)matchingNode.Tag).SourceName, networkInterface.SourceName, true) == 0)
                         {
                             await RemoveTreeNodeCascadeUp(matchingNode);
                         }

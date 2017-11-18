@@ -21,9 +21,9 @@ namespace MigAz.Azure.Models
         public string TargetContainer;
         public string TargetBlob;
         public string TargetKey = String.Empty;
-        public string OutputFilename;
         public string OutputParameterName;
         public string Status = String.Empty;
+        public string StatusDescription = String.Empty;
         public long TotalBytes = 0;
         public long BytesCopied = 0;
         public string StartTime = String.Empty;
