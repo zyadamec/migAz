@@ -446,7 +446,7 @@ namespace MigAz.Core.ArmTemplate
         public Reference managedDisk;
         public string caching;
         public string createOption;
-        public long diskSizeGB;
+        public long? diskSizeGB;
         public long lun;
     }
 
@@ -579,6 +579,7 @@ namespace MigAz.Core.ArmTemplate
     public class Parameter
     {
         public string type;
+        public string value;
     }
 
     public class Template

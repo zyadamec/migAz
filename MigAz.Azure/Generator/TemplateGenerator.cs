@@ -472,11 +472,11 @@ namespace MigAz.Azure.Generator
                         this.AddAlert(AlertType.Recommendation, "Consider using disk size 128GB (P10), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
                     else if (targetDisk.DiskSizeInGB > 128 && targetDisk.DiskSizeInGB < 512)
                         this.AddAlert(AlertType.Recommendation, "Consider using disk size 512GB (P20), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
-                    else if (targetDisk.DiskSizeInGB > 512 && targetDisk.DiskSizeInGB < 1024)
-                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 1024GB (P30), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
-                    else if (targetDisk.DiskSizeInGB > 1024 && targetDisk.DiskSizeInGB < 2048)
-                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 2048GB (P40), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
-                    else if (targetDisk.DiskSizeInGB > 2048 && targetDisk.DiskSizeInGB < 4095)
+                    else if (targetDisk.DiskSizeInGB > 512 && targetDisk.DiskSizeInGB < 1023)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 1023GB (P30), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 1023 && targetDisk.DiskSizeInGB < 2047)
+                        this.AddAlert(AlertType.Recommendation, "Consider using disk size 2047GB (P40), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
+                    else if (targetDisk.DiskSizeInGB > 2047 && targetDisk.DiskSizeInGB < 4095)
                         this.AddAlert(AlertType.Recommendation, "Consider using disk size 4095GB (P50), as this disk will be billed at that capacity per Azure Premium Storage billing sizes.", targetDisk);
                 }
             }
@@ -486,6 +486,7 @@ namespace MigAz.Azure.Generator
         {
             TemplateStreams.Clear();
             Resources.Clear();
+            Parameters.Clear();
             _CopyBlobDetails.Clear();
             _TemporaryStorageAccounts.Clear();
 
@@ -1401,6 +1402,8 @@ namespace MigAz.Azure.Generator
                     managedDiskReference.id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId;
 
                     osdisk.managedDisk = managedDiskReference;
+
+                    dependson.Add(targetVirtualMachine.OSVirtualHardDisk.ReferenceId);
                 }
             }
 
@@ -1449,7 +1452,10 @@ namespace MigAz.Azure.Generator
                         Reference managedDiskReference = new Reference();
                         managedDiskReference.id = dataDisk.ReferenceId;
 
+                        datadisk.diskSizeGB = null;
                         datadisk.managedDisk = managedDiskReference;
+
+                        dependson.Add(dataDisk.ReferenceId);
                     }
 
                     datadisks.Add(datadisk);
@@ -1529,6 +1535,8 @@ namespace MigAz.Azure.Generator
                 {
                     Parameter parameter = new Parameter();
                     parameter.type = "string";
+                    parameter.value = "testing";
+
                     this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
                 }
 
@@ -1680,6 +1688,7 @@ namespace MigAz.Azure.Generator
             }
 
             await SerializeExportTemplate();
+            await SerializeParameterTemplate();
 
             StatusProvider.UpdateStatus("Ready");
 
@@ -1724,6 +1733,24 @@ namespace MigAz.Azure.Generator
             TemplateStreams.Add("export.json", templateStream);
 
             LogProvider.WriteLog("SerializeExportTemplate", "End");
+        }
+        private async Task SerializeParameterTemplate()
+        {
+            LogProvider.WriteLog("SerializeParameterTemplate", "Start");
+
+            if (this.Parameters.Count > 0)
+            {
+                StatusProvider.UpdateStatus("BUSY:  Generating parameters.json");
+
+                String templateString = await GetParameterString();
+                ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+                byte[] a = asciiEncoding.GetBytes(templateString);
+                MemoryStream templateStream = new MemoryStream();
+                await templateStream.WriteAsync(a, 0, a.Length);
+                TemplateStreams.Add("parameters.json", templateStream);
+            }
+
+            LogProvider.WriteLog("SerializeParameterTemplate", "End");
         }
 
         private async Task SerializeBlobCopyPowerShell()
@@ -1824,7 +1851,7 @@ namespace MigAz.Azure.Generator
             return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
         }
 
-        public async Task<string> GetTemplateString()
+        private async Task<string> GetTemplateString()
         {
             Template template = new Template()
             {
@@ -1838,6 +1865,22 @@ namespace MigAz.Azure.Generator
 
             return jsontext;
         }
+
+        private async Task<string> GetParameterString()
+        {
+            Template template = new Template()
+            {
+                parameters = this.Parameters
+            };
+
+            // save JSON template
+            string jsontext = JsonConvert.SerializeObject(template, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+            jsontext = jsontext.Replace("schemalink", "$schema");
+
+            return jsontext;
+        }
+
+
         public async Task<string> GetStorageAccountTemplateString()
         {
             List<ArmResource> storageAccountResources = new List<ArmResource>();

@@ -166,8 +166,8 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                if (this.TargetStorage == null)
-                    return "[resourceId('Microsoft.Compute/disks/', '" + this.ToString() + "')]";
+                if (this.TargetStorage != null && this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
+                    return "[concat(subscription().id, '/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Compute/disks/', '" + this.ToString() + "')]";
                 else return 
                         String.Empty;
             }

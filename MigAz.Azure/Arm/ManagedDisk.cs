@@ -150,6 +150,9 @@ namespace MigAz.Azure.Arm
             if (this._AzureContext != null && this._AzureContext.LogProvider != null)
                 _AzureContext.LogProvider.WriteLog("GetSASUrlAsync", "Start Disk '" + this.Name + "'");
 
+            if (this._AzureContext != null && this._AzureContext.StatusProvider != null)
+                _AzureContext.StatusProvider.UpdateStatus("Getting Access SAS for Managed Disk '" + this.Name + "'");
+
             // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/disks/disks-grant-access
             string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
