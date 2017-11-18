@@ -47,7 +47,7 @@ Select-AzureRmSubscription{subscriptionSwitch}</pre>
             </li>
             <li>
                 <p>Once the copy has completed, redeploy the template to your resource group to fix up the VHD file locations.</p>
-<pre>New-AzureRmResourceGroupDeployment -ResourceGroupName "{resourceGroupName}" -TemplateFile "{templatePath}"</pre>
+<pre>New-AzureRmResourceGroupDeployment{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}</pre>
             </li>
         </ol>
         <p>Once you are happy that all is well with your ARM Resource Deployment, you can delete your old Classic ASM Resources.

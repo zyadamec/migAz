@@ -1528,10 +1528,8 @@ namespace MigAz.Azure.Generator
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
             templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
 
-            if (targetManagedDisk.SourceDisk != null && targetManagedDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+            if (targetManagedDisk.TargetStorage != null && targetManagedDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
             {
-                Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
-
                 string managedDiskSourceUriParameterName = targetManagedDisk.ToString() + "_SourceUri";
 
                 if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
@@ -1598,8 +1596,6 @@ namespace MigAz.Azure.Generator
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
                     copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
-                    copyblobdetail.OutputFilename = "parameters.json";
-                    copyblobdetail.OutputParameterName = disk.ToString() + "_SourceUri_BlobCopyResult";
                 }
             }
 
@@ -1629,6 +1625,8 @@ namespace MigAz.Azure.Generator
                     copyblobdetail.TargetStorageAccount = targetTemporaryStorageAccount.ToString();
                     copyblobdetail.TargetStorageAccountType = targetTemporaryStorageAccount.StorageAccountType.ToString();
                     copyblobdetail.TargetBlob = disk.TargetName + ".vhd";
+                    copyblobdetail.OutputFilename = "parameters.json";
+                    copyblobdetail.OutputParameterName = disk.ToString() + "_SourceUri_BlobCopyResult";
                 }
             }
 
