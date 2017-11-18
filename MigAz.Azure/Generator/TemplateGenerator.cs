@@ -1625,7 +1625,7 @@ namespace MigAz.Azure.Generator
                     copyblobdetail.TargetStorageAccount = targetTemporaryStorageAccount.ToString();
                     copyblobdetail.TargetStorageAccountType = targetTemporaryStorageAccount.StorageAccountType.ToString();
                     copyblobdetail.TargetBlob = disk.TargetName + ".vhd";
-                    copyblobdetail.OutputFilename = "parameters.json";
+                    copyblobdetail.OutputFilename = this.GetTemplateParameterFilename();
                     copyblobdetail.OutputParameterName = disk.ToString() + "_SourceUri_BlobCopyResult";
                 }
             }
@@ -1704,19 +1704,19 @@ namespace MigAz.Azure.Generator
 
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
-            // Only generate copyblobdetails.json if it contains disks that are being copied
+            // Only generate Blob Copy Detail file if it contains disks that are being copied
             if (_CopyBlobDetails.Count > 0)
             {
-                StatusProvider.UpdateStatus("BUSY:  Generating copyblobdetails.json");
-                LogProvider.WriteLog("SerializeStreams", "Start copyblobdetails.json stream");
+                StatusProvider.UpdateStatus("BUSY:  Generating " + this.GetBlobCopyDetailFilename());
+                LogProvider.WriteLog("SerializeStreams", "Start " + this.GetBlobCopyDetailFilename() + " stream");
 
                 string jsontext = JsonConvert.SerializeObject(this._CopyBlobDetails, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
                 byte[] b = asciiEncoding.GetBytes(jsontext);
                 MemoryStream copyBlobDetailStream = new MemoryStream();
                 await copyBlobDetailStream.WriteAsync(b, 0, b.Length);
-                TemplateStreams.Add("copyblobdetails.json", copyBlobDetailStream);
+                TemplateStreams.Add(this.GetBlobCopyDetailFilename(), copyBlobDetailStream);
 
-                LogProvider.WriteLog("SerializeStreams", "End copyblobdetails.json stream");
+                LogProvider.WriteLog("SerializeStreams", "End " + this.GetBlobCopyDetailFilename() + " stream");
             }
 
             LogProvider.WriteLog("SerializeBlobCopyDetails", "End");
@@ -1726,14 +1726,14 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("SerializeExportTemplate", "Start");
 
-            StatusProvider.UpdateStatus("BUSY:  Generating export.json");
+            StatusProvider.UpdateStatus("BUSY:  Generating" + this.GetTemplateFilename());
 
             String templateString = await GetTemplateString();
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
             byte[] a = asciiEncoding.GetBytes(templateString);
             MemoryStream templateStream = new MemoryStream();
             await templateStream.WriteAsync(a, 0, a.Length);
-            TemplateStreams.Add("export.json", templateStream);
+            TemplateStreams.Add(this.GetTemplateFilename(), templateStream);
 
             LogProvider.WriteLog("SerializeExportTemplate", "End");
         }
@@ -1743,14 +1743,14 @@ namespace MigAz.Azure.Generator
 
             if (this.Parameters.Count > 0)
             {
-                StatusProvider.UpdateStatus("BUSY:  Generating parameters.json");
+                StatusProvider.UpdateStatus("BUSY:  Generating " + this.GetTemplateParameterFilename());
 
                 String templateString = await GetParameterString();
                 ASCIIEncoding asciiEncoding = new ASCIIEncoding();
                 byte[] a = asciiEncoding.GetBytes(templateString);
                 MemoryStream templateStream = new MemoryStream();
                 await templateStream.WriteAsync(a, 0, a.Length);
-                TemplateStreams.Add("parameters.json", templateStream);
+                TemplateStreams.Add(this.GetTemplateParameterFilename(), templateStream);
             }
 
             LogProvider.WriteLog("SerializeParameterTemplate", "End");
@@ -1831,8 +1831,18 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
             instructionContent = instructionContent.Replace("{resourceGroupNameParameter}", " -ResourceGroupName \"" + this.TargetResourceGroupName + "\"");
             instructionContent = instructionContent.Replace("{templateFileParameter}", " -TemplateFile \"" + GetTemplatePath() + "\"");
-            instructionContent = instructionContent.Replace("{templateParameterFileParameter}", " -TemplateParameterFile \"" + GetTemplateParameterPath() + "\"");
             instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
+
+            if (this.HasBlobCopyDetails)
+                instructionContent = instructionContent.Replace("{migazExecutionCommand}", "&amp; '" + _OutputDirectory + "MigAz.ps1'");
+            else
+                instructionContent = instructionContent.Replace("{migazExecutionCommand}", "New-AzureRmResourceGroupDeployment");
+
+            if (this.Parameters.Count == 0)
+                instructionContent = instructionContent.Replace("{templateParameterFileParameter}", String.Empty);
+            else
+                instructionContent = instructionContent.Replace("{templateParameterFileParameter}", " -TemplateParameterFile \"" + GetTemplateParameterPath() + "\"");
+
 
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
@@ -1842,20 +1852,40 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("SerializeDeploymentInstructions", "End");
         }
 
-        public string GetCopyBlobDetailPath()
+        public string GetBlobCopyDetailFilename()
         {
-            return Path.Combine(this.OutputDirectory, "copyblobdetails.json");
+            if (this.HasBlobCopyDetails)
+                return this.TargetResourceGroupName.Replace(" ", "_") + "_BlobCopy.json";
+            else
+                return String.Empty;
         }
 
+        public string GetCopyBlobDetailPath()
+        {
+            if (this.HasBlobCopyDetails)
+                return Path.Combine(this.OutputDirectory, this.GetBlobCopyDetailFilename());
+            else
+                return String.Empty;
+        }
+
+        public string GetTemplateFilename()
+        {
+            return this.TargetResourceGroupName.Replace(" ", "_") + ".json";
+        }
 
         public string GetTemplatePath()
         {
-            return Path.Combine(this.OutputDirectory, "export.json");
+            return Path.Combine(this.OutputDirectory, GetTemplateFilename());
+        }
+
+        public string GetTemplateParameterFilename()
+        {
+            return this.TargetResourceGroupName.Replace(" ", "_") + "_Parameters.json";
         }
 
         public string GetTemplateParameterPath()
         {
-            return Path.Combine(this.OutputDirectory, "parameters.json");
+            return Path.Combine(this.OutputDirectory, GetTemplateParameterFilename());
         }
 
         public string GetInstructionPath()

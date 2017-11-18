@@ -42,12 +42,12 @@ Select-AzureRmSubscription{subscriptionSwitch}</pre>
             <li>
                 <p>If your template contains VMs, run the script to snapshot and copy the VHDs from your source to your target 
                     storage accounts</p>
-<pre>&amp; '{exportPath}MigAz.ps1'{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
+<pre>{migazExecutionCommand}{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
 </pre>
             </li>
             <li>
                 <p>Once the copy has completed, redeploy the template to your resource group to fix up the VHD file locations.</p>
-<pre>New-AzureRmResourceGroupDeployment{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}</pre>
+<pre>{migazExecutionCommand}{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}</pre>
             </li>
         </ol>
         <p>Once you are happy that all is well with your ARM Resource Deployment, you can delete your old Classic ASM Resources.

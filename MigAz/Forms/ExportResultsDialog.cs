@@ -27,7 +27,7 @@ namespace MigAz.Forms
         private void btnViewTemplate_Click(object sender, EventArgs e)
         {
             ProcessStartInfo pInfo = new ProcessStartInfo();
-            pInfo.FileName = _TemplateGenerator.OutputDirectory + "export.json";
+            pInfo.FileName = _TemplateGenerator.OutputDirectory + _TemplateGenerator.GetTemplateFilename();
             pInfo.UseShellExecute = true;
             Process p = Process.Start(pInfo);
         }
