@@ -54,6 +54,11 @@
             this.label16 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.primaryNICSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.osDiskSummary = new MigAz.Azure.UserControls.ResourceSummary();
             this.availabilitySetSummary = new MigAz.Azure.UserControls.ResourceSummary();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -101,7 +106,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(20, 133);
+            this.label12.Location = new System.Drawing.Point(10, 133);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(38, 13);
@@ -130,7 +135,7 @@
             // 
             // txtTargetName
             // 
-            this.txtTargetName.Location = new System.Drawing.Point(104, 130);
+            this.txtTargetName.Location = new System.Drawing.Point(94, 130);
             this.txtTargetName.Margin = new System.Windows.Forms.Padding(2);
             this.txtTargetName.Name = "txtTargetName";
             this.txtTargetName.Size = new System.Drawing.Size(204, 20);
@@ -142,7 +147,7 @@
             // 
             this.cbRoleSizes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbRoleSizes.FormattingEnabled = true;
-            this.cbRoleSizes.Location = new System.Drawing.Point(105, 158);
+            this.cbRoleSizes.Location = new System.Drawing.Point(95, 158);
             this.cbRoleSizes.Name = "cbRoleSizes";
             this.cbRoleSizes.Size = new System.Drawing.Size(203, 21);
             this.cbRoleSizes.TabIndex = 1;
@@ -151,7 +156,7 @@
             // lblTargetNumberOfCores
             // 
             this.lblTargetNumberOfCores.AutoSize = true;
-            this.lblTargetNumberOfCores.Location = new System.Drawing.Point(104, 216);
+            this.lblTargetNumberOfCores.Location = new System.Drawing.Point(179, 187);
             this.lblTargetNumberOfCores.Name = "lblTargetNumberOfCores";
             this.lblTargetNumberOfCores.Size = new System.Drawing.Size(13, 13);
             this.lblTargetNumberOfCores.TabIndex = 25;
@@ -160,7 +165,7 @@
             // lblTargetMemoryInGb
             // 
             this.lblTargetMemoryInGb.AutoSize = true;
-            this.lblTargetMemoryInGb.Location = new System.Drawing.Point(104, 236);
+            this.lblTargetMemoryInGb.Location = new System.Drawing.Point(179, 207);
             this.lblTargetMemoryInGb.Name = "lblTargetMemoryInGb";
             this.lblTargetMemoryInGb.Size = new System.Drawing.Size(13, 13);
             this.lblTargetMemoryInGb.TabIndex = 26;
@@ -169,7 +174,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 161);
+            this.label1.Location = new System.Drawing.Point(10, 161);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(30, 13);
@@ -179,7 +184,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(20, 216);
+            this.label2.Location = new System.Drawing.Point(95, 187);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
@@ -189,7 +194,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 236);
+            this.label3.Location = new System.Drawing.Point(95, 207);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 13);
@@ -199,7 +204,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 256);
+            this.label5.Location = new System.Drawing.Point(95, 227);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
@@ -209,7 +214,7 @@
             // lblTargetMaxDataDisks
             // 
             this.lblTargetMaxDataDisks.AutoSize = true;
-            this.lblTargetMaxDataDisks.Location = new System.Drawing.Point(104, 256);
+            this.lblTargetMaxDataDisks.Location = new System.Drawing.Point(179, 227);
             this.lblTargetMaxDataDisks.Name = "lblTargetMaxDataDisks";
             this.lblTargetMaxDataDisks.Size = new System.Drawing.Size(13, 13);
             this.lblTargetMaxDataDisks.TabIndex = 30;
@@ -230,7 +235,7 @@
             // 
             this.lblTargetLocationRequired.AutoSize = true;
             this.lblTargetLocationRequired.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTargetLocationRequired.Location = new System.Drawing.Point(104, 161);
+            this.lblTargetLocationRequired.Location = new System.Drawing.Point(94, 161);
             this.lblTargetLocationRequired.Name = "lblTargetLocationRequired";
             this.lblTargetLocationRequired.Size = new System.Drawing.Size(189, 13);
             this.lblTargetLocationRequired.TabIndex = 33;
@@ -298,9 +303,9 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(9, 277);
+            this.pictureBox1.Location = new System.Drawing.Point(10, 345);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(299, 401);
+            this.pictureBox1.Size = new System.Drawing.Size(299, 330);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 40;
             this.pictureBox1.TabStop = false;
@@ -308,17 +313,63 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(20, 189);
+            this.label8.Location = new System.Drawing.Point(6, 246);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(78, 13);
             this.label8.TabIndex = 41;
             this.label8.Text = "Availability Set:";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(7, 268);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(49, 13);
+            this.label10.TabIndex = 43;
+            this.label10.Text = "OS Disk:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(7, 291);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(65, 13);
+            this.label11.TabIndex = 45;
+            this.label11.Text = "Primary NIC:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(7, 329);
+            this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(110, 13);
+            this.label15.TabIndex = 47;
+            this.label15.Text = "Additional Resources:";
+            // 
+            // primaryNICSummary
+            // 
+            this.primaryNICSummary.AutoSize = true;
+            this.primaryNICSummary.Location = new System.Drawing.Point(90, 290);
+            this.primaryNICSummary.Name = "primaryNICSummary";
+            this.primaryNICSummary.Size = new System.Drawing.Size(71, 28);
+            this.primaryNICSummary.TabIndex = 46;
+            // 
+            // osDiskSummary
+            // 
+            this.osDiskSummary.AutoSize = true;
+            this.osDiskSummary.Location = new System.Drawing.Point(90, 267);
+            this.osDiskSummary.Name = "osDiskSummary";
+            this.osDiskSummary.Size = new System.Drawing.Size(71, 28);
+            this.osDiskSummary.TabIndex = 44;
+            // 
             // availabilitySetSummary
             // 
             this.availabilitySetSummary.AutoSize = true;
-            this.availabilitySetSummary.Location = new System.Drawing.Point(105, 188);
+            this.availabilitySetSummary.Location = new System.Drawing.Point(90, 245);
             this.availabilitySetSummary.Name = "availabilitySetSummary";
             this.availabilitySetSummary.Size = new System.Drawing.Size(71, 28);
             this.availabilitySetSummary.TabIndex = 42;
@@ -328,6 +379,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.primaryNICSummary);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.osDiskSummary);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.availabilitySetSummary);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.pictureBox1);
@@ -392,5 +448,10 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label8;
         private ResourceSummary availabilitySetSummary;
+        private ResourceSummary osDiskSummary;
+        private System.Windows.Forms.Label label10;
+        private ResourceSummary primaryNICSummary;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label15;
     }
 }

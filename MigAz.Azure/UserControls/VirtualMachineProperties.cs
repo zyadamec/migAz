@@ -94,16 +94,20 @@ namespace MigAz.Azure.UserControls
             }
 
             availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
+            osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView);
+            primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView);
 
-            AddResourceSummary(new ResourceSummary(virtualMachine.OSVirtualHardDisk, targetTreeView));
             foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
             {
                 AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
             }
             foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
             {
-                AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
+                if (!targetNIC.IsPrimary)
+                    AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
             }
+
+            label15.Visible = pictureBox1.Controls.Count > 0;
         }
 
         private void AddResourceSummary(ResourceSummary resourceSummary)
