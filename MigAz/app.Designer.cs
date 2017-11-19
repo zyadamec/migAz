@@ -265,5 +265,17 @@ namespace MigAz {
                 this["DefaultTargetDiskType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3600")]
+        public int AccessSASTokenLifetimeSeconds {
+            get {
+                return ((int)(this["AccessSASTokenLifetimeSeconds"]));
+            }
+            set {
+                this["AccessSASTokenLifetimeSeconds"] = value;
+            }
+        }
     }
 }

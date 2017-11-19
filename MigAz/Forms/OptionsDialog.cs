@@ -63,6 +63,7 @@ namespace MigAz.Forms
             app.Default.SaveSelection = chkSaveSelection.Checked;
             app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
+            app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
 
             if (rbClassicDisk.Checked)
                 app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ClassicDisk;
@@ -88,6 +89,7 @@ namespace MigAz.Forms
             chkSaveSelection.Checked = app.Default.SaveSelection;
             chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
+            upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
 
             if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
                 rbClassicDisk.Checked = true;

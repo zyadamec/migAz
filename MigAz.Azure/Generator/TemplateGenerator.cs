@@ -32,6 +32,7 @@ namespace MigAz.Azure.Generator
         private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
+        private Int32 _AccessSASTokenLifetime = 3600;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -71,6 +72,13 @@ namespace MigAz.Azure.Generator
             get { return _Alerts; }
             set { _Alerts = value; }
         }
+
+        public Int32 AccessSASTokenLifetime
+        {
+            get { return _AccessSASTokenLifetime; }
+            set { _AccessSASTokenLifetime = value; }
+        }
+
         public String OutputDirectory
         {
             get { return _OutputDirectory; }
@@ -1614,7 +1622,7 @@ namespace MigAz.Azure.Generator
                 {
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
-                    copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(3600);
+                    copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(_AccessSASTokenLifetime);
                 }
             }
 

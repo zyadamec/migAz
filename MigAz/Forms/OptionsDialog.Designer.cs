@@ -55,25 +55,27 @@
             this.txtNetworkInterfaceCardSuffix = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.upDownAccessSASMinutes = new System.Windows.Forms.NumericUpDown();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.rbManagedDisk = new System.Windows.Forms.RadioButton();
+            this.rbClassicDisk = new System.Windows.Forms.RadioButton();
             this.chkSaveSelection = new System.Windows.Forms.CheckBox();
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.rbManagedDisk = new System.Windows.Forms.RadioButton();
-            this.rbClassicDisk = new System.Windows.Forms.RadioButton();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(421, 392);
+            this.btnOK.Location = new System.Drawing.Point(421, 407);
             this.btnOK.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(74, 23);
@@ -85,8 +87,8 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(508, 392);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCancel.Location = new System.Drawing.Point(508, 407);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(74, 23);
             this.btnCancel.TabIndex = 16;
@@ -117,10 +119,10 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtNetworkInterfaceCardSuffix);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(13, 163);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Location = new System.Drawing.Point(13, 178);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(570, 216);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
@@ -270,7 +272,7 @@
             // btnApplyDefaultNaming
             // 
             this.btnApplyDefaultNaming.Location = new System.Drawing.Point(353, 176);
-            this.btnApplyDefaultNaming.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnApplyDefaultNaming.Margin = new System.Windows.Forms.Padding(2);
             this.btnApplyDefaultNaming.Name = "btnApplyDefaultNaming";
             this.btnApplyDefaultNaming.Size = new System.Drawing.Size(207, 26);
             this.btnApplyDefaultNaming.TabIndex = 14;
@@ -351,21 +353,85 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.numericUpDown1);
+            this.groupBox2.Controls.Add(this.upDownAccessSASMinutes);
             this.groupBox2.Controls.Add(this.panel1);
             this.groupBox2.Controls.Add(this.chkSaveSelection);
             this.groupBox2.Controls.Add(this.chkAutoSelectDependencies);
             this.groupBox2.Controls.Add(this.chkBuildEmpty);
             this.groupBox2.Controls.Add(this.chkAllowTelemetry);
             this.groupBox2.Location = new System.Drawing.Point(13, 17);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.groupBox2.Size = new System.Drawing.Size(569, 134);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox2.Size = new System.Drawing.Size(569, 146);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(412, 114);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "Minutes";
+            // 
+            // upDownAccessSASMinutes
+            // 
+            this.upDownAccessSASMinutes.Location = new System.Drawing.Point(356, 110);
+            this.upDownAccessSASMinutes.Maximum = new decimal(new int[] {
+            1440,
+            0,
+            0,
+            0});
+            this.upDownAccessSASMinutes.Minimum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.upDownAccessSASMinutes.Name = "upDownAccessSASMinutes";
+            this.upDownAccessSASMinutes.Size = new System.Drawing.Size(50, 20);
+            this.upDownAccessSASMinutes.TabIndex = 6;
+            this.upDownAccessSASMinutes.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.rbManagedDisk);
+            this.panel1.Controls.Add(this.rbClassicDisk);
+            this.panel1.Location = new System.Drawing.Point(353, 41);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(182, 42);
+            this.panel1.TabIndex = 5;
+            // 
+            // rbManagedDisk
+            // 
+            this.rbManagedDisk.AutoSize = true;
+            this.rbManagedDisk.Location = new System.Drawing.Point(3, 3);
+            this.rbManagedDisk.Name = "rbManagedDisk";
+            this.rbManagedDisk.Size = new System.Drawing.Size(175, 17);
+            this.rbManagedDisk.TabIndex = 3;
+            this.rbManagedDisk.TabStop = true;
+            this.rbManagedDisk.Text = "Managed Disk (Recommended)";
+            this.rbManagedDisk.UseVisualStyleBackColor = true;
+            // 
+            // rbClassicDisk
+            // 
+            this.rbClassicDisk.AutoSize = true;
+            this.rbClassicDisk.Location = new System.Drawing.Point(3, 22);
+            this.rbClassicDisk.Name = "rbClassicDisk";
+            this.rbClassicDisk.Size = new System.Drawing.Size(82, 17);
+            this.rbClassicDisk.TabIndex = 2;
+            this.rbClassicDisk.TabStop = true;
+            this.rbClassicDisk.Text = "Classic Disk";
+            this.rbClassicDisk.UseVisualStyleBackColor = true;
             // 
             // chkSaveSelection
             // 
@@ -416,57 +482,25 @@
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
             // 
-            // label10
+            // label11
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(409, 53);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(44, 13);
-            this.label10.TabIndex = 7;
-            this.label10.Text = "Minutes";
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(321, 90);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(214, 13);
+            this.label11.TabIndex = 8;
+            this.label11.Text = "Managed DIsk Access SAS Duration";
             // 
-            // numericUpDown1
+            // label12
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(353, 51);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(50, 20);
-            this.numericUpDown1.TabIndex = 6;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.rbManagedDisk);
-            this.panel1.Controls.Add(this.rbClassicDisk);
-            this.panel1.Location = new System.Drawing.Point(353, 21);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 24);
-            this.panel1.TabIndex = 5;
-            // 
-            // rbManagedDisk
-            // 
-            this.rbManagedDisk.AutoSize = true;
-            this.rbManagedDisk.Location = new System.Drawing.Point(3, 3);
-            this.rbManagedDisk.Name = "rbManagedDisk";
-            this.rbManagedDisk.Size = new System.Drawing.Size(94, 17);
-            this.rbManagedDisk.TabIndex = 3;
-            this.rbManagedDisk.TabStop = true;
-            this.rbManagedDisk.Text = "Managed Disk";
-            this.rbManagedDisk.UseVisualStyleBackColor = true;
-            // 
-            // rbClassicDisk
-            // 
-            this.rbClassicDisk.AutoSize = true;
-            this.rbClassicDisk.Location = new System.Drawing.Point(103, 4);
-            this.rbClassicDisk.Name = "rbClassicDisk";
-            this.rbClassicDisk.Size = new System.Drawing.Size(82, 17);
-            this.rbClassicDisk.TabIndex = 2;
-            this.rbClassicDisk.TabStop = true;
-            this.rbClassicDisk.Text = "Classic Disk";
-            this.rbClassicDisk.UseVisualStyleBackColor = true;
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(321, 19);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(150, 13);
+            this.label12.TabIndex = 9;
+            this.label12.Text = "Default Target Disk Type";
             // 
             // OptionsDialog
             // 
@@ -474,7 +508,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(590, 427);
+            this.ClientSize = new System.Drawing.Size(590, 441);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -493,7 +527,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -532,9 +566,11 @@
         private System.Windows.Forms.TextBox txtResourceGroupSuffix;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown upDownAccessSASMinutes;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton rbManagedDisk;
         private System.Windows.Forms.RadioButton rbClassicDisk;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
     }
 }
