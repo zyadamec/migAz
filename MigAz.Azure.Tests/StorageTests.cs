@@ -127,8 +127,10 @@ namespace MigAz.Tests
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDataDisk01' which has not been added as an export resource."));
 
+            Assert.IsNotNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' is used by Virtual Machine 'ManagedDisk01-vm', but is not included in the exported resources."));
             artifacts.NetworkInterfaces.Add(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
+            Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' is used by Virtual Machine 'ManagedDisk01-vm', but is not included in the exported resources."));
 
             Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 

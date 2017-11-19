@@ -257,6 +257,18 @@ namespace MigAz.Azure.Generator
                             this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
                     }
                 }
+                else
+                {
+                    bool virtualMachineAvailabitySetExists = false;
+                    foreach (MigrationTarget.AvailabilitySet targetAvailabilitySet in _ExportArtifacts.AvailablitySets)
+                    {
+                        if (targetAvailabilitySet.ToString() == virtualMachine.TargetAvailabilitySet.ToString())
+                            virtualMachineAvailabitySetExists = true;
+                    }
+
+                    if (!virtualMachineAvailabitySetExists)
+                        this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' utilizes Availability Set '" + virtualMachine.TargetAvailabilitySet.ToString() + "'; however, the Availability Set is not included in the Export.", virtualMachine);
+                }
 
                 if (virtualMachine.TargetSize == null)
                 {
