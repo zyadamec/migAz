@@ -35,10 +35,12 @@ namespace MigAz.Azure.Arm
                 return true;
             else if (storageAccountType == StorageAccountType.Premium_LRS)
             {
-                return (this.Name.Contains("_DS") ||
+                return (
+                    this.Name.Contains("_DS") ||
                     this.Name.Contains("_GS") ||
                     (this.Name.Contains("_L") && this.Name.EndsWith("s")) ||
-                    (this.Name.Contains("_F") && this.Name.EndsWith("s")) ;
+                    (this.Name.Contains("_F") && this.Name.EndsWith("s"))
+                    );
             }
 
             return false; // Unknown Enum Type
