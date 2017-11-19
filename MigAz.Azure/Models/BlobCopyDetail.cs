@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Models
 {
-    public class CopyBlobDetail
+    public class BlobCopyDetail
     {
         public string SourceEnvironment;
         public string SourceStorageAccount;
@@ -14,6 +14,7 @@ namespace MigAz.Azure.Models
         public string SourceBlob;
         public string SourceKey;
         public string SourceAbsoluteUri;
+        public DateTime? SourceExpiration;
         public string TargetLocation;
         public string TargetResourceGroup;
         public string TargetStorageAccount;

@@ -284,7 +284,7 @@ namespace MigAz.Forms
                     return;
                 }
 
-                migrator.TemplateGenerator.AccessSASTokenLifetime = app.Default.AccessSASTokenLifetimeSeconds;
+                migrator.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
 
                 await migrator.TemplateGenerator.GenerateStreams();
                 await migrator.TemplateGenerator.SerializeStreams();

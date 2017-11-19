@@ -29,7 +29,7 @@ namespace MigAz.Azure.Generator
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
         private ExportArtifacts _ExportArtifacts;
-        private List<CopyBlobDetail> _CopyBlobDetails = new List<CopyBlobDetail>();
+        private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
         private ITelemetryProvider _telemetryProvider;
         private ISettingsProvider _settingsProvider;
         private Int32 _AccessSASTokenLifetime = 3600;
@@ -73,7 +73,7 @@ namespace MigAz.Azure.Generator
             set { _Alerts = value; }
         }
 
-        public Int32 AccessSASTokenLifetime
+        public Int32 AccessSASTokenLifetimeSeconds
         {
             get { return _AccessSASTokenLifetime; }
             set { _AccessSASTokenLifetime = value; }
@@ -1582,12 +1582,12 @@ namespace MigAz.Azure.Generator
             return templateManagedDisk;
         }
 
-        private async Task<CopyBlobDetail> BuildCopyBlob(MigrationTarget.Disk disk, MigrationTarget.ResourceGroup resourceGroup)
+        private async Task<BlobCopyDetail> BuildCopyBlob(MigrationTarget.Disk disk, MigrationTarget.ResourceGroup resourceGroup)
         {
             if (disk.SourceDisk == null)
                 return null;
 
-            CopyBlobDetail copyblobdetail = new CopyBlobDetail();
+            BlobCopyDetail copyblobdetail = new BlobCopyDetail();
             if (this.SourceSubscription != null)
                 copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
 
@@ -1623,6 +1623,7 @@ namespace MigAz.Azure.Generator
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
                     copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(_AccessSASTokenLifetime);
+                    copyblobdetail.SourceExpiration = DateTime.UtcNow.AddSeconds(this.AccessSASTokenLifetimeSeconds);
                 }
             }
 

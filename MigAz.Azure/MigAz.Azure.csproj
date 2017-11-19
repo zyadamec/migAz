@@ -198,7 +198,7 @@
     <Compile Include="Generator\AzureGenerator.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
-    <Compile Include="Models\CopyBlobDetail.cs" />
+    <Compile Include="Models\BlobCopyDetail.cs" />
     <Compile Include="Models\SaveSelection.cs" />
     <Compile Include="Models\TelemetryRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
