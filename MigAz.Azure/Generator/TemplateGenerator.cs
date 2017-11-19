@@ -177,11 +177,11 @@ namespace MigAz.Azure.Generator
                 }
             }
 
-            foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
-            {
-                if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
-                    this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
-            }
+            //foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
+            //{
+            //    if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
+            //        this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
+            //}
 
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
@@ -453,23 +453,23 @@ namespace MigAz.Azure.Generator
                         this.AddAlert(AlertType.Error, "Target Storage Account '" + armStorageAccount.Name + "' is not in the same region (" + armStorageAccount.Location.Name + ") as the Target Resource Group '" + _ExportArtifacts.ResourceGroup.ToString() + "' (" + _ExportArtifacts.ResourceGroup.TargetLocation.Name + ").", targetDisk);
                     }
                 }
-                else if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)targetDisk.TargetStorage;
-                    bool targetStorageExists = false;
+                //else if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                //{
+                //    Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)targetDisk.TargetStorage;
+                //    bool targetStorageExists = false;
 
-                    foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                    {
-                        if (storageAccount.ToString() == targetStorageAccount.ToString())
-                        {
-                            targetStorageExists = true;
-                            break;
-                        }
-                    }
+                //    foreach (Azure.MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                //    {
+                //        if (storageAccount.ToString() == targetStorageAccount.ToString())
+                //        {
+                //            targetStorageExists = true;
+                //            break;
+                //        }
+                //    }
 
-                    if (!targetStorageExists)
-                        this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Disk '" + targetDisk.ToString() + "' is invalid, as it is not included in the migration / template.", targetDisk);
-                }
+                //    if (!targetStorageExists)
+                //        this.AddAlert(AlertType.Error, "Target Storage Account '" + targetStorageAccount.ToString() + "' for Disk '" + targetDisk.ToString() + "' is invalid, as it is not included in the migration / template.", targetDisk);
+                //}
 
                 if (targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) ||
                     targetDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
@@ -552,13 +552,13 @@ namespace MigAz.Azure.Generator
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Load Balancers");
 
-                LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
-                foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
-                {
-                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
-                    BuildStorageAccountObject(storageAccount);
-                }
-                LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
+                //LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
+                //foreach (MigrationTarget.StorageAccount storageAccount in _ExportArtifacts.StorageAccounts)
+                //{
+                //    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
+                //    BuildStorageAccountObject(storageAccount);
+                //}
+                //LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Availablity Sets");
                 foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in _ExportArtifacts.AvailablitySets)
@@ -1407,11 +1407,11 @@ namespace MigAz.Azure.Generator
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
 
-                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null)
-                    {
-                        if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
-                            storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
-                    }
+                    //if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null)
+                    //{
+                    //    if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
+                    //        storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
+                    //}
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
@@ -1458,11 +1458,11 @@ namespace MigAz.Azure.Generator
                         vhd.uri = dataDisk.TargetMediaLink;
                         datadisk.vhd = vhd;
 
-                        if (dataDisk.TargetStorage != null)
-                        {
-                            if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
-                                storageaccountdependencies.Add(dataDisk.TargetStorage);
-                        }
+                        //if (dataDisk.TargetStorage != null)
+                        //{
+                        //    if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
+                        //        storageaccountdependencies.Add(dataDisk.TargetStorage);
+                        //}
                     }
                     else if (dataDisk.IsManagedDisk)
                     {
@@ -1807,8 +1807,8 @@ namespace MigAz.Azure.Generator
 
             ASCIIEncoding asciiEncoding = new ASCIIEncoding();
 
-            StatusProvider.UpdateStatus("BUSY:  Generating DeployInstructions.html");
-            LogProvider.WriteLog("SerializeStreams", "Start DeployInstructions.html stream");
+            StatusProvider.UpdateStatus("BUSY:  Generating " + this.GetDeployInstructionFilename());
+            LogProvider.WriteLog("SerializeStreams", "Start " + this.GetDeployInstructionFilename() + " stream");
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = "MigAz.Azure.Generator.DeployDocTemplate.html";
@@ -1865,9 +1865,14 @@ namespace MigAz.Azure.Generator
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
             await instructionStream.WriteAsync(c, 0, c.Length);
-            TemplateStreams.Add("DeployInstructions.html", instructionStream);
+            TemplateStreams.Add(this.GetDeployInstructionFilename(), instructionStream);
 
             LogProvider.WriteLog("SerializeDeploymentInstructions", "End");
+        }
+
+        public string GetDeployInstructionFilename()
+        {
+            return this.TargetResourceGroupName.Replace(" ", "_") + " Deployment Instructions.html";
         }
 
         public string GetBlobCopyDetailFilename()
@@ -1908,7 +1913,7 @@ namespace MigAz.Azure.Generator
 
         public string GetInstructionPath()
         {
-            return Path.Combine(this.OutputDirectory, "DeployInstructions.html");
+            return Path.Combine(this.OutputDirectory, this.GetDeployInstructionFilename());
         }
 
         public async Task<string> GetTemplateString()

@@ -201,7 +201,8 @@ If ($StartType -eq "CancelBlobCopy")
 if ($StartType -eq $null -or $StartType -eq "ResourceGroupDeployment")
 {
 	Write-Host "Beginning Azure Resource Group Deployment"
-	Write-Host " - Template File '$($TemplateFile)'"
+	Write-Host " - ResourceGroupName '$($ResourceGroupName)'"
+	Write-Host " - TemplateFile '$($TemplateFile)'"
 
 	if ($TemplateParameterFile -eq $null)
 	{
@@ -211,7 +212,7 @@ if ($StartType -eq $null -or $StartType -eq "ResourceGroupDeployment")
 	}
 	else
 	{
-		Write-Host " - Parameter File '$($TemplateParameterFile)'"
+		Write-Host " - TemplateParameterFile '$($TemplateParameterFile)'"
 		Write-Host ""
 
 		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile

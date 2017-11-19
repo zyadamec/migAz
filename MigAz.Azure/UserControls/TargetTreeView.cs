@@ -127,10 +127,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.VirtualNetworks.Add((Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag);
                 }
-                else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
-                }
+                //else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
+                //{
+                //    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                //}
                 else if (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                 {
                     exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
@@ -458,9 +458,16 @@ namespace MigAz.Azure.UserControls
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
-                TreeNode targetAvailabilitySetNode = null;
-
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
+
+                if (targetVirtualMachine.TargetAvailabilitySet != null)
+                {
+                    if (targetVirtualMachine.TargetAvailabilitySet.SourceAvailabilitySet != null && targetVirtualMachine.TargetAvailabilitySet.SourceAvailabilitySet.GetType() == typeof(Asm.CloudService))
+                    {
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachine.TargetAvailabilitySet.ToString(), targetVirtualMachine.TargetAvailabilitySet.ToString(), targetVirtualMachine.TargetAvailabilitySet, true);
+                    }
+                }
 
                 if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
@@ -575,6 +582,7 @@ namespace MigAz.Azure.UserControls
                         {
                             await RemoveAsmNetworkTurnedArmNetworkFromARMTree(networkInterface);
                         }
+                        await RemoveCloudServiceTurnedAvailabilitySetFromARMTree(targetVirtualMachine.TargetAvailabilitySet);
                     }
                     else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
                         await RemoveTreeNodeCascadeUp(matchingNode);
@@ -622,6 +630,28 @@ namespace MigAz.Azure.UserControls
                         if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && String.Compare(((Azure.MigrationTarget.NetworkInterface)matchingNode.Tag).SourceName, networkInterface.SourceName, true) == 0)
                         {
                             await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveCloudServiceTurnedAvailabilitySetFromARMTree(AvailabilitySet availabilitySet)
+        {
+            if (availabilitySet != null)
+            {
+                if (availabilitySet.SourceAvailabilitySet != null && availabilitySet.SourceAvailabilitySet.GetType() == typeof(Azure.Asm.CloudService))
+                {
+                    TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                    if (targetResourceGroupNode != null)
+                    {
+                        TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(availabilitySet.ToString(), true);
+                        foreach (TreeNode matchingNode in matchingNodes)
+                        {
+                            if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && String.Compare(((Azure.MigrationTarget.AvailabilitySet)matchingNode.Tag).SourceName, availabilitySet.SourceName, true) == 0)
+                            {
+                                await RemoveTreeNodeCascadeUp(matchingNode);
+                            }
                         }
                     }
                 }

@@ -35,7 +35,7 @@ namespace MigAz.Forms
         private void btnGenerateInstructions_Click(object sender, EventArgs e)
         {
             ProcessStartInfo pInfo = new ProcessStartInfo();
-           pInfo.FileName = _TemplateGenerator.OutputDirectory + "DeployInstructions.html";
+           pInfo.FileName = _TemplateGenerator.OutputDirectory + _TemplateGenerator.GetDeployInstructionFilename();
             pInfo.UseShellExecute = true;
             Process p = Process.Start(pInfo);
         }
