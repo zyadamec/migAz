@@ -299,6 +299,11 @@ namespace MigAz.Azure.Generator
                                 this.AddAlert(AlertType.Error, "Specified VM Size '" + virtualMachine.TargetSize.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' is invalid as it is not available in Azure Location '" + _ExportArtifacts.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
                         }
                     }
+
+                    if (virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
+                    {
+                        this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
+                    }
                 }
 
                 foreach (Azure.MigrationTarget.NetworkInterface networkInterface in virtualMachine.NetworkInterfaces)
@@ -366,11 +371,6 @@ namespace MigAz.Azure.Generator
                             }
                         }
                     }
-                }
-
-                if (virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
-                {
-                    this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
                 }
 
                 ValidateVMDisk(virtualMachine.OSVirtualHardDisk);
