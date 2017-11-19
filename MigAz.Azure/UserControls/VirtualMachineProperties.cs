@@ -72,7 +72,10 @@ namespace MigAz.Azure.UserControls
                 {
                     foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
                     {
-                        cbRoleSizes.Items.Add(vmSize);
+                        if (vmSize.IsStorageTypeSupported(_VirtualMachine.OSVirtualHardDisk.StorageAccountType))
+                        {
+                            cbRoleSizes.Items.Add(vmSize);
+                        }
                     }
                 }
 

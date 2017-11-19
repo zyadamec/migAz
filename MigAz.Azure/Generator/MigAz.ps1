@@ -113,6 +113,8 @@ If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
 			# Convert to CloudBlob object type
 			$snapshot = [Microsoft.WindowsAzure.Storage.Blob.CloudBlob] $snapshot.ICloudBlob
             
+			Write-Host " - Starting Blob Copy '$($copyblobdetail.TargetBlob)'." -ForegroundColor Green
+
 			# Initiate blob snapshot copy job
 			Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
 		}
@@ -296,6 +298,6 @@ if (($StartType -eq $null -and $ResourceGroupDeploymentError -eq $false) -or $St
 	foreach ($migAzTempStorage in $distinctMigAzTempStorage)
 	{
 		Write-Host " * Removing MigAz Temporary Storage Account '$($migAzTempStorage.TargetStorageAccount)'" -ForegroundColor Green
-		Remove-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName -Name $migAzTempStorage.TargetStorageAccount 
+		Remove-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName -Name $migAzTempStorage.TargetStorageAccount -Confirm:$false
 	}
 }
