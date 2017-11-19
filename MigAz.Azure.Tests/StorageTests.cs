@@ -140,11 +140,10 @@ namespace MigAz.Tests
 
             Assert.AreEqual(7, templateJson["resources"].Children().Count());
 
-        //    var resource = templateJson["resources"].First();
-        //    Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
-        //    Assert.AreEqual("manageddiskdiag857v2", resource["name"].Value<string>());
-        //    Assert.AreEqual("[resourceGroup().location]", resource["location"].Value<string>());
-        //    Assert.AreEqual("Standard_LRS", resource["properties"]["accountType"].Value<string>());
+            var resource = templateJson["resources"].First();
+            Assert.AreEqual("Microsoft.Network/networkSecurityGroups", resource["type"].Value<string>());
+            Assert.AreEqual("ManagedDisk01-nsg-nsg", resource["name"].Value<string>());
+            Assert.AreEqual("[resourceGroup().location]", resource["location"].Value<string>());
         }
     }
 }

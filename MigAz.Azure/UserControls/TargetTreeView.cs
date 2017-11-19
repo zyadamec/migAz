@@ -199,7 +199,7 @@ namespace MigAz.Azure.UserControls
 
             Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
 
-            if (targetDisk.SourceDisk != null && (targetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            if (targetDisk.SourceDisk != null)
             {
                 TreeNode diskParentNode = targetTreeNode.Parent;
 
@@ -225,7 +225,7 @@ namespace MigAz.Azure.UserControls
 
             Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
 
-            if (targetDisk.SourceDisk != null && (targetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            if (targetDisk.SourceDisk != null)
             {
                 TreeNode diskParentNode = targetTreeNode.Parent;
 
