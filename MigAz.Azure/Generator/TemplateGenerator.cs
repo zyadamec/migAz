@@ -639,7 +639,7 @@ namespace MigAz.Azure.Generator
             foreach (MigAzGeneratorAlert migAzMessage in this.Alerts)
             {
                 sbMigAzMessageResult.Append("<li>");
-                sbMigAzMessageResult.Append(migAzMessage);
+                sbMigAzMessageResult.Append(migAzMessage.AlertType + " - " + migAzMessage.Message);
                 sbMigAzMessageResult.Append("</li>");
             }
             sbMigAzMessageResult.Append("</ul>");
