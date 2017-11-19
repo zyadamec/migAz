@@ -138,7 +138,7 @@ namespace MigAz.Tests
 
             JObject templateJson = JObject.Parse(await templateGenerator.GetTemplateString());
 
-            Assert.AreEqual(6, templateJson["resources"].Children().Count());
+            Assert.AreEqual(7, templateJson["resources"].Children().Count());
 
         //    var resource = templateJson["resources"].First();
         //    Assert.AreEqual("Microsoft.Storage/storageAccounts", resource["type"].Value<string>());
