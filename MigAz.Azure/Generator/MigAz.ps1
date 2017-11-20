@@ -39,7 +39,7 @@ $copyblobdetailsout = @()
 
 $StartBlobCopySuccess = $false
 $MonitorBlobCopySuccess = $false
-$ResourceGroupDeploymentError = $false
+$ResourceGroupDeploymentSuccess = $false
 
 # If Initiating the copy of all blobs
 If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
@@ -287,10 +287,10 @@ elseif (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $true) -or $Start
 		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -ErrorAction Stop
 	}
 
-	$ResourceGroupDeploymentError = $true
+	$ResourceGroupDeploymentSuccess = $true
 }
 
-if (($StartType -eq $null -and $ResourceGroupDeploymentError -eq $false) -or $StartType -eq "DeleteMigAzTempStorage")
+if (($StartType -eq $null -and $ResourceGroupDeploymentSuccess -eq $true) -or $StartType -eq "DeleteMigAzTempStorage")
 {
 	Write-Host "- Removing MigAz Temporary Storage Account(s)"
 
