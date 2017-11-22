@@ -104,6 +104,7 @@
     <Compile Include="Arm\VirtualMachine.cs" />
     <Compile Include="Arm\VirtualNetwork.cs" />
     <Compile Include="Arm\VirtualNetworkGateway.cs" />
+    <Compile Include="Arm\VMImage.cs" />
     <Compile Include="Arm\VMSize.cs" />
     <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Asm\RoleSize.cs" />

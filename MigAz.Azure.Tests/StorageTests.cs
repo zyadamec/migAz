@@ -14,6 +14,7 @@ using MigAz.Azure.Generator;
 using MigAz.Core.Generator;
 using MIGAZ.Tests.Fakes;
 using System.Collections.Generic;
+using MigAz.Azure.Arm;
 
 namespace MigAz.Tests
 {
@@ -131,6 +132,12 @@ namespace MigAz.Tests
             artifacts.NetworkInterfaces.Add(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' is used by Virtual Machine 'ManagedDisk01-vm', but is not included in the exported resources."));
+
+            Assert.IsTrue(artifacts.VirtualMachines[0].TargetSize.ToString() == "Standard_A1");
+            Assert.IsNotNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'."));
+            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == "Standard_DS2_v2").FirstOrDefault();
+            await templateGenerator.UpdateArtifacts(artifacts);
+            Assert.IsNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
             Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 
