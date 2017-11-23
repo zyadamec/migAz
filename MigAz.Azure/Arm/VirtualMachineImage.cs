@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class VMImage : ArmResource
+    public class VirtualMachineImage : ArmResource, IVirtualMachineImage
     {
         private AzureContext _AzureContext;
 
-        private VMImage() : base(null) { }
+        private VirtualMachineImage() : base(null) { }
 
-        public VMImage(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
+        public VirtualMachineImage(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
         {
             _AzureContext = azureContext;
         }

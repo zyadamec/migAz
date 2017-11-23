@@ -54,6 +54,7 @@ namespace MigAz.Azure
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
         private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
+        private List<Azure.MigrationTarget.VirtualMachineImage> _ArmTargetVirtualMachineImages = new List<MigrationTarget.VirtualMachineImage>();
         private List<Azure.MigrationTarget.Disk> _ArmTargetManagedDisks = new List<MigrationTarget.Disk>();
         private List<Azure.MigrationTarget.RouteTable> _ArmTargetRouteTables = new List<MigrationTarget.RouteTable>();
         private List<Azure.MigrationTarget.LoadBalancer> _ArmTargetLoadBalancers = new List<MigrationTarget.LoadBalancer>();
@@ -68,9 +69,12 @@ namespace MigAz.Azure
         public List<Azure.MigrationTarget.StorageAccount> AsmTargetStorageAccounts { get { return _AsmTargetStorageAccounts; } }
         public List<Azure.MigrationTarget.VirtualNetwork> AsmTargetVirtualNetworks { get { return _AsmTargetVirtualNetworks; } }
         public List<Azure.MigrationTarget.VirtualMachine> AsmTargetVirtualMachines { get { return _AsmTargetVirtualMachines; } }
+
+
         public List<Azure.MigrationTarget.StorageAccount> ArmTargetStorageAccounts { get { return _ArmTargetStorageAccounts; } }
         public List<Azure.MigrationTarget.VirtualNetwork> ArmTargetVirtualNetworks { get { return _ArmTargetVirtualNetworks; } }
         public List<Azure.MigrationTarget.VirtualMachine> ArmTargetVirtualMachines { get { return _ArmTargetVirtualMachines; } }
+        public List<Azure.MigrationTarget.VirtualMachineImage> ArmTargetVirtualMachineImages { get { return _ArmTargetVirtualMachineImages; } }
         public List<Azure.MigrationTarget.AvailabilitySet> ArmTargetAvailabilitySets { get { return _ArmTargetAvailabilitySets; } }
         public List<Azure.MigrationTarget.Disk> ArmTargetManagedDisks { get { return _ArmTargetManagedDisks; } }
         public List<Azure.MigrationTarget.RouteTable> ArmTargetRouteTables { get { return _ArmTargetRouteTables; } }
@@ -105,6 +109,7 @@ namespace MigAz.Azure
             _ArmTenants = null;
             _ArmSubscriptions = null;
             _MigrationAvailabilitySets = null;
+
             _VirtualNetworks = null;
             _StorageAccounts = null;
             _CloudServices = null;
@@ -1020,7 +1025,7 @@ namespace MigAz.Azure
             JObject virtualMachineJson = await this.GetAzureARMResources("VirtualMachines", resourceGroup, null);
 
             var virtualMachines = from virtualMachine in virtualMachineJson["value"]
-                            select virtualMachine;
+                                  select virtualMachine;
 
             List<Arm.VirtualMachine> resourceGroupVirtualMachines = new List<Arm.VirtualMachine>();
 
@@ -1035,6 +1040,32 @@ namespace MigAz.Azure
 
             resourceGroup.AzureSubscription.ArmVirtualMachines.Add(resourceGroup, resourceGroupVirtualMachines);
             return resourceGroupVirtualMachines;
+        }
+        public async Task<List<Arm.VirtualMachineImage>> GetAzureArmVirtualMachineImages(Arm.ResourceGroup resourceGroup)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachineImages", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (resourceGroup.AzureSubscription.ArmVirtualMachineImages.ContainsKey(resourceGroup))
+                return resourceGroup.AzureSubscription.ArmVirtualMachineImages[resourceGroup];
+
+            JObject virtualMachineImagesJson = await this.GetAzureARMResources("VirtualMachineImages", resourceGroup, null);
+
+            var virtualMachineImages = from virtualMachineImage in virtualMachineImagesJson["value"]
+                                  select virtualMachineImage;
+
+            List<Arm.VirtualMachineImage> resourceGroupVirtualMachineImages = new List<Arm.VirtualMachineImage>();
+
+            foreach (var virtualMachineImage in virtualMachineImages)
+            {
+                Arm.VirtualMachineImage armVirtualMachineImage = new Arm.VirtualMachineImage(this._AzureContext, virtualMachineImage);
+                await armVirtualMachineImage.InitializeChildrenAsync(_AzureContext);
+                resourceGroupVirtualMachineImages.Add(armVirtualMachineImage);
+                _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachineImages", "Loaded ARM Virtual Machine Image '" + armVirtualMachineImage.Name + "'.");
+                _AzureContext.StatusProvider.UpdateStatus("Loaded ARM Virtual Machine '" + armVirtualMachineImage.Name + "'.");
+            }
+
+            resourceGroup.AzureSubscription.ArmVirtualMachineImages.Add(resourceGroup, resourceGroupVirtualMachineImages);
+            return resourceGroupVirtualMachineImages;
         }
 
         internal async Task GetAzureARMStorageAccountKeys(Arm.StorageAccount armStorageAccount)
@@ -1542,6 +1573,11 @@ namespace MigAz.Azure
                     url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Resource Group '" + resourceGroup.Name + "'.");
                     break;
+                case "VirtualMachineImages":
+                    // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/images/images-list-by-resource-group
+                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=2016-04-30-preview";
+                    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machine Images for Resource Group '" + resourceGroup.Name + "'.");
+                    break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
                     url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2017-03-30";
@@ -1890,6 +1926,15 @@ namespace MigAz.Azure
             }
         }
 
+        private async Task LoadARMVirtualMachineImages(ResourceGroup armResourceGroup)
+        {
+            foreach (Azure.Arm.VirtualMachineImage armVirtualMachineImage in await this.GetAzureArmVirtualMachineImages(armResourceGroup))
+            {
+                Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = new Azure.MigrationTarget.VirtualMachineImage(this._AzureContext, armVirtualMachineImage);
+                _ArmTargetVirtualMachineImages.Add(targetVirtualMachineImage);
+            }
+        }
+
         private async Task LoadARMVirtualMachines(ResourceGroup armResourceGroup)
         {
             foreach (Azure.Arm.VirtualMachine armVirtualMachine in await this.GetAzureArmVirtualMachines(armResourceGroup))
@@ -2067,6 +2112,7 @@ namespace MigAz.Azure
                     }
                     await Task.WhenAll(armVirtualMachineTasks.ToArray());
 
+
                     List<Task> armLoadBalancerTasks = new List<Task>();
                     foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
@@ -2074,6 +2120,15 @@ namespace MigAz.Azure
                         armLoadBalancerTasks.Add(armLoadBalancerTask);
                     }
                     await Task.WhenAll(armLoadBalancerTasks.ToArray());
+
+                    List<Task> armVirtualMachineImageTasks = new List<Task>();
+                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    {
+                        Task armVirtualMachineImageTask = LoadARMVirtualMachineImages(armResourceGroup);
+                        armVirtualMachineImageTasks.Add(armVirtualMachineImageTask);
+                    }
+                    await Task.WhenAll(armVirtualMachineImageTasks.ToArray());
+
                 }
             }
         }

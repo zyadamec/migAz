@@ -376,6 +376,11 @@ namespace MigAz.Azure.UserControls
                     childNode.ImageKey = "RouteTable";
                     childNode.SelectedImageKey = "RouteTable";
                 }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                {
+                    childNode.ImageKey = "VirtualMachineImage";
+                    childNode.SelectedImageKey = "VirtualMachineImage";
+                }
                 else
                     throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
 
@@ -513,6 +518,14 @@ namespace MigAz.Azure.UserControls
 
                 targetResourceGroupNode.ExpandAll();
                 return targetDiskNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+            {
+                Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = (Azure.MigrationTarget.VirtualMachineImage)parentNode;
+                TreeNode targetVirtualMachineImageNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachineImage.SourceName, targetVirtualMachineImage.ToString(), targetVirtualMachineImage, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetVirtualMachineImageNode;
             }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
             {

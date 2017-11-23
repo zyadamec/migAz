@@ -669,7 +669,8 @@ namespace MigAz.Migrators
                 Type tagType = e.Node.Tag.GetType();
                 if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
+                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) || 
+                    (tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
                     (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
@@ -1258,6 +1259,18 @@ namespace MigAz.Migrators
                             tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
                             tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
+                        }
+
+                        foreach (Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage in _AzureContextSourceASM.AzureRetriever.ArmTargetVirtualMachineImages)
+                        {
+                            TreeNode virtualMachineImageParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachineImage)targetVirtualMachineImage.Source).ResourceGroup);
+
+                            TreeNode tnVirtualMachineImage = new TreeNode(targetVirtualMachineImage.SourceName);
+                            tnVirtualMachineImage.Name = targetVirtualMachineImage.SourceName;
+                            tnVirtualMachineImage.Tag = targetVirtualMachineImage;
+                            tnVirtualMachineImage.ImageKey = "VirtualMachineImage";
+                            tnVirtualMachineImage.SelectedImageKey = "VirtualMachineImage";
+                            virtualMachineImageParentNode.Nodes.Add(tnVirtualMachineImage);
                         }
 
                         subscriptionNodeARM.Expand();
