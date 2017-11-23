@@ -230,6 +230,7 @@
     <Content Include="Resources\Storage.png" />
     <Content Include="Resources\Subscription.png" />
     <Content Include="Resources\VirtualMachine.png" />
+    <Content Include="Resources\VirtualMachineImage.png" />
     <Content Include="Resources\VirtualMachineScaleSet.png" />
     <Content Include="Resources\VNet.png" />
     <Content Include="Images\Azure SDK.ico" />

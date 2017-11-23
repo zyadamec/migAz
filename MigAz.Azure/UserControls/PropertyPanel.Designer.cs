@@ -99,6 +99,7 @@
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
             this.imageList1.Images.SetKeyName(10, "RouteTable");
+            this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
             // 
             // PropertyPanel
             // 
