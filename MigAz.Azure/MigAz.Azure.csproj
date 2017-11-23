@@ -285,6 +285,12 @@
     <Compile Include="UserControls\TargetTreeView.Designer.cs">
       <DependentUpon>TargetTreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\VirtualMachineImageProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\VirtualMachineImageProperties.Designer.cs">
+      <DependentUpon>VirtualMachineImageProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\VirtualMachineProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

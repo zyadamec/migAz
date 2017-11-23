@@ -233,6 +233,15 @@ namespace MigAz.Azure.UserControls
                         properties.Bind(_TargetTreeView, (Azure.MigrationTarget.RouteTable)migrationTargetNode.Tag);
                         this.PropertyDetailControl = properties;
                     }
+                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                    {
+                        this.ResourceImage = imageList1.Images["VirtualMachineImage"];
+
+                        VirtualMachineImageProperties properties = new VirtualMachineImageProperties();
+                        properties.PropertyChanged += Properties_PropertyChanged;
+                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachineImage)migrationTargetNode.Tag);
+                        this.PropertyDetailControl = properties;
+                    }
                 }
             }
 
