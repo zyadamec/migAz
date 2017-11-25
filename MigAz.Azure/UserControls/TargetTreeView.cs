@@ -590,6 +590,9 @@ namespace MigAz.Azure.UserControls
                     }
                 }
             }
+
+            if (treeTargetARM.SelectedNode == null)
+                PropertyPanel.Clear();
         }
 
         private async Task RemoveAsmDiskTurnedManagedDiskFromARMTree(Disk disk)
