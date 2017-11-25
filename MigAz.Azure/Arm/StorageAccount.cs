@@ -112,7 +112,12 @@ namespace MigAz.Azure.Arm
 
         public StorageAccountType StorageAccountType
         {
-            get { return this.StorageAccountType; }
+            get {
+                if (AccountType == "Premium_LRS")
+                    return StorageAccountType.Premium_LRS;
+                else
+                    return StorageAccountType.Standard_LRS;
+                }
         }
 
         public override string ToString()

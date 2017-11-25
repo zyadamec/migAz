@@ -266,25 +266,8 @@ namespace MigAz.Azure.UserControls
                     // Note, this could probably be object compares, but was written this was to get it done.  Possible future change to object compares
                     if (nodeObject != null && sourceObject != null)
                     {
-                        if (nodeObject.GetType() == sourceObject.GetType())
-                        {
-                            if (sourceObject.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                        if (nodeObject.GetType() == sourceObject.GetType() && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.VirtualMachine) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.Disk) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.LoadBalancer) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.RouteTable) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
                     }
                 }
 

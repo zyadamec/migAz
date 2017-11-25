@@ -96,6 +96,17 @@ namespace MigAz.Azure.Asm
             get { return _SourceStorageAccount; }
         }
 
+        public StorageAccountType StorageAccountType
+        {
+            get
+            {
+                if (_SourceStorageAccount != null)
+                    return _SourceStorageAccount.StorageAccountType;
+                else
+                    return StorageAccountType.Premium_LRS;
+            }
+        }
+
         public String StorageKey
         {
             get

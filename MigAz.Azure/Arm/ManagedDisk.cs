@@ -1,5 +1,6 @@
 ﻿using MigAz.Azure.Interface;
 using MigAz.Core.ArmTemplate;
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -112,6 +113,17 @@ namespace MigAz.Azure.Arm
         public string AccountType
         {
             get { return (string)ResourceToken["properties"]["accountType"]; }
+        }
+
+        public StorageAccountType StorageAccountType
+        {
+            get
+            {
+                if (AccountType == "Premium_LRS")
+                    return StorageAccountType.Premium_LRS;
+                else
+                    return StorageAccountType.Standard_LRS;
+            }
         }
 
         public string CreateOption

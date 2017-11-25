@@ -20,7 +20,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.SourceDisk = sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
-            this.TargetStorage = new ManagedDiskStorage(this);
+            this.TargetStorage = new ManagedDiskStorage(sourceDisk);
 
             this.TargetName = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
@@ -35,7 +35,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             this.SourceDisk = (IDisk)sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
-            this.TargetStorage = new ManagedDiskStorage(this);
+            this.TargetStorage = new ManagedDiskStorage(sourceDisk);
 
             if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {

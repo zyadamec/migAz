@@ -149,7 +149,7 @@ namespace MigAz.Azure.UserControls
                 }
                 else
                 {
-                    _TargetDisk.TargetStorage = new ManagedDiskStorage(_TargetDisk);
+                    _TargetDisk.TargetStorage = new ManagedDiskStorage(_TargetDisk.SourceDisk);
                     _TargetTreeView.TransitionToManagedDisk(_TargetTreeNode);
 
                     int comboBoxIndex = cmbTargetStorage.Items.IndexOf(_TargetDisk.TargetStorage.StorageAccountType.ToString());

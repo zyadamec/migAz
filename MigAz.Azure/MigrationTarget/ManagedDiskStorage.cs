@@ -11,11 +11,11 @@ namespace MigAz.Azure.MigrationTarget
     {
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
-        public ManagedDiskStorage(Disk targetDisk)
+        public ManagedDiskStorage(IDisk sourceDisk)
         {
-            if (targetDisk != null)
+            if (sourceDisk != null)
             {
-                _StorageAccountType = targetDisk.StorageAccountType;
+                _StorageAccountType = sourceDisk.StorageAccountType;
             }
         }
 

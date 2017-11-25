@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
@@ -96,6 +97,17 @@ namespace MigAz.Azure.Arm
                     return String.Empty;
 
                 return MediaLink.Split(new char[] { '/' })[4];
+            }
+        }
+
+        public StorageAccountType StorageAccountType
+        {
+            get
+            {
+                if (_SourceStorageAccount != null)
+                    return _SourceStorageAccount.StorageAccountType;
+                else
+                    return StorageAccountType.Premium_LRS;
             }
         }
 
