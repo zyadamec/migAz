@@ -952,15 +952,23 @@ namespace MigAz.Azure
 
             JObject locationsJson = await this.GetAzureARMResources("Locations", null, null);
 
-            var locations = from location in locationsJson["value"]
-                                  select location;
-
             _ArmLocations = new List<Arm.Location>();
 
-            foreach (var location in locations)
+            if (locationsJson != null)
             {
-                Arm.Location armLocation = new Arm.Location(_AzureContext, location);
-                _ArmLocations.Add(armLocation);
+                var locations = from location in locationsJson["value"]
+                                select location;
+
+                if (locations != null)
+                {
+                    foreach (var location in locations)
+                    {
+                        Arm.Location armLocation = new Arm.Location(_AzureContext, location);
+                        _ArmLocations.Add(armLocation);
+
+                        _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
+                    }
+                }
             }
 
             List<Task> armLocationChildTasks = new List<Task>();
