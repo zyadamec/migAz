@@ -22,6 +22,7 @@ namespace MigAz.Azure.Arm
         {
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
             this.Location = await azureContext.AzureRetriever.GetAzureARMLocation(this.LocationString);
+
             return;
         }
 

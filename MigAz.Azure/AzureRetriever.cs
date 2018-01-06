@@ -934,6 +934,9 @@ namespace MigAz.Azure
 
         public async Task<Arm.Location> GetAzureARMLocation(string location)
         {
+            if (location == null || location.Length == 0)
+                throw new ArgumentException("Location parameter must be provided.");
+
             List<Arm.Location> armLocations = await this.GetAzureARMLocations();
             Arm.Location matchedLocation = armLocations.Where(a => a.DisplayName == location).FirstOrDefault();
 
