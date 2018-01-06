@@ -141,6 +141,11 @@ namespace MigAz.Azure.Arm
             return;
         }
 
+        public async Task Refresh()
+        {
+            base.SetResourceToken(await _AzureContext.AzureRetriever.GetAzureArmVirtualMachineDetail(this));
+        }
+
         public override string ToString()
         {
             return this.Name;

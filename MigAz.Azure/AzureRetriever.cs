@@ -1023,6 +1023,21 @@ namespace MigAz.Azure
             return;
         }
 
+        internal async Task<JToken> GetAzureArmVirtualMachineDetail(Arm.VirtualMachine virtualMachine)
+        {
+            _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachine", "Start - '" + virtualMachine.ResourceGroup.ToString() + "' Resource Group / '" + virtualMachine.ToString() + "' Virtual Machine");
+
+            // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-get
+            string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + _AzureSubscription.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Virtual Machine Details : '" + virtualMachine.ResourceGroup.ToString() + "' / '" + virtualMachine.ToString() + "' " + _AzureSubscription.SubscriptionId);
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, _AzureContext.TokenProvider.AccessToken, "GET", false);
+            AzureRestResponse azureRestResponse = await GetAzureRestResponse(azureRestRequest);
+            JObject virtualMachineResult = JObject.Parse(azureRestResponse.Response);
+
+            return virtualMachineResult;
+        }
+
         public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines(Arm.ResourceGroup resourceGroup)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Start - '" + resourceGroup.ToString() + "' Resource Group");

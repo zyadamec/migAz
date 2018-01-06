@@ -410,6 +410,21 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("UpdateArtifacts", "End - Execution " + this.ExecutionGuid.ToString());
         }
 
+        public async void BeforeGeneration()
+        {
+            foreach (Azure.MigrationTarget.VirtualMachine asdf in _ExportArtifacts.VirtualMachines)
+            {
+                if (asdf.Source != null && asdf.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
+                {
+                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)asdf.Source;
+                    //if (armVirtualMachine.OSVirtualHardDisk.HasManagedDisks)
+                    //{
+                        await armVirtualMachine.Refresh();
+                    //}
+                }
+            }
+        }
+
         private void ValidateVMDisk(MigrationTarget.Disk targetDisk)
         {
             if (targetDisk.IsManagedDisk)
@@ -515,6 +530,11 @@ namespace MigAz.Azure.Generator
 
         public async Task GenerateStreams()
         {
+            if (this.HasErrors)
+            {
+                throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
+            }
+
             TemplateStreams.Clear();
             Resources.Clear();
             Parameters.Clear();

@@ -25,6 +25,11 @@ namespace MigAz.Azure.Arm
             return;
         }
 
+        internal void SetResourceToken(JToken resourceToken)
+        {
+            _ResourceToken = resourceToken;
+        }
+
         public JToken ResourceToken => _ResourceToken;
         public string Name => (string)_ResourceToken["name"];
         public string Id => (string)_ResourceToken["id"];
