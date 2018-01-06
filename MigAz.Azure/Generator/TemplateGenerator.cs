@@ -1883,7 +1883,15 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
             instructionContent = instructionContent.Replace("{resourceGroupNameParameter}", " -ResourceGroupName \"" + this.TargetResourceGroupName + "\"");
             instructionContent = instructionContent.Replace("{templateFileParameter}", " -TemplateFile \"" + GetTemplatePath() + "\"");
-            instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
+
+            if (_settingsProvider.BuildEmpty)
+            {
+                instructionContent = instructionContent.Replace("{blobCopyFileParameter}", String.Empty); // In Empty Build, we don't do any blob copies
+            }
+            else
+            {
+                instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
+            }
 
             if (this.HasBlobCopyDetails)
                 instructionContent = instructionContent.Replace("{migazExecutionCommand}", "&amp; '" + _OutputDirectory + "MigAz.ps1'");
