@@ -30,8 +30,22 @@ namespace MigAz.Azure.Asm
         {
             get
             {
+                if (_XmlNode.SelectSingleNode("LoadBalancerProbe") == null)
+                    return 0;
+
                 XmlNode probenode = _XmlNode.SelectSingleNode("LoadBalancerProbe");
-                return Int64.Parse(probenode.SelectSingleNode("Port").InnerText);
+
+                if (probenode.SelectSingleNode("Port") == null)
+                    return 0;
+
+                try
+                {
+                    return Int64.Parse(probenode.SelectSingleNode("Port").InnerText);
+                }
+                catch
+                {
+                    return 0;
+                }
             }
         }
 
@@ -40,28 +54,66 @@ namespace MigAz.Azure.Asm
             get
             {
                 XmlNode probenode = _XmlNode.SelectSingleNode("LoadBalancerProbe");
+
+                if (probenode.SelectSingleNode("Protocol") == null)
+                    return "Unknown";
+
                 return probenode.SelectSingleNode("Protocol").InnerText;
             }
         }
 
         public Int64 Port
         {
-            get { return Int64.Parse(_XmlNode.SelectSingleNode("Port").InnerText); }
+            get
+            {
+                if (_XmlNode.SelectSingleNode("Port") == null)
+                    return 0;
+
+                try
+                {
+                    return Int64.Parse(_XmlNode.SelectSingleNode("Port").InnerText);
+                }
+                catch
+                { return 0; }
+            }
         }
 
         public Int64 LocalPort
         {
-            get { return Int64.Parse(_XmlNode.SelectSingleNode("LocalPort").InnerText); }
+            get
+            {
+                if (_XmlNode.SelectSingleNode("LocalPort") == null)
+                    return 0;
+
+                try
+                {
+                    return Int64.Parse(_XmlNode.SelectSingleNode("LocalPort").InnerText);
+                }
+                catch
+                { return 0; }
+            }
         }
         
         public string Protocol
         {
-            get { return _XmlNode.SelectSingleNode("Protocol").InnerText; }
+            get
+            {
+                if (_XmlNode.SelectSingleNode("Protocol") == null)
+                    return String.Empty;
+
+                return _XmlNode.SelectSingleNode("Protocol").InnerText;
+            }
         }
 
         public string Name
         {
-            get { return _XmlNode.SelectSingleNode("Name").InnerText; }
+            get
+            {
+                if (_XmlNode.SelectSingleNode("Name") == null)
+                    return String.Empty;
+
+                return _XmlNode.SelectSingleNode("Name").InnerText;
+            }
         }
 
         public string LoadBalancedEndpointSetName
