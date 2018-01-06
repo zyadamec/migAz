@@ -21,7 +21,9 @@ namespace MigAz.Azure.Arm
         internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             this.ResourceGroup = await azureContext.AzureRetriever.GetAzureARMResourceGroup(this.Id);
-            this.Location = await azureContext.AzureRetriever.GetAzureARMLocation(this.LocationString);
+
+            if (this.LocationString != null && this.LocationString.Length > 0)
+                this.Location = await azureContext.AzureRetriever.GetAzureARMLocation(this.LocationString);
 
             return;
         }
