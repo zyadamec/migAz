@@ -1856,9 +1856,16 @@ namespace MigAz.Azure
                                     if (targetProbe == null)
                                     {
                                         targetProbe = new Azure.MigrationTarget.Probe();
-                                        targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
-                                        targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
-                                        targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+
+                                        if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") != null)
+                                            targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
+
+                                        if (probenode.SelectSingleNode("Port") != null)
+                                            targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+
+                                        if (probenode.SelectSingleNode("Protocol") != null)
+                                            targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+
                                         targetLoadBalancer.Probes.Add(targetProbe);
                                     }
 
