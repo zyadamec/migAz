@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
-using MigAz.Azure.Arm;
 using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
+using MigAz.Azure.Arm;
 
 namespace MigAz.Azure
 {
@@ -780,8 +779,11 @@ namespace MigAz.Azure
             return virtualNetworks;
         }
 
-        public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(Arm.ResourceGroup resourceGroup)
+        public async virtual Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmVirtualNetworks.ContainsKey(resourceGroup))
@@ -825,8 +827,11 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks(Arm.ResourceGroup resourceGroup)
+        public async virtual Task<List<Arm.ManagedDisk>> GetAzureARMManagedDisks(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMManagedDisks", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmManagedDisks.ContainsKey(resourceGroup))
@@ -881,8 +886,11 @@ namespace MigAz.Azure
             return storageAccounts;
         }
 
-        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(Arm.ResourceGroup resourceGroup)
+        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMStorageAccounts", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmStorageAccounts.ContainsKey(resourceGroup))
@@ -975,7 +983,7 @@ namespace MigAz.Azure
             }
 
             List<Task> armLocationChildTasks = new List<Task>();
-            foreach (Azure.Arm.Location armLocation in _ArmLocations)
+            foreach (Arm.Location armLocation in _ArmLocations)
             {
                 Task armLocationChildTask = armLocation.InitializeChildrenAsync();
                 armLocationChildTasks.Add(armLocationChildTask);
@@ -1041,8 +1049,11 @@ namespace MigAz.Azure
             return virtualMachineResult;
         }
 
-        public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.VirtualMachine>> GetAzureArmVirtualMachines(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachines", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmVirtualMachines.ContainsKey(resourceGroup))
@@ -1067,8 +1078,11 @@ namespace MigAz.Azure
             resourceGroup.AzureSubscription.ArmVirtualMachines.Add(resourceGroup, resourceGroupVirtualMachines);
             return resourceGroupVirtualMachines;
         }
-        public async Task<List<Arm.VirtualMachineImage>> GetAzureArmVirtualMachineImages(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.VirtualMachineImage>> GetAzureArmVirtualMachineImages(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachineImages", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmVirtualMachineImages.ContainsKey(resourceGroup))
@@ -1117,8 +1131,11 @@ namespace MigAz.Azure
             return;
         }
 
-        public async Task<List<Arm.AvailabilitySet>> GetAzureARMAvailabilitySets(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.AvailabilitySet>> GetAzureARMAvailabilitySets(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMAvailabilitySets", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmAvailabilitySets.ContainsKey(resourceGroup))
@@ -1184,8 +1201,11 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<List<Arm.NetworkInterface>> GetAzureARMNetworkInterfaces(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.NetworkInterface>> GetAzureARMNetworkInterfaces(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkInterfaces", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmNetworkInterfaces.ContainsKey(resourceGroup))
@@ -1219,17 +1239,24 @@ namespace MigAz.Azure
             if (postNicSeperatorIndexOf > -1)
                 id = id.Substring(0, providerIndexOf + ArmConst.ProviderNetworkInterfaces.Length + postNicSeperatorIndexOf + 1);
 
-            foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces(await GetAzureARMResourceGroup(id)))
+            ResourceGroup resourceGroup = await GetAzureARMResourceGroup(id);
+            if (resourceGroup != null)
             {
-                if (String.Compare(networkInterface.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
-                    return networkInterface;
+                foreach (Arm.NetworkInterface networkInterface in await this.GetAzureARMNetworkInterfaces(resourceGroup))
+                {
+                    if (String.Compare(networkInterface.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
+                        return networkInterface;
+                }
             }
 
             return null;
         }
 
-        public async Task<List<Arm.VirtualNetworkGateway>> GetAzureARMVirtualNetworkGateways(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.VirtualNetworkGateway>> GetAzureARMVirtualNetworkGateways(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMVirtualNetworkGateways", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmVirtualNetworkGateways.ContainsKey(resourceGroup))
@@ -1257,10 +1284,14 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroup", "Start");
 
-            foreach (Arm.NetworkSecurityGroup networkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups(await GetAzureARMResourceGroup(id)))
+            ResourceGroup resourceGroup = await GetAzureARMResourceGroup(id);
+            if (resourceGroup != null)
             {
-                if (String.Compare(networkSecurityGroup.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
-                    return networkSecurityGroup;
+                foreach (Arm.NetworkSecurityGroup networkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups(resourceGroup))
+                {
+                    if (String.Compare(networkSecurityGroup.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
+                        return networkSecurityGroup;
+                }
             }
 
             return null;
@@ -1269,17 +1300,24 @@ namespace MigAz.Azure
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMRouteTable", "Start");
 
-            foreach (Arm.RouteTable routeTable in await this.GetAzureARMRouteTables(await GetAzureARMResourceGroup(id)))
+            ResourceGroup resourceGroup = await GetAzureARMResourceGroup(id);
+            if (resourceGroup != null)
             {
-                if (String.Compare(routeTable.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
-                    return routeTable;
+                foreach (Arm.RouteTable routeTable in await this.GetAzureARMRouteTables(resourceGroup))
+                {
+                    if (String.Compare(routeTable.Id, id, StringComparison.InvariantCultureIgnoreCase) == 0)
+                        return routeTable;
+                }
             }
 
             return null;
         }
         
-        public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.NetworkSecurityGroup>> GetAzureARMNetworkSecurityGroups(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMNetworkSecurityGroups", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmNetworkSecurityGroups.ContainsKey(resourceGroup))
@@ -1305,8 +1343,11 @@ namespace MigAz.Azure
             return resourceGroupNetworkSecurityGroups;
         }
 
-        public async Task<List<Arm.RouteTable>> GetAzureARMRouteTables(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.RouteTable>> GetAzureARMRouteTables(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMRouteTables", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmRouteTables.ContainsKey(resourceGroup))
@@ -1335,20 +1376,24 @@ namespace MigAz.Azure
         public async Task<PublicIP> GetAzureARMPublicIP(string id)
         {
             ResourceGroup resourceGroup = await this.GetAzureARMResourceGroup(id);
-            if (resourceGroup == null)
-                return null;
 
-            foreach (PublicIP publicIp in await this.GetAzureARMPublicIPs(resourceGroup))
+            if (resourceGroup != null)
             {
-                if (String.Compare(publicIp.Id, id) == 0)
-                    return publicIp;
+                foreach (PublicIP publicIp in await this.GetAzureARMPublicIPs(resourceGroup))
+                {
+                    if (String.Compare(publicIp.Id, id) == 0)
+                        return publicIp;
+                }
             }
 
             return null;
         }
 
-        public async Task<List<Arm.PublicIP>> GetAzureARMPublicIPs(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.PublicIP>> GetAzureARMPublicIPs(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMPublicIPs", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmPublicIPs.ContainsKey(resourceGroup))
@@ -1372,8 +1417,11 @@ namespace MigAz.Azure
             return resourceGroupPublicIPs;
         }
 
-        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers(Arm.ResourceGroup resourceGroup)
+        public async Task<List<Arm.LoadBalancer>> GetAzureARMLoadBalancers(ResourceGroup resourceGroup)
         {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
             _AzureContext.LogProvider.WriteLog("GetAzureARMLoadBalancers", "Start - '" + resourceGroup.ToString() + "' Resource Group");
 
             if (resourceGroup.AzureSubscription.ArmLoadBalancers.ContainsKey(resourceGroup))
@@ -1500,7 +1548,7 @@ namespace MigAz.Azure
             return RemoveXmlns(azureRestResponse.Response);
         }
 
-        private async Task<JObject> GetAzureARMResources(string resourceType, Arm.ResourceGroup resourceGroup, Hashtable info)
+        private async Task<JObject> GetAzureARMResources(string resourceType, ResourceGroup resourceGroup, Hashtable info)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMResources", "Start");
 
@@ -1902,18 +1950,24 @@ namespace MigAz.Azure
             }
         }
 
-        private async Task LoadARMManagedDisks(ResourceGroup armResourceGroup)
+        private async Task LoadARMManagedDisks(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.ManagedDisk armManagedDisk in await this.GetAzureARMManagedDisks(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.ManagedDisk armManagedDisk in await this.GetAzureARMManagedDisks(resourceGroup))
             {
                 Azure.MigrationTarget.Disk targetManagedDisk = new Azure.MigrationTarget.Disk(armManagedDisk, null);
                 _ArmTargetManagedDisks.Add(targetManagedDisk);
             }
         }
 
-        private async Task LoadARMPublicIPs(ResourceGroup armResourceGroup)
+        private async Task LoadARMPublicIPs(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.PublicIP armPublicIp in await this.GetAzureARMPublicIPs(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.PublicIP armPublicIp in await this.GetAzureARMPublicIPs(resourceGroup))
             {
                 Azure.MigrationTarget.PublicIp targetPublicIP = new Azure.MigrationTarget.PublicIp(armPublicIp);
                 _ArmTargetPublicIPs.Add(targetPublicIP);
@@ -1922,16 +1976,19 @@ namespace MigAz.Azure
 
         private async Task LoadARMNetworkInterfaces(ResourceGroup armResourceGroup)
         {
-            foreach (Azure.Arm.NetworkInterface armNetworkInterface in await this.GetAzureARMNetworkInterfaces(armResourceGroup))
+            foreach (Arm.NetworkInterface armNetworkInterface in await this.GetAzureARMNetworkInterfaces(armResourceGroup))
             {
                 Azure.MigrationTarget.NetworkInterface targetNetworkInterface = new Azure.MigrationTarget.NetworkInterface(this._AzureContext, armNetworkInterface);
                 _ArmTargetNetworkInterfaces.Add(targetNetworkInterface);
             }
         }
 
-        private async Task LoadARMLoadBalancers(ResourceGroup armResourceGroup)
+        private async Task LoadARMLoadBalancers(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.LoadBalancer armLoadBalancer in await this.GetAzureARMLoadBalancers(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.LoadBalancer armLoadBalancer in await this.GetAzureARMLoadBalancers(resourceGroup))
             {
                 Azure.MigrationTarget.LoadBalancer targetLoadBalancer = new Azure.MigrationTarget.LoadBalancer(armLoadBalancer);
                 foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in targetLoadBalancer.FrontEndIpConfigurations)
@@ -1950,27 +2007,36 @@ namespace MigAz.Azure
                 _ArmTargetLoadBalancers.Add(targetLoadBalancer);
             }
         }
-        private async Task LoadARMAvailabilitySets(ResourceGroup armResourceGroup)
+        private async Task LoadARMAvailabilitySets(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.AvailabilitySet armAvailabilitySet in await this.GetAzureARMAvailabilitySets(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.AvailabilitySet armAvailabilitySet in await this.GetAzureARMAvailabilitySets(resourceGroup))
             {
                 Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = new Azure.MigrationTarget.AvailabilitySet(this._AzureContext, armAvailabilitySet);
                 _ArmTargetAvailabilitySets.Add(targetAvailabilitySet);
             }
         }
 
-        private async Task LoadARMVirtualMachineImages(ResourceGroup armResourceGroup)
+        private async Task LoadARMVirtualMachineImages(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.VirtualMachineImage armVirtualMachineImage in await this.GetAzureArmVirtualMachineImages(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.VirtualMachineImage armVirtualMachineImage in await this.GetAzureArmVirtualMachineImages(resourceGroup))
             {
                 Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = new Azure.MigrationTarget.VirtualMachineImage(this._AzureContext, armVirtualMachineImage);
                 _ArmTargetVirtualMachineImages.Add(targetVirtualMachineImage);
             }
         }
 
-        private async Task LoadARMVirtualMachines(ResourceGroup armResourceGroup)
+        private async Task LoadARMVirtualMachines(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.VirtualMachine armVirtualMachine in await this.GetAzureArmVirtualMachines(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.VirtualMachine armVirtualMachine in await this.GetAzureArmVirtualMachines(resourceGroup))
             {
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = new Azure.MigrationTarget.VirtualMachine(this._AzureContext, armVirtualMachine, _DefaultTargetDiskType);
                 _ArmTargetVirtualMachines.Add(targetVirtualMachine);
@@ -1981,7 +2047,7 @@ namespace MigAz.Azure
                     {
                         if (targetAvailabilitySet.SourceAvailabilitySet != null)
                         {
-                            Azure.Arm.AvailabilitySet sourceAvailabilitySet = (Azure.Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet;
+                            Arm.AvailabilitySet sourceAvailabilitySet = (Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet;
                             if (sourceAvailabilitySet.Id == armVirtualMachine.AvailabilitySet.Id)
                             {
                                 targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
@@ -1994,7 +2060,7 @@ namespace MigAz.Azure
                 {
                     if (networkInterface.SourceNetworkInterface != null)
                     {
-                        Azure.Arm.NetworkInterface sourceNetworkInterface = (Azure.Arm.NetworkInterface)networkInterface.SourceNetworkInterface;
+                        Arm.NetworkInterface sourceNetworkInterface = (Arm.NetworkInterface)networkInterface.SourceNetworkInterface;
                         if (sourceNetworkInterface.NetworkSecurityGroup != null)
                         {
                             foreach (Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ArmTargetNetworkSecurityGroups)
@@ -2009,7 +2075,7 @@ namespace MigAz.Azure
                     {
                         if (networkInterfaceIpConfiguration.SourceIpConfiguration != null)
                         {
-                            Azure.Arm.NetworkInterfaceIpConfiguration sourceIpConfiguration = (Azure.Arm.NetworkInterfaceIpConfiguration)networkInterfaceIpConfiguration.SourceIpConfiguration;
+                            Arm.NetworkInterfaceIpConfiguration sourceIpConfiguration = (Arm.NetworkInterfaceIpConfiguration)networkInterfaceIpConfiguration.SourceIpConfiguration;
 
                             if (sourceIpConfiguration.PublicIP != null)
                             {
@@ -2027,35 +2093,47 @@ namespace MigAz.Azure
             }
         }
 
-        private async Task LoadARMStorageAccounts(ResourceGroup armResourceGroup)
+        private async Task LoadARMStorageAccounts(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.StorageAccount armStorageAccount in await this.GetAzureARMStorageAccounts(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.StorageAccount armStorageAccount in await this.GetAzureARMStorageAccounts(resourceGroup))
             {
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = new Azure.MigrationTarget.StorageAccount(this._AzureContext, armStorageAccount);
                 _ArmTargetStorageAccounts.Add(targetStorageAccount);
             }
         }
 
-        private async Task LoadARMVirtualNetworks(ResourceGroup armResourceGroup)
+        private async Task LoadARMVirtualNetworks(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await this.GetAzureARMVirtualNetworks(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.VirtualNetwork armVirtualNetwork in await this.GetAzureARMVirtualNetworks(resourceGroup))
             {
                 Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(this._AzureContext, armVirtualNetwork, _ArmTargetNetworkSecurityGroups, _ArmTargetRouteTables);
                 _ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
             }
         }
 
-        private async Task LoadARMNetworkSecurityGroups(ResourceGroup armResourceGroup)
+        private async Task LoadARMNetworkSecurityGroups(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.NetworkSecurityGroup armNetworkSecurityGroup in await this.GetAzureARMNetworkSecurityGroups(resourceGroup))
             {
                 Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new Azure.MigrationTarget.NetworkSecurityGroup(this._AzureContext, armNetworkSecurityGroup);
                 _ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
             }
         }
-        private async Task LoadARMRouteTables(ResourceGroup armResourceGroup)
+        private async Task LoadARMRouteTables(ResourceGroup resourceGroup)
         {
-            foreach (Azure.Arm.RouteTable armRouteTable in await this.GetAzureARMRouteTables(armResourceGroup))
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.RouteTable armRouteTable in await this.GetAzureARMRouteTables(resourceGroup))
             {
                 Azure.MigrationTarget.RouteTable targetRouteTable = new Azure.MigrationTarget.RouteTable(this._AzureContext, armRouteTable);
                 _ArmTargetRouteTables.Add(targetRouteTable);
@@ -2073,7 +2151,7 @@ namespace MigAz.Azure
                     await this.GetAzureARMLocations();
 
                     List<Task> armNetworkSecurityGroupTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armNetworkSecurityGroupTask = LoadARMNetworkSecurityGroups(armResourceGroup);
                         armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
@@ -2081,7 +2159,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
 
                     List<Task> armRouteTableTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armRouteTableTask = LoadARMRouteTables(armResourceGroup);
                         armRouteTableTasks.Add(armRouteTableTask);
@@ -2089,7 +2167,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armRouteTableTasks.ToArray());
 
                     List<Task> armPublicIPTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armPublicIPTask = LoadARMPublicIPs(armResourceGroup);
                         armPublicIPTasks.Add(armPublicIPTask);
@@ -2098,7 +2176,7 @@ namespace MigAz.Azure
 
 
                     List<Task> armVirtualNetworkTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armVirtualNetworkTask = LoadARMVirtualNetworks(armResourceGroup);
                         armVirtualNetworkTasks.Add(armVirtualNetworkTask);
@@ -2106,7 +2184,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armVirtualNetworkTasks.ToArray());
 
                     List<Task> armStorageAccountTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armStorageAccountTask = LoadARMStorageAccounts(armResourceGroup);
                         armStorageAccountTasks.Add(armStorageAccountTask);
@@ -2114,7 +2192,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armStorageAccountTasks.ToArray());
 
                     List<Task> armManagedDiskTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup);
                         armManagedDiskTasks.Add(armManagedDiskTask);
@@ -2122,7 +2200,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armManagedDiskTasks.ToArray());
 
                     List<Task> armAvailabilitySetTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armAvailabilitySetTask = LoadARMAvailabilitySets(armResourceGroup);
                         armAvailabilitySetTasks.Add(armAvailabilitySetTask);
@@ -2130,7 +2208,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armAvailabilitySetTasks.ToArray());
 
                     List<Task> armNetworkInterfaceTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup);
                         armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
@@ -2138,7 +2216,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
 
                     List<Task> armVirtualMachineTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armVirtualMachineTask = LoadARMVirtualMachines(armResourceGroup);
                         armVirtualMachineTasks.Add(armVirtualMachineTask);
@@ -2147,7 +2225,7 @@ namespace MigAz.Azure
 
 
                     List<Task> armLoadBalancerTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armLoadBalancerTask = LoadARMLoadBalancers(armResourceGroup);
                         armLoadBalancerTasks.Add(armLoadBalancerTask);
@@ -2155,7 +2233,7 @@ namespace MigAz.Azure
                     await Task.WhenAll(armLoadBalancerTasks.ToArray());
 
                     List<Task> armVirtualMachineImageTasks = new List<Task>();
-                    foreach (Azure.Arm.ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                     {
                         Task armVirtualMachineImageTask = LoadARMVirtualMachineImages(armResourceGroup);
                         armVirtualMachineImageTasks.Add(armVirtualMachineImageTask);

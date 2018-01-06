@@ -257,12 +257,12 @@ namespace MigAz.Azure.Generator
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
                     if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
                         if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' must be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.", virtualMachine);
+                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
                     }
                 }
                 else
