@@ -143,18 +143,23 @@ namespace MigAz.Migrators
         private async Task _AzureContextSourceASM_AfterUserSignOut()
         {
             ResetForm();
-            await _AzureContextTargetARM.SetSubscriptionContext(null);
-            await _AzureContextTargetARM.Logout();
+
+            if (_AzureContextTargetARM != null)
+                await _AzureContextTargetARM.SetSubscriptionContext(null);
+
+            if (_AzureContextTargetARM != null)
+                await _AzureContextTargetARM.Logout();
+
             azureLoginContextViewerARM.Enabled = false;
             azureLoginContextViewerARM.Refresh();
         }
 
         private async Task _AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            ResetForm();
-
             try
             {
+                ResetForm();
+
                 if (sender.AzureSubscription != null)
                 {
                     if (_AzureContextTargetARM.AzureSubscription == null)
@@ -211,15 +216,32 @@ namespace MigAz.Migrators
 
         private void ResetForm()
         {
-            treeSourceASM.Nodes.Clear();
-            treeSourceARM.Nodes.Clear();
-            treeTargetARM.Nodes.Clear();
-            _SelectedNodes.Clear();
+            if (treeSourceASM != null)
+            {
+                treeSourceASM.Enabled = false;
+                treeSourceASM.Nodes.Clear();
+            }
+
+            if (treeSourceARM != null)
+            {
+                treeSourceARM.Enabled = false;
+                treeSourceARM.Nodes.Clear();
+            }
+
+            if (treeTargetARM != null)
+            {
+                treeTargetARM.Enabled = false;
+                treeTargetARM.Nodes.Clear();
+            }
+
+            if (_SelectedNodes != null)
+                _SelectedNodes.Clear();
+
+            if (_PropertyPanel != null)
+                _PropertyPanel.Clear();
+
             UpdateExportItemsCount();
-            _PropertyPanel.Clear();
-            treeSourceASM.Enabled = false;
-            treeSourceARM.Enabled = false;
-            treeTargetARM.Enabled = false;
+            
             _IsAsmLoaded = false;
             _IsArmLoaded = false;
         }
