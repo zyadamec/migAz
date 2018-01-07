@@ -282,7 +282,7 @@ namespace MigAz.Migrators
         {
             string currentVersion = "2.3.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
-            string newVersionNumber = await versionCheck.GetAvailableVersion("https://api.migaz.tools/v1/version", currentVersion);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/v1/version", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
                 DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);

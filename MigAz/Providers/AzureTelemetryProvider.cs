@@ -43,7 +43,7 @@ namespace MigAz.Providers
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://api.migaz.tools/v1/telemetry/ARMtoARM");
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://migaz.azurewebsites.net/v1/telemetry/ARMtoARM");
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.ContentLength = data.Length;
