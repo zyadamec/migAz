@@ -21,6 +21,7 @@ namespace MigAz.Azure.Models
         public string TargetStorageAccountType;
         public string TargetContainer;
         public string TargetBlob;
+        public string TargetEndpoint;
         public string TargetKey = String.Empty;
         public string OutputParameterName;
         public string Status = String.Empty;

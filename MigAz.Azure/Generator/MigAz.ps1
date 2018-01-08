@@ -89,7 +89,7 @@ If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
 
 		# Create destination storage account context
 		$copyblobdetail.TargetKey = (Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount | Get-AzureRmStorageAccountKey).Value[0]
-		$destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -ErrorAction Stop
+		$destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint -ErrorAction Stop
 
 		# Create destination container if it does not exist
 		$destination_container = Get-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer -ErrorAction SilentlyContinue
@@ -155,7 +155,7 @@ If (($StartType -eq $null -and $StartBlobCopySuccess -eq $true) -or $StartType -
         {
             if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
             {
-                $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
+                $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint
                 $status = Get-AzureStorageBlobCopyState -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob
 
                 $copyblobdetail.TotalBytes = "{0:N0} MB" -f ($status.TotalBytes / 1MB)

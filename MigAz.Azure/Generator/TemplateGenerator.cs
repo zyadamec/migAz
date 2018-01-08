@@ -243,6 +243,15 @@ namespace MigAz.Azure.Generator
 
             foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in _ExportArtifacts.AvailablitySets)
             {
+                if (availablitySet.TargetVirtualMachines.Count() == 0)
+                {
+                    this.AddAlert(AlertType.Warning, "Availability Set '" + availablitySet.ToString() + "' does not contain any Virtual Machines and will be exported as an empty Availability Set.", availablitySet);
+                }
+                else if (availablitySet.TargetVirtualMachines.Count() == 1)
+                {
+                    this.AddAlert(AlertType.Warning, "Availability Set '" + availablitySet.ToString() + "' only contains a single VM.  Only utilize an Availability Set if additional VMs will be added; otherwise, a single VM instance should not reside within an Availability Set.", availablitySet);
+                }
+
                 if (!availablitySet.IsManagedDisks && !availablitySet.IsUnmanagedDisks)
                 {
                     this.AddAlert(AlertType.Error, "All OS and Data Disks for Virtual Machines contained within Availablity Set '" + availablitySet.ToString() + "' should be either Unmanaged Disks or Managed Disks for consistent deployment.", availablitySet);
@@ -1654,6 +1663,9 @@ namespace MigAz.Azure.Generator
 
             copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
+
+            AzureServiceUrls azureServiceUrls = new AzureServiceUrls(this.TargetSubscription.AzureEnvironment, this.LogProvider);
+            copyblobdetail.TargetEndpoint = azureServiceUrls.GetStorageEndpointUrl();
 
             if (disk.TargetStorage != null)
             {
