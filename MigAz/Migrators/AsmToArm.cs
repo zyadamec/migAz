@@ -282,7 +282,7 @@ namespace MigAz.Migrators
         {
             string currentVersion = "2.3.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
-            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/v1/version", currentVersion);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
                 DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -691,7 +691,8 @@ namespace MigAz.Migrators
                 Type tagType = e.Node.Tag.GetType();
                 if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) || 
+                    (tagType == typeof(Azure.MigrationTarget.AvailabilitySet)) ||
+                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
                     (tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
@@ -1255,20 +1256,12 @@ namespace MigAz.Migrators
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachine)targetVirtualMachine.Source).ResourceGroup);
 
-                            TreeNode virtualMachineParentNode = tnResourceGroup;
-
-                            if (targetVirtualMachine.TargetAvailabilitySet != null)
-                            {
-                                TreeNode tnAvailabilitySet = GetAvailabilitySetTreeNode(virtualMachineParentNode, targetVirtualMachine.TargetAvailabilitySet);
-                                virtualMachineParentNode = tnAvailabilitySet;
-                            }
-
                             TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                             tnVirtualMachine.Name = targetVirtualMachine.SourceName;
                             tnVirtualMachine.Tag = targetVirtualMachine;
                             tnVirtualMachine.ImageKey = "VirtualMachine";
                             tnVirtualMachine.SelectedImageKey = "VirtualMachine";
-                            virtualMachineParentNode.Nodes.Add(tnVirtualMachine);
+                            tnResourceGroup.Nodes.Add(tnVirtualMachine);
                         }
 
                         foreach (Azure.MigrationTarget.LoadBalancer targetLoadBalancer in _AzureContextSourceASM.AzureRetriever.ArmTargetLoadBalancers)

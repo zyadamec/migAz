@@ -441,6 +441,14 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return targetNetworkInterfaceNode;
             }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+            {
+                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)parentNode;
+                TreeNode targetAvailabilitySetNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetAvailabilitySet.ToString(), targetAvailabilitySet.ToString(), targetAvailabilitySet, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetAvailabilitySetNode;
+            }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
             {
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
