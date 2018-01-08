@@ -191,6 +191,22 @@ namespace MigAz.Azure.Generator
             //        this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
             //}
 
+            foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in _ExportArtifacts.VirtualNetworks)
+            {
+                foreach (MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
+                {
+                    if (targetSubnet.NetworkSecurityGroup != null)
+                    {
+                        MigrationTarget.NetworkSecurityGroup networkSecurityGroupInMigration = _ExportArtifacts.SeekNetworkSecurityGroup(targetSubnet.NetworkSecurityGroup.ToString());
+
+                        if (networkSecurityGroupInMigration == null)
+                        {
+                            this.AddAlert(AlertType.Error, "Virtual Network '" + targetVirtualNetwork.ToString() + "' Subnet '" + targetSubnet.ToString() + "' utilizes Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.ToString() + "', but the NSG resource is not added into the migration template.", targetSubnet);
+                        }
+                    }
+                }
+            }
+
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
             {
                 if (targetNetworkSecurityGroup.TargetName == string.Empty)
@@ -406,8 +422,6 @@ namespace MigAz.Azure.Generator
             //    this.AddAlert(AlertType.Error, "Subnet '" + subnet.name + "' utilized ASM Network Security Group (NSG) '" + targetSubnet.NetworkSecurityGroup.ToString() + "', which has not been added to the ARM Subnet as the NSG was not included in the ARM Template (was not selected as an included resources for export).", targetNetworkSecurityGroup);
             //}
 
-            // todo add Warning about availability set with only single VM included
-
             // todo add error if existing target disk storage is not in the same data center / region as vm.
 
             LogProvider.WriteLog("UpdateArtifacts", "Start OnTemplateChanged Event");
@@ -617,6 +631,24 @@ namespace MigAz.Azure.Generator
                     BuildNetworkInterfaceObject(networkInterface);
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Network Interfaces");
+
+
+                LogProvider.WriteLog("GenerateStreams", "Start Exporting Managed Disk Definition(s)");
+                foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Creating Copy Blob Details for Disk : " + targetDisk.ToString());
+                    if (!_settingsProvider.BuildEmpty)
+                    {
+                        this._CopyBlobDetails.Add(await BuildCopyBlob(targetDisk, _ExportArtifacts.ResourceGroup));
+                    }
+
+                    if (targetDisk.IsManagedDisk)
+                    {
+                        StatusProvider.UpdateStatus("BUSY: Creating ARM Managed Disk : " + targetDisk.ToString());
+                        await BuildManagedDiskObject(targetDisk);
+                    }
+                }
+                LogProvider.WriteLog("GenerateStreams", "End Exporting Managed Disk Definition(s)");
 
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Cloud Services / Virtual Machines");
                 foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
@@ -1439,8 +1471,6 @@ namespace MigAz.Azure.Generator
                 osdisk.createOption = "Attach";
                 osdisk.osType = targetVirtualMachine.OSVirtualHardDiskOS;
 
-                this._CopyBlobDetails.Add(await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, _ExportArtifacts.ResourceGroup));
-
                 if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
                 {
                     osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
@@ -1457,8 +1487,6 @@ namespace MigAz.Azure.Generator
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    ManagedDisk osManagedDisk = await BuildManagedDiskObject(targetVirtualMachine.OSVirtualHardDisk);
-
                     Reference managedDiskReference = new Reference();
                     managedDiskReference.id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId;
 
@@ -1490,8 +1518,6 @@ namespace MigAz.Azure.Generator
                     else
                     {
                         datadisk.createOption = "Attach";
-
-                        this._CopyBlobDetails.Add(await BuildCopyBlob(dataDisk, _ExportArtifacts.ResourceGroup));
                     }
 
                     if (dataDisk.IsUnmanagedDisk)
@@ -1508,8 +1534,6 @@ namespace MigAz.Azure.Generator
                     }
                     else if (dataDisk.IsManagedDisk)
                     {
-                        ManagedDisk datadiskManagedDisk = await BuildManagedDiskObject(dataDisk);
-
                         Reference managedDiskReference = new Reference();
                         managedDiskReference.id = dataDisk.ReferenceId;
 
