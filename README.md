@@ -34,6 +34,14 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.3.0.0
+ - Initial release to allow copying of ASM directly to Managed Disks, as well as deployed ARM Managed Disks.
+ - KNOWN ISSUE:  An ARM VM that has Managed Disks must be stopped to allow MigAz v2.3.0.0 to obtain an AccessSAS URL for each Managed Disk.  Use of snapshots will be investigated for a future release.
+ - Several Bug fixes, validation of Subnet NSG existing in export, warning of single VM in an Availability Set.
+ - Streamlined PowerShell process w/ deeper output.
+ - Use of "MigAz temporary storage account" for blob copy target prior to Managed Disk creation.  Current PowerShell process does prompt for deletion (requiring 'Yes' confirmation).
+ - Expanded MigAz Options dialog to include number of minutes AccessSAS for Managed Disks is to be valid and option to default migration to recommended Managed Disks over legacy Classic Disks.
+ 
 ### v2.2.14.0
  - Added Storage Account Resource Group Name into copyblobdetails.json and removed as BlobCopy.ps1 parameter to resolve use of existing storage accounts in other Resource Groups(s).
  - Incrased maximum disk size from 1023 to 4095 per Azure support for 4 TB drives.
