@@ -196,7 +196,7 @@ namespace MigAz.Azure.UserControls
             if (rb.Checked)
             {
 
-                #region Add "In MigAz Migration" Virtual Networks to cmbExistingArmVNets
+                #region Add "Existing in Subscription / Location" ARM Virtual Networks to cmbExistingArmVNets
 
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();

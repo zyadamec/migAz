@@ -78,6 +78,17 @@ namespace MigAz.Azure.Asm
             }
         }
 
+        public StorageAccountType StorageAccountType
+        {
+            get
+            {
+                if (AccountType == "Premium_LRS")
+                    return StorageAccountType.Premium_LRS;
+                else
+                    return StorageAccountType.Standard_LRS;
+            }
+        }
+
         #endregion
 
         #region Methods

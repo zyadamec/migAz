@@ -16,6 +16,7 @@ namespace MigAz.Azure.MigrationTarget
         private BackEndAddressPool _BackEndAddressPool = null;
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private string _TargetName = String.Empty;
+        private VirtualMachine _ParentVirtualMachine;
 
         private NetworkInterface() { }
 
@@ -25,6 +26,7 @@ namespace MigAz.Azure.MigrationTarget
             _SourceNetworkInterface = networkInterface;
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+            this.EnableIPForwarding = networkInterface.EnableIpForwarding;
 
             foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
@@ -38,22 +40,24 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups)
+        public NetworkInterface(AzureContext azureContext, Arm.NetworkInterface networkInterface)
         {
             _AzureContext = azureContext;
             _SourceNetworkInterface = networkInterface;
+
             this.TargetName = networkInterface.Name;
             this.IsPrimary = networkInterface.IsPrimary;
+            this.EnableIPForwarding = networkInterface.EnableIPForwarding;
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
-                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, virtualNetworks);
+                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, azureContext.AzureRetriever.ArmTargetVirtualNetworks);
                 this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
             }
 
             if (networkInterface.NetworkSecurityGroup != null)
             {
-                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(networkSecurityGroups, networkInterface.NetworkSecurityGroup.ToString());
+                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(azureContext.AzureRetriever.ArmTargetNetworkSecurityGroups, networkInterface.NetworkSecurityGroup.ToString());
             }
         }
 
@@ -66,6 +70,12 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _EnableIPForwarding; }
             set { _EnableIPForwarding = value; }
+        }
+
+        public VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
+            set { _ParentVirtualMachine = value; }
         }
 
         public string TargetName

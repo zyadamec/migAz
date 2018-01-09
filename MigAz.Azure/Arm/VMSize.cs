@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,24 @@ namespace MigAz.Azure.Arm
         public override string ToString()
         {
             return this.Name;
+        }
+
+        public bool IsStorageTypeSupported(StorageAccountType storageAccountType)
+        {
+            if (storageAccountType == StorageAccountType.Standard_LRS)
+                return true;
+            else if (storageAccountType == StorageAccountType.Premium_LRS)
+            {
+                return (
+                    this.Name.Contains("_DS") ||
+                    this.Name.Contains("_GS") ||
+                    (this.Name.Contains("_L") && this.Name.EndsWith("s")) ||
+                    (this.Name.Contains("_F") && this.Name.EndsWith("s"))
+                    );
+            }
+
+            return false; // Unknown Enum Type
+            
         }
 
     }

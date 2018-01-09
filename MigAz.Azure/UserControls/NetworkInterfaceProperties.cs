@@ -37,7 +37,6 @@ namespace MigAz.Azure.UserControls
             _TargetNetworkInterface = targetNetworkInterface;
             networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
 
-
             if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
             {
                 await networkSelectionControl1.Bind(azureContext, targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
@@ -46,6 +45,11 @@ namespace MigAz.Azure.UserControls
 
             lblSourceName.Text = _TargetNetworkInterface.SourceName;
             txtTargetName.Text = _TargetNetworkInterface.TargetName;
+
+            if (_TargetNetworkInterface.EnableIPForwarding)
+                rbIPForwardingEnabled.Checked = true;
+            else
+                rbIPForwardingDisabled.Checked = true;
 
             if (_TargetNetworkInterface.SourceNetworkInterface != null)
             {
@@ -66,9 +70,12 @@ namespace MigAz.Azure.UserControls
                     lblStaticIpAddress.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
                 }
             }
+
+            virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
+            networkSecurityGroup.Bind(_TargetNetworkInterface.NetworkSecurityGroup, _TargetTreeView);
         }
-        
-       
+
+
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
@@ -84,6 +91,18 @@ namespace MigAz.Azure.UserControls
             {
                 e.Handled = true;
             }
+        }
+
+        private void rbIPForwardingEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            _TargetNetworkInterface.EnableIPForwarding = true;
+            PropertyChanged();
+        }
+
+        private void rbIPForwardingDisabled_CheckedChanged(object sender, EventArgs e)
+        {
+            _TargetNetworkInterface.EnableIPForwarding = false;
+            PropertyChanged();
         }
     }
 }

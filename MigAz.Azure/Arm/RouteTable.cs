@@ -1,4 +1,5 @@
 ﻿using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,30 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class RouteTable : IRouteTable
+    public class RouteTable : ArmResource, IRouteTable
     {
         private List<Route> _Routes = new List<Route>();
 
-        public string Name => "TODO";
-        public List<Route> Routes => _Routes; // todo  routenode in resource.properties.routes)
+
+        private RouteTable() : base(null) { }
+
+        public RouteTable(JToken resourceToken) : base(resourceToken)
+        {
+            var routes = from route in ResourceToken["properties"]["routes"]
+                          select route;
+
+            foreach (var route in routes)
+            {
+                Route armRoute = new Route(this, route);
+                _Routes.Add(armRoute);
+            }
+        }
+
+        public List<Route> Routes => _Routes;
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

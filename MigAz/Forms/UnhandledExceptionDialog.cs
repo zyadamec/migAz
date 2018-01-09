@@ -22,22 +22,29 @@ namespace MigAz.Forms
         public UnhandledExceptionDialog(ILogProvider fileLogProvider, Exception e)
         {
             InitializeComponent();
-            _UnhandledException = e;
-            _LogProvider = fileLogProvider;
 
-            if (e.GetType() == typeof(System.Net.WebException))
+            if (e != null)
             {
-                System.Net.WebException webException = (System.Net.WebException)e;
-                Stream responseStream = webException.Response.GetResponseStream();
-                responseStream.Position = 0;
-                StreamReader sr = new StreamReader(responseStream);
-                string responseBody = sr.ReadToEnd();
-                textBox1.Text = responseBody + Environment.NewLine + Environment.NewLine + webException.Message + Environment.NewLine + Environment.NewLine + webException.StackTrace;
-            }
-            else
-                textBox1.Text = e.Message + Environment.NewLine + e.StackTrace;
+                _UnhandledException = e;
 
-            _LogProvider.WriteLog("UnhandledExceptionDialog", textBox1.Text);
+                if (e.GetType() == typeof(System.Net.WebException))
+                {
+                    System.Net.WebException webException = (System.Net.WebException)e;
+                    Stream responseStream = webException.Response.GetResponseStream();
+                    responseStream.Position = 0;
+                    StreamReader sr = new StreamReader(responseStream);
+                    string responseBody = sr.ReadToEnd();
+                    textBox1.Text = responseBody + Environment.NewLine + Environment.NewLine + webException.Message + Environment.NewLine + Environment.NewLine + webException.StackTrace;
+                }
+                else
+                    textBox1.Text = e.Message + Environment.NewLine + e.StackTrace;
+            }
+
+            if (fileLogProvider != null)
+            {
+                _LogProvider = fileLogProvider;
+                _LogProvider.WriteLog("UnhandledExceptionDialog", textBox1.Text);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

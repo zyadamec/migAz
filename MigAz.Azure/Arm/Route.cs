@@ -10,15 +10,31 @@ namespace MigAz.Azure.Arm
 {
     public class Route : ArmResource, IRoute
     {
+        private RouteTable _RouteTable;
+
         private Route() : base(null) { }
 
-        private Route(JToken resourceToken) : base(resourceToken)
+        public Route(RouteTable routeTable, JToken resourceToken) : base(resourceToken)
         {
-
+            _RouteTable = routeTable;
         }
 
-        public string AddressPrefix => "TODO";
-        public string NextHopType => "TODO";
-        public string NextHopIpAddress => "TODO";
+        public string AddressPrefix
+        {
+            get { return (string)ResourceToken["properties"]["addressPrefix"]; }
+        }
+        public NextHopTypeEnum NextHopType
+        {
+            get
+            {
+                NextHopTypeEnum nextHopType;
+                Enum.TryParse<NextHopTypeEnum>((string)ResourceToken["properties"]["nextHopType"], out nextHopType);
+                return nextHopType;
+            }
+        }
+        public string NextHopIpAddress
+        {
+            get { return (string)ResourceToken["properties"]["nextHopIpAddress"]; }
+        }
     }
 }

@@ -62,5 +62,11 @@
     <Setting Name="LoadBalancerSuffix" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="DefaultTargetDiskType" Type="MigAz.Core.Interface.ArmDiskType" Scope="User">
+      <Value Profile="(Default)">ManagedDisk</Value>
+    </Setting>
+    <Setting Name="AccessSASTokenLifetimeSeconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3600</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

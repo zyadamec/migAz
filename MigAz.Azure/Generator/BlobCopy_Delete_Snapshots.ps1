@@ -13,7 +13,7 @@ $copyblobdetailsout = @()
     foreach ($copyblobdetail in $copyblobdetails)
     {
         # Create source storage account context
-        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceSA -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+        $source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
         $source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
         $blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null }

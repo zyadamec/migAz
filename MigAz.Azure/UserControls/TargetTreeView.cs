@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -84,7 +85,38 @@ namespace MigAz.Azure.UserControls
         }
 
         public ISettingsProvider SettingsProvider { get; set; }
+        public bool HasStorageAccount
+        {
+            get
+            {
+                bool exists = false;
 
+                foreach (TreeNode treeNode in treeTargetARM.Nodes)
+                {
+                    exists = this.ContainTagTypeRecursive(treeNode, typeof(StorageAccount));
+                    if (exists)
+                        return true;
+                }
+
+                return exists;
+            }
+        }
+
+        private bool ContainTagTypeRecursive(TreeNode parentTreeNode, System.Type tagType)
+        {
+            if (parentTreeNode.Tag != null && parentTreeNode.Tag.GetType() == tagType)
+                return true;
+            else
+            {
+                foreach (TreeNode selectedNode in parentTreeNode.Nodes)
+                {
+                    if (ContainTagTypeRecursive(selectedNode, tagType))
+                        return true;
+                }
+
+                return false;
+            }
+        }
         private void GetExportArtifactsRecursive(TreeNode parentTreeNode, ref ExportArtifacts exportArtifacts)
         {
             foreach (TreeNode selectedNode in parentTreeNode.Nodes)
@@ -95,13 +127,17 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.VirtualNetworks.Add((Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag);
                 }
-                else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
-                }
+                //else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
+                //{
+                //    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                //}
                 else if (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                 {
                     exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.MigrationTarget.AvailabilitySet))
+                {
+                    exportArtifacts.AvailablitySets.Add((Azure.MigrationTarget.AvailabilitySet)selectedNode.Tag);
                 }
                 else if (tagType == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
@@ -114,6 +150,24 @@ namespace MigAz.Azure.UserControls
                 else if (tagType == typeof(Azure.MigrationTarget.PublicIp))
                 {
                     exportArtifacts.PublicIPs.Add((Azure.MigrationTarget.PublicIp)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.MigrationTarget.Disk))
+                {
+                    Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)selectedNode.Tag;
+                    if (targetDisk.TargetStorage != null && targetDisk.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
+                    {
+                        // We are only adding the Target Disk into the Export Artifacts as a Disk object if the Target Disk is targeted as a Managed Disk.
+                        // Otherwise, it is a Classic Disk and will be generated as part of the Virtual Machine JSON (does not have a stand alone Disk object).
+                        exportArtifacts.Disks.Add((Azure.MigrationTarget.Disk)selectedNode.Tag);
+                    }
+                }
+                else if (tagType == typeof(Azure.MigrationTarget.NetworkInterface))
+                {
+                    exportArtifacts.NetworkInterfaces.Add((Azure.MigrationTarget.NetworkInterface)selectedNode.Tag);
+                }
+                else if (tagType == typeof(Azure.MigrationTarget.RouteTable))
+                {
+                    exportArtifacts.RouteTables.Add((Azure.MigrationTarget.RouteTable)selectedNode.Tag);
                 }
             }
 
@@ -138,6 +192,59 @@ namespace MigAz.Azure.UserControls
             return exportArtifacts;
         }
 
+        internal void TransitionToManagedDisk(TreeNode targetTreeNode)
+        {
+            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+                throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
+
+            Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
+
+            if (targetDisk.SourceDisk != null)
+            {
+                TreeNode diskParentNode = targetTreeNode.Parent;
+
+                while (diskParentNode != null && diskParentNode.Tag != null && diskParentNode.Tag.GetType() != typeof(Azure.MigrationTarget.ResourceGroup))
+                {
+                    diskParentNode = diskParentNode.Parent;
+                }
+
+                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
+                if (diskParentNode != null)
+                {
+                    treeTargetARM.Nodes.Remove(targetTreeNode);
+                    diskParentNode.Nodes.Add(targetTreeNode);
+                    treeTargetARM.SelectedNode = targetTreeNode;
+                }
+            }
+        }
+
+        internal void TransitionToClassicDisk(TreeNode targetTreeNode)
+        {
+            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+                throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
+
+            Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
+
+            if (targetDisk.SourceDisk != null)
+            {
+                TreeNode diskParentNode = targetTreeNode.Parent;
+
+                // Move the disk treenode to be a child under the resource group, not under the VM, as we are making it a Managed Disk
+                if (targetTreeNode.Parent.Tag != null && targetTreeNode.Parent.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                {
+                    // Seek the Virtual Machine Tree Node
+                    TreeNode virtualMachineNode = SeekARMChildTreeNode(targetTreeNode.Parent.Nodes, targetDisk.ParentVirtualMachine.ToString(), targetDisk.ParentVirtualMachine.ToString(), targetDisk.ParentVirtualMachine, false);
+
+                    if (virtualMachineNode != null)
+                    {
+                        treeTargetARM.Nodes.Remove(targetTreeNode);
+                        virtualMachineNode.Nodes.Add(targetTreeNode);
+                        treeTargetARM.SelectedNode = targetTreeNode;
+                    }
+                }
+            }
+        }
+
         private void SeekAlertSourceRecursive(object sourceObject, TreeNodeCollection nodes)
         {
             foreach (TreeNode treeNode in nodes)
@@ -159,21 +266,11 @@ namespace MigAz.Azure.UserControls
                     // Note, this could probably be object compares, but was written this was to get it done.  Possible future change to object compares
                     if (nodeObject != null && sourceObject != null)
                     {
-                        if (nodeObject.GetType() == sourceObject.GetType())
-                        {
-                            if (sourceObject.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                        if (nodeObject.GetType() == sourceObject.GetType() && sourceObject.ToString() == nodeObject.ToString())
                                 treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.VirtualMachine) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.Disk) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                            else if (sourceObject.GetType() == typeof(Azure.MigrationTarget.LoadBalancer) && sourceObject.ToString() == nodeObject.ToString())
-                                treeTargetARM.SelectedNode = treeNode;
-                        }
                     }
                 }
+
                 SeekAlertSourceRecursive(sourceObject, treeNode.Nodes);
             }
         }
@@ -185,7 +282,7 @@ namespace MigAz.Azure.UserControls
 
         public TreeNode SeekARMChildTreeNode(TreeNodeCollection nodeCollection, string name, string text, object tag, bool allowCreated = false)
         {
-            TreeNode[] childNodeMatch = nodeCollection.Find(name, false);
+            TreeNode[] childNodeMatch = nodeCollection.Find(name, true);
 
             foreach (TreeNode matchedNode in childNodeMatch)
             {
@@ -257,6 +354,16 @@ namespace MigAz.Azure.UserControls
                     childNode.ImageKey = "PublicIp";
                     childNode.SelectedImageKey = "PublicIp";
                 }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+                {
+                    childNode.ImageKey = "RouteTable";
+                    childNode.SelectedImageKey = "RouteTable";
+                }
+                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                {
+                    childNode.ImageKey = "VirtualMachineImage";
+                    childNode.SelectedImageKey = "VirtualMachineImage";
+                }
                 else
                     throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
 
@@ -326,34 +433,106 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return targetPublicIpNode;
             }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+            {
+                Azure.MigrationTarget.NetworkInterface targetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)parentNode;
+                TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetNetworkInterfaceNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+            {
+                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)parentNode;
+                TreeNode targetAvailabilitySetNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetAvailabilitySet.ToString(), targetAvailabilitySet.ToString(), targetAvailabilitySet, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetAvailabilitySetNode;
+            }
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
             {
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
-                TreeNode targetAvailabilitySetNode = null;
+                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
-                // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability
                 if (targetVirtualMachine.TargetAvailabilitySet != null)
                 {
-                    targetAvailabilitySetNode = GetTargetAvailabilitySetNode(targetResourceGroupNode, targetVirtualMachine.TargetAvailabilitySet);
-                    virtualMachineParentNode = targetAvailabilitySetNode;
+                    if (targetVirtualMachine.TargetAvailabilitySet.SourceAvailabilitySet != null && targetVirtualMachine.TargetAvailabilitySet.SourceAvailabilitySet.GetType() == typeof(Asm.CloudService))
+                    {
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachine.TargetAvailabilitySet.ToString(), targetVirtualMachine.TargetAvailabilitySet.ToString(), targetVirtualMachine.TargetAvailabilitySet, true);
+                    }
                 }
 
-                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
+                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                {
+                    // Adding under Virtual Machine, as it is not a managed disk
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                }
+                else
+                {
+                    // Under Resource Group, as it is a managed Disk
+                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                }
 
                 foreach (Azure.MigrationTarget.Disk targetDisk in targetVirtualMachine.DataDisks)
                 {
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    if (targetDisk.IsUnmanagedDisk)
+                    {
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    }
+                    else
+                    {
+                        // Under Resource Group, as it is a managed Disk
+                        TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
+                    }
                 }
 
                 foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in targetVirtualMachine.NetworkInterfaces)
                 {
-                    TreeNode networkInterfaceNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+                    if (targetNetworkInterface.SourceNetworkInterface != null && targetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+                    {
+                        // We are only adding as a child node if it is an ASM Network Interface, otherwise we expect this to follow ARM convention in which NIC is a first class object in the resource group (not embededded under the VM).
+                        TreeNode networkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
+                    }
                 }
 
                 targetResourceGroupNode.ExpandAll();
                 return virtualMachineNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.Disk))
+            {
+                Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)parentNode;
+                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.SourceName, targetDisk.ToString(), targetDisk, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetDiskNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+            {
+                Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = (Azure.MigrationTarget.VirtualMachineImage)parentNode;
+                TreeNode targetVirtualMachineImageNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachineImage.SourceName, targetVirtualMachineImage.ToString(), targetVirtualMachineImage, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetVirtualMachineImageNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+            {
+                Azure.MigrationTarget.NetworkInterface targetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)parentNode;
+                TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.SourceName, targetNetworkInterface.ToString(), targetNetworkInterface, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return targetNetworkInterfaceNode;
+            }
+            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+            {
+                Azure.MigrationTarget.RouteTable targetRouteTable = (Azure.MigrationTarget.RouteTable)parentNode;
+                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.SourceName, targetRouteTable.ToString(), targetRouteTable, true);
+
+                targetRouteTableNode.ExpandAll();
+                return targetRouteTableNode;
             }
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());
@@ -391,57 +570,96 @@ namespace MigAz.Azure.UserControls
                 TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(migrationTarget.SourceName, true);
                 foreach (TreeNode matchingNode in matchingNodes)
                 {
-                    if (matchingNode.Tag.GetType() == migrationTarget.GetType())
+                    if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
+                    {
                         await RemoveTreeNodeCascadeUp(matchingNode);
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.StorageAccount))
+
+                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)matchingNode.Tag;
+
+                        // if there are VMs that have originating Classic Disks, we may need to clean them up from the Resource Group if they were being moved to a Managed Disk (not under the VM in the Treeview)
+                        await RemoveAsmDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
+                        foreach (MigrationTarget.Disk disk in targetVirtualMachine.DataDisks)
                         {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
+                            await RemoveAsmDiskTurnedManagedDiskFromARMTree(disk);
                         }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.StorageAccount))
+                        foreach (MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
                         {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
+                            await RemoveAsmNetworkTurnedArmNetworkFromARMTree(networkInterface);
                         }
+                        await RemoveCloudServiceTurnedAvailabilitySetFromARMTree(targetVirtualMachine.TargetAvailabilitySet);
                     }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.VirtualMachine))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.VirtualMachine))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
-                    else if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                    {
-                        if (migrationTarget.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                        else if (migrationTarget.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        }
-                    }
+                    else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
+                        await RemoveTreeNodeCascadeUp(matchingNode);
                     else if (matchingNode.Tag.GetType() == typeof(TreeNode))
                     {
                         TreeNode childTreeNode = (TreeNode)matchingNode.Tag;
                         if (migrationTarget.GetType() == childTreeNode.Tag.GetType())
                             await RemoveTreeNodeCascadeUp(matchingNode);
+                    }
+                }
+            }
+
+            if (treeTargetARM.SelectedNode == null)
+                PropertyPanel.Clear();
+        }
+
+        private async Task RemoveAsmDiskTurnedManagedDiskFromARMTree(Disk disk)
+        {
+            if (disk.SourceDisk != null && (disk.SourceDisk.GetType() == typeof(Azure.Asm.Disk) || disk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk)))
+            {
+                
+
+                TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                if (targetResourceGroupNode != null)
+                {
+                    TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(disk.TargetName, true);
+                    foreach (TreeNode matchingNode in matchingNodes)
+                    {
+                        if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk) && String.Compare(((Azure.MigrationTarget.Disk)matchingNode.Tag).SourceName, disk.SourceName, true) == 0)
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveAsmNetworkTurnedArmNetworkFromARMTree(NetworkInterface networkInterface)
+        {
+            if (networkInterface.SourceNetworkInterface != null && networkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+            {
+                TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                if (targetResourceGroupNode != null)
+                {
+                    TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(networkInterface.ToString(), true);
+                    foreach (TreeNode matchingNode in matchingNodes)
+                    {
+                        if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface) && String.Compare(((Azure.MigrationTarget.NetworkInterface)matchingNode.Tag).SourceName, networkInterface.SourceName, true) == 0)
+                        {
+                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveCloudServiceTurnedAvailabilitySetFromARMTree(AvailabilitySet availabilitySet)
+        {
+            if (availabilitySet != null)
+            {
+                if (availabilitySet.SourceAvailabilitySet != null && availabilitySet.SourceAvailabilitySet.GetType() == typeof(Azure.Asm.CloudService))
+                {
+                    TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
+                    if (targetResourceGroupNode != null)
+                    {
+                        TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(availabilitySet.ToString(), true);
+                        foreach (TreeNode matchingNode in matchingNodes)
+                        {
+                            if (matchingNode.Tag != null && matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet) && String.Compare(((Azure.MigrationTarget.AvailabilitySet)matchingNode.Tag).SourceName, availabilitySet.SourceName, true) == 0)
+                            {
+                                await RemoveTreeNodeCascadeUp(matchingNode);
+                            }
+                        }
                     }
                 }
             }
@@ -479,6 +697,7 @@ namespace MigAz.Azure.UserControls
                 LogProvider.WriteLog("treeARM_AfterSelect", "Start");
 
             _EventSourceNode = e.Node;
+
             await _PropertyPanel.Bind(e.Node);
             _EventSourceNode = null;
 

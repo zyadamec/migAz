@@ -8,8 +8,8 @@ namespace MigAz.Core.Interface
 {
     public enum StorageAccountType
     {
-        Standard,
-        Premium
+        Standard_LRS,
+        Premium_LRS
     }
 
     public interface IStorageTarget

@@ -28,12 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PropertyPanel));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pnlProperties = new System.Windows.Forms.Panel();
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.imageList1 = new System.Windows.Forms.ImageList();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -97,6 +98,8 @@
             this.imageList1.Images.SetKeyName(7, "VirtualMachine");
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(10, "RouteTable");
+            this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
             // 
             // PropertyPanel
             // 

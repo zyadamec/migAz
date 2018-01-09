@@ -371,7 +371,7 @@ namespace MigAz.Core.ArmTemplate
         public AvailabilitySet(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/availabilitySets";
-            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
@@ -387,7 +387,7 @@ namespace MigAz.Core.ArmTemplate
         public VirtualMachine(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/virtualMachines";
-            apiVersion = "2015-06-15"; // TODO apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
         public Dictionary<string, string> plan;
     }
@@ -446,7 +446,7 @@ namespace MigAz.Core.ArmTemplate
         public Reference managedDisk;
         public string caching;
         public string createOption;
-        public long diskSizeGB;
+        public long? diskSizeGB;
         public long lun;
     }
 
@@ -462,11 +462,21 @@ namespace MigAz.Core.ArmTemplate
         }
     }
 
+    public class ManagedDisk_Sku
+    {
+        public string name = "Premium_LRS";
+    }
+
     public class ManagedDisk_Properties
     {
-        public string creationData = "Empty";
-        public string storageAccountType = "Standard_LRS";
-        public int diskSizeGb = 128;
+        public ManagedDiskCreationData_Properties creationData;
+        public int diskSizeGb;
+    }
+
+    public class ManagedDiskCreationData_Properties
+    {
+        public string createOption = "Empty";
+        public string sourceUri ;
     }
 
     public class Snapshot : Disk
@@ -474,7 +484,7 @@ namespace MigAz.Core.ArmTemplate
         public Snapshot(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/snapshots";
-            apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
@@ -483,7 +493,7 @@ namespace MigAz.Core.ArmTemplate
         public Disk(Guid executionGuid) : base(executionGuid)
         {
             type = "Microsoft.Compute/disks";
-            apiVersion = "2016-04-30-preview";
+            apiVersion = "2017-03-30";
         }
     }
 
@@ -573,6 +583,7 @@ namespace MigAz.Core.ArmTemplate
     public class Parameter
     {
         public string type;
+        public string value;
     }
 
     public class Template

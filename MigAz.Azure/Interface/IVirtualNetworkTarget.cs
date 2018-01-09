@@ -12,8 +12,16 @@ namespace MigAz.Azure.Interface
         private String _TargetPrivateIPAllocationMethod = "Dynamic";
         private String _TargetStaticIpAddress = String.Empty;
 
-        public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
-        public IMigrationSubnet TargetSubnet { get; set; }
+        public IMigrationVirtualNetwork TargetVirtualNetwork
+        {
+            get;
+            set;
+        }
+        public IMigrationSubnet TargetSubnet
+        {
+            get;
+            set;
+        }
         public String TargetPrivateIPAllocationMethod
         {
             get { return _TargetPrivateIPAllocationMethod; }

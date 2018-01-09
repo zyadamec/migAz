@@ -9,7 +9,8 @@ namespace MigAz.Azure.Arm
     {
         private JToken _Subnet;
         private VirtualNetwork _Parent;
-        private NetworkSecurityGroup _NetworkSecurityGroup = null;
+        private NetworkSecurityGroup _NetworkSecurityGroup;
+        private RouteTable _RouteTable;
 
         private Subnet() { }
 
@@ -24,6 +25,10 @@ namespace MigAz.Azure.Arm
             if (this.NetworkSecurityGroupId != string.Empty)
             {
                 _NetworkSecurityGroup = await azureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+            }
+            if (this.RouteTableId != string.Empty)
+            {
+                _RouteTable = await azureContext.AzureRetriever.GetAzureARMRouteTable(this.RouteTableId);
             }
         }
 
@@ -57,9 +62,15 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public RouteTable RouteTable
+        private string RouteTableId
         {
-            get { return null; } // todo
+            get
+            {
+                if (_Subnet["properties"]["routeTable"] == null)
+                    return string.Empty;
+
+                return (string)_Subnet["properties"]["routeTable"]["id"];
+            }
         }
 
         public VirtualNetwork Parent
@@ -72,6 +83,13 @@ namespace MigAz.Azure.Arm
             get
             {
                 return _NetworkSecurityGroup;
+            }
+        }
+        public RouteTable RouteTable
+        {
+            get
+            {
+                return _RouteTable;
             }
         }
 
