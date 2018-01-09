@@ -43,7 +43,7 @@ namespace MigAz.Providers
 
             try
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://localhost:24202/api/v2");
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://migaz.azurewebsites.net/api/v2");
                 request.Method = "POST";
                 request.ContentType = "application/json";
                 request.ContentLength = data.Length;
@@ -59,7 +59,7 @@ namespace MigAz.Providers
             }
             catch (Exception exception)
             {
-                DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+// DialogResult dialogresult = MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
