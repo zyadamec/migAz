@@ -100,6 +100,8 @@
             this.imageList1.Images.SetKeyName(7, "VirtualMachine");
             this.imageList1.Images.SetKeyName(8, "AvailabilitySet");
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
+            this.imageList1.Images.SetKeyName(10, "RouteTable");
+            this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
             // 
             // statusStrip1
             // 
@@ -336,7 +338,7 @@
             this.btnExport.TabIndex = 9;
             this.btnExport.Text = "&Export Objects";
             this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click_1);
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click_1Async);
             // 
             // txtDestinationFolder
             // 

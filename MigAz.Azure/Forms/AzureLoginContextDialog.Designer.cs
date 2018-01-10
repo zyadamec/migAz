@@ -40,8 +40,8 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(1181, 25);
             this.label4.TabIndex = 54;
-            this.label4.Text = "The following Azure Subscription context will be utilized to retrieve Azure Class" +
-    "ic (ASM) resource information for migration.";
+            this.label4.Text = "The following Azure Subscription context will be utilized to retrieve Azure " +
+    "resource information for migration.";
             // 
             // btnCloseDialog
             // 

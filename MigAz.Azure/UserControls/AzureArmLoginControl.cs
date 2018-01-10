@@ -112,47 +112,59 @@ namespace MigAz.Azure.UserControls
 
             if (btnAuthenticate.Text == "Sign In")
             {
-                cboTenant.Enabled = false;
-                cboTenant.Items.Clear();
-                cmbSubscriptions.Enabled = false;
-                cmbSubscriptions.Items.Clear();
-
-                await _AzureContext.Login();
-
-                if (_AzureContext.TokenProvider != null)
+                try
                 {
-                    lblAuthenticatedUser.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
-                    btnAuthenticate.Text = "Sign Out";
-
+                    cboTenant.Enabled = false;
                     cboTenant.Items.Clear();
-                    foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
-                    {
-                        if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
-                            cboTenant.Items.Add(azureTenant);
-                    }
+                    cmbSubscriptions.Enabled = false;
+                    cmbSubscriptions.Items.Clear();
 
-                    cboAzureEnvironment.Enabled = false;
-                    cboTenant.Enabled = true;
+                    await _AzureContext.Login();
 
-                    Application.DoEvents();
+                    if (_AzureContext.TokenProvider != null)
+                    {
+                        lblAuthenticatedUser.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                        btnAuthenticate.Text = "Sign Out";
 
-                    if (cboTenant.Items.Count == 0)
-                    {
-                        MessageBox.Show("This account does not have any Tenants with Azure Subscription(s).  Logging out of Azure AD Account.");
-                        btnAuthenticate_Click(this, null); // No tenants, logout
+                        cboTenant.Items.Clear();
+                        foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                        {
+                            if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
+                                cboTenant.Items.Add(azureTenant);
+                        }
+
+                        cboAzureEnvironment.Enabled = false;
+                        cboTenant.Enabled = true;
+
+                        Application.DoEvents();
+
+                        if (cboTenant.Items.Count == 0)
+                        {
+                            MessageBox.Show("This account does not have any Tenants with Azure Subscription(s).  Logging out of Azure AD Account.");
+                            btnAuthenticate_Click(this, null); // No tenants, logout
+                        }
+                        if (cboTenant.Items.Count == 1)
+                        {
+                            cboTenant.SelectedIndex = 0;
+                        }
+                        else if (cboTenant.Items.Count > 1)
+                        {
+                            _AzureContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Tenant");
+                        }
                     }
-                    if (cboTenant.Items.Count == 1)
+                    else
                     {
-                        cboTenant.SelectedIndex = 0;
-                    }
-                    else if (cboTenant.Items.Count > 1)
-                    {
-                        _AzureContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Tenant");
+                        _AzureContext.LogProvider.WriteLog("GetToken_Click", "Failed to get token");
                     }
                 }
-                else
+                catch (Microsoft.IdentityModel.Clients.ActiveDirectory.AdalServiceException exc)
                 {
-                    _AzureContext.LogProvider.WriteLog("GetToken_Click", "Failed to get token");
+                    if (exc.ErrorCode == "authentication_canceled")
+                    {
+                        // do nothing
+                    }
+                    else
+                        throw exc;
                 }
             }
             else

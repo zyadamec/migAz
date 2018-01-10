@@ -12,17 +12,24 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
-        private string _BlobStorageNamespace = String.Empty;
+        private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
-        private StorageAccount() { }
+        public StorageAccount()
+        {
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+        }
+        public StorageAccount(StorageAccountType storageAccountType)
+        {
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            this.StorageAccountType = storageAccountType;
+        }
 
         public StorageAccount(AzureContext azureContext, IStorageAccount source)
         {
             _AzureContext = azureContext;
             _Source = source;
             this.TargetName = source.Name;
-            this.AccountType = source.AccountType;
-            this._BlobStorageNamespace = azureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            this.StorageAccountType = MigrationTarget.StorageAccount.GetStorageAccountType(source.AccountType);
         }
 
         public string TargetName
@@ -31,8 +38,17 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
-        public string AccountType { get; set; }
-        public string BlobStorageNamespace { get { return _BlobStorageNamespace; } }
+        public string BlobStorageNamespace
+        {
+            get
+            {
+                if (_AzureContext == null)
+                    return String.Empty;
+                else
+                    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            }
+        }
+
         public IStorageAccount SourceAccount
         {
             get { return _Source; }
@@ -51,25 +67,28 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType
         {
-            get { return MigrationTarget.StorageAccount.GetStorageAccountType(this.AccountType); }
+            get { return _StorageAccountType; }
+            set { _StorageAccountType = value; }
         }
 
         public override string ToString()
         {
-            if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
+            if (_AzureContext == null)
+                return this.TargetName;
+            else if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
                 return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;
             else
                 return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;
         }
 
-        public static StorageAccountType GetStorageAccountType(string storageAccountType)
+        private static StorageAccountType GetStorageAccountType(string storageAccountType)
         {
             // https://msdn.microsoft.com/en-us/library/azure/hh264518.aspx
 
             if (String.Compare("Premium_LRS", storageAccountType, true) == 0)
-                return StorageAccountType.Premium;
+                return StorageAccountType.Premium_LRS;
 
-            return StorageAccountType.Standard;
+            return StorageAccountType.Standard_LRS;
         }
     }
 }

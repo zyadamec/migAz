@@ -5,27 +5,52 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {
-    public class Disk : ArmResource, IArmDisk
+    public class ClassicDisk : ArmResource, IArmDisk
     {
         private StorageAccount _SourceStorageAccount = null;
+        private Arm.VirtualMachine _ParentVirtualMachine = null;
 
-        public Disk(JToken resourceToken) : base(resourceToken)
+        public ClassicDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
         {
+            _ParentVirtualMachine = virtualMachine;
         }
 
-        private Disk() : base(null) { }
+        private ClassicDisk() : base(null) { }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
             _SourceStorageAccount = azureContext.AzureRetriever.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
+            this.SourceManagedDisk = await azureContext.AzureRetriever.GetAzureARMManagedDisk(this.ParentVirtualMachine, this.Name);
+        }
+
+        public Arm.VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
         }
 
         public string CreateOption => (string)this.ResourceToken["createOption"];
         public string Caching => (string)this.ResourceToken["caching"];
-        public int DiskSizeGb => Convert.ToInt32((string)this.ResourceToken["diskSizeGB"]);
+        public int DiskSizeGb
+        {
+            get
+            {
+                try
+                {
+                    Int32 diskSizeGb = 0;
+                    Int32.TryParse((string)this.ResourceToken["diskSizeGB"], out diskSizeGb);
+
+                    return diskSizeGb;
+                }
+                catch (System.NullReferenceException)
+                {
+                    return 0;
+                }
+            }
+        }
 
         public int Lun => Convert.ToInt32((string)ResourceToken["lun"]);
 
@@ -72,6 +97,17 @@ namespace MigAz.Azure.Arm
                     return String.Empty;
 
                 return MediaLink.Split(new char[] { '/' })[4];
+            }
+        }
+
+        public StorageAccountType StorageAccountType
+        {
+            get
+            {
+                if (_SourceStorageAccount != null)
+                    return _SourceStorageAccount.StorageAccountType;
+                else
+                    return StorageAccountType.Premium_LRS;
             }
         }
 
@@ -184,6 +220,8 @@ namespace MigAz.Azure.Arm
                 return (string)this.ResourceToken["encryptionSettings"]["keyEncryptionKey"]["keyUrl"];
             }
         }
+
+        public ManagedDisk SourceManagedDisk { get; internal set; }
 
         public override string ToString()
         {

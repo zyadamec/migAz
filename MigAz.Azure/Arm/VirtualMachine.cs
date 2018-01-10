@@ -11,6 +11,7 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualMachine : ArmResource, IVirtualMachine
     {
+        private AzureContext _AzureContext;
         private List<IArmDisk> _DataDisks = new List<IArmDisk>();
         private IArmDisk _OSVirtualHardDisk;
         private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
@@ -19,12 +20,29 @@ namespace MigAz.Azure.Arm
 
         private VirtualMachine() : base(null) { }
 
-        public VirtualMachine(JToken resourceToken) : base(resourceToken)
+        public VirtualMachine(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
         {
-            _OSVirtualHardDisk = new Disk(ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            _AzureContext = azureContext;
+
+            if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
+            {
+                _OSVirtualHardDisk = new ManagedDisk(_AzureContext, this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            }
+            else
+            {
+                _OSVirtualHardDisk = new ClassicDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+            }
+
             foreach (JToken dataDiskToken in ResourceToken["properties"]["storageProfile"]["dataDisks"])
             {
-                _DataDisks.Add(new Disk(dataDiskToken));
+                if (dataDiskToken["vhd"] == null)
+                {
+                    _DataDisks.Add(new ManagedDisk(_AzureContext, this, dataDiskToken));
+                }
+                else
+                {
+                    _DataDisks.Add(new ClassicDisk(this, dataDiskToken));
+                }
             }
         }
 
@@ -64,6 +82,7 @@ namespace MigAz.Azure.Arm
 
         public List<IArmDisk> DataDisks => _DataDisks;
         public IArmDisk OSVirtualHardDisk => _OSVirtualHardDisk;
+
         public List<NetworkInterface> NetworkInterfaces => _NetworkInterfaceCards;
 
         public AvailabilitySet AvailabilitySet
@@ -94,11 +113,16 @@ namespace MigAz.Azure.Arm
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
 
+
             await this.OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
 
-            foreach (Disk dataDisk in this.DataDisks)
+            foreach (IArmDisk dataDisk in this.DataDisks)
             {
-                await dataDisk.InitializeChildrenAsync(azureContext);
+                if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                {
+                    ClassicDisk classicDisk = (Arm.ClassicDisk)dataDisk;
+                    await classicDisk.InitializeChildrenAsync(azureContext);
+                }
             }
 
             foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
@@ -115,6 +139,11 @@ namespace MigAz.Azure.Arm
             }
 
             return;
+        }
+
+        public async Task Refresh()
+        {
+            base.SetResourceToken(await _AzureContext.AzureRetriever.GetAzureArmVirtualMachineDetail(this));
         }
 
         public override string ToString()

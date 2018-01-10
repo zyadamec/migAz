@@ -199,7 +199,7 @@ namespace MigAz.Forms
             System.Diagnostics.Process.Start("https://aka.ms/migaz");
         }
 
-        private void btnExport_Click_1(object sender, EventArgs e)
+        private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
             if (splitContainer2.Panel1.Controls.Count == 1)
             {
@@ -215,7 +215,7 @@ namespace MigAz.Forms
                 migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
                 // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                btnRefreshOutput_Click(this, null);
+                await RefreshOutput();
 
                 migrator.TemplateGenerator.Write();
 
@@ -266,6 +266,11 @@ namespace MigAz.Forms
 
         private async void btnRefreshOutput_Click(object sender, EventArgs e)
         {
+            await RefreshOutput();
+        }
+
+        private async Task RefreshOutput()
+        {
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             if (parent.Controls.Count == 1)
@@ -278,6 +283,8 @@ namespace MigAz.Forms
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
+
+                migrator.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
 
                 await migrator.TemplateGenerator.GenerateStreams();
                 await migrator.TemplateGenerator.SerializeStreams();
@@ -390,6 +397,7 @@ namespace MigAz.Forms
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
             asmToArm.AzureResourceImageList = this.imageList1;
@@ -412,6 +420,7 @@ namespace MigAz.Forms
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
+            asmToArm.AzureContextSourceASM.AzureRetriever.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
             asmToArm.AzureResourceImageList = this.imageList1;

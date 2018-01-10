@@ -9,41 +9,64 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class Route : IMigrationTarget
     {
-        private AzureContext _AzureContext;
+        private IRoute _Source;
         private String _TargetName = String.Empty;
-        private String _NextHopType = String.Empty;
+        private NextHopTypeEnum _NextHopType = NextHopTypeEnum.VnetLocal;
         private String _AddressPrefix = String.Empty;
         private String _NextHopIpAddress = String.Empty;
         
 
         private Route() { }
 
-        public Route(AzureContext azureContext)
+        public Route(IRoute route)
         {
-            this._AzureContext = azureContext;
+            _Source = route;
+
+            this.TargetName = route.Name;
+            this.NextHopType = route.NextHopType;
+            this.AddressPrefix = route.AddressPrefix;
+            this.NextHopIpAddress = route.NextHopIpAddress;
         }
 
-        public String NextHopType
+        public NextHopTypeEnum NextHopType
         {
             get { return _NextHopType; }
-            set { _NextHopType = value.Trim(); }
+            set { _NextHopType = value; }
         }
 
         public String AddressPrefix
         {
             get { return _AddressPrefix; }
-            set { _AddressPrefix = value.Trim(); }
+            set
+            {
+                if (value == null)
+                    _AddressPrefix = String.Empty;
+                else
+                    _AddressPrefix = value.Trim();
+            }
         }
         public String NextHopIpAddress
         {
             get { return _NextHopIpAddress; }
-            set { _NextHopIpAddress = value.Trim(); }
+            set
+            {
+                if (value == null)
+                    _NextHopIpAddress = String.Empty;
+                else
+                    _NextHopIpAddress = value.Trim();
+            }
         }
 
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+            set
+            {
+                if (value == null)
+                    _TargetName = String.Empty;
+                else
+                    _TargetName = value.Trim().Replace(" ", String.Empty);
+            }
         }
 
         public String SourceName

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MigAz.Core</RootNamespace>
     <AssemblyName>MigAz.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -70,6 +70,7 @@
     <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITelemetryProvider.cs" />
     <Compile Include="Interface\IVirtualMachine.cs" />
+    <Compile Include="Interface\IVirtualMachineImage.cs" />
     <Compile Include="Interface\IVirtualNetwork.cs" />
     <Compile Include="Interface\IVirtualNetworkGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace MigAz.Core.Interface
 {
+    public enum ArmDiskType
+    {
+        ManagedDisk,
+        ClassicDisk
+    }
+
     public interface IDisk
     {
         Int32 DiskSizeGb { get; }
-        //String MediaLink { get; }
-        //String StorageAccountBlob { get; }
-        //String StorageAccountContainer { get; }
-        //String StorageAccountName { get; }
-        //String StorageKey { get; }
+        bool IsEncrypted { get; }
+        StorageAccountType StorageAccountType { get; }
+
     }
 }

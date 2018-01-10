@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using System.Collections.Generic;
 
 namespace MigAz.Azure.UserControls
 {
@@ -14,17 +15,9 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
-        public bool AllowManangedDisk
-        {
-            get { return this.diskProperties1.AllowManangedDisk; }
-            set { this.diskProperties1.AllowManangedDisk = value; }
-        }
-
         public VirtualMachineProperties()
         {
             InitializeComponent();
-            this.diskProperties1.PropertyChanged += Properties1_PropertyChanged;
-            this.diskProperties1.ShowSizeInGb = false;
         }
 
         public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, MigrationTarget.VirtualMachine virtualMachine)
@@ -67,11 +60,6 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (_VirtualMachine.OSVirtualHardDisk != null)
-                this.diskProperties1.Bind(azureContext, _TargetTreeView, _VirtualMachine.OSVirtualHardDisk);
-            else
-                this.diskProperties1.Visible = false;
-
             cbRoleSizes.Items.Clear();
             if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)
             {
@@ -84,7 +72,10 @@ namespace MigAz.Azure.UserControls
                 {
                     foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
                     {
-                        cbRoleSizes.Items.Add(vmSize);
+                        if (vmSize.IsStorageTypeSupported(_VirtualMachine.OSVirtualHardDisk.StorageAccountType))
+                        {
+                            cbRoleSizes.Items.Add(vmSize);
+                        }
                     }
                 }
 
@@ -101,6 +92,32 @@ namespace MigAz.Azure.UserControls
                 lblTargetLocationRequired.Enabled = true;
                 lblTargetLocationRequired.Visible = true;
             }
+
+            availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
+            osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView);
+            primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView);
+
+            foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
+            {
+                AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
+            }
+            foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
+            {
+                if (!targetNIC.IsPrimary)
+                    AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
+            }
+
+            label15.Visible = pictureBox1.Controls.Count > 0;
+        }
+
+        private void AddResourceSummary(ResourceSummary resourceSummary)
+        {
+            if (pictureBox1.Controls.Count > 0)
+            {
+                resourceSummary.Top = pictureBox1.Controls[pictureBox1.Controls.Count - 1].Top + pictureBox1.Controls[pictureBox1.Controls.Count - 1].Height;
+            }
+
+            pictureBox1.Controls.Add(resourceSummary);
         }
 
         private async Task Properties1_PropertyChanged()

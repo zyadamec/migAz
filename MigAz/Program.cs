@@ -18,7 +18,7 @@ namespace MigAz
             Application.SetCompatibleTextRenderingDefault(false);
             Application.ThreadException += Application_ThreadException;
             programForm = new MigAzForm();
-           Application.Run(programForm);
+            Application.Run(programForm);
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)

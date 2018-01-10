@@ -5,6 +5,8 @@ namespace MigAz.Forms
 {
     public partial class OptionsDialog : Form
     {
+        private bool _HasChanges = false;
+
         public OptionsDialog()
         {
             InitializeComponent();
@@ -37,6 +39,8 @@ namespace MigAz.Forms
                     chkAllowTelemetry.Checked = false;
                 }
             }
+
+            _HasChanges = true;
         }
 
         private void txtStorageAccountSuffix_KeyPress(object sender, KeyPressEventArgs e)
@@ -45,9 +49,13 @@ namespace MigAz.Forms
             {
                 e.Handled = true;
             }
+            else
+            {
+                _HasChanges = true;
+            }
         }
 
-        private void btnOK_Click(object sender, EventArgs e)
+        private void SaveChanges()
         {
             app.Default.ResourceGroupSuffix = txtResourceGroupSuffix.Text.Trim();
             app.Default.VirtualNetworkSuffix = txtVirtualNetworkSuffix.Text.Trim();
@@ -63,7 +71,22 @@ namespace MigAz.Forms
             app.Default.SaveSelection = chkSaveSelection.Checked;
             app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
+            app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
+
+            if (rbClassicDisk.Checked)
+                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ClassicDisk;
+            else
+                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ManagedDisk;
+
             app.Default.Save();
+
+            _HasChanges = false;
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            if (_HasChanges)
+                SaveChanges();
         }
 
         private void formOptions_Load(object sender, EventArgs e)
@@ -82,6 +105,14 @@ namespace MigAz.Forms
             chkSaveSelection.Checked = app.Default.SaveSelection;
             chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
+            upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
+
+            if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
+                rbClassicDisk.Checked = true;
+            else
+                rbManagedDisk.Checked = true;
+
+            _HasChanges = false;
         }
 
         private void btnApplyDefaultNaming_Click(object sender, EventArgs e)
@@ -96,6 +127,47 @@ namespace MigAz.Forms
             txtAvailabilitySetSuffix.Text = "-as";
             txtVirtualMachineSuffix.Text = "-vm";
             txtNetworkInterfaceCardSuffix.Text = "-nic";
+        }
+
+        private void OptionsDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_HasChanges)
+            {
+                DialogResult result = MessageBox.Show("Do you want to save your MigAz Option changes?", "Pending Changes", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes)
+                {
+                    this.SaveChanges();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void migAzOption_CheckedChanged(object sender, EventArgs e)
+        {
+            _HasChanges = true;
+        }
+
+        private void migAzOption_TextChanged(object sender, EventArgs e)
+        {
+            _HasChanges = true;
+        }
+
+        private void upDownAccessSASMinutes_ValueChanged(object sender, EventArgs e)
+        {
+            _HasChanges = true;
+        }
+
+        private void migAzOption_CheckChanged(object sender, EventArgs e)
+        {
+            _HasChanges = true;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            _HasChanges = false;
         }
     }
 }

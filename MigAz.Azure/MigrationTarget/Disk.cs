@@ -12,27 +12,34 @@ namespace MigAz.Azure.MigrationTarget
     {
         private string _TargetName = String.Empty;
         private Int32 _DiskSizeInGB = 0;
+        private VirtualMachine _ParentVirtualMachine;
 
-        public Disk() { }
+        private Disk() { }
 
-        public Disk(Asm.Disk sourceDisk)
+        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine)
         {
             this.SourceDisk = sourceDisk;
+            this._ParentVirtualMachine = parentVirtualMachine;
+            this.TargetStorage = new ManagedDiskStorage(sourceDisk);
+
             this.TargetName = sourceDisk.DiskName;
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
             this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
+
         }
 
-        public Disk(IArmDisk sourceDisk)
+        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine)
         {
             this.SourceDisk = (IDisk)sourceDisk;
+            this._ParentVirtualMachine = parentVirtualMachine;
+            this.TargetStorage = new ManagedDiskStorage(sourceDisk);
 
-            if (sourceDisk.GetType() == typeof(Azure.Arm.Disk))
+            if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {
-                Azure.Arm.Disk armDisk = (Azure.Arm.Disk)sourceDisk;
+                Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)sourceDisk;
 
                 this.TargetName = armDisk.Name;
                 this.Lun = armDisk.Lun;
@@ -45,10 +52,16 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
+                this.TargetName = armManagedDisk.Name;
+                this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
             }
-
         }
 
+        public VirtualMachine ParentVirtualMachine
+        {
+            get { return _ParentVirtualMachine; }
+            set { _ParentVirtualMachine = value; }
+        }
 
         public string TargetName
         {
@@ -95,18 +108,17 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-
-
         public IStorageAccount SourceStorageAccount
         {
             get; private set;
         }
 
-        public IStorageTarget TargetStorageAccount
+        public IStorageTarget TargetStorage
         {
-            get;set;
+            get;
+            set;
         }
-
+        
         public string TargetStorageAccountContainer
         {
             get { return "vhds"; }
@@ -119,14 +131,19 @@ namespace MigAz.Azure.MigrationTarget
 
         public StorageAccountType StorageAccountType
         {
-            get { return this.TargetStorageAccount.StorageAccountType; }
+            get {
+                if (this.TargetStorage != null)
+                    return this.TargetStorage.StorageAccountType;
+
+                return StorageAccountType.Premium_LRS;
+            }
         }
 
         public string TargetMediaLink
         {
             get
             {
-                return "https://" + TargetStorageAccount.ToString() + "." + TargetStorageAccount.BlobStorageNamespace + "/vhds/" + this.TargetStorageAccountBlob;
+                return "https://" + TargetStorage.ToString() + "." + TargetStorage.BlobStorageNamespace + "/vhds/" + this.TargetStorageAccountBlob;
             }
         }
 
@@ -134,7 +151,39 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                return this.TargetStorageAccount != null && this.TargetStorageAccount.GetType() == typeof(Azure.MigrationTarget.ManagedDisk);
+                return this.TargetStorage != null && this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage);
+            }
+        }
+
+        public bool IsUnmanagedDisk
+        {
+            get
+            {
+                return this.TargetStorage != null && (this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.StorageAccount) || this.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount));
+            }
+        }
+        public string ReferenceId
+        {
+            get
+            {
+                if (this.TargetStorage != null && this.TargetStorage.GetType() == typeof(Azure.MigrationTarget.ManagedDiskStorage))
+                    return "[concat(subscription().id, '/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Compute/disks/', '" + this.ToString() + "')]";
+                else return 
+                        String.Empty;
+            }
+        }
+
+        public bool IsSmallerThanSourceDisk
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return false;
+
+                if (this.DiskSizeInGB < this.SourceDisk.DiskSizeGb)
+                    return true;
+
+                return false;
             }
         }
 

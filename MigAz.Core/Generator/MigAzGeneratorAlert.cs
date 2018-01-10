@@ -10,7 +10,8 @@ namespace MigAz.Core.Generator
     public enum AlertType
     {
         Error,
-        Warning
+        Warning,
+        Recommendation
     }
 
     public class MigAzGeneratorAlert

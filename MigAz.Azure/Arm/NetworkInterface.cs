@@ -25,8 +25,10 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal async override Task InitializeChildrenAsync(AzureContext azureContext)
         {
+            await base.InitializeChildrenAsync(azureContext);
+
             foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in this.NetworkInterfaceIpConfigurations)
             {
                 await networkInterfaceIpConfiguration.InitializeChildrenAsync(azureContext);
@@ -36,7 +38,21 @@ namespace MigAz.Azure.Arm
                 this.NetworkSecurityGroup = await azureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
         }
 
-        public string EnableIPForwarding => (string)ResourceToken["properties"]["enableIPForwarding"];
+        public bool EnableIPForwarding
+        {
+            get
+            {
+                try
+                {
+                    return (bool)ResourceToken["properties"]["enableIPForwarding"];
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public string EnableAcceleratedNetworking => (string)ResourceToken["properties"]["enableAcceleratedNetworking"];
         public Guid ResourceGuid => new Guid((string)ResourceToken["properties"]["resourceGuid"]);
         public bool IsPrimary => Convert.ToBoolean((string)ResourceToken["properties"]["primary"]);
