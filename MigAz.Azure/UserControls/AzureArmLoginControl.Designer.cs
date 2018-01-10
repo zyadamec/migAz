@@ -37,6 +37,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.cboTenant = new System.Windows.Forms.ComboBox();
+            this.ckbIncludePreviewRegions = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lblAuthenticatedUser
@@ -145,10 +146,22 @@
             this.cboTenant.TabIndex = 61;
             this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
             // 
-            // AzureArmLoginControl2
+            // ckbIncludePreviewRegions
+            // 
+            this.ckbIncludePreviewRegions.AutoSize = true;
+            this.ckbIncludePreviewRegions.Location = new System.Drawing.Point(700, 15);
+            this.ckbIncludePreviewRegions.Name = "ckbIncludePreviewRegions";
+            this.ckbIncludePreviewRegions.Size = new System.Drawing.Size(357, 29);
+            this.ckbIncludePreviewRegions.TabIndex = 63;
+            this.ckbIncludePreviewRegions.Text = "Include preview regions (France)";
+            this.ckbIncludePreviewRegions.UseVisualStyleBackColor = true;
+            this.ckbIncludePreviewRegions.CheckedChanged += new System.EventHandler(this.ckbIncludePreviewRegions_CheckedChanged);
+            // 
+            // AzureArmLoginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ckbIncludePreviewRegions);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cboTenant);
             this.Controls.Add(this.lblAuthenticatedUser);
@@ -158,7 +171,7 @@
             this.Controls.Add(this.btnAuthenticate);
             this.Controls.Add(this.cboAzureEnvironment);
             this.Controls.Add(this.label1);
-            this.Name = "AzureArmLoginControl2";
+            this.Name = "AzureArmLoginControl";
             this.Size = new System.Drawing.Size(1171, 267);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -176,5 +189,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cboTenant;
+        private System.Windows.Forms.CheckBox ckbIncludePreviewRegions;
     }
 }

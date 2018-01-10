@@ -885,7 +885,7 @@ namespace MigAz.Azure
             return matchedLocation;
         }
 
-        public async virtual Task<List<Arm.Location>> GetAzureARMLocations(bool includePreviewRegions=true)
+        public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "Start");
 
@@ -905,7 +905,7 @@ namespace MigAz.Azure
                 _ArmLocations.Add(armLocation);
             }
 
-            if (includePreviewRegions)
+            if (_AzureContext.IncludePreviewRegions)
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "France preview regions added by code");
                 

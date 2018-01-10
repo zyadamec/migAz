@@ -8,6 +8,7 @@ namespace MigAz.Azure
 {
     public class AzureContext
     {
+        private bool _includePreviewRegions = false;
         private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureServiceUrls _AzureServiceUrls;
 
@@ -79,6 +80,11 @@ namespace MigAz.Azure
 
                 AzureEnvironmentChanged?.Invoke(this);
             }
+        }
+
+        public bool IncludePreviewRegions {
+            get { return _includePreviewRegions; }
+            set { _includePreviewRegions = value; }
         }
 
         public AzureTenant AzureTenant

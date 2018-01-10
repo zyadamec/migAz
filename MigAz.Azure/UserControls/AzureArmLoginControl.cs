@@ -221,5 +221,10 @@ namespace MigAz.Azure.UserControls
 
             Application.DoEvents();
         }
+
+        private void ckbIncludePreviewRegions_CheckedChanged(object sender, EventArgs e)
+        {
+            _AzureContext.IncludePreviewRegions = ckbIncludePreviewRegions.Checked;
+        }
     }
 }
