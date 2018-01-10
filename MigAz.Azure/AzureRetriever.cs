@@ -988,11 +988,10 @@ namespace MigAz.Azure
             {
                 _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "France preview regions added by code");
 
-                // commented due to currently DR test implying all DC shutdown
-                //// Add Preview Location for France Central (centered on Eiffel Tower)
-                //var franceCentralJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francecentral\", \"name\": \"francecentral\",  \"displayName\": \"France Central\",  \"longitude\": \"2.294\",  \"latitude\": \"48.858\"}";
-                //var lfc = JToken.Parse(franceCentralJson);
-                //_ArmLocations.Add(new Arm.Location(_AzureContext, lfc));
+                // Add Preview Location for France Central (centered on Eiffel Tower)
+                var franceCentralJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francecentral\", \"name\": \"francecentral\",  \"displayName\": \"France Central\",  \"longitude\": \"2.294\",  \"latitude\": \"48.858\"}";
+                var lfc = JToken.Parse(franceCentralJson);
+                _ArmLocations.Add(new Arm.Location(_AzureContext, lfc));
 
                 // Add Preview Location for France South (centered on If Castle)
                 var franceSouthJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francesouth\", \"name\": \"francesouth\",  \"displayName\": \"France South\",  \"longitude\": \"5.325126\",  \"latitude\": \"43.279841\"}";
@@ -1733,6 +1732,7 @@ namespace MigAz.Azure
 
                 // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
                 HttpWebResponse response = null;
+                const Int32 maxRetrySecond = 16;     // to avoid infinite retry in case of API Call failure
                 Int32 retrySeconds = 1;
                 bool boolRetryGetResponse = true;
                 while (boolRetryGetResponse)
@@ -1765,6 +1765,14 @@ namespace MigAz.Azure
                                 Application.DoEvents();
                             }
                             retrySeconds = retrySeconds * 2;
+
+                            if (retrySeconds>maxRetrySecond)
+                            {
+                                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
+                                _AzureContext.StatusProvider.UpdateStatus("Too many retry.");
+                                throw webException;
+                                // too many retry -> throw exception 
+                            }
 
                             _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
                             _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
