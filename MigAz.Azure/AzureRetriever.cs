@@ -1732,7 +1732,7 @@ namespace MigAz.Azure
 
                 // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
                 HttpWebResponse response = null;
-                const Int32 maxRetrySecond = 16;     // to avoid infinite retry in case of API Call failure
+                const Int32 maxRetrySecond = 32;     // to avoid infinite retry in case of API Call failure
                 Int32 retrySeconds = 1;
                 bool boolRetryGetResponse = true;
                 while (boolRetryGetResponse)
