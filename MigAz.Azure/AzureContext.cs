@@ -126,6 +126,7 @@ namespace MigAz.Azure
 
         public async Task CopyContext(AzureContext sourceContext)
         {
+            this.IncludePreviewRegions = sourceContext.IncludePreviewRegions;
             this.AzureEnvironment = sourceContext.AzureEnvironment;
             await this.SetTenantContext(sourceContext.AzureTenant);
             await this.SetSubscriptionContext(sourceContext.AzureSubscription);
