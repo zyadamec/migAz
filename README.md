@@ -34,6 +34,11 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.3.1.0
+ - adding support for France preview (France Central, France South)
+ - limiting api call retries in case of multiple errors
+ - update VM sku supporting premium disk.
+
 ### v2.3.0.0
  - Initial release to allow copying of ASM directly to Managed Disks, as well as deployed ARM Managed Disks.
  - KNOWN ISSUE:  An ARM VM that has Managed Disks must be stopped to allow MigAz v2.3.0.0 to obtain an AccessSAS URL for each Managed Disk.  Use of snapshots will be investigated for a future release.
