@@ -1911,11 +1911,11 @@ namespace MigAz.Azure
                                         if (inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName") != null)
                                             targetProbe.Name = inputendpoint.SelectSingleNode("LoadBalancedEndpointSetName").InnerText;
 
-                                        if (probenode.SelectSingleNode("Port") != null)
-                                            targetProbe.Port = Int32.Parse(probenode.SelectSingleNode("Port").InnerText);
+                                        if (inputendpoint.SelectSingleNode("Port") != null)
+                                            targetProbe.Port = Int32.Parse(inputendpoint.SelectSingleNode("Port").InnerText);
 
-                                        if (probenode.SelectSingleNode("Protocol") != null)
-                                            targetProbe.Protocol = probenode.SelectSingleNode("Protocol").InnerText;
+                                        if (inputendpoint.SelectSingleNode("Protocol") != null)
+                                            targetProbe.Protocol = inputendpoint.SelectSingleNode("Protocol").InnerText;
 
                                         targetLoadBalancer.Probes.Add(targetProbe);
                                     }
