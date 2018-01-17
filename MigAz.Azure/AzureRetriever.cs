@@ -245,7 +245,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, accessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, accessToken, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
