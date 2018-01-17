@@ -42,8 +42,36 @@ namespace MigAz.Azure.MigrationTarget
             _SourceAvailabilitySet = availabilitySet;
 
             this.TargetName = _SourceAvailabilitySet.Name;
-            this.PlatformFaultDomainCount = availabilitySet.PlatformFaultDomainCount;
-            this.PlatformUpdateDomainCount = availabilitySet.PlatformUpdateDomainCount;
+
+            if (availabilitySet.PlatformFaultDomainCount < Constants.AvailabilitySetMinPlatformFaultDomain)
+            {
+                // todo future, track object translation alerts
+                this.PlatformFaultDomainCount = Constants.AvailabilitySetMinPlatformFaultDomain;
+            }
+            else if (availabilitySet.PlatformFaultDomainCount > Constants.AvailabilitySetMaxPlatformFaultDomain)
+            {
+                // todo future, track object translation alerts
+                this.PlatformFaultDomainCount = Constants.AvailabilitySetMaxPlatformFaultDomain;
+            }
+            else
+            {
+                this.PlatformFaultDomainCount = availabilitySet.PlatformFaultDomainCount;
+            }
+
+            if (availabilitySet.PlatformUpdateDomainCount < Constants.AvailabilitySetMinPlatformUpdateDomain)
+            {
+                // todo future, track object translation alerts
+                this.PlatformUpdateDomainCount = Constants.AvailabilitySetMinPlatformUpdateDomain;
+            }
+            else if (availabilitySet.PlatformUpdateDomainCount > Constants.AvailabilitySetMaxPlatformUpdateDomain)
+            {
+                // todo future, track object translation alerts
+                this.PlatformUpdateDomainCount = Constants.AvailabilitySetMaxPlatformUpdateDomain;
+            }
+            else
+            {
+                this.PlatformUpdateDomainCount = availabilitySet.PlatformUpdateDomainCount;
+            }
         }
 
         public IAvailabilitySetSource SourceAvailabilitySet
@@ -79,10 +107,10 @@ namespace MigAz.Azure.MigrationTarget
             get { return _PlatformUpdateDomainCount; }
             set
             {
-                if (value >= 5 && value <= 20)
+                if (value >= Constants.AvailabilitySetMinPlatformUpdateDomain && value <= Constants.AvailabilitySetMaxPlatformUpdateDomain)
                     _PlatformUpdateDomainCount = value;
                 else
-                    throw new ArgumentException("Platform Update Domain Count must be between 5 and 20.");
+                    throw new ArgumentException("Platform Update Domain Count must be between " + Constants.AvailabilitySetMinPlatformUpdateDomain.ToString() + " and " + Constants.AvailabilitySetMaxPlatformUpdateDomain.ToString() + ".");
             }
         }
 
@@ -91,10 +119,10 @@ namespace MigAz.Azure.MigrationTarget
             get { return _PlatformFaultDomainCount; }
             set
             {
-                if (value >= 2 && value <= 3)
+                if (value >= Constants.AvailabilitySetMinPlatformFaultDomain && value <= Constants.AvailabilitySetMaxPlatformFaultDomain)
                     _PlatformFaultDomainCount = value;
                 else
-                    throw new ArgumentException("Platform Fault Domain Count must be between 2 and 3.");
+                    throw new ArgumentException("Platform Fault Domain Count must be between " + Constants.AvailabilitySetMinPlatformFaultDomain.ToString() + " and " + Constants.AvailabilitySetMaxPlatformFaultDomain.ToString() + ".");
             }
         }
 

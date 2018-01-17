@@ -130,6 +130,7 @@
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
+    <Compile Include="MigrationTarget\Constants.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
     <Compile Include="MigrationTarget\FrontEndIpConfiguration.cs" />
     <Compile Include="MigrationTarget\InboundNatRule.cs" />

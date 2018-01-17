@@ -108,7 +108,7 @@ namespace MigAz.Azure.Arm
             await base.InitializeChildrenAsync(azureContext);
 
             if (this.AvailabilitySetId != String.Empty)
-                this.AvailabilitySet = azureContext.AzureRetriever.GetAzureARMAvailabilitySet(azureContext.AzureSubscription, this.AvailabilitySetId);
+                this.AvailabilitySet = azureContext.AzureSubscription.GetAzureARMAvailabilitySet(azureContext.AzureSubscription, this.AvailabilitySetId);
 
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
@@ -127,7 +127,7 @@ namespace MigAz.Azure.Arm
 
             foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
             {
-                NetworkInterface networkInterface = await azureContext.AzureRetriever.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
+                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
                 networkInterface.VirtualMachine = this;
                 _NetworkInterfaceCards.Add(networkInterface);
             }
@@ -143,7 +143,7 @@ namespace MigAz.Azure.Arm
 
         public async Task Refresh()
         {
-            base.SetResourceToken(await _AzureContext.AzureRetriever.GetAzureArmVirtualMachineDetail(this));
+            base.SetResourceToken(await _AzureContext.AzureSubscription.GetAzureArmVirtualMachineDetail(this));
         }
 
         public override string ToString()

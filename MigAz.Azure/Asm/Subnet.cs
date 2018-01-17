@@ -107,12 +107,12 @@ namespace MigAz.Azure.Asm
         {
             if (this.NetworkSecurityGroupName != String.Empty)
             {
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
             }
 
             if (this.RouteTableName != String.Empty)
             {
-                _AsmRouteTable = await _AzureContext.AzureRetriever.GetAzureAsmRouteTable(this.RouteTableName);
+                _AsmRouteTable = await _AzureContext.AzureSubscription.GetAzureAsmRouteTable(this.RouteTableName);
             }
         }
 

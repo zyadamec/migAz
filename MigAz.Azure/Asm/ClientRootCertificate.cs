@@ -24,7 +24,7 @@ namespace MigAz.Azure.Asm
 
         public async Task InitializeChildrenAsync()
         {
-            _AsmClientRootCertificateDataXml = await _AzureContext.AzureRetriever.GetAzureAsmClientRootCertificateData(_AsmVirtualNetwork, this.Thumbprint);
+            _AsmClientRootCertificateDataXml = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificateData(_AsmVirtualNetwork, this.Thumbprint);
         }
 
         public string Thumbprint

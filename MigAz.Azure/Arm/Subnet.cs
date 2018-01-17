@@ -24,11 +24,11 @@ namespace MigAz.Azure.Arm
         {
             if (this.NetworkSecurityGroupId != string.Empty)
             {
-                _NetworkSecurityGroup = await azureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+                _NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
             }
             if (this.RouteTableId != string.Empty)
             {
-                _RouteTable = await azureContext.AzureRetriever.GetAzureARMRouteTable(this.RouteTableId);
+                _RouteTable = await azureContext.AzureSubscription.GetAzureARMRouteTable(this.RouteTableId);
             }
         }
 
