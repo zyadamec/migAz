@@ -35,7 +35,7 @@ namespace MigAz.Azure.Arm
             }
 
             if (this.NetworkSecurityGroupId != String.Empty)
-                this.NetworkSecurityGroup = await azureContext.AzureRetriever.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+                this.NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
         }
 
         public bool EnableIPForwarding

@@ -21,7 +21,7 @@ namespace MigAz.Azure.Arm
 
         internal override async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _VirtualNetwork = azureContext.AzureRetriever.GetAzureARMVirtualNetwork(azureContext.AzureSubscription, this.SubnetId);
+            _VirtualNetwork = azureContext.AzureSubscription.GetAzureARMVirtualNetwork(azureContext.AzureSubscription, this.SubnetId);
 
             if (_VirtualNetwork != null)
             {
@@ -37,7 +37,7 @@ namespace MigAz.Azure.Arm
 
             if (this.PublicIpAddressId != String.Empty)
             {
-                _PublicIP = await azureContext.AzureRetriever.GetAzureARMPublicIP(this.PublicIpAddressId);
+                _PublicIP = await azureContext.AzureSubscription.GetAzureARMPublicIP(this.PublicIpAddressId);
             }
         }
 

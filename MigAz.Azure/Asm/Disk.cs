@@ -20,7 +20,7 @@ namespace MigAz.Azure.Asm
 
         public async Task InitializeChildren()
         {
-            _SourceStorageAccount = await _AzureContext.AzureRetriever.GetAzureAsmStorageAccount(StorageAccountName);
+            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(StorageAccountName);
         }
 
         #region Properties

@@ -37,7 +37,7 @@ namespace MigAz.Azure.Asm
         public async Task InitializeChildrenAsync()
         {
             if (_XmlNode.SelectSingleNode("AffinityGroup") != null)
-                _AsmAffinityGroup = await _AzureContext.AzureRetriever.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
+                _AsmAffinityGroup = await _AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
 
             foreach (XmlNode subnetNode in _XmlNode.SelectNodes("Subnets/Subnet"))
             {
@@ -46,7 +46,7 @@ namespace MigAz.Azure.Asm
                 _AsmSubnets.Add(asmSubnet);
             }
 
-            _AsmVirtualNetworkGateway = await _AzureContext.AzureRetriever.GetAzureAsmVirtualNetworkGateway(this);
+            _AsmVirtualNetworkGateway = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkGateway(this);
 
             _AsmLocalNetworkSites = new List<LocalNetworkSite>();
             foreach (XmlNode localNetworkSiteXml in _XmlNode.SelectNodes("Gateway/Sites/LocalNetworkSite"))
@@ -56,7 +56,7 @@ namespace MigAz.Azure.Asm
                 _AsmLocalNetworkSites.Add(asmLocalNetworkSite);
             }
 
-            _AsmClientRootCertificates = await _AzureContext.AzureRetriever.GetAzureAsmClientRootCertificates(this);
+            _AsmClientRootCertificates = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificates(this);
         }
 
         #endregion

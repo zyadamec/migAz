@@ -23,8 +23,8 @@ namespace MigAz.Azure.Arm
 
         public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = azureContext.AzureRetriever.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
-            this.SourceManagedDisk = await azureContext.AzureRetriever.GetAzureARMManagedDisk(this.ParentVirtualMachine, this.Name);
+            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
+            this.SourceManagedDisk = await azureContext.AzureSubscription.GetAzureARMManagedDisk(this.ParentVirtualMachine, this.Name);
         }
 
         public Arm.VirtualMachine ParentVirtualMachine

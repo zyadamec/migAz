@@ -397,7 +397,7 @@ namespace MigAz.Forms
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.AzureRetriever.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
+            asmToArm.AzureContextSourceASM.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
             asmToArm.AzureResourceImageList = this.imageList1;
@@ -420,7 +420,7 @@ namespace MigAz.Forms
             SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
 
             AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.AzureRetriever.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
+            asmToArm.AzureContextSourceASM.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
             asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
             asmToArm.AzureResourceImageList = this.imageList1;

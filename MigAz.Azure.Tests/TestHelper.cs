@@ -81,7 +81,7 @@ namespace MigAz.Tests
 
         internal static async Task<Azure.MigrationTarget.ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
-            List<Azure.Arm.Location> azureLocations = await azureContext.AzureRetriever.GetAzureARMLocations();
+            List<Azure.Arm.Location> azureLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
             Azure.MigrationTarget.ResourceGroup targetResourceGroup = new Azure.MigrationTarget.ResourceGroup();
             targetResourceGroup.TargetLocation = azureLocations[0];
             return targetResourceGroup;

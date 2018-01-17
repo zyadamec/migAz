@@ -24,7 +24,7 @@ namespace MigAz.Azure.Arm
 
         internal async Task InitializeChildrenAsync()
         {
-            await _AzureContext.AzureRetriever.GetAzureARMLocationVMSizes(this);
+            await _AzureContext.AzureSubscription.GetAzureARMLocationVMSizes(this);
         }
 
         #endregion
