@@ -28,7 +28,7 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\AsmObjectsOffline.json");
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureRetriever.BindAsmResources();
+            await azureContextUSCommercial.AzureSubscription.BindAsmResources();
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -60,7 +60,7 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\ArmObjectsOffline.json");
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureRetriever.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources();
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -92,7 +92,7 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureRetriever.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources();
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -100,38 +100,38 @@ namespace MigAz.Tests
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
 
-            artifacts.VirtualMachines.Add(azureContextUSCommercial.AzureRetriever.ArmTargetVirtualMachines[0]);
+            artifacts.VirtualMachines.Add(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualMachines[0]);
             artifacts.VirtualMachines[0].OSVirtualHardDisk.DiskSizeInGB = 128;
 
             await templateGenerator.UpdateArtifacts(artifacts);
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' utilizes Network Security Group (NSG) 'ManagedDisk01-nsg-nsg', but the NSG resource is not added into the migration template."));
-            artifacts.NetworkSecurityGroups.Add(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkSecurityGroups[0]);
+            artifacts.NetworkSecurityGroups.Add(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' utilizes Network Security Group (NSG) 'ManagedDisk01-nsg-nsg', but the NSG resource is not added into the migration template."));
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Target Virtual Network 'ManagedDiskvnet-vnet' for Virtual Machine 'ManagedDisk01-vm' Network Interface 'manageddisk01549-nic' is invalid, as it is not included in the migration / template."));
-            artifacts.VirtualNetworks.Add(azureContextUSCommercial.AzureRetriever.ArmTargetVirtualNetworks[0]);
+            artifacts.VirtualNetworks.Add(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Target Virtual Network 'ManagedDiskvnet-vnet' for Virtual Machine 'ManagedDisk01-vm' Network Interface 'manageddisk01549-nic' is invalid, as it is not included in the migration / template."));
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' IP Configuration 'ipconfig1' utilizes Public IP 'ManagedDisk01-ip', but the Public IP resource is not added into the migration template."));
-            artifacts.PublicIPs.Add(azureContextUSCommercial.AzureRetriever.ArmTargetPublicIPs[0]);
+            artifacts.PublicIPs.Add(azureContextUSCommercial.AzureSubscription.ArmTargetPublicIPs[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' IP Configuration 'ipconfig1' utilizes Public IP 'ManagedDisk01-ip', but the Public IP resource is not added into the migration template."));
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDisk01_OsDisk_1_e901d155e5404b6a912afb22e7a804a6' which has not been added as an export resource."));
-            artifacts.Disks.Add(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[1]);
+            artifacts.Disks.Add(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[1]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDisk01_OsDisk_1_e901d155e5404b6a912afb22e7a804a6' which has not been added as an export resource."));
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDataDisk01' which has not been added as an export resource."));
-            artifacts.Disks.Add(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0]);
+            artifacts.Disks.Add(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Virtual Machine 'ManagedDisk01' references Managed Disk 'ManagedDataDisk01' which has not been added as an export resource."));
 
             Assert.IsNotNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' is used by Virtual Machine 'ManagedDisk01-vm', but is not included in the exported resources."));
-            artifacts.NetworkInterfaces.Add(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0]);
+            artifacts.NetworkInterfaces.Add(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
             await templateGenerator.UpdateArtifacts(artifacts);
             Assert.IsNull(templateGenerator.SeekAlert("Network Interface Card (NIC) 'manageddisk01549-nic' is used by Virtual Machine 'ManagedDisk01-vm', but is not included in the exported resources."));
 
@@ -168,7 +168,7 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureRetriever.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources();
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -177,40 +177,40 @@ namespace MigAz.Tests
 
             TargetTreeView targetTreeView = new TargetTreeView();
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureRetriever.ArmTargetRouteTables[0]);
-            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureRetriever.ArmTargetRouteTables[0]);
+            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
+            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureRetriever.ArmTargetRouteTables[0].GetType(), "Object type mismatch");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureRetriever.ArmTargetRouteTables[0], "Not the correct object");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0].GetType(), "Object type mismatch");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureRetriever.ArmTargetVirtualNetworks[0]);
-            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureRetriever.ArmTargetVirtualNetworks[0]);
+            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
+            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureRetriever.ArmTargetVirtualNetworks[0].GetType(), "Object type mismatch");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureRetriever.ArmTargetVirtualNetworks[0], "Not the correct object");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0].GetType(), "Object type mismatch");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0]);
-            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0]);
+            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
+            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0].GetType(), "Object type mismatch");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureRetriever.ArmTargetNetworkInterfaces[0], "Not the correct object");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0].GetType(), "Object type mismatch");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0]);
-            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0]);
+            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
+            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0].GetType(), "Object type mismatch");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureRetriever.ArmTargetManagedDisks[0], "Not the correct object");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0].GetType(), "Object type mismatch");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkSecurityGroups[0]);
-            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureRetriever.ArmTargetNetworkSecurityGroups[0]);
+            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
+            targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureRetriever.ArmTargetNetworkSecurityGroups[0].GetType(), "Object type mismatch");
-            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureRetriever.ArmTargetNetworkSecurityGroups[0], "Not the correct object");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0].GetType(), "Object type mismatch");
+            Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0], "Not the correct object");
 
         }
     }

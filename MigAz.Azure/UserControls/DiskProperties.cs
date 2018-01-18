@@ -108,7 +108,7 @@ namespace MigAz.Azure.UserControls
             if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
             {
                 rbExistingARMStorageAccount.Text = "Existing Storage in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                List<Azure.Arm.StorageAccount> a = await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation);
+                List<Azure.Arm.StorageAccount> a = await _AzureContext.AzureSubscription.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation);
                 rbExistingARMStorageAccount.Enabled = a.Count() > 0;
             }
             else
@@ -254,7 +254,7 @@ namespace MigAz.Azure.UserControls
                 txtBlobName.Enabled = true;
                 txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
-                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContext.AzureRetriever.GetAzureARMStorageAccounts())
+                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContext.AzureSubscription.GetAzureARMStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }

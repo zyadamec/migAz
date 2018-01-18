@@ -128,7 +128,7 @@ namespace MigAz.Azure.Asm
         {
             if (this.VirtualNetworkName != String.Empty)
             {
-                _SourceVirtualNetwork = await _AzureContext.AzureRetriever.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
+                _SourceVirtualNetwork = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
 
                 if (_SourceVirtualNetwork != null)
                 {
@@ -150,9 +150,9 @@ namespace MigAz.Azure.Asm
             }
 
             if (this.NetworkSecurityGroupName != String.Empty)
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureRetriever.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
 
-            this.RoleSize = await _AzureContext.AzureRetriever.GetAzureASMRoleSize(this.RoleSizeString);
+            this.RoleSize = await _AzureContext.AzureSubscription.GetAzureASMRoleSize(this.RoleSizeString);
         }
 
         #region Properties

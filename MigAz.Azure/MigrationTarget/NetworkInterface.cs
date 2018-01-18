@@ -51,13 +51,13 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
-                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, azureContext.AzureRetriever.ArmTargetVirtualNetworks);
+                MigrationTarget.NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureContext, armNetworkInterfaceIpConfiguration, azureContext.AzureSubscription.ArmTargetVirtualNetworks);
                 this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
             }
 
             if (networkInterface.NetworkSecurityGroup != null)
             {
-                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(azureContext.AzureRetriever.ArmTargetNetworkSecurityGroups, networkInterface.NetworkSecurityGroup.ToString());
+                this.NetworkSecurityGroup = NetworkSecurityGroup.SeekNetworkSecurityGroup(azureContext.AzureSubscription.ArmTargetNetworkSecurityGroups, networkInterface.NetworkSecurityGroup.ToString());
             }
         }
 

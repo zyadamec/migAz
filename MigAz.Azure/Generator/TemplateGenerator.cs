@@ -1398,12 +1398,12 @@ namespace MigAz.Azure.Generator
                 networkinterface_ref_properties.primary = targetNetworkInterface.IsPrimary;
 
                 NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.TargetName + "')]";
+                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString() + "')]";
                 networkinterface_ref.properties = networkinterface_ref_properties;
 
                 networkinterfaces.Add(networkinterface_ref);
 
-                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.TargetName + "')]");
+                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString() + "')]");
             }
 
             HardwareProfile hardwareprofile = new HardwareProfile();

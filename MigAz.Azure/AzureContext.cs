@@ -11,6 +11,7 @@ namespace MigAz.Azure
         private bool _includePreviewRegions = false;
         private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureServiceUrls _AzureServiceUrls;
+        private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
 
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
@@ -132,6 +133,12 @@ namespace MigAz.Azure
             await this.SetSubscriptionContext(sourceContext.AzureSubscription);
             this.TokenProvider.AuthenticationResult = sourceContext.TokenProvider.AuthenticationResult;
             await UserAuthenticated?.Invoke(this);
+        }
+
+        public ArmDiskType DefaultTargetDiskType
+        {
+            get { return _DefaultTargetDiskType; }
+            set { _DefaultTargetDiskType = value; }
         }
 
         #endregion
