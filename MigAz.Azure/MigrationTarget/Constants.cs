@@ -14,3 +14,4 @@ namespace MigAz.Azure.MigrationTarget
         public const int AvailabilitySetMinPlatformFaultDomain = 2;
         public const int AvailabilitySetMaxPlatformFaultDomain = 3;
     }
+}
