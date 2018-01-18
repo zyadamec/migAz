@@ -143,11 +143,11 @@ namespace MigAz.Tests
             managedDiskStorage.StorageAccountType = Core.Interface.StorageAccountType.Premium_LRS;
             artifacts.VirtualMachines[0].OSVirtualHardDisk.TargetStorage = managedDiskStorage;
             await templateGenerator.UpdateArtifacts(artifacts);
-            Assert.IsNotNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'."));
+            Assert.IsNotNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
             artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == "Standard_DS2_v2").FirstOrDefault();
             await templateGenerator.UpdateArtifacts(artifacts);
-            Assert.IsNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'."));
+            Assert.IsNull(templateGenerator.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
             Assert.IsFalse(templateGenerator.HasErrors, "Template Generation cannot occur as the are error(s).");
 

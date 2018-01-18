@@ -298,6 +298,7 @@ namespace MigAz.Azure
 
                 // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
                 HttpWebResponse response = null;
+                const Int32 maxRetrySecond = 32;
                 Int32 retrySeconds = 1;
                 bool boolRetryGetResponse = true;
                 while (boolRetryGetResponse)
@@ -330,6 +331,14 @@ namespace MigAz.Azure
                                 Application.DoEvents();
                             }
                             retrySeconds = retrySeconds * 2;
+
+                            if (retrySeconds > maxRetrySecond)
+                            {
+                                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
+                                _AzureContext.StatusProvider.UpdateStatus("Too many retry.");
+                                throw webException;
+                                // too many retry -> throw exception 
+                            }
 
                             _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
                             _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
