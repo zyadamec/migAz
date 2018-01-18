@@ -19,7 +19,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 5. Login credentials at destination Azure subscription
 
 ## Get it
-Download from the [Release](release) folder to obtain the latest MigAz v2 release (currently ASM to ARM and ARM to ARM Migration).  Note that Migaz AWS to ARM is not yet integrated into the new v2 project baseline and remains available via the AWS release folders ([AWS Release](aws/release)).
+Download from the [Release](Release) folder to obtain the latest MigAz v2 release (currently ASM to ARM and ARM to ARM Migration).  Note that Migaz AWS to ARM is not yet integrated into the new v2 project baseline and remains available via the AWS release folders ([AWS Release](aws/release)).
 
 ## Instructions
 [Azure ASM to Azure ARM Migration](asm) - MigAz ASM to ARM will help you on your ASM to ARM migrations. Allows you to create an ARM template out of an Azure IaaS ASM deployment. It also provides an automation script for blobs copy.
@@ -34,6 +34,19 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.3.1.0
+ - adding support for France preview (France Central, France South)
+ - limiting api call retries in case of multiple errors
+ - update VM sku supporting premium disk.
+
+### v2.3.0.0
+ - Initial release to allow copying of ASM directly to Managed Disks, as well as deployed ARM Managed Disks.
+ - KNOWN ISSUE:  An ARM VM that has Managed Disks must be stopped to allow MigAz v2.3.0.0 to obtain an AccessSAS URL for each Managed Disk.  Use of snapshots will be investigated for a future release.
+ - Several Bug fixes, validation of Subnet NSG existing in export, warning of single VM in an Availability Set.
+ - Streamlined PowerShell process w/ deeper output.
+ - Use of "MigAz temporary storage account" for blob copy target prior to Managed Disk creation.  Current PowerShell process does prompt for deletion (requiring 'Yes' confirmation).
+ - Expanded MigAz Options dialog to include number of minutes AccessSAS for Managed Disks is to be valid and option to default migration to recommended Managed Disks over legacy Classic Disks.
+ 
 ### v2.2.14.0
  - Added Storage Account Resource Group Name into copyblobdetails.json and removed as BlobCopy.ps1 parameter to resolve use of existing storage accounts in other Resource Groups(s).
  - Incrased maximum disk size from 1023 to 4095 per Azure support for 4 TB drives.

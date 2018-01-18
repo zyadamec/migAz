@@ -81,7 +81,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "ResourceGroupProperties";
-            this.Size = new System.Drawing.Size(625, 126);
+            this.Size = new System.Drawing.Size(625, 130);
             this.ResumeLayout(false);
             this.PerformLayout();
 

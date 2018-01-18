@@ -691,6 +691,22 @@ namespace MigAz.Azure
                 }
             }
 
+            if (_AzureContext.IncludePreviewRegions)
+            {
+                _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "France preview regions added by code");
+
+                // Add Preview Location for France Central (centered on Eiffel Tower)
+                var franceCentralJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francecentral\", \"name\": \"francecentral\",  \"displayName\": \"France Central\",  \"longitude\": \"2.294\",  \"latitude\": \"48.858\"}";
+                var lfc = JToken.Parse(franceCentralJson);
+                _ArmLocations.Add(new Arm.Location(_AzureContext, lfc));
+
+                // Add Preview Location for France South (centered on If Castle)
+                var franceSouthJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francesouth\", \"name\": \"francesouth\",  \"displayName\": \"France South\",  \"longitude\": \"5.325126\",  \"latitude\": \"43.279841\"}";
+                var lfs = JToken.Parse(franceSouthJson);
+                _ArmLocations.Add(new Arm.Location(_AzureContext, lfs));
+
+            }
+             
             List<Task> armLocationChildTasks = new List<Task>();
             foreach (Arm.Location armLocation in _ArmLocations)
             {

@@ -327,7 +327,7 @@ namespace MigAz.Azure.Generator
 
                     if (virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
                     {
-                        this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'DS', 'DS v2', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
+                        this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
                     }
                 }
 
