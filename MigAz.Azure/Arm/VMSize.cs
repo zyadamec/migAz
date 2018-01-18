@@ -35,11 +35,14 @@ namespace MigAz.Azure.Arm
                 return true;
             else if (storageAccountType == StorageAccountType.Premium_LRS)
             {
+                // TODO : maybe use a regex pattern to check VM size ?
                 return (
+                    this.Name.Contains("_B") ||
                     this.Name.Contains("_DS") ||
                     this.Name.Contains("_GS") ||
                     (this.Name.Contains("_L") && this.Name.EndsWith("s")) ||
-                    (this.Name.Contains("_F") && this.Name.EndsWith("s"))
+                    (this.Name.Contains("_F") && this.Name.EndsWith("s")) ||
+                    (this.Name.StartsWith("Standard_D") && this.Name.EndsWith("s_v3"))
                     );
             }
 

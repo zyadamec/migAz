@@ -34,6 +34,7 @@ namespace MigAz.Azure.UserControls
                 if (azureContext.AzureRetriever.SubscriptionContext != null)
                 {
                     List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
+
                     foreach (Azure.Arm.Location armLocation in armLocations.OrderBy(a => a.DisplayName))
                     {
                         cboTargetLocation.Items.Add(armLocation);
@@ -92,5 +93,6 @@ namespace MigAz.Azure.UserControls
 
             PropertyChanged();
         }
+        
     }
 }

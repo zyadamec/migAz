@@ -8,6 +8,7 @@ namespace MigAz.Azure
 {
     public class AzureContext
     {
+        private bool _includePreviewRegions = false;
         private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureServiceUrls _AzureServiceUrls;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
@@ -82,6 +83,11 @@ namespace MigAz.Azure
             }
         }
 
+        public bool IncludePreviewRegions {
+            get { return _includePreviewRegions; }
+            set { _includePreviewRegions = value; }
+        }
+
         public AzureTenant AzureTenant
         {
             get { return _AzureTenant; }
@@ -121,6 +127,7 @@ namespace MigAz.Azure
 
         public async Task CopyContext(AzureContext sourceContext)
         {
+            this.IncludePreviewRegions = sourceContext.IncludePreviewRegions;
             this.AzureEnvironment = sourceContext.AzureEnvironment;
             await this.SetTenantContext(sourceContext.AzureTenant);
             await this.SetSubscriptionContext(sourceContext.AzureSubscription);
