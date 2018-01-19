@@ -12,6 +12,7 @@ using MigAz.Azure.Models;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
+using MigAz.Core;
 
 namespace MigAz.Azure.Generator
 {
@@ -385,6 +386,24 @@ namespace MigAz.Azure.Generator
 
                         if (ipConfiguration.TargetSubnet == null)
                             this.AddAlert(AlertType.Error, "Target Subnet for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' must be specified.", networkInterface);
+                        else
+                        {
+                            if (!IPv4CIDR.IsValidCIDR(ipConfiguration.TargetSubnet.AddressPrefix))
+                            {
+                                this.AddAlert(AlertType.Error, "Target Subnet '" + ipConfiguration.TargetSubnet.ToString() + "' used by Virtual Machine '" + virtualMachine.ToString() + "' has an invalid IPv4 Address Prefix: " + ipConfiguration.TargetSubnet.AddressPrefix, ipConfiguration.TargetSubnet);
+                            }
+                            else
+                            {
+                                if (ipConfiguration.TargetPrivateIPAllocationMethod == "Static")
+                                {
+                                    if (!IPv4CIDR.IsIpAddressInAddressPrefix(ipConfiguration.TargetSubnet.AddressPrefix, ipConfiguration.TargetPrivateIpAddress))
+                                    {
+                                        this.AddAlert(AlertType.Error, "Target IP Address '" + ipConfiguration.TargetPrivateIpAddress + "' is not valid in Subnet '" + ipConfiguration.TargetSubnet.ToString() + "' Address Prefix '" + ipConfiguration.TargetSubnet.AddressPrefix + "'.", networkInterface);
+                                    }
+                                }
+                            }
+
+                        }
 
                         if (ipConfiguration.TargetPublicIp != null)
                         {

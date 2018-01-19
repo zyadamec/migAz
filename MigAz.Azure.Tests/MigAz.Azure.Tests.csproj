@@ -74,6 +74,7 @@
     <Compile Include="Fakes\FakeTelemetryProvider.cs" />
     <Compile Include="Fakes\FakeTokenProvider.cs" />
     <Compile Include="Fakes\TestRetriever.cs" />
+    <Compile Include="MigAzCoreTests.cs" />
     <Compile Include="StorageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VnetTests.cs" />

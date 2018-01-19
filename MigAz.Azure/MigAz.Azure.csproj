@@ -214,6 +214,12 @@
     <Compile Include="UserControls\IMigratorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UserControls\IPv4AddressBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\IPv4AddressBox.Designer.cs">
+      <DependentUpon>IPv4AddressBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LoadBalancerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -330,6 +336,9 @@
     <EmbeddedResource Include="Generator\DeployDocTemplate.html" />
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\IPv4AddressBox.resx">
+      <DependentUpon>IPv4AddressBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>

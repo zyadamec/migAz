@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ArmTemplate\ARM.cs" />
     <Compile Include="ArmTemplate\ArmConst.cs" />
+    <Compile Include="CIDR.cs" />
     <Compile Include="Generator\MigAzGeneratorAlert.cs" />
     <Compile Include="Interface\IAvailabilitySetSource.cs" />
     <Compile Include="Interface\IDisk.cs" />
