@@ -231,6 +231,16 @@ namespace MigAz.Azure.Generator
                         {
                             this.AddAlert(AlertType.Error, "Internal Load Balancer must have an internal Subnet association.", targetLoadBalancer);
                         }
+                        else
+                        {
+                            if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == "Static")
+                            {
+                                if (!IPv4CIDR.IsIpAddressInAddressPrefix(targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix, targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                {
+                                    this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not valid in Subnet '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.ToString() + "' Address Prefix '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix + "'.", targetLoadBalancer);
+                                }
+                            }
+                        }
                     }
                     else
                     {
