@@ -46,7 +46,7 @@ namespace MigAz.Azure.UserControls
                 {
                     // Cannot use existing ARM VNet without Target Location
                     rbExistingARMVNet.Enabled = false;
-                    rbExistingARMVNet.Visible = false;
+                    rbExistingARMVNet.Text = "<Set Target Resource Group Location>";
                 }
             }
             catch (Exception exc)
