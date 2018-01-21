@@ -139,6 +139,18 @@
     <Compile Include="Forms\UnhandledExceptionDialog.Designer.cs">
       <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="MigrationSource\MigrationSourceAzure.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MigrationSource\MigrationSourceAzure.Designer.cs">
+      <DependentUpon>MigrationSourceAzure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MigrationTarget\MigrationTargetAzure.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MigrationTarget\MigrationTargetAzure.Designer.cs">
+      <DependentUpon>MigrationTargetAzure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\AzureTelemetryProvider.cs" />
     <Compile Include="Providers\UISaveSelectionProvider.cs" />
@@ -146,18 +158,6 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Migrators\AsmToArm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Migrators\AsmToArm.Designer.cs">
-      <DependentUpon>AsmToArm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrators\AwsToArm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Migrators\AwsToArm.Designer.cs">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Forms\ASM403ForbiddenExceptionDialog.resx">
       <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -173,6 +173,12 @@
     <EmbeddedResource Include="Forms\UnhandledExceptionDialog.resx">
       <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="MigrationSource\MigrationSourceAzure.resx">
+      <DependentUpon>MigrationSourceAzure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MigrationTarget\MigrationTargetAzure.resx">
+      <DependentUpon>MigrationTargetAzure.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -183,12 +189,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Migrators\AsmToArm.resx">
-      <DependentUpon>AsmToArm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrators\AwsToArm.resx">
-      <DependentUpon>AwsToArm.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>app.Designer.cs</LastGenOutput>

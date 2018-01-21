@@ -15,8 +15,11 @@ namespace MigAz.Azure.UserControls
     public partial class TargetTreeView : UserControl
     {
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup = new MigrationTarget.ResourceGroup();
-        private TreeNode _EventSourceNode;
         private PropertyPanel _PropertyPanel;
+
+        public delegate void AfterTargetSelectedHandler();
+        public event AfterTargetSelectedHandler AfterTargetSelected;
+
 
         public TargetTreeView()
         {
@@ -60,11 +63,6 @@ namespace MigAz.Azure.UserControls
         public TreeNodeCollection Nodes
         {
             get { return this.treeTargetARM.Nodes; }
-        }
-
-        public TreeNode EventSourceNode
-        {
-            get { return _EventSourceNode; }
         }
 
         public TreeNode SelectedNode
@@ -691,21 +689,9 @@ namespace MigAz.Azure.UserControls
         }
 
 
-        private async void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("treeARM_AfterSelect", "Start");
-
-            _EventSourceNode = e.Node;
-
-            await _PropertyPanel.Bind(e.Node);
-            _EventSourceNode = null;
-
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("treeARM_AfterSelect", "End");
-
-            if (this.StatusProvider != null)
-                StatusProvider.UpdateStatus("Ready");
+            AfterTargetSelected?.Invoke();
         }
 
         private void TargetTreeView_Resize(object sender, EventArgs e)

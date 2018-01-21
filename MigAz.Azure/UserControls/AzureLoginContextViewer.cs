@@ -84,6 +84,9 @@ namespace MigAz.Azure.UserControls
 
         private async void btnAzureContext_Click(object sender, EventArgs e)
         {
+            if (_AzureContext == null)
+                throw new ArgumentException("Azure Context not set.  You must initiate the AzureLoginContextViewer control with the Bind Method.");
+
             if (_ChangeType == AzureLoginChangeType.Full)
             {
                 AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();

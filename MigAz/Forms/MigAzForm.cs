@@ -2,15 +2,14 @@
 using System.Windows.Forms;
 using MigAz.Providers;
 using MigAz.Core.Interface;
-using System.Reflection;
-using MigAz.Migrators;
-using MigAz.Core.Generator;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using MigAz.Azure;
 using MigAz.Azure.Generator;
 using MigAz.Azure.UserControls;
+using MigAz.Azure.Generator.AsmToArm;
+using MigAz.MigrationTarget;
 
 namespace MigAz.Forms
 {
@@ -21,6 +20,11 @@ namespace MigAz.Forms
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private AppSettingsProvider _appSettingsProvider;
+        private TemplateGenerator _TemplateGenerator;
+        private TreeNode _EventSourceNode;
+
+
+        private TargetTreeView _TreeTargetARM;
 
         #endregion
 
@@ -37,6 +41,66 @@ namespace MigAz.Forms
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             lblLastOutputRefresh.Text = String.Empty;
+
+            this.propertyPanel1.LogProvider = _logProvider;
+
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTargetAzure a = (MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                _TreeTargetARM = a.TargetTreeView;
+            }
+
+            if (splitContainer3.Panel1.Controls.Count == 1)
+            {
+                // This will move to be based on the source context (upon instantiation)
+                MigrationSource.MigrationSourceAzure control = (MigrationSource.MigrationSourceAzure)splitContainer3.Panel1.Controls[0];
+                control.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider, this.imageList1);
+
+
+                //control.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
+                //control.UserAuthenticated += _AzureContext_UserAuthenticated;
+                //control.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
+                //control.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
+                //control.BeforeUserSignOut += _AzureContext_BeforeUserSignOut;
+                //control.AfterUserSignOut += _AzureContext_AfterUserSignOut;
+                //control.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
+                //control.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
+                control.AfterNodeChecked += _AzureContextSource_AfterNodeChecked;
+            }
+
+
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                control.Bind(this.propertyPanel1);
+                control.AfterTargetSelected += Control_AfterTargetSelected;
+            }
+
+            // todo _TemplateGenerator = new AzureGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
+
+        }
+
+        private async Task Control_AfterTargetSelected(TreeNode sender)
+        {
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
+
+            _EventSourceNode = sender;
+            await this.propertyPanel1.Bind(sender);
+            _EventSourceNode = null;
+
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("Control_AfterTargetSelected", "End");
+
+            if (this.StatusProvider != null)
+                StatusProvider.UpdateStatus("Ready");
+
+        }
+
+        private async Task _AzureContextSource_AfterNodeChecked(IMigrationTarget sender)
+        {
+            TreeNode resultUpdateARMTree = await _TreeTargetARM.AddMigrationTargetToTargetTree(sender);
+
         }
 
         private void _logProvider_OnMessage(string message)
@@ -55,6 +119,11 @@ namespace MigAz.Forms
         #endregion
 
         #region Properties
+
+        public TemplateGenerator TemplateGenerator
+        {
+            get { return _TemplateGenerator; }
+        }
 
         public ILogProvider LogProvider
         {
@@ -131,23 +200,6 @@ namespace MigAz.Forms
         #region Menu Items
 
 
-        private async void aWSToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Coming soon to MigAz v2.  Continue to utilize seperate AWS to ARM MigAz Tool until integrated.  https://aka.ms/MigAz");
-
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AwsToArm awsToArm = new AwsToArm(StatusProvider, LogProvider, propertyPanel1);
-            awsToArm.AzureResourceImageList = this.imageList1;
-            awsToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(awsToArm);
-
-            splitContainer2_Panel1_Resize(this, null);
-
-            newMigrationToolStripMenuItem.Enabled = false ;
-            closeMigrationToolStripMenuItem.Enabled = true;
-        }
-
         private void closeMigrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "Start close current migration session control");
@@ -165,8 +217,6 @@ namespace MigAz.Forms
             tabOutputResults.TabPages.Clear();
             btnRefreshOutput.Enabled = false;
             lblLastOutputRefresh.Text = String.Empty;
-            newMigrationToolStripMenuItem.Enabled = true;
-            closeMigrationToolStripMenuItem.Enabled = false;
             this.Text = "MigAz";
 
             LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "End close current migration session control");
@@ -205,23 +255,23 @@ namespace MigAz.Forms
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)splitContainer2.Panel1.Controls[0];
 
-                if (migrator.TemplateGenerator.HasErrors)
+                if (this.TemplateGenerator.HasErrors)
                 {
                     tabMigAzMonitoring.SelectTab("tabMessages");
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
 
-                migrator.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
                 // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
                 await RefreshOutput();
 
-                migrator.TemplateGenerator.Write();
+                this.TemplateGenerator.Write();
 
                 StatusProvider.UpdateStatus("Ready");
 
-                var exportResults = new ExportResultsDialog(migrator.TemplateGenerator);
+                var exportResults = new ExportResultsDialog(this.TemplateGenerator);
                 exportResults.ShowDialog(this);
             }
         }
@@ -236,7 +286,6 @@ namespace MigAz.Forms
                 object alert = dgvMigAzMessages.Rows[e.RowIndex].Cells["SourceObject"].Value;
                 migrator.SeekAlertSource(alert);
             }
-
         }
 
         private void tabOutputResults_Resize(object sender, EventArgs e)
@@ -277,25 +326,25 @@ namespace MigAz.Forms
             {
                 IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
 
-                if (migrator.TemplateGenerator.HasErrors)
+                if (this.TemplateGenerator.HasErrors)
                 {
                     tabMigAzMonitoring.SelectTab("tabMessages");
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
 
-                migrator.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
+                this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
 
-                await migrator.TemplateGenerator.GenerateStreams();
-                await migrator.TemplateGenerator.SerializeStreams();
+                await this.TemplateGenerator.GenerateStreams();
+                await this.TemplateGenerator.SerializeStreams();
 
                 foreach (TabPage tabPage in tabOutputResults.TabPages)
                 {
-                    if (!migrator.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
+                    if (!this.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
                         tabOutputResults.TabPages.Remove(tabPage);
                 }
 
-                foreach (var templateStream in migrator.TemplateGenerator.TemplateStreams)
+                foreach (var templateStream in this.TemplateGenerator.TemplateStreams)
                 {
                     TabPage tabPage = null;
                     if (!tabOutputResults.TabPages.ContainsKey(templateStream.Key))
@@ -353,12 +402,12 @@ namespace MigAz.Forms
                     }
                 }
 
-                if (tabOutputResults.TabPages.Count != migrator.TemplateGenerator.TemplateStreams.Count)
-                    throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + migrator.TemplateGenerator.TemplateStreams.Count);
+                if (tabOutputResults.TabPages.Count != this.TemplateGenerator.TemplateStreams.Count)
+                    throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + this.TemplateGenerator.TemplateStreams.Count);
 
                 // Ensure Tabs are in same order as output streams
                 int streamIndex = 0;
-                foreach (string templateStreamKey in migrator.TemplateGenerator.TemplateStreams.Keys)
+                foreach (string templateStreamKey in this.TemplateGenerator.TemplateStreams.Keys)
                 {
                     int rotationCounter = 0;
 
@@ -372,7 +421,7 @@ namespace MigAz.Forms
 
                         rotationCounter++;
 
-                        if (rotationCounter > migrator.TemplateGenerator.TemplateStreams.Count)
+                        if (rotationCounter > this.TemplateGenerator.TemplateStreams.Count)
                             throw new ArgumentException("Rotated through all tabs, unabled to locate tab '" + templateStreamKey + "' while ensuring tab order/sequencing.");
                     }
 
@@ -391,53 +440,7 @@ namespace MigAz.Forms
                 }
             }
         }
-
-        private void aSMToARMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
-            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
-            asmToArm.AzureResourceImageList = this.imageList1;
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-
-            newMigrationToolStripMenuItem.Enabled = false;
-            closeMigrationToolStripMenuItem.Enabled = true;
-
-            asmToArm.RemoveArmTab();
-            splitContainer2_Panel1_Resize(this, null);
-
-            this.Refresh();
-            Application.DoEvents();
-            asmToArm.ChangeAzureContext();
-        }
-
-        private void aRMToARMToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            AsmToArm asmToArm = new AsmToArm(StatusProvider, LogProvider, propertyPanel1);
-            asmToArm.AzureContextSourceASM.DefaultTargetDiskType = app.Default.DefaultTargetDiskType;
-            asmToArm.AzureContextSourceASM.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            asmToArm.AzureContextSourceASM.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
-            asmToArm.AzureResourceImageList = this.imageList1;
-            asmToArm.TemplateGenerator.AfterTemplateChanged += TemplateGenerator_AfterTemplateChanged;
-            parent.Controls.Add(asmToArm);
-
-            newMigrationToolStripMenuItem.Enabled = false;
-            closeMigrationToolStripMenuItem.Enabled = true;
-
-            asmToArm.RemoveAsmTab();
-            splitContainer2_Panel1_Resize(this, null);
-
-            this.Refresh();
-            Application.DoEvents();
-            asmToArm.ChangeAzureContext();
-        }
-
+        
         private void splitContainer2_Panel1_Resize(object sender, EventArgs e)
         {
             if (splitContainer2.Panel1.Controls.Count == 1)
