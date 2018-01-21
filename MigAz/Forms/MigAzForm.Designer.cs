@@ -180,6 +180,7 @@
             // 
             // splitContainer3
             // 
+            this.splitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
             this.splitContainer3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -194,8 +195,8 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.migrationTargetAzure2);
             this.splitContainer3.Panel2.Resize += new System.EventHandler(this.splitContainer3_Panel2_Resize);
-            this.splitContainer3.Size = new System.Drawing.Size(917, 474);
-            this.splitContainer3.SplitterDistance = 439;
+            this.splitContainer3.Size = new System.Drawing.Size(919, 476);
+            this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.SplitterWidth = 6;
             this.splitContainer3.TabIndex = 0;
             // 

@@ -40,6 +40,7 @@ namespace MigAz.Forms
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
+            splitContainer3.SplitterDistance = splitContainer3.Width / 2;
             lblLastOutputRefresh.Text = String.Empty;
 
             this.propertyPanel1.LogProvider = _logProvider;
