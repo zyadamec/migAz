@@ -60,7 +60,6 @@
             // azureLoginContextViewerTarget
             // 
             this.azureLoginContextViewerTarget.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
-            this.azureLoginContextViewerTarget.Enabled = false;
             this.azureLoginContextViewerTarget.Location = new System.Drawing.Point(2, 2);
             this.azureLoginContextViewerTarget.Margin = new System.Windows.Forms.Padding(2);
             this.azureLoginContextViewerTarget.Name = "azureLoginContextViewerTarget";
