@@ -145,6 +145,15 @@ namespace MigAz.Forms
                 MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
                 control.Clear();
             }
+
+            dgvMigAzMessages.DataSource = null;
+            btnRefreshOutput.Enabled = false;
+            
+            foreach (TabPage t in tabOutputResults.TabPages)
+            {
+                tabOutputResults.TabPages.Remove(t);
+            }
+
         }
 
         private async Task Control_AfterTargetSelected(TreeNode sender)
