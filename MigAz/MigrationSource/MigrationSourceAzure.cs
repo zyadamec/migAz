@@ -57,11 +57,13 @@ namespace MigAz.MigrationSource
         public delegate Task AfterNodeCheckedHandler(IMigrationTarget sender);
         public event AfterNodeCheckedHandler AfterNodeChecked;
 
-        public delegate void AfterNodeUncheckedHandler(IMigrationTarget sender);
+        public delegate Task AfterNodeUncheckedHandler(IMigrationTarget sender);
         public event AfterNodeUncheckedHandler AfterNodeUnchecked;
 
-        #endregion
+        public delegate void ClearContextHandler();
+        public event ClearContextHandler ClearContext;
 
+        #endregion
 
         public MigrationSourceAzure()
         {
@@ -92,6 +94,11 @@ namespace MigAz.MigrationSource
             treeAzureARM.ImageList = _ImageList;
         }
 
+        public AzureContext AzureContext
+        {
+            get { return _AzureContextSource; }
+        }
+
         private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
         {
             BeforeAzureTenantChange?.Invoke(sender);
@@ -107,17 +114,16 @@ namespace MigAz.MigrationSource
                 treeAzureASM.Nodes.Clear();
             }
 
-            if (treeAzureASM != null)
+            if (treeAzureARM != null)
             {
-                treeAzureASM.Enabled = false;
-                treeAzureASM.Nodes.Clear();
+                treeAzureARM.Enabled = false;
+                treeAzureARM.Nodes.Clear();
             }
 
             if (_SelectedNodes != null)
                 _SelectedNodes.Clear();
 
-            //if (_PropertyPanel != null)
-            //    _PropertyPanel.Clear();
+            ClearContext?.Invoke();
         }
 
         #endregion
@@ -932,8 +938,7 @@ namespace MigAz.MigrationSource
                     }
                     else
                     {
-                            //await treeTargetARM.RemoveASMNodeFromARMTree((MigAz.Core.Interface.IMigrationTarget)e.Node.Tag);
-                            AfterNodeUnchecked?.Invoke(migrationTarget);
+                        AfterNodeUnchecked?.Invoke(migrationTarget);
                     }
                 }
             }
@@ -1141,6 +1146,16 @@ namespace MigAz.MigrationSource
                     throw new ArgumentException("Unknown Azure Resource Type Source: " + cmbAzureResourceTypeSource.SelectedItem.ToString());
 
             }
+
+            ClearContext?.Invoke();
+        }
+
+        private void MigrationSourceAzure_Resize(object sender, EventArgs e)
+        {
+            treeAzureARM.Height = this.Height - 135;
+            treeAzureARM.Width = this.Width;
+            treeAzureASM.Height = this.Height - 135;
+            treeAzureASM.Width = this.Width;
         }
     }
 }

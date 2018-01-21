@@ -43,11 +43,14 @@ namespace MigAz.Forms
             lblLastOutputRefresh.Text = String.Empty;
 
             this.propertyPanel1.LogProvider = _logProvider;
+            this.propertyPanel1.PropertyChanged += PropertyPanel1_PropertyChanged;
 
+            MigrationTargetAzure a;
             if (splitContainer3.Panel2.Controls.Count == 1)
             {
-                MigrationTargetAzure a = (MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                a = (MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
                 _TreeTargetARM = a.TargetTreeView;
+                a.ImageList = this.imageList1;
             }
 
             if (splitContainer3.Panel1.Controls.Count == 1)
@@ -56,6 +59,7 @@ namespace MigAz.Forms
                 MigrationSource.MigrationSourceAzure control = (MigrationSource.MigrationSourceAzure)splitContainer3.Panel1.Controls[0];
                 control.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider, this.imageList1);
 
+                this.propertyPanel1.AzureContext = control.AzureContext;
 
                 //control.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
                 //control.UserAuthenticated += _AzureContext_UserAuthenticated;
@@ -66,6 +70,8 @@ namespace MigAz.Forms
                 //control.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
                 //control.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
                 control.AfterNodeChecked += _AzureContextSource_AfterNodeChecked;
+                control.AfterNodeUnchecked += _AzureContextSource_AfterNodeUnchecked;
+                control.ClearContext += Control_ClearContext;
             }
 
 
@@ -74,10 +80,48 @@ namespace MigAz.Forms
                 MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
                 control.Bind(this.propertyPanel1);
                 control.AfterTargetSelected += Control_AfterTargetSelected;
+                control.AfterResourceValidation += Control_AfterResourceValidation;
             }
 
             // todo _TemplateGenerator = new AzureGenerator(_AzureContextSourceASM.AzureSubscription, _AzureContextTargetARM.AzureSubscription, LogProvider, StatusProvider, _telemetryProvider, _appSettingsProvider);
 
+        }
+
+        private async Task Control_AfterResourceValidation()
+        {
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                dgvMigAzMessages.DataSource = control.TargetTreeView.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
+                dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvMigAzMessages.Columns["SourceObject"].Visible = false;
+                btnRefreshOutput.Enabled = true;
+            }
+        }
+
+        private async Task PropertyPanel1_PropertyChanged()
+        {
+            //if (_SourceAsmNode == null && treeTargetARM.EventSourceNode == null) // we are not going to update on every property bind during TreeView updates
+            //{
+                if (splitContainer3.Panel2.Controls.Count == 1)
+                {
+                    MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                    await control.TargetTreeView.ValidateAzureResources();
+                }
+            //}
+            //await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
+        }
+
+        private void Control_ClearContext()
+        {
+            propertyPanel1.Clear();
+
+
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                control.Clear();
+            }
         }
 
         private async Task Control_AfterTargetSelected(TreeNode sender)
@@ -99,9 +143,15 @@ namespace MigAz.Forms
 
         private async Task _AzureContextSource_AfterNodeChecked(IMigrationTarget sender)
         {
-            TreeNode resultUpdateARMTree = await _TreeTargetARM.AddMigrationTargetToTargetTree(sender);
+            TreeNode resultUpdateARMTree = await _TreeTargetARM.AddMigrationTarget(sender);
 
         }
+
+        private async Task _AzureContextSource_AfterNodeUnchecked(IMigrationTarget sender)
+        {
+            await _TreeTargetARM.RemoveMigrationTarget(sender);
+        }
+
 
         private void _logProvider_OnMessage(string message)
         {
@@ -165,14 +215,7 @@ namespace MigAz.Forms
             this.tabOutputResults.Height = splitContainer2.Panel2.Height - 55;
         }
 
-        private async void TemplateGenerator_AfterTemplateChanged(object sender, EventArgs e)
-        {
-            TemplateGenerator a = (TemplateGenerator)sender;
-            dgvMigAzMessages.DataSource = a.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
-            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
-            btnRefreshOutput.Enabled = true;
-        }
+
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -196,33 +239,6 @@ namespace MigAz.Forms
             btnRefreshOutput.Enabled = false;
             lblLastOutputRefresh.Text = String.Empty;
         }
-
-        #region Menu Items
-
-
-        private void closeMigrationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "Start close current migration session control");
-
-            if (splitContainer2.Panel1.Controls.Count > 0)
-            {
-                foreach (Control control in splitContainer2.Panel1.Controls)
-                {
-                    control.Dispose();
-                }
-            }
-
-            propertyPanel1.Clear();
-            dgvMigAzMessages.DataSource = null;
-            tabOutputResults.TabPages.Clear();
-            btnRefreshOutput.Enabled = false;
-            lblLastOutputRefresh.Text = String.Empty;
-            this.Text = "MigAz";
-
-            LogProvider.WriteLog("closeMigrationToolStripMenuItem_Click", "End close current migration session control");
-        }
-
-        #endregion
 
         private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
         {
@@ -449,6 +465,32 @@ namespace MigAz.Forms
                     splitContainer2.Panel1.Controls[0].Height = 300;
                 else
                     splitContainer2.Panel1.Controls[0].Height = splitContainer2.Panel1.Height - 20;
+            }
+        }
+
+        private void splitContainer3_Panel1_Resize(object sender, EventArgs e)
+        {
+            if (splitContainer3.Panel1.Controls.Count == 1)
+            {
+                if (splitContainer3.Panel1.Height < 300)
+                    splitContainer3.Panel1.Controls[0].Height = 300;
+                else
+                    splitContainer3.Panel1.Controls[0].Height = splitContainer3.Panel1.Height - 20;
+
+                splitContainer3.Panel1.Controls[0].Width = splitContainer3.Panel1.Width - 20;
+            }
+        }
+
+        private void splitContainer3_Panel2_Resize(object sender, EventArgs e)
+        {
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                if (splitContainer3.Panel2.Height < 300)
+                    splitContainer3.Panel2.Controls[0].Height = 300;
+                else
+                    splitContainer3.Panel2.Controls[0].Height = splitContainer3.Panel2.Height - 20;
+
+                splitContainer3.Panel2.Controls[0].Width = splitContainer3.Panel2.Width - 20;
             }
         }
     }

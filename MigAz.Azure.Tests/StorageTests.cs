@@ -177,35 +177,35 @@ namespace MigAz.Tests
 
             TargetTreeView targetTreeView = new TargetTreeView();
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
+            await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0].GetType(), "Object type mismatch");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
+            await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0].GetType(), "Object type mismatch");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetVirtualNetworks[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
+            await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0].GetType(), "Object type mismatch");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetNetworkInterfaces[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
+            await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag.GetType() == azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0].GetType(), "Object type mismatch");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag == azureContextUSCommercial.AzureSubscription.ArmTargetManagedDisks[0], "Not the correct object");
 
-            await targetTreeView.AddMigrationTargetToTargetTree(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
+            await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetNetworkSecurityGroups[0]);
             Assert.IsTrue(targetTreeView.SelectedNode != null, "Selected Node is null");
             Assert.IsTrue(targetTreeView.SelectedNode.Tag != null, "Selected Node Tag is null");
