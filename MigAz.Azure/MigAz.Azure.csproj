@@ -113,17 +113,35 @@
     <Compile Include="AzureSubscriptionResourceCache.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.Designer.cs">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AzureLoginContextDialog.Designer.cs">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AzureNewOrExistingLoginContextDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AzureNewOrExistingLoginContextDialog.Designer.cs">
+      <DependentUpon>AzureNewOrExistingLoginContextDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AzureSubscriptionContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.Designer.cs">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IArmDisk.cs" />
@@ -226,6 +244,18 @@
     <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MigrationAzureTargetContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureTargetContext.Designer.cs">
+      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureSourceContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureSourceContext.Designer.cs">
+      <DependentUpon>MigrationAzureSourceContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\NetworkInterfaceProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -313,6 +343,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Forms\ASM403ForbiddenExceptionDialog.resx">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AzureNewOrExistingLoginContextDialog.resx">
+      <DependentUpon>AzureNewOrExistingLoginContextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UnhandledExceptionDialog.resx">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Generator\MigAz.ps1" />
     <None Include="Generator\BlobCopy_Delete_Snapshots.ps1" />
     <None Include="packages.config" />
@@ -342,6 +381,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureTargetContext.resx">
+      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureSourceContext.resx">
+      <DependentUpon>MigrationAzureSourceContext.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkInterfaceProperties.resx">
       <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>

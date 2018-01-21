@@ -1,4 +1,5 @@
-﻿using MigAz.Forms;
+﻿using MigAz.Azure.Forms;
+using MigAz.Forms;
 using System;
 using System.Windows.Forms;
 

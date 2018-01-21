@@ -65,8 +65,8 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.migrationSourceAzure2 = new MigAz.MigrationSource.MigrationSourceAzure();
-            this.migrationTargetAzure2 = new MigAz.MigrationTarget.MigrationTargetAzure();
+            this.migrationSourceAzure2 = new MigAz.Azure.UserControls.MigrationAzureSourceContext();
+            this.migrationTargetAzure2 = new MigAz.Azure.UserControls.MigrationAzureTargetContext();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -563,11 +563,9 @@
         private Azure.UserControls.PropertyPanel propertyPanel1;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.Label label1;
-        private MigrationSource.MigrationSourceAzure migrationSourceAzure1;
-        private MigrationTarget.MigrationTargetAzure migrationTargetAzure1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private MigrationSource.MigrationSourceAzure migrationSourceAzure2;
-        private MigrationTarget.MigrationTargetAzure migrationTargetAzure2;
+        private Azure.UserControls.MigrationAzureSourceContext migrationSourceAzure2;
+        private Azure.UserControls.MigrationAzureTargetContext migrationTargetAzure2;
     }
 }
 

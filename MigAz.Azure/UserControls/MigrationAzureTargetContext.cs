@@ -12,11 +12,10 @@ using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Generator;
 using MigAz.Core.Interface;
-using MigAz.Providers;
 
-namespace MigAz.MigrationTarget
+namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationTargetAzure : UserControl
+    public partial class MigrationAzureTargetContext : UserControl
     {
         private AzureContext _AzureContextTarget;
         private AzureGenerator _AzureGenerator;
@@ -27,7 +26,7 @@ namespace MigAz.MigrationTarget
         public delegate void AfterExportArtifactRefreshHandler(TargetTreeView sender);
         public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
-        public MigrationTargetAzure()
+        public MigrationAzureTargetContext()
         {
             InitializeComponent();
 
@@ -59,9 +58,9 @@ namespace MigAz.MigrationTarget
             AfterTargetSelected?.Invoke(this.TargetTreeView.SelectedNode);
         }
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, AppSettingsProvider appSettingsProvider, ITelemetryProvider telemetryProvider, PropertyPanel propertyPanel)
+        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, PropertyPanel propertyPanel)
         {
-            _AzureContextTarget = new AzureContext(logProvider, statusProvider, appSettingsProvider);
+            _AzureContextTarget = new AzureContext(logProvider, statusProvider, null);
             //_AzureContextTarget.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             //_AzureContextTarget.UserAuthenticated += _AzureContext_UserAuthenticated;
             //_AzureContextTarget.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -74,7 +73,18 @@ namespace MigAz.MigrationTarget
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
 
             this.treeTargetARM.PropertyPanel = propertyPanel;
-            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider, telemetryProvider, appSettingsProvider);
+            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider, telemetryProvider);
+        }
+
+        public AzureContext AzureContext
+        {
+            get { return azureLoginContextViewerTarget.SelectedAzureContext; }
+        }
+
+        public AzureContext ExistingContext
+        {
+            get { return azureLoginContextViewerTarget.ExistingContext; }
+            set { azureLoginContextViewerTarget.ExistingContext = value; }
         }
 
         public void Clear()

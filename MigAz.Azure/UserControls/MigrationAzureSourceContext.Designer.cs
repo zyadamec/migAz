@@ -1,6 +1,6 @@
-﻿namespace MigAz.MigrationSource
+﻿namespace MigAz.Azure.UserControls
 {
-    partial class MigrationSourceAzure
+    partial class MigrationAzureSourceContext
     {
         /// <summary> 
         /// Required designer variable.
@@ -32,7 +32,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cmbAzureResourceTypeSource = new System.Windows.Forms.ComboBox();
             this.treeAzureARM = new System.Windows.Forms.TreeView();
-            this.azureLoginContextViewerSource = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewerSource = new AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // treeAzureASM
@@ -79,7 +79,7 @@
             // 
             // azureLoginContextViewerSource
             // 
-            this.azureLoginContextViewerSource.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
+            this.azureLoginContextViewerSource.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.NewContext;
             this.azureLoginContextViewerSource.Location = new System.Drawing.Point(0, 2);
             this.azureLoginContextViewerSource.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.azureLoginContextViewerSource.Name = "azureLoginContextViewerSource";
@@ -106,7 +106,7 @@
         }
 
         #endregion
-        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerSource;
+        private AzureLoginContextViewer azureLoginContextViewerSource;
         private System.Windows.Forms.TreeView treeAzureASM;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbAzureResourceTypeSource;

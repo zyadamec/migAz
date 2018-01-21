@@ -1,6 +1,6 @@
-﻿namespace MigAz.MigrationTarget
+﻿namespace MigAz.Azure.UserControls
 {
-    partial class MigrationTargetAzure
+    partial class MigrationAzureTargetContext
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.label6 = new System.Windows.Forms.Label();
-            this.treeTargetARM = new MigAz.Azure.UserControls.TargetTreeView();
-            this.azureLoginContextViewerTarget = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.treeTargetARM = new TargetTreeView();
+            this.azureLoginContextViewerTarget = new AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // label6
@@ -59,7 +59,7 @@
             // 
             // azureLoginContextViewerTarget
             // 
-            this.azureLoginContextViewerTarget.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
+            this.azureLoginContextViewerTarget.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.NewOrExistingContext;
             this.azureLoginContextViewerTarget.Location = new System.Drawing.Point(2, 2);
             this.azureLoginContextViewerTarget.Margin = new System.Windows.Forms.Padding(2);
             this.azureLoginContextViewerTarget.Name = "azureLoginContextViewerTarget";
@@ -85,8 +85,8 @@
 
         #endregion
 
-        private Azure.UserControls.TargetTreeView treeTargetARM;
-        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerTarget;
+        private TargetTreeView treeTargetARM;
+        private AzureLoginContextViewer azureLoginContextViewerTarget;
         private System.Windows.Forms.Label label6;
     }
 }

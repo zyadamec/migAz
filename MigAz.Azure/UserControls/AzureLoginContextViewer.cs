@@ -7,13 +7,22 @@ namespace MigAz.Azure.UserControls
 {
     public enum AzureLoginChangeType
     {
-        Full,
-        SubscriptionOnly
+        NewOrExistingContext,
+        NewContext,
+        SubscriptionChangeOnly
+    }
+
+    public enum AzureContextSelectedType
+    {
+        NewContext,
+        ExistingContext
     }
     public partial class AzureLoginContextViewer : UserControl
     {
         private AzureContext _AzureContext;
-        private AzureLoginChangeType _ChangeType = AzureLoginChangeType.Full;
+        private AzureContext _ExistingContext;
+        private AzureLoginChangeType _ChangeType = AzureLoginChangeType.NewContext;
+        private AzureContextSelectedType _AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
 
         public AzureLoginContextViewer()
         {
@@ -30,43 +39,68 @@ namespace MigAz.Azure.UserControls
             _AzureContext.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
         }
 
+        public AzureContext ExistingContext
+        {
+            get { return _ExistingContext; }
+            set
+            {
+                _ExistingContext = value;
+                UpdateLabels();
+            }
+        }
+
         private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
         {
-            if (sender.AzureTenant == null)
-                lblTenantName.Text = "-";
-            else
-                lblTenantName.Text = sender.AzureTenant.ToString();
+            UpdateLabels();
         }
 
         private async Task _AzureContext_AfterUserSignOut()
         {
-            lblSourceUser.Text = "-";
-            lblSourceSubscriptionName.Text = "-";
-            lblSourceSubscriptionId.Text = "-";
+            UpdateLabels();
         }
 
         private async Task _AzureContext_AzureEnvironmentChanged(AzureContext sender)
         {
-            lblSourceEnvironment.Text = sender.AzureEnvironment.ToString();
+            UpdateLabels();
         }
 
         private async Task _AzureContext_UserAuthenticated(AzureContext sender)
         {
-            AzureContext azureContext = (AzureContext)sender;
-            lblSourceUser.Text = azureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+            UpdateLabels();
         }
 
         private async Task _AzureContext_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            if (sender.AzureSubscription != null)
+            UpdateLabels();
+        }
+
+        private void UpdateLabels()
+        {
+            lblSourceUser.Text = "-";
+            lblSourceSubscriptionName.Text = "-";
+            lblSourceSubscriptionId.Text = "-";
+            lblTenantName.Text = "-";
+
+            AzureContext selectedContext = this.SelectedAzureContext;
+            if (selectedContext != null)
             {
-                lblSourceSubscriptionName.Text = sender.AzureSubscription.Name;
-                lblSourceSubscriptionId.Text = sender.AzureSubscription.SubscriptionId.ToString();
-            }
-            else
-            {
-                lblSourceSubscriptionName.Text = "-";
-                lblSourceSubscriptionId.Text = "-";
+                lblSourceEnvironment.Text = selectedContext.AzureEnvironment.ToString();
+
+                if (selectedContext.AzureTenant != null)
+                    lblTenantName.Text = selectedContext.AzureTenant.ToString();
+
+                if (selectedContext.TokenProvider != null &&
+                    selectedContext.TokenProvider.AuthenticationResult != null &&
+                    selectedContext.TokenProvider.AuthenticationResult.UserInfo != null)
+                {
+                    lblSourceUser.Text = selectedContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                }
+
+                if (selectedContext.AzureSubscription != null)
+                {
+                    lblSourceSubscriptionName.Text = selectedContext.AzureSubscription.Name;
+                    lblSourceSubscriptionId.Text = selectedContext.AzureSubscription.SubscriptionId.ToString();
+                }
             }
         }
 
@@ -82,12 +116,45 @@ namespace MigAz.Azure.UserControls
             set { _ChangeType = value; }
         }
 
+        public AzureContext SelectedAzureContext
+        {
+            get
+            {
+                if (this.ChangeType == AzureLoginChangeType.NewOrExistingContext)
+                {
+                    if (_ExistingContext != null && _AzureContextSelectedType == AzureContextSelectedType.ExistingContext)
+                        return _ExistingContext;
+                    else
+                        return _AzureContext;
+                }
+                else
+                    return _AzureContext;
+            }
+        }
+
         private async void btnAzureContext_Click(object sender, EventArgs e)
         {
             if (_AzureContext == null)
                 throw new ArgumentException("Azure Context not set.  You must initiate the AzureLoginContextViewer control with the Bind Method.");
 
-            if (_ChangeType == AzureLoginChangeType.Full)
+            if (_ChangeType == AzureLoginChangeType.NewOrExistingContext)
+            {
+                if (_ExistingContext == null)
+                {
+                    AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
+                    await azureLoginContextDialog.InitializeDialog(_AzureContext);
+                    azureLoginContextDialog.ShowDialog();
+                    azureLoginContextDialog.Dispose();
+                }
+                else
+                {
+                    AzureNewOrExistingLoginContextDialog azureLoginContextDialog = new AzureNewOrExistingLoginContextDialog();
+                    await azureLoginContextDialog.InitializeDialog(this);
+                    azureLoginContextDialog.ShowDialog();
+                    azureLoginContextDialog.Dispose();
+                }
+            }
+            else if (_ChangeType == AzureLoginChangeType.NewContext)
             {
                 AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
                 await azureLoginContextDialog.InitializeDialog(_AzureContext);

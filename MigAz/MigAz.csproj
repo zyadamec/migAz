@@ -109,12 +109,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.Designer.cs">
-      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\MigAzForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,24 +127,6 @@
     <Compile Include="Forms\OptionsDialog.Designer.cs">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\UnhandledExceptionDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\UnhandledExceptionDialog.Designer.cs">
-      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MigrationSource\MigrationSourceAzure.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MigrationSource\MigrationSourceAzure.Designer.cs">
-      <DependentUpon>MigrationSourceAzure.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MigrationTarget\MigrationTargetAzure.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MigrationTarget\MigrationTargetAzure.Designer.cs">
-      <DependentUpon>MigrationTargetAzure.cs</DependentUpon>
-    </Compile>
     <Compile Include="Providers\AppSettingsProvider.cs" />
     <Compile Include="Providers\AzureTelemetryProvider.cs" />
     <Compile Include="Providers\UISaveSelectionProvider.cs" />
@@ -158,9 +134,6 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\ASM403ForbiddenExceptionDialog.resx">
-      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -169,15 +142,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UnhandledExceptionDialog.resx">
-      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MigrationSource\MigrationSourceAzure.resx">
-      <DependentUpon>MigrationSourceAzure.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MigrationTarget\MigrationTargetAzure.resx">
-      <DependentUpon>MigrationTargetAzure.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -249,6 +213,9 @@
       <Project>{1bdc90e2-902b-4397-8b4f-7dff2d486fc2}</Project>
       <Name>MigAz.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MigrationSource\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

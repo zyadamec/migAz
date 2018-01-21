@@ -1,4 +1,4 @@
-﻿namespace MigAz.Forms
+﻿namespace MigAz.Azure.Forms
 {
     partial class UnhandledExceptionDialog
     {

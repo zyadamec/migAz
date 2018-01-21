@@ -7,22 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure;
-using MigAz.Providers;
 using MigAz.Core.Interface;
 using MigAz.Azure.Interface;
-using MigAz.Forms;
 using System.Net;
 using MigAz.Azure.Arm;
+using MigAz.Azure.Forms;
 
-namespace MigAz.MigrationSource
+namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationSourceAzure : UserControl
+    public partial class MigrationAzureSourceContext : UserControl
     {
         private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private TreeNode _SourceAsmNode;
         private ImageList _ImageList;
+        private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
+        private bool _AutoSelectDependencies = true;
 
         #region Matching Events from AzureContext
 
@@ -65,7 +65,7 @@ namespace MigAz.MigrationSource
 
         #endregion
 
-        public MigrationSourceAzure()
+        public MigrationAzureSourceContext()
         {
             InitializeComponent();
             cmbAzureResourceTypeSource.SelectedIndex = 0;
@@ -76,9 +76,10 @@ namespace MigAz.MigrationSource
             treeAzureARM.Width = this.Width;
         }
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, AppSettingsProvider appSettingsProvider, ImageList imageList)
+        //        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, AppSettingsProvider appSettingsProvider, ImageList imageList)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, ImageList imageList)
         {
-            _AzureContextSource = new AzureContext(logProvider, statusProvider, appSettingsProvider);
+            _AzureContextSource = new AzureContext(logProvider, statusProvider, null);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -128,6 +129,17 @@ namespace MigAz.MigrationSource
 
         #endregion
 
+        public ArmDiskType DefaultTargetDiskType
+        {
+            get { return _DefaultTargetDiskType; }
+            set { _DefaultTargetDiskType = value; }
+        }
+
+        public bool AutoSelectDependencies
+        {
+            get { return _AutoSelectDependencies; }
+            set { _AutoSelectDependencies = value; }
+        }
 
         #region Event Handlers
 
@@ -148,8 +160,8 @@ namespace MigAz.MigrationSource
 
         private async Task _AzureContext_AzureEnvironmentChanged(AzureContext sender)
         {
-            app.Default.AzureEnvironment = sender.AzureEnvironment.ToString();
-            app.Default.Save();
+            //app.Default.AzureEnvironment = sender.AzureEnvironment.ToString();
+            //app.Default.Save();
 
             //if (_AzureContextTargetARM.TokenProvider == null)
             //    _AzureContextTargetARM.AzureEnvironment = sender.AzureEnvironment;
@@ -539,9 +551,9 @@ namespace MigAz.MigrationSource
 
         #region Source Resource TreeView Methods
 
-        private async Task AutoSelectDependencies(TreeNode selectedNode)
+        private async Task SelectDependencies(TreeNode selectedNode)
         {
-            if ((app.Default.AutoSelectDependencies) && (selectedNode.Checked) && (selectedNode.Tag != null))
+            if (this.AutoSelectDependencies && (selectedNode.Checked) && (selectedNode.Tag != null))
             {
                 if (selectedNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
                 {
@@ -613,7 +625,7 @@ namespace MigAz.MigrationSource
 
                             #region OS Disk Storage Account
 
-                            if (app.Default.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
+                            if (this.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                             {
                                 foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(asmVirtualMachine.OSVirtualHardDisk.StorageAccountName, true))
                                 {
@@ -629,7 +641,7 @@ namespace MigAz.MigrationSource
 
                             #region Data Disk(s) Storage Account(s)
 
-                            if (app.Default.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
+                            if (this.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                             {
 
                                 foreach (Azure.Asm.Disk dataDisk in asmVirtualMachine.DataDisks)
@@ -910,7 +922,7 @@ namespace MigAz.MigrationSource
             }
 
             if (e.Node.Checked)
-                await AutoSelectDependencies(e.Node);
+                await SelectDependencies(e.Node);
 
             TreeNode resultUpdateARMTree = null;
 

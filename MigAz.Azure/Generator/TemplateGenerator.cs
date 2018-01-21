@@ -30,23 +30,23 @@ namespace MigAz.Azure.Generator
         private ISubscription _TargetSubscription;
         private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
         private ITelemetryProvider _telemetryProvider;
-        private ISettingsProvider _settingsProvider;
+        //private ISettingsProvider _settingsProvider;
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
+        private bool _BuildEmpty = false;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription, ITelemetryProvider telemetryProvider, ISettingsProvider settingsProvider)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription, ITelemetryProvider telemetryProvider)
         {
             _logProvider = logProvider;
             _statusProvider = statusProvider;
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
             _telemetryProvider = telemetryProvider;
-            _settingsProvider = settingsProvider;
         }
 
         public ILogProvider LogProvider
@@ -67,6 +67,11 @@ namespace MigAz.Azure.Generator
             get { return _ExecutionGuid; }
         }
 
+        public bool BuildEmpty
+        {
+            get { return _BuildEmpty; }
+            set { _BuildEmpty = value; }
+        }
         public Int32 AccessSASTokenLifetimeSeconds
         {
             get { return _AccessSASTokenLifetime; }
@@ -214,7 +219,7 @@ namespace MigAz.Azure.Generator
                 foreach (Azure.MigrationTarget.Disk targetDisk in _ExportArtifacts.Disks)
                 {
                     StatusProvider.UpdateStatus("BUSY: Creating Copy Blob Details for Disk : " + targetDisk.ToString());
-                    if (!_settingsProvider.BuildEmpty)
+                    if (!this.BuildEmpty)
                     {
                         this._CopyBlobDetails.Add(await BuildCopyBlob(targetDisk, _ExportArtifacts.ResourceGroup));
                     }
@@ -580,7 +585,7 @@ namespace MigAz.Azure.Generator
                     publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
 
                     PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-                    publicipaddress.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
+                    publicipaddress.name = targetVirtualNetwork.TargetName; // todo now  + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
                     publicipaddress.location = "[resourceGroup().location]";
                     publicipaddress.properties = publicipaddress_properties;
 
@@ -668,7 +673,7 @@ namespace MigAz.Azure.Generator
 
                     VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
                     virtualnetworkgateway.location = "[resourceGroup().location]";
-                    virtualnetworkgateway.name = targetVirtualNetwork.TargetName + _settingsProvider.VirtualNetworkGatewaySuffix;
+                    virtualnetworkgateway.name = targetVirtualNetwork.TargetName; // todo  + _settingsProvider.VirtualNetworkGatewaySuffix;
                     virtualnetworkgateway.properties = virtualnetworkgateway_properties;
                     virtualnetworkgateway.dependsOn = dependson;
 
@@ -1001,7 +1006,7 @@ namespace MigAz.Azure.Generator
             OsProfile osprofile = new OsProfile();
 
             // if the tool is configured to create new VMs with empty data disks
-            if (_settingsProvider.BuildEmpty)
+            if (this.BuildEmpty)
             {
                 osdisk.name = targetVirtualMachine.OSVirtualHardDisk.ToString();
                 osdisk.createOption = "FromImage";
@@ -1091,7 +1096,7 @@ namespace MigAz.Azure.Generator
                         datadisk.lun = dataDisk.Lun.Value;
 
                     // if the tool is configured to create new VMs with empty data disks
-                    if (_settingsProvider.BuildEmpty)
+                    if (this.BuildEmpty)
                     {
                         datadisk.createOption = "Empty";
                     }
@@ -1129,13 +1134,13 @@ namespace MigAz.Azure.Generator
             }
 
             StorageProfile storageprofile = new StorageProfile();
-            if (_settingsProvider.BuildEmpty) { storageprofile.imageReference = imagereference; }
+            if (this.BuildEmpty) { storageprofile.imageReference = imagereference; }
             storageprofile.osDisk = osdisk;
             storageprofile.dataDisks = datadisks;
 
             VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
             virtualmachine_properties.hardwareProfile = hardwareprofile;
-            if (_settingsProvider.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
+            if (this.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
             virtualmachine_properties.networkProfile = networkprofile;
             virtualmachine_properties.storageProfile = storageprofile;
 
@@ -1501,7 +1506,7 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{resourceGroupNameParameter}", " -ResourceGroupName \"" + this.TargetResourceGroupName + "\"");
             instructionContent = instructionContent.Replace("{templateFileParameter}", " -TemplateFile \"" + GetTemplatePath() + "\"");
 
-            if (_settingsProvider.BuildEmpty)
+            if (this.BuildEmpty)
             {
                 instructionContent = instructionContent.Replace("{blobCopyFileParameter}", String.Empty); // In Empty Build, we don't do any blob copies
             }
