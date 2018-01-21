@@ -82,8 +82,16 @@ namespace MigAz.Forms
             {
                 migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this.AppSettingsProvider, this._telemetryProvider, this.propertyPanel1);
                 migrationTargetControl.AfterTargetSelected += Control_AfterTargetSelected;
-                migrationTargetControl.AfterResourceValidation += Control_AfterResourceValidation;
+                migrationTargetControl.AfterExportArtifactRefresh += MigrationTargetControl_AfterExportArtifactRefresh;
             }
+        }
+
+        private void MigrationTargetControl_AfterExportArtifactRefresh(TargetTreeView sender)
+        {
+            dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
+            btnRefreshOutput.Enabled = true;
         }
 
         private MigrationSourceAzure MigrationSourceControl
@@ -114,29 +122,17 @@ namespace MigAz.Forms
             }
         }
 
-        private async Task Control_AfterResourceValidation()
-        {
-            if (splitContainer3.Panel2.Controls.Count == 1)
-            {
-                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
-                dgvMigAzMessages.DataSource = control.TargetTreeView.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
-                dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dgvMigAzMessages.Columns["SourceObject"].Visible = false;
-                btnRefreshOutput.Enabled = true;
-            }
-        }
-
         private async Task PropertyPanel1_PropertyChanged()
         {
             //if (_SourceAsmNode == null && treeTargetARM.EventSourceNode == null) // we are not going to update on every property bind during TreeView updates
             //{
-                if (splitContainer3.Panel2.Controls.Count == 1)
-                {
-                    MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
-                    control.TargetTreeView.ValidateAzureResources();
-                }
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                await control.TargetTreeView.RefreshExportArtifacts();
+
+            }
             //}
-            //await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
         }
 
         private void Control_ClearContext()
@@ -171,12 +167,13 @@ namespace MigAz.Forms
         private async Task _AzureContextSource_AfterNodeChecked(IMigrationTarget sender)
         {
             TreeNode resultUpdateARMTree = await _TreeTargetARM.AddMigrationTarget(sender);
-
+            await _TreeTargetARM.RefreshExportArtifacts();
         }
 
         private async Task _AzureContextSource_AfterNodeUnchecked(IMigrationTarget sender)
         {
             await _TreeTargetARM.RemoveMigrationTarget(sender);
+            await _TreeTargetARM.RefreshExportArtifacts();
         }
 
 
@@ -333,13 +330,10 @@ namespace MigAz.Forms
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            if (parent.Controls.Count == 1 && e.RowIndex > -1)
+            if (_TreeTargetARM != null && e.RowIndex > -1)
             {
-                IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
                 object alert = dgvMigAzMessages.Rows[e.RowIndex].Cells["SourceObject"].Value;
-                migrator.SeekAlertSource(alert);
+                _TreeTargetARM.SeekAlertSource(alert);
             }
         }
 

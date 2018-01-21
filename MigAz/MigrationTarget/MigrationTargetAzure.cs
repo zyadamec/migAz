@@ -24,15 +24,15 @@ namespace MigAz.MigrationTarget
         public delegate Task AfterTargetSelectedHandler(TreeNode sender);
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
-        public delegate Task AfterResourceValidationHandler();
-        public event AfterResourceValidationHandler AfterResourceValidation;
+        public delegate void AfterExportArtifactRefreshHandler(TargetTreeView sender);
+        public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
         public MigrationTargetAzure()
         {
             InitializeComponent();
 
             treeTargetARM.AfterTargetSelected += TreeTargetARM_AfterTargetSelected;
-            treeTargetARM.AfterResourceValidation += TreeTargetARM_AfterResourceValidation;
+            treeTargetARM.AfterExportArtifactRefresh += TreeTargetARM_AfterExportArtifactRefresh;
         }
 
         public TemplateGenerator TemplateGenerator
@@ -43,9 +43,9 @@ namespace MigAz.MigrationTarget
             }
         }
 
-        private async Task TreeTargetARM_AfterResourceValidation()
+        private async Task TreeTargetARM_AfterExportArtifactRefresh()
         {
-            await AfterResourceValidation?.Invoke();
+            AfterExportArtifactRefresh?.Invoke(this.treeTargetARM);
         }
 
         public ImageList ImageList

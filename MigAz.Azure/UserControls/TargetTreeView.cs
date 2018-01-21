@@ -23,8 +23,8 @@ namespace MigAz.Azure.UserControls
         public delegate void AfterTargetSelectedHandler();
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
-        public delegate Task AfterResourceValidationHandler();
-        public event AfterResourceValidationHandler AfterResourceValidation;
+        public delegate Task AfterExportArtifactRefreshHandler();
+        public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
         public TargetTreeView()
         {
@@ -180,7 +180,7 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private void RefreshExportArtifacts()
+        public async Task RefreshExportArtifacts()
         {
             _ExportArtifacts = new ExportArtifacts();
 
@@ -191,13 +191,17 @@ namespace MigAz.Azure.UserControls
             {
                 GetExportArtifactsRecursive(treeNode, ref _ExportArtifacts);
             }
+
+            await _ExportArtifacts.ValidateAzureResources();
+            AfterExportArtifactRefresh?.Invoke();
         }
 
         public ExportArtifacts ExportArtifacts
         {
             get
             {
-                RefreshExportArtifacts();
+                if (_ExportArtifacts == null)
+                    return null;
 
                 if (_ExportArtifacts.HasErrors)
                     return null;
@@ -740,12 +744,6 @@ namespace MigAz.Azure.UserControls
         public void Clear()
         {
             treeTargetARM.Nodes.Clear();
-        }
-
-        public void ValidateAzureResources()
-        {
-            this.RefreshExportArtifacts();
-            AfterResourceValidation?.Invoke();
         }
 
         public List<MigAzGeneratorAlert> Alerts
