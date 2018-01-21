@@ -63,6 +63,7 @@ namespace MigAz.MigrationTarget
         {
             this.treeTargetARM.Width = this.Width;
             this.treeTargetARM.Height = this.Height - 125;
+            azureLoginContextViewerARM.Width = this.Width;
         }
     }
 }

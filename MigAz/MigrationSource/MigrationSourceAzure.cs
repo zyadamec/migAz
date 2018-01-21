@@ -1156,6 +1156,7 @@ namespace MigAz.MigrationSource
             treeAzureARM.Width = this.Width;
             treeAzureASM.Height = this.Height - 135;
             treeAzureASM.Width = this.Width;
+            azureLoginContextViewerSource.Width = this.Width;
         }
     }
 }

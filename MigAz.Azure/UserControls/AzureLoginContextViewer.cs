@@ -112,5 +112,11 @@ namespace MigAz.Azure.UserControls
         {
             btnAzureContext_Click(this, null);
         }
+
+        private void AzureLoginContextViewer_Resize(object sender, EventArgs e)
+        {
+            groupSubscription.Width = this.Width - 5;
+            btnAzureContext.Left = this.Width - btnAzureContext.Width - 10;
+        }
     }
 }
