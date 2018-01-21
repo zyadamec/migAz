@@ -107,7 +107,7 @@ namespace MigAz.Forms
                 if (splitContainer3.Panel2.Controls.Count == 1)
                 {
                     MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
-                    await control.TargetTreeView.ValidateAzureResources();
+                    control.TargetTreeView.ValidateAzureResources();
                 }
             //}
             //await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
@@ -268,17 +268,19 @@ namespace MigAz.Forms
 
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
-            if (splitContainer2.Panel1.Controls.Count == 1)
-            {
-                IMigratorUserControl migrator = (IMigratorUserControl)splitContainer2.Panel1.Controls[0];
 
-                if (this.TemplateGenerator.HasErrors)
+            if (splitContainer3.Panel2.Controls.Count == 1)
+            {
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
+                
+                if (control.TargetTreeView.HasErrors)
                 {
                     tabMigAzMonitoring.SelectTab("tabMessages");
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
 
+                this.TemplateGenerator.ExportArtifacts = control.TargetTreeView.ExportArtifacts;
                 this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
                 // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
@@ -337,13 +339,11 @@ namespace MigAz.Forms
 
         private async Task RefreshOutput()
         {
-            SplitterPanel parent = (SplitterPanel)splitContainer2.Panel1;
-
-            if (parent.Controls.Count == 1)
+            if (splitContainer3.Panel2.Controls.Count == 1)
             {
-                IMigratorUserControl migrator = (IMigratorUserControl)parent.Controls[0];
+                MigrationTarget.MigrationTargetAzure control = (MigrationTarget.MigrationTargetAzure)splitContainer3.Panel2.Controls[0];
 
-                if (this.TemplateGenerator.HasErrors)
+                if (control.TargetTreeView.HasErrors)
                 {
                     tabMigAzMonitoring.SelectTab("tabMessages");
                     MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
@@ -351,6 +351,7 @@ namespace MigAz.Forms
                 }
 
                 this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
+                this.TemplateGenerator.ExportArtifacts = control.TargetTreeView.ExportArtifacts;
 
                 await this.TemplateGenerator.GenerateStreams();
                 await this.TemplateGenerator.SerializeStreams();
@@ -453,7 +454,7 @@ namespace MigAz.Forms
                 if (AppSettingsProvider.AllowTelemetry)
                 {
                     StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                    migrator.PostTelemetryRecord();
+                    // todo now _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
                 }
             }
         }
