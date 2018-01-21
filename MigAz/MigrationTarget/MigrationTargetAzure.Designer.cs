@@ -30,7 +30,7 @@
         {
             this.label6 = new System.Windows.Forms.Label();
             this.treeTargetARM = new MigAz.Azure.UserControls.TargetTreeView();
-            this.azureLoginContextViewerARM = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.azureLoginContextViewerTarget = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.SuspendLayout();
             // 
             // label6
@@ -57,23 +57,23 @@
             this.treeTargetARM.StatusProvider = null;
             this.treeTargetARM.TabIndex = 69;
             // 
-            // azureLoginContextViewerARM
+            // azureLoginContextViewerTarget
             // 
-            this.azureLoginContextViewerARM.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
-            this.azureLoginContextViewerARM.Enabled = false;
-            this.azureLoginContextViewerARM.Location = new System.Drawing.Point(2, 2);
-            this.azureLoginContextViewerARM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.azureLoginContextViewerARM.Name = "azureLoginContextViewerARM";
-            this.azureLoginContextViewerARM.Size = new System.Drawing.Size(670, 163);
-            this.azureLoginContextViewerARM.TabIndex = 68;
-            this.azureLoginContextViewerARM.Title = "Azure Subscription (Target)";
+            this.azureLoginContextViewerTarget.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.Full;
+            this.azureLoginContextViewerTarget.Enabled = false;
+            this.azureLoginContextViewerTarget.Location = new System.Drawing.Point(2, 2);
+            this.azureLoginContextViewerTarget.Margin = new System.Windows.Forms.Padding(2);
+            this.azureLoginContextViewerTarget.Name = "azureLoginContextViewerTarget";
+            this.azureLoginContextViewerTarget.Size = new System.Drawing.Size(670, 163);
+            this.azureLoginContextViewerTarget.TabIndex = 68;
+            this.azureLoginContextViewerTarget.Title = "Azure Subscription (Target)";
             // 
             // MigrationTargetAzure
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeTargetARM);
-            this.Controls.Add(this.azureLoginContextViewerARM);
+            this.Controls.Add(this.azureLoginContextViewerTarget);
             this.Controls.Add(this.label6);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MigrationTargetAzure";
@@ -87,7 +87,7 @@
         #endregion
 
         private Azure.UserControls.TargetTreeView treeTargetARM;
-        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerARM;
+        private Azure.UserControls.AzureLoginContextViewer azureLoginContextViewerTarget;
         private System.Windows.Forms.Label label6;
     }
 }
