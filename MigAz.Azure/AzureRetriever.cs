@@ -24,6 +24,7 @@ namespace MigAz.Azure
         private object _lockObject = new object();
         private AzureSubscription _AzureSubscription = null;
         private List<AzureSubscription> _AzureSubscriptions;
+        private PromptBehavior _PromptBehavior = PromptBehavior.Auto;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
@@ -35,10 +36,6 @@ namespace MigAz.Azure
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
         private Dictionary<AzureSubscription, AzureSubscriptionResourceCache> _AzureSubscriptionResourceCaches = new Dictionary<AzureSubscription, AzureSubscriptionResourceCache>();
 
-        private bool _IsAsmLoaded = false;
-        private bool _IsArmLoaded = false;
-
-
         private AzureRetriever() { }
 
         public AzureRetriever(AzureContext azureContext)
@@ -49,6 +46,12 @@ namespace MigAz.Azure
         public AzureSubscription SubscriptionContext
         {
             get { return _AzureSubscription; }
+        }
+
+        public PromptBehavior PromptBehavior
+        {
+            get { return _PromptBehavior; }
+            set { _PromptBehavior = value; }
         }
 
         public void ClearCache()

@@ -31,11 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.17.2.31801, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.2\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.17.3.35304, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.3\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.17.2.31801, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.2\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.17.3.35304, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.3\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -113,17 +113,35 @@
     <Compile Include="AzureSubscriptionResourceCache.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ASM403ForbiddenExceptionDialog.Designer.cs">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AzureLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AzureLoginContextDialog.Designer.cs">
       <DependentUpon>AzureLoginContextDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AzureNewOrExistingLoginContextDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AzureNewOrExistingLoginContextDialog.Designer.cs">
+      <DependentUpon>AzureNewOrExistingLoginContextDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AzureSubscriptionContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AzureSubscriptionContextDialog.Designer.cs">
       <DependentUpon>AzureSubscriptionContextDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UnhandledExceptionDialog.Designer.cs">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IArmDisk.cs" />
@@ -214,11 +232,29 @@
     <Compile Include="UserControls\IMigratorUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UserControls\IPv4AddressBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\IPv4AddressBox.Designer.cs">
+      <DependentUpon>IPv4AddressBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LoadBalancerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureTargetContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureTargetContext.Designer.cs">
+      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureSourceContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureSourceContext.Designer.cs">
+      <DependentUpon>MigrationAzureSourceContext.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\NetworkInterfaceProperties.cs">
       <SubType>UserControl</SubType>
@@ -307,6 +343,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Forms\ASM403ForbiddenExceptionDialog.resx">
+      <DependentUpon>ASM403ForbiddenExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AzureNewOrExistingLoginContextDialog.resx">
+      <DependentUpon>AzureNewOrExistingLoginContextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UnhandledExceptionDialog.resx">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Generator\MigAz.ps1" />
     <None Include="Generator\BlobCopy_Delete_Snapshots.ps1" />
     <None Include="packages.config" />
@@ -331,8 +376,17 @@
     <EmbeddedResource Include="UserControls\DiskProperties.resx">
       <DependentUpon>DiskProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\IPv4AddressBox.resx">
+      <DependentUpon>IPv4AddressBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureTargetContext.resx">
+      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureSourceContext.resx">
+      <DependentUpon>MigrationAzureSourceContext.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\NetworkInterfaceProperties.resx">
       <DependentUpon>NetworkInterfaceProperties.cs</DependentUpon>

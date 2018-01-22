@@ -29,7 +29,7 @@ namespace MigAz.Azure.UserControls
         public void Bind(AzureContext azureContext, MigrationTarget.StorageAccount storageAccount)
         {
             _AzureContext = azureContext;
-            txtTargetName.MaxLength = 24 - azureContext.SettingsProvider.StorageAccountSuffix.Length;
+            txtTargetName.MaxLength = 24 - azureContext.TargetSettings.StorageAccountSuffix.Length;
 
             _StorageAccount = storageAccount;
             lblAccountType.Text = storageAccount.SourceAccount.AccountType;

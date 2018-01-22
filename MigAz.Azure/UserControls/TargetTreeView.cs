@@ -9,14 +9,22 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.MigrationTarget;
+using MigAz.Core.Generator;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class TargetTreeView : UserControl
     {
+
+        private ExportArtifacts _ExportArtifacts;
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup = new MigrationTarget.ResourceGroup();
-        private TreeNode _EventSourceNode;
         private PropertyPanel _PropertyPanel;
+
+        public delegate void AfterTargetSelectedHandler();
+        public event AfterTargetSelectedHandler AfterTargetSelected;
+
+        public delegate Task AfterExportArtifactRefreshHandler();
+        public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
         public TargetTreeView()
         {
@@ -60,11 +68,6 @@ namespace MigAz.Azure.UserControls
         public TreeNodeCollection Nodes
         {
             get { return this.treeTargetARM.Nodes; }
-        }
-
-        public TreeNode EventSourceNode
-        {
-            get { return _EventSourceNode; }
         }
 
         public TreeNode SelectedNode
@@ -177,19 +180,34 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        public ExportArtifacts GetExportArtifacts()
+        public async Task RefreshExportArtifacts()
         {
-            ExportArtifacts exportArtifacts = new ExportArtifacts();
+            _ExportArtifacts = new ExportArtifacts();
 
             if (this.Nodes.Count == 1 && this.Nodes[0].Tag != null)
-                exportArtifacts.ResourceGroup = (MigrationTarget.ResourceGroup)this.Nodes[0].Tag;
+                _ExportArtifacts.ResourceGroup = (MigrationTarget.ResourceGroup)this.Nodes[0].Tag;
 
             foreach (TreeNode treeNode in treeTargetARM.Nodes)
             {
-                GetExportArtifactsRecursive(treeNode, ref exportArtifacts);
+                GetExportArtifactsRecursive(treeNode, ref _ExportArtifacts);
             }
 
-            return exportArtifacts;
+            await _ExportArtifacts.ValidateAzureResources();
+            AfterExportArtifactRefresh?.Invoke();
+        }
+
+        public ExportArtifacts ExportArtifacts
+        {
+            get
+            {
+                if (_ExportArtifacts == null)
+                    return null;
+
+                if (_ExportArtifacts.HasErrors)
+                    return null;
+                else
+                    return _ExportArtifacts;
+            }
         }
 
         internal void TransitionToManagedDisk(TreeNode targetTreeNode)
@@ -380,7 +398,7 @@ namespace MigAz.Azure.UserControls
             return targetResourceGroupNode;
         }
 
-        public async Task<TreeNode> AddMigrationTargetToTargetTree(IMigrationTarget parentNode)
+        public async Task<TreeNode> AddMigrationTarget(IMigrationTarget parentNode)
         {
             if (parentNode == null)
                 throw new ArgumentNullException("Migration Target cannot be null.");
@@ -561,7 +579,7 @@ namespace MigAz.Azure.UserControls
             return tnAvailabilitySet;
         }
 
-        public async Task RemoveASMNodeFromARMTree(IMigrationTarget migrationTarget)
+        public async Task RemoveMigrationTarget(IMigrationTarget migrationTarget)
         {
 
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
@@ -691,21 +709,9 @@ namespace MigAz.Azure.UserControls
         }
 
 
-        private async void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("treeARM_AfterSelect", "Start");
-
-            _EventSourceNode = e.Node;
-
-            await _PropertyPanel.Bind(e.Node);
-            _EventSourceNode = null;
-
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("treeARM_AfterSelect", "End");
-
-            if (this.StatusProvider != null)
-                StatusProvider.UpdateStatus("Ready");
+            AfterTargetSelected?.Invoke();
         }
 
         private void TargetTreeView_Resize(object sender, EventArgs e)
@@ -734,5 +740,33 @@ namespace MigAz.Azure.UserControls
 
             return _TargetVirtualNetworks;
         }
+
+        public void Clear()
+        {
+            treeTargetARM.Nodes.Clear();
+        }
+
+        public List<MigAzGeneratorAlert> Alerts
+        {
+            get
+            {
+                if (_ExportArtifacts == null)
+                    return new List<MigAzGeneratorAlert>();
+                else
+                    return _ExportArtifacts.Alerts;
+            }
+        }
+
+        public bool HasErrors
+        {
+            get
+            {
+                if (_ExportArtifacts == null)
+                    return false;
+                else
+                    return _ExportArtifacts.HasErrors;
+            }
+        }
+
     }
 }

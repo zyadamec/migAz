@@ -25,6 +25,7 @@ namespace MigAz.Azure.UserControls
         public NetworkSelectionControl()
         {
             InitializeComponent();
+            txtStaticIp.TextChanged += txtStaticIp_TextChanged;
         }
 
         public async Task Bind(AzureContext azureContext, Azure.UserControls.TargetTreeView targetTreeView,  List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
@@ -45,7 +46,7 @@ namespace MigAz.Azure.UserControls
                 {
                     // Cannot use existing ARM VNet without Target Location
                     rbExistingARMVNet.Enabled = false;
-                    rbExistingARMVNet.Visible = false;
+                    rbExistingARMVNet.Text = "<Set Target Resource Group Location>";
                 }
             }
             catch (Exception exc)
@@ -53,8 +54,6 @@ namespace MigAz.Azure.UserControls
                 _AzureContext.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
                 this.ExistingARMVNetEnabled = false;
             }
-
-
         }
 
         public IVirtualNetworkTarget VirtualNetworkTarget
@@ -296,7 +295,7 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged();
         }
 
-        private void txtStaticIp_TextChanged(object sender, EventArgs e)
+        private void txtStaticIp_TextChanged(object sender)
         {
             if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
             {
@@ -308,12 +307,5 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private void txtStaticIp_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (char.IsWhiteSpace(e.KeyChar))
-            {
-                e.Handled = true;
-            }
-        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 
 namespace MigAz.Tests.Fakes
 {
@@ -15,6 +16,19 @@ namespace MigAz.Tests.Fakes
             NetworkSecurityGroupSuffix = "-nsg";
             LoadBalancerSuffix = "-lb";
             VirtualMachineSuffix = "-vm";
+        }
+
+        public TargetSettings GetTargetSettings()
+        {
+            TargetSettings targetSettings = new TargetSettings();
+            targetSettings.AvailabilitySetSuffix = this.AvailabilitySetSuffix;
+            targetSettings.NetworkInterfaceCardSuffix = this.NetworkInterfaceCardSuffix;
+            targetSettings.NetworkSecurityGroupSuffix = this.NetworkSecurityGroupSuffix;
+            targetSettings.StorageAccountSuffix = this.StorageAccountSuffix;
+            targetSettings.VirtualMachineSuffix = this.VirtualMachineSuffix;
+            targetSettings.VirtualNetworkSuffix = this.VirtualNetworkSuffix;
+
+            return targetSettings;
         }
 
         public bool AllowTelemetry { get; set; }

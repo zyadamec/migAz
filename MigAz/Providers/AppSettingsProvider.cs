@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+﻿using System;
+using MigAz.Azure.UserControls;
+using MigAz.Core;
+using MigAz.Core.Interface;
 
 namespace MigAz.Providers
 {
@@ -139,6 +142,19 @@ namespace MigAz.Providers
                 app.Default.VirtualMachineSuffix = value;
                 app.Default.Save();
             }
+        }
+
+        internal TargetSettings GetTargetSettings()
+        {
+            TargetSettings targetSettings = new TargetSettings();
+            targetSettings.AvailabilitySetSuffix = this.AvailabilitySetSuffix;
+            targetSettings.NetworkInterfaceCardSuffix = this.NetworkInterfaceCardSuffix;
+            targetSettings.NetworkSecurityGroupSuffix = this.NetworkSecurityGroupSuffix;
+            targetSettings.StorageAccountSuffix = this.StorageAccountSuffix;
+            targetSettings.VirtualMachineSuffix = this.VirtualMachineSuffix;
+            targetSettings.VirtualNetworkSuffix = this.VirtualNetworkSuffix;
+
+            return targetSettings;
         }
     }
 }

@@ -36,9 +36,9 @@
             this.cmbExistingArmSubnet = new System.Windows.Forms.ComboBox();
             this.cmbExistingArmVNets = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.txtStaticIp = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbAllocationMethod = new System.Windows.Forms.ComboBox();
+            this.txtStaticIp = new MigAz.Azure.UserControls.IPv4AddressBox();
             this.SuspendLayout();
             // 
             // label8
@@ -128,18 +128,6 @@
             this.label9.TabIndex = 41;
             this.label9.Text = "Static IP:";
             // 
-            // txtStaticIp
-            // 
-            this.txtStaticIp.Enabled = false;
-            this.txtStaticIp.Location = new System.Drawing.Point(87, 129);
-            this.txtStaticIp.Margin = new System.Windows.Forms.Padding(2);
-            this.txtStaticIp.MaxLength = 15;
-            this.txtStaticIp.Name = "txtStaticIp";
-            this.txtStaticIp.Size = new System.Drawing.Size(216, 20);
-            this.txtStaticIp.TabIndex = 40;
-            this.txtStaticIp.TextChanged += new System.EventHandler(this.txtStaticIp_TextChanged);
-            this.txtStaticIp.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtStaticIp_KeyPress);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -164,12 +152,20 @@
             this.cmbAllocationMethod.TabIndex = 38;
             this.cmbAllocationMethod.SelectedIndexChanged += new System.EventHandler(this.cmbAllocationMethod_SelectedIndexChanged);
             // 
+            // txtStaticIp
+            // 
+            this.txtStaticIp.Enabled = false;
+            this.txtStaticIp.Location = new System.Drawing.Point(87, 130);
+            this.txtStaticIp.Name = "txtStaticIp";
+            this.txtStaticIp.Size = new System.Drawing.Size(100, 20);
+            this.txtStaticIp.TabIndex = 42;
+            // 
             // NetworkSelectionControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label9);
             this.Controls.Add(this.txtStaticIp);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbAllocationMethod);
             this.Controls.Add(this.label8);
@@ -196,8 +192,8 @@
         private System.Windows.Forms.ComboBox cmbExistingArmSubnet;
         private System.Windows.Forms.ComboBox cmbExistingArmVNets;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox txtStaticIp;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbAllocationMethod;
+        private IPv4AddressBox txtStaticIp;
     }
 }

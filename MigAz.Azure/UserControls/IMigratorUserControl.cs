@@ -34,11 +34,7 @@ namespace MigAz.Azure.UserControls
             get { return _statusProvider; }
         }
 
-        public TemplateGenerator TemplateGenerator
-        {
-            get { return _TemplateGenerator; }
-            set { _TemplateGenerator = value; }
-        }
+
 
         public virtual void SeekAlertSource(object sourceObject)
         {

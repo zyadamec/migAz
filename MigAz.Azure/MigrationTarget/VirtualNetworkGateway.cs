@@ -43,7 +43,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualNetworkSuffix;
+            return this.TargetName + _AzureContext.TargetSettings.VirtualNetworkSuffix;
         }
 
 

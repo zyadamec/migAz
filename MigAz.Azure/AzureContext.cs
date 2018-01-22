@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace MigAz.Azure
         private ITokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
-        private ISettingsProvider _SettingsProvider;
+        private TargetSettings _TargetSettings;
 
         public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
         public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
@@ -49,11 +50,11 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, ISettingsProvider settingsProvider)
+        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, TargetSettings targetSetings)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
-            _SettingsProvider = settingsProvider;
+            _TargetSettings = targetSetings;
             _AzureServiceUrls = new AzureServiceUrls(this);
             _TokenProvider = new AzureTokenProvider(this);
             _AzureRetriever = new AzureRetriever(this);
@@ -120,9 +121,9 @@ namespace MigAz.Azure
             get { return _StatusProvider; }
         }
 
-        public ISettingsProvider SettingsProvider
+        public TargetSettings TargetSettings
         {
-            get { return _SettingsProvider; }
+            get { return _TargetSettings; }
         }
 
         public async Task CopyContext(AzureContext sourceContext)

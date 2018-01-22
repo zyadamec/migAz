@@ -83,7 +83,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.NetworkSecurityGroupSuffix;
+            return this.TargetName + _AzureContext.TargetSettings.NetworkSecurityGroupSuffix;
         }
     }
 }

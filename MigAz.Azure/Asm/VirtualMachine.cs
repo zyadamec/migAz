@@ -1,5 +1,6 @@
 ﻿using MigAz.Azure.Arm;
 using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections;
@@ -33,7 +34,7 @@ namespace MigAz.Azure.Asm
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, CloudService asmCloudService, ISettingsProvider settingsProvider, XmlNode virtualMachineXml, Hashtable vmDetails)
+        public VirtualMachine(AzureContext azureContext, CloudService asmCloudService, TargetSettings targetSettings, XmlNode virtualMachineXml, Hashtable vmDetails)
         {
             this._AsmCloudService = asmCloudService;
             this._AzureContext = azureContext;

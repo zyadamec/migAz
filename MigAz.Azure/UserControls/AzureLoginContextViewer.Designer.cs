@@ -56,9 +56,11 @@
             this.groupSubscription.Controls.Add(this.label2);
             this.groupSubscription.Controls.Add(this.label1);
             this.groupSubscription.Controls.Add(this.btnAzureContext);
-            this.groupSubscription.Location = new System.Drawing.Point(3, 3);
+            this.groupSubscription.Location = new System.Drawing.Point(2, 2);
+            this.groupSubscription.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupSubscription.Name = "groupSubscription";
-            this.groupSubscription.Size = new System.Drawing.Size(883, 190);
+            this.groupSubscription.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupSubscription.Size = new System.Drawing.Size(662, 152);
             this.groupSubscription.TabIndex = 1;
             this.groupSubscription.TabStop = false;
             this.groupSubscription.Text = "Azure Subscription";
@@ -66,111 +68,124 @@
             // lblTenantName
             // 
             this.lblTenantName.AutoSize = true;
-            this.lblTenantName.Location = new System.Drawing.Point(224, 92);
+            this.lblTenantName.Location = new System.Drawing.Point(168, 74);
+            this.lblTenantName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTenantName.Name = "lblTenantName";
-            this.lblTenantName.Size = new System.Drawing.Size(19, 25);
+            this.lblTenantName.Size = new System.Drawing.Size(14, 20);
             this.lblTenantName.TabIndex = 10;
             this.lblTenantName.Text = "-";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(22, 92);
+            this.label6.Location = new System.Drawing.Point(16, 74);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(85, 25);
+            this.label6.Size = new System.Drawing.Size(63, 20);
             this.label6.TabIndex = 9;
             this.label6.Text = "Tenant:";
             // 
             // lblSourceSubscriptionId
             // 
             this.lblSourceSubscriptionId.AutoSize = true;
-            this.lblSourceSubscriptionId.Location = new System.Drawing.Point(224, 146);
+            this.lblSourceSubscriptionId.Location = new System.Drawing.Point(168, 117);
+            this.lblSourceSubscriptionId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSourceSubscriptionId.Name = "lblSourceSubscriptionId";
-            this.lblSourceSubscriptionId.Size = new System.Drawing.Size(19, 25);
+            this.lblSourceSubscriptionId.Size = new System.Drawing.Size(14, 20);
             this.lblSourceSubscriptionId.TabIndex = 8;
             this.lblSourceSubscriptionId.Text = "-";
             // 
             // lblSourceSubscriptionName
             // 
             this.lblSourceSubscriptionName.AutoSize = true;
-            this.lblSourceSubscriptionName.Location = new System.Drawing.Point(224, 119);
+            this.lblSourceSubscriptionName.Location = new System.Drawing.Point(168, 95);
+            this.lblSourceSubscriptionName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSourceSubscriptionName.Name = "lblSourceSubscriptionName";
-            this.lblSourceSubscriptionName.Size = new System.Drawing.Size(19, 25);
+            this.lblSourceSubscriptionName.Size = new System.Drawing.Size(14, 20);
             this.lblSourceSubscriptionName.TabIndex = 7;
             this.lblSourceSubscriptionName.Text = "-";
             // 
             // lblSourceUser
             // 
             this.lblSourceUser.AutoSize = true;
-            this.lblSourceUser.Location = new System.Drawing.Point(224, 65);
+            this.lblSourceUser.Location = new System.Drawing.Point(168, 52);
+            this.lblSourceUser.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSourceUser.Name = "lblSourceUser";
-            this.lblSourceUser.Size = new System.Drawing.Size(19, 25);
+            this.lblSourceUser.Size = new System.Drawing.Size(14, 20);
             this.lblSourceUser.TabIndex = 6;
             this.lblSourceUser.Text = "-";
             // 
             // lblSourceEnvironment
             // 
             this.lblSourceEnvironment.AutoSize = true;
-            this.lblSourceEnvironment.Location = new System.Drawing.Point(224, 38);
+            this.lblSourceEnvironment.Location = new System.Drawing.Point(168, 30);
+            this.lblSourceEnvironment.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSourceEnvironment.Name = "lblSourceEnvironment";
-            this.lblSourceEnvironment.Size = new System.Drawing.Size(19, 25);
+            this.lblSourceEnvironment.Size = new System.Drawing.Size(14, 20);
             this.lblSourceEnvironment.TabIndex = 5;
             this.lblSourceEnvironment.Text = "-";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 146);
+            this.label4.Location = new System.Drawing.Point(16, 117);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(160, 25);
+            this.label4.Size = new System.Drawing.Size(119, 20);
             this.label4.TabIndex = 4;
             this.label4.Text = "Subscription Id:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 119);
+            this.label3.Location = new System.Drawing.Point(16, 95);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(199, 25);
+            this.label3.Size = new System.Drawing.Size(147, 20);
             this.label3.TabIndex = 3;
             this.label3.Text = "Subscription Name:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 65);
+            this.label2.Location = new System.Drawing.Point(16, 52);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 25);
+            this.label2.Size = new System.Drawing.Size(47, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "User:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 38);
+            this.label1.Location = new System.Drawing.Point(16, 30);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(138, 25);
+            this.label1.Size = new System.Drawing.Size(102, 20);
             this.label1.TabIndex = 1;
             this.label1.Text = "Environment:";
             // 
             // btnAzureContext
             // 
-            this.btnAzureContext.Location = new System.Drawing.Point(736, 23);
+            this.btnAzureContext.Location = new System.Drawing.Point(552, 18);
+            this.btnAzureContext.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAzureContext.Name = "btnAzureContext";
-            this.btnAzureContext.Size = new System.Drawing.Size(141, 40);
+            this.btnAzureContext.Size = new System.Drawing.Size(106, 32);
             this.btnAzureContext.TabIndex = 0;
             this.btnAzureContext.Text = "Change";
             this.btnAzureContext.UseVisualStyleBackColor = true;
             this.btnAzureContext.Click += new System.EventHandler(this.btnAzureContext_Click);
             // 
-            // AzureLoginContextViewer2
+            // AzureLoginContextViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupSubscription);
-            this.Name = "AzureLoginContextViewer2";
-            this.Size = new System.Drawing.Size(894, 211);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Name = "AzureLoginContextViewer";
+            this.Size = new System.Drawing.Size(670, 169);
             this.EnabledChanged += new System.EventHandler(this.AzureLoginContextViewer_EnabledChanged);
+            this.Resize += new System.EventHandler(this.AzureLoginContextViewer_Resize);
             this.groupSubscription.ResumeLayout(false);
             this.groupSubscription.PerformLayout();
             this.ResumeLayout(false);

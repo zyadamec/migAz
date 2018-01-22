@@ -31,9 +31,12 @@ namespace MigAz.Providers
         {
             TelemetryRecord telemetryrecord = new TelemetryRecord();
             telemetryrecord.ExecutionId = templateGenerator.ExecutionGuid;
-            telemetryrecord.SubscriptionId = templateGenerator.SourceSubscription.SubscriptionId;
-            telemetryrecord.TenantId = templateGenerator.SourceSubscription.AzureAdTenantId;
-            telemetryrecord.OfferCategories = templateGenerator.SourceSubscription.offercategories;
+            if (templateGenerator.SourceSubscription != null)
+            {
+                telemetryrecord.SubscriptionId = templateGenerator.SourceSubscription.SubscriptionId;
+                telemetryrecord.TenantId = templateGenerator.SourceSubscription.AzureAdTenantId;
+                telemetryrecord.OfferCategories = templateGenerator.SourceSubscription.offercategories;
+            }
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
             telemetryrecord.ProcessedResources = this.GetProcessedItems(templateGenerator);
 

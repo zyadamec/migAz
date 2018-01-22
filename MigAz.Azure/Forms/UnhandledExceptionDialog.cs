@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Forms
+namespace MigAz.Azure.Forms
 {
     public partial class UnhandledExceptionDialog : Form
     {
@@ -22,7 +22,7 @@ namespace MigAz.Forms
         public UnhandledExceptionDialog(ILogProvider fileLogProvider, Exception e)
         {
             InitializeComponent();
-
+            
             if (e != null)
             {
                 _UnhandledException = e;
