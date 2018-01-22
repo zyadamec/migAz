@@ -12,6 +12,7 @@ using MigAz.Azure.Interface;
 using System.Net;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Forms;
+using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
@@ -76,10 +77,9 @@ namespace MigAz.Azure.UserControls
             treeAzureARM.Width = this.Width;
         }
 
-        //        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, AppSettingsProvider appSettingsProvider, ImageList imageList)
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, ImageList imageList)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList)
         {
-            _AzureContextSource = new AzureContext(logProvider, statusProvider, null);
+            _AzureContextSource = new AzureContext(logProvider, statusProvider, targetSettings);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;

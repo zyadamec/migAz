@@ -75,10 +75,10 @@ namespace MigAz.Azure.MigrationTarget
         {
             if (_AzureContext == null)
                 return this.TargetName;
-            else if (this.TargetName.Length + this._AzureContext.SettingsProvider.StorageAccountSuffix.Length > 24)
-                return this.TargetName.Substring(0, 24 - this._AzureContext.SettingsProvider.StorageAccountSuffix.Length) + this._AzureContext.SettingsProvider.StorageAccountSuffix;
+            else if (this.TargetName.Length + this._AzureContext.TargetSettings.StorageAccountSuffix.Length > 24)
+                return this.TargetName.Substring(0, 24 - this._AzureContext.TargetSettings.StorageAccountSuffix.Length) + this._AzureContext.TargetSettings.StorageAccountSuffix;
             else
-                return this.TargetName + this._AzureContext.SettingsProvider.StorageAccountSuffix;
+                return this.TargetName + this._AzureContext.TargetSettings.StorageAccountSuffix;
         }
 
         private static StorageAccountType GetStorageAccountType(string storageAccountType)

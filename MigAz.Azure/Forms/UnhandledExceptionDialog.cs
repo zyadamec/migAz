@@ -22,7 +22,7 @@ namespace MigAz.Azure.Forms
         public UnhandledExceptionDialog(ILogProvider fileLogProvider, Exception e)
         {
             InitializeComponent();
-
+            
             if (e != null)
             {
                 _UnhandledException = e;

@@ -12,6 +12,7 @@ using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Generator;
 using MigAz.Core.Interface;
+using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
@@ -58,9 +59,9 @@ namespace MigAz.Azure.UserControls
             AfterTargetSelected?.Invoke(this.TargetTreeView.SelectedNode);
         }
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, PropertyPanel propertyPanel)
+        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, TargetSettings targetSettings, PropertyPanel propertyPanel)
         {
-            _AzureContextTarget = new AzureContext(logProvider, statusProvider, null);
+            _AzureContextTarget = new AzureContext(logProvider, statusProvider, targetSettings);
             //_AzureContextTarget.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             //_AzureContextTarget.UserAuthenticated += _AzureContext_UserAuthenticated;
             //_AzureContextTarget.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;

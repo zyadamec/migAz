@@ -128,7 +128,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + this._AzureContext.SettingsProvider.AvailabilitySetSuffix;
+            return this.TargetName + this._AzureContext.TargetSettings.AvailabilitySetSuffix;
         }
 
         internal bool IsManagedDisks

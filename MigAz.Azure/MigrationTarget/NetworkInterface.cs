@@ -86,7 +86,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.NetworkInterfaceCardSuffix;
+            return this.TargetName + _AzureContext.TargetSettings.NetworkInterfaceCardSuffix;
         }
 
         public bool IsPrimary { get; set; }

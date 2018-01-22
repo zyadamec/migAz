@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MigAz.Azure;
 using MigAz.Azure.Generator;
 using MigAz.Azure.UserControls;
+using MigAz.Azure.Generator.AsmToArm;
 
 namespace MigAz.Forms
 {
@@ -18,7 +19,7 @@ namespace MigAz.Forms
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private AppSettingsProvider _appSettingsProvider;
-        private ITelemetryProvider _telemetryProvider;
+        private AzureTelemetryProvider _telemetryProvider = new AzureTelemetryProvider();
         private TreeNode _EventSourceNode;
 
 
@@ -56,8 +57,7 @@ namespace MigAz.Forms
             if (migrationSourceControl != null)
             {
                 // This will move to be based on the source context (upon instantiation)
-                migrationSourceControl.Bind(this._statusProvider, this._logProvider, this.imageList1);
-//                migrationSourceControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider, this.imageList1);
+                migrationSourceControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
 
                 this.propertyPanel1.AzureContext = migrationSourceControl.AzureContext;
 
@@ -78,8 +78,7 @@ namespace MigAz.Forms
             MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
             if (migrationTargetControl != null)
             {
-                // todo now , add app setting provider back
-                migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this.propertyPanel1);
+                migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this._appSettingsProvider.GetTargetSettings(), this.propertyPanel1);
                 migrationTargetControl.AfterTargetSelected += Control_AfterTargetSelected;
                 migrationTargetControl.AfterExportArtifactRefresh += MigrationTargetControl_AfterExportArtifactRefresh;
             }
@@ -220,6 +219,7 @@ namespace MigAz.Forms
                 LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
             _EventSourceNode = sender;
+            propertyPanel1.AzureContext = this.MigrationTargetControl.AzureContext;
             await this.propertyPanel1.Bind(sender);
             _EventSourceNode = null;
 
@@ -543,12 +543,14 @@ namespace MigAz.Forms
                     if (AppSettingsProvider.AllowTelemetry)
                     {
                         StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                        // todo now _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
+                        _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
                     }
                 }
             }
+
+            StatusProvider.UpdateStatus("Ready");
         }
-        
+
         private void splitContainer2_Panel1_Resize(object sender, EventArgs e)
         {
             if (splitContainer2.Panel1.Controls.Count == 1)

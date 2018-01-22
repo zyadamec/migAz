@@ -270,7 +270,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.SettingsProvider.VirtualMachineSuffix;
+            return this.TargetName + _AzureContext.TargetSettings.VirtualMachineSuffix;
         }
 
         public AvailabilitySet TargetAvailabilitySet

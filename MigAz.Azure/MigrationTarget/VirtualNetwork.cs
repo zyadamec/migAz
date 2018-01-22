@@ -127,10 +127,10 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ToString()
         {
-            if (_AzureContext == null || _AzureContext.SettingsProvider == null)
+            if (_AzureContext == null || _AzureContext.TargetSettings == null)
                 return this.TargetName;
             else
-                return this.TargetName + _AzureContext.SettingsProvider.VirtualNetworkSuffix;
+                return this.TargetName + _AzureContext.TargetSettings.VirtualNetworkSuffix;
         }
 
         public string TargetId
