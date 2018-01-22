@@ -104,7 +104,7 @@ namespace MigAz.Azure
 
             AuthenticationContext context = new AuthenticationContext(authenticationUrl);
 
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            PlatformParameters platformParams = new PlatformParameters(_AzureContext.AzureRetriever.PromptBehavior, null);
             AuthenticationResult authenticationResult = await context.AcquireTokenAsync(_AzureContext.AzureServiceUrls.GetGraphApiUrl(), strClientId, new Uri(strReturnUrl), platformParams);
             if (authenticationResult == null)
             {

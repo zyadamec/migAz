@@ -14,9 +14,11 @@ namespace MigAz.Azure.UserControls
 
     public enum AzureContextSelectedType
     {
-        NewContext,
-        ExistingContext
+        ExistingContext,
+        SameUserDifferentSubscription,
+        NewContext
     }
+
     public partial class AzureLoginContextViewer : UserControl
     {
         private AzureContext _AzureContext;
@@ -39,6 +41,14 @@ namespace MigAz.Azure.UserControls
             _AzureContext.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
         }
 
+        public AzureContextSelectedType AzureContextSelectedType
+        {
+            get { return _AzureContextSelectedType; }
+            set
+            {
+                _AzureContextSelectedType = value;
+            }
+        }
         public AzureContext ExistingContext
         {
             get { return _ExistingContext; }
@@ -74,7 +84,7 @@ namespace MigAz.Azure.UserControls
             UpdateLabels();
         }
 
-        private void UpdateLabels()
+        public void UpdateLabels()
         {
             lblSourceUser.Text = "-";
             lblSourceSubscriptionName.Text = "-";
@@ -130,6 +140,11 @@ namespace MigAz.Azure.UserControls
                 else
                     return _AzureContext;
             }
+        }
+
+        public AzureContext AzureContext
+        {
+            get { return _AzureContext; }
         }
 
         private async void btnAzureContext_Click(object sender, EventArgs e)

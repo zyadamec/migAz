@@ -1,4 +1,5 @@
-﻿using MigAz.Azure.UserControls;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Azure.UserControls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +14,8 @@ namespace MigAz.Azure.Forms
 {
     public partial class AzureNewOrExistingLoginContextDialog : Form
     {
+        private AzureLoginContextViewer _AzureLoginContextViewer;
+
         public AzureNewOrExistingLoginContextDialog()
         {
             InitializeComponent();
@@ -20,10 +23,18 @@ namespace MigAz.Azure.Forms
 
         public async Task InitializeDialog(AzureLoginContextViewer azureLoginContextViewer)
         {
+            _AzureLoginContextViewer = azureLoginContextViewer;
+            await azureArmLoginControl1.BindContext(azureLoginContextViewer.AzureContext);
+
             azureLoginContextViewer.SelectedAzureContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
 
-            lblAzureEnvironment.Text = azureLoginContextViewer.SelectedAzureContext.AzureEnvironment.ToString();
-            lblAzureUsername.Text = azureLoginContextViewer.SelectedAzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+            lblSameEnviroronment.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
+            lblSameUsername.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+            lblSameTenant.Text = azureLoginContextViewer.ExistingContext.AzureTenant.ToString();
+            lblSameSubscription.Text = azureLoginContextViewer.ExistingContext.AzureSubscription.ToString();
+
+            lblSameEnvironment2.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
+            lblSameUsername2.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
 
             cboTenant.Items.Clear();
             if (azureLoginContextViewer.SelectedAzureContext.AzureRetriever != null && azureLoginContextViewer.SelectedAzureContext.TokenProvider != null && azureLoginContextViewer.SelectedAzureContext.TokenProvider.AuthenticationResult != null)
@@ -53,8 +64,71 @@ namespace MigAz.Azure.Forms
                 }
             }
 
+            switch (azureLoginContextViewer.AzureContextSelectedType)
+            {
+                case AzureContextSelectedType.ExistingContext:
+                    rbExistingContext.Checked = true;
+                    break;
+                case AzureContextSelectedType.SameUserDifferentSubscription:
+                    rbSameUserDifferentSubscription.Checked = true;
+                    break;
+                case AzureContextSelectedType.NewContext:
+                    rbNewContext.Checked = true;
+                    break;
+            }
+
             azureLoginContextViewer.SelectedAzureContext.LogProvider.WriteLog("InitializeDialog", "End AzureSubscriptionContextDialog InitializeDialog");
         }
+
+
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void rbExistingContext_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbExistingContext.Checked)
+            {
+                _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
+                cboTenant.Enabled = false;
+                cboSubscription.Enabled = false;
+                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
+            }
+
+            _AzureLoginContextViewer.UpdateLabels();
+        }
+
+        private void rbSameUserDifferentSubscription_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbSameUserDifferentSubscription.Checked)
+            {
+                _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
+                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
+
+                _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
+            }
+
+            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);
+            cboTenant.Enabled = rbSameUserDifferentSubscription.Checked;
+            _AzureLoginContextViewer.UpdateLabels();
+        }
+
+        private void rbNewContext_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbNewContext.Checked)
+            {
+                _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.NewContext;
+                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.SelectAccount;
+            }
+
+            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);
+
+            azureArmLoginControl1.Enabled = rbNewContext.Checked;
+            _AzureLoginContextViewer.UpdateLabels();
+        }
+
 
     }
 }
