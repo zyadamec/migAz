@@ -13,6 +13,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Core.Interface;
 using MigAz.Core.Generator;
 using MIGAZ.Tests.Fakes;
+using MigAz.Core;
 
 namespace MigAz.Tests
 {
@@ -33,7 +34,7 @@ namespace MigAz.Tests
         {
             ILogProvider logProvider = new FakeLogProvider();
             IStatusProvider statusProvider = new FakeStatusProvider();
-            ISettingsProvider settingsProvider = new FakeSettingsProvider();
+            TargetSettings settingsProvider = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContext = new AzureContext(logProvider, statusProvider, settingsProvider);
             azureContext.AzureEnvironment = azureEnvironment;
             azureContext.TokenProvider = new FakeTokenProvider();
