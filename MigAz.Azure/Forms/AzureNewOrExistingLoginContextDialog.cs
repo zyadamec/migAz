@@ -129,6 +129,28 @@ namespace MigAz.Azure.Forms
             _AzureLoginContextViewer.UpdateLabels();
         }
 
+        private void AzureNewOrExistingLoginContextDialog_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            bool isValidTargetContext = false;
 
+            if (rbExistingContext.Checked)
+            {
+                isValidTargetContext = true;
+            }
+            else if (rbSameUserDifferentSubscription.Checked)
+            {
+
+            }
+            else if (rbNewContext.Checked)
+            {
+                isValidTargetContext = _AzureLoginContextViewer.AzureContext.AzureSubscription != null;
+            }
+
+            if (!isValidTargetContext)
+            {
+                e.Cancel = true;
+                MessageBox.Show("You must have a valid target Azure Subscription selected.");
+            }
+        }
     }
 }

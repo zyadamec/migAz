@@ -177,14 +177,14 @@
             this.lblSameEnvironment2.TabIndex = 82;
             this.lblSameEnvironment2.Text = "-";
             // 
-            // cmbSubscription
+            // cboSubscription
             // 
             this.cboSubscription.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSubscription.Enabled = false;
             this.cboSubscription.FormattingEnabled = true;
             this.cboSubscription.Location = new System.Drawing.Point(229, 365);
             this.cboSubscription.Margin = new System.Windows.Forms.Padding(2);
-            this.cboSubscription.Name = "cmbSubscription";
+            this.cboSubscription.Name = "cboSubscription";
             this.cboSubscription.Size = new System.Drawing.Size(687, 28);
             this.cboSubscription.Sorted = true;
             this.cboSubscription.TabIndex = 78;
@@ -301,6 +301,7 @@
             this.Name = "AzureNewOrExistingLoginContextDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "MigAz Target Azure Subscription Context";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AzureNewOrExistingLoginContextDialog_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
