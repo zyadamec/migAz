@@ -146,6 +146,7 @@
             this.cboTenant.Size = new System.Drawing.Size(687, 28);
             this.cboTenant.Sorted = true;
             this.cboTenant.TabIndex = 84;
+            this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
             // 
             // label5
             // 
