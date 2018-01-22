@@ -34,6 +34,11 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.3.2.0
+ - Code Restructure, to facilitate future splitting of different Source and Target technologies
+ - New dialog for changing Target Subscription Context, should aid in migration across different Azure Environments (i.e. Commercial to Government)
+ - Validate IPv4 Address is within Subnet Address Range (for NICs, Internal Load Balancers).
+ 
 ### v2.3.1.0
  - adding support for France preview (France Central, France South)
  - limiting api call retries in case of multiple errors
