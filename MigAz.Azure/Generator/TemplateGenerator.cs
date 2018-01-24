@@ -1512,7 +1512,10 @@ namespace MigAz.Azure.Generator
             }
             else
             {
-                instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
+                if (this.HasBlobCopyDetails)
+                    instructionContent = instructionContent.Replace("{blobCopyFileParameter}", " -BlobCopyFile \"" + GetCopyBlobDetailPath() + "\"");
+                else
+                    instructionContent = instructionContent.Replace("{blobCopyFileParameter}", String.Empty);
             }
 
             if (this.HasBlobCopyDetails)
