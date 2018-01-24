@@ -437,7 +437,7 @@ namespace MigAz.Forms
 
                 if (this.TemplateGenerator != null)
                 {
-                    this.TemplateGenerator.TargetSubscription = migrationSourceControl.AzureContext.AzureSubscription;
+                    this.TemplateGenerator.SourceSubscription = migrationSourceControl.AzureContext.AzureSubscription;
                     this.TemplateGenerator.TargetSubscription = migrationTargetControl.AzureContext.AzureSubscription;
                     this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
                     this.TemplateGenerator.ExportArtifacts = migrationTargetControl.TargetTreeView.ExportArtifacts;
