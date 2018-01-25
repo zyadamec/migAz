@@ -236,7 +236,7 @@ namespace MigAz.Azure.Generator
                 foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
-                    await BuildVirtualMachineObject(virtualMachine);
+                    await BuildVirtualMachineObject(virtualMachine, _ExportArtifacts.ResourceGroup);
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
             }
@@ -958,7 +958,7 @@ namespace MigAz.Azure.Generator
             return networkInterface;
         }
 
-        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine targetVirtualMachine)
+        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine targetVirtualMachine, Azure.MigrationTarget.ResourceGroup targetResourceGroup)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
 
@@ -1065,11 +1065,13 @@ namespace MigAz.Azure.Generator
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
 
-                    //if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null)
-                    //{
-                    //    if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
-                    //        storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
-                    //}
+                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                    {
+                        await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup);
+
+                        if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
+                            storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
+                    }
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
@@ -1112,11 +1114,14 @@ namespace MigAz.Azure.Generator
                         vhd.uri = dataDisk.TargetMediaLink;
                         datadisk.vhd = vhd;
 
-                        //if (dataDisk.TargetStorage != null)
-                        //{
-                        //    if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
-                        //        storageaccountdependencies.Add(dataDisk.TargetStorage);
-                        //}
+
+                        if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                        {
+                            await BuildCopyBlob(dataDisk, targetResourceGroup);
+
+                            if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
+                                storageaccountdependencies.Add(dataDisk.TargetStorage);
+                        }
                     }
                     else if (dataDisk.IsManagedDisk)
                     {
