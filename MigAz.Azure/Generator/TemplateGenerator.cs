@@ -1067,6 +1067,7 @@ namespace MigAz.Azure.Generator
 
                     if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
                     {
+                        // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
                         await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup);
 
                         if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
@@ -1117,6 +1118,7 @@ namespace MigAz.Azure.Generator
 
                         if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
                         {
+                            // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
                             await BuildCopyBlob(dataDisk, targetResourceGroup);
 
                             if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
