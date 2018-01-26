@@ -16,7 +16,7 @@ using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationAzureSourceContext : UserControl
+    public partial class MigrationAzureSourceContext : IMigrationSourceUserControl
     {
         private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();

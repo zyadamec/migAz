@@ -20,10 +20,10 @@ namespace MigAz.Azure.UserControls
         private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup = new MigrationTarget.ResourceGroup();
         private PropertyPanel _PropertyPanel;
 
-        public delegate void AfterTargetSelectedHandler();
+        public delegate Task AfterTargetSelectedHandler(TreeNode selectedNode);
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
-        public delegate Task AfterExportArtifactRefreshHandler();
+        public delegate Task AfterExportArtifactRefreshHandler(TargetTreeView sender);
         public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
         public TargetTreeView()
@@ -193,7 +193,7 @@ namespace MigAz.Azure.UserControls
             }
 
             await _ExportArtifacts.ValidateAzureResources();
-            AfterExportArtifactRefresh?.Invoke();
+            await AfterExportArtifactRefresh?.Invoke(this);
         }
 
         public ExportArtifacts ExportArtifacts
@@ -711,7 +711,7 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            AfterTargetSelected?.Invoke();
+            AfterTargetSelected?.Invoke(e.Node);
         }
 
         private void TargetTreeView_Resize(object sender, EventArgs e)

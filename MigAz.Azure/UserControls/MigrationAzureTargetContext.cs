@@ -21,18 +21,9 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContextTarget;
         private AzureGenerator _AzureGenerator;
 
-        public delegate Task AfterTargetSelectedHandler(TreeNode sender);
-        public event AfterTargetSelectedHandler AfterTargetSelected;
-
-        public delegate void AfterExportArtifactRefreshHandler(TargetTreeView sender);
-        public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
-
         public MigrationAzureTargetContext()
         {
             InitializeComponent();
-
-            treeTargetARM.AfterTargetSelected += TreeTargetARM_AfterTargetSelected;
-            treeTargetARM.AfterExportArtifactRefresh += TreeTargetARM_AfterExportArtifactRefresh;
         }
 
         public TemplateGenerator TemplateGenerator
@@ -41,22 +32,6 @@ namespace MigAz.Azure.UserControls
             {
                 return _AzureGenerator;
             }
-        }
-
-        private async Task TreeTargetARM_AfterExportArtifactRefresh()
-        {
-            AfterExportArtifactRefresh?.Invoke(this.treeTargetARM);
-        }
-
-        public ImageList ImageList
-        {
-            get { return treeTargetARM.ImageList; }
-            set { treeTargetARM.ImageList = value; }
-        }
-
-        private void TreeTargetARM_AfterTargetSelected()
-        {
-            AfterTargetSelected?.Invoke(this.TargetTreeView.SelectedNode);
         }
 
         public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, TargetSettings targetSettings, PropertyPanel propertyPanel)
@@ -73,7 +48,6 @@ namespace MigAz.Azure.UserControls
 
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
 
-            this.treeTargetARM.PropertyPanel = propertyPanel;
             this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider, telemetryProvider);
         }
 
@@ -88,21 +62,9 @@ namespace MigAz.Azure.UserControls
             set { azureLoginContextViewerTarget.ExistingContext = value; }
         }
 
-        public void Clear()
-        {
-            this.treeTargetARM.Clear();
-        }
-
-        public TargetTreeView TargetTreeView
-        {
-            get { return this.treeTargetARM; }
-        }
-
         private void MigrationTargetAzure_Resize(object sender, EventArgs e)
         {
-            this.treeTargetARM.Width = this.Width;
-            this.treeTargetARM.Height = this.Height - 125;
-            azureLoginContextViewerTarget.Width = this.Width;
+            azureLoginContextViewerTarget.Width = this.Width - 10;
         }
     }
 }
