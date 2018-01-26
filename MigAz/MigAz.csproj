@@ -140,6 +140,12 @@
     <Compile Include="UserControls\MigAzMigrationSourceSelection.Designer.cs">
       <DependentUpon>MigAzMigrationSourceSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MigAzMigrationTargetSelection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigAzMigrationTargetSelection.Designer.cs">
+      <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -161,6 +167,9 @@
     </Compile>
     <EmbeddedResource Include="UserControls\MigAzMigrationSourceSelection.resx">
       <DependentUpon>MigAzMigrationSourceSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigAzMigrationTargetSelection.resx">
+      <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

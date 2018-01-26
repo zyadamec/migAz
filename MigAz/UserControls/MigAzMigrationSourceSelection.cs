@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
 using MigAz.AzureStack.UserControls;
+using MigAz.Azure.UserControls;
 
-namespace MigAz.Azure.UserControls
+namespace MigAz.UserControls
 {
     public partial class MigAzMigrationSourceSelection : UserControl
     {

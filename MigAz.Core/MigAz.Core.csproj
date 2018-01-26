@@ -58,6 +58,12 @@
     </Compile>
     <Compile Include="Interface\IMigrationSubnet.cs" />
     <Compile Include="Interface\IMigrationTarget.cs" />
+    <Compile Include="Interface\IMigrationTargetUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\IMigrationTargetUserControl.Designer.cs">
+      <DependentUpon>IMigrationTargetUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\IMigrationVirtualNetwork.cs" />
     <Compile Include="Interface\IMigrationVirtualNetworkGateway.cs" />
     <Compile Include="Interface\INetworkInterface.cs" />

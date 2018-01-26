@@ -1,6 +1,6 @@
 ﻿namespace MigAz.UserControls
 {
-    partial class MigAzMigrationSourceSelection
+    partial class MigAzMigrationTargetSelection
     {
         /// <summary> 
         /// Required designer variable.
@@ -38,18 +38,18 @@
             // 
             this.groupBox1.Controls.Add(this.btnAzureStack);
             this.groupBox1.Controls.Add(this.btnAzure);
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(310, 270);
-            this.groupBox1.TabIndex = 1;
+            this.groupBox1.Size = new System.Drawing.Size(359, 128);
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
             // 
             // btnAzureStack
             // 
-            this.btnAzureStack.Location = new System.Drawing.Point(32, 123);
+            this.btnAzureStack.Location = new System.Drawing.Point(201, 55);
             this.btnAzureStack.Name = "btnAzureStack";
-            this.btnAzureStack.Size = new System.Drawing.Size(123, 42);
+            this.btnAzureStack.Size = new System.Drawing.Size(124, 39);
             this.btnAzureStack.TabIndex = 1;
             this.btnAzureStack.Text = "Azure Stack";
             this.btnAzureStack.UseVisualStyleBackColor = true;
@@ -57,22 +57,21 @@
             // 
             // btnAzure
             // 
-            this.btnAzure.Location = new System.Drawing.Point(32, 72);
+            this.btnAzure.Location = new System.Drawing.Point(31, 55);
             this.btnAzure.Name = "btnAzure";
-            this.btnAzure.Size = new System.Drawing.Size(123, 45);
+            this.btnAzure.Size = new System.Drawing.Size(117, 39);
             this.btnAzure.TabIndex = 0;
             this.btnAzure.Text = "Azure";
             this.btnAzure.UseVisualStyleBackColor = true;
             this.btnAzure.Click += new System.EventHandler(this.btnAzure_Click);
             // 
-            // MigAzMigrationSourceSelection
+            // MigAzMigrationTargetSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox1);
-            this.Name = "MigAzMigrationSourceSelection";
-            this.Size = new System.Drawing.Size(361, 318);
-            this.Resize += new System.EventHandler(this.MigAzMigrationSourceSelection_Resize);
+            this.Name = "MigAzMigrationTargetSelection";
+            this.Size = new System.Drawing.Size(387, 141);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 

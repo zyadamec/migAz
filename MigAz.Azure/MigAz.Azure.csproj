@@ -229,9 +229,6 @@
     <Compile Include="UserControls\DiskProperties.Designer.cs">
       <DependentUpon>DiskProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\IMigratorUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="UserControls\IPv4AddressBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
