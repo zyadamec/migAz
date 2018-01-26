@@ -13,6 +13,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Generator;
 using MigAz.Core.Interface;
 using MigAz.Core;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.UserControls
 {

@@ -566,9 +566,9 @@ namespace MigAz.Forms
                 if (splitContainer3.Panel1.Height < 300)
                     control.Height = 300;
                 else
-                    control.Height = splitContainer3.Panel1.Height - 20;
+                    control.Height = splitContainer3.Panel1.Height - 10;
 
-                control.Width = splitContainer3.Panel1.Width - 20;
+                control.Width = splitContainer3.Panel1.Width - 10;
             }
         }
 
@@ -636,10 +636,6 @@ namespace MigAz.Forms
 
         private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(IMigrationSourceUserControl migrationSourceUserControl)
         {
-            MigrationSourceSelectionControlVisible = false;
-            splitContainer3.Panel1.Controls.Add(migrationSourceUserControl);
-            splitContainer3_Panel1_Resize(this, null);
-
             if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
@@ -665,6 +661,13 @@ namespace MigAz.Forms
                 //migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this._appSettingsProvider.GetTargetSettings(), this.propertyPanel1);
             }
 
+            MigrationSourceSelectionControlVisible = false;
+            splitContainer3.Panel1.Controls.Add(migrationSourceUserControl);
+            migrationSourceUserControl.Top = 5;
+            migrationSourceUserControl.Left = 5;
+            splitContainer3_Panel1_Resize(this, null);
+
+            migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
 
         private bool MigrationTargetSelectionControlVisible
