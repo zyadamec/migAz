@@ -640,7 +640,7 @@ namespace MigAz.Forms
             splitContainer3.Panel1.Controls.Add(migrationSourceUserControl);
             splitContainer3_Panel1_Resize(this, null);
 
-            if (migrationSourceUserControl != null)
+            if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
