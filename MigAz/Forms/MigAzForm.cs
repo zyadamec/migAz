@@ -206,7 +206,6 @@ namespace MigAz.Forms
                 LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
             _EventSourceNode = sender;
-            propertyPanel1.AzureContext = this.MigrationTargetControl.AzureContext;
             await this.propertyPanel1.Bind(sender);
             _EventSourceNode = null;
 
