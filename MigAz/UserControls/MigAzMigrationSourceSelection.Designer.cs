@@ -31,11 +31,13 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnAzureStack = new System.Windows.Forms.Button();
             this.btnAzure = new System.Windows.Forms.Button();
+            this.btnAmazonWebServices = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnAmazonWebServices);
             this.groupBox1.Controls.Add(this.btnAzureStack);
             this.groupBox1.Controls.Add(this.btnAzure);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
@@ -65,6 +67,16 @@
             this.btnAzure.UseVisualStyleBackColor = true;
             this.btnAzure.Click += new System.EventHandler(this.btnAzure_Click);
             // 
+            // btnAmazonWebServices
+            // 
+            this.btnAmazonWebServices.Location = new System.Drawing.Point(32, 171);
+            this.btnAmazonWebServices.Name = "btnAmazonWebServices";
+            this.btnAmazonWebServices.Size = new System.Drawing.Size(123, 45);
+            this.btnAmazonWebServices.TabIndex = 2;
+            this.btnAmazonWebServices.Text = "AWS";
+            this.btnAmazonWebServices.UseVisualStyleBackColor = true;
+            this.btnAmazonWebServices.Click += new System.EventHandler(this.btnAmazonWebServices_Click);
+            // 
             // MigAzMigrationSourceSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -83,5 +95,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnAzureStack;
         private System.Windows.Forms.Button btnAzure;
+        private System.Windows.Forms.Button btnAmazonWebServices;
     }
 }
