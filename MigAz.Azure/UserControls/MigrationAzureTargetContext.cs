@@ -17,7 +17,7 @@ using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationAzureTargetContext : IMigrationTargetUserControl
+    public partial class MigrationAzureTargetContext : UserControl, IMigrationTargetUserControl
     {
         private AzureContext _AzureContextTarget;
         private AzureGenerator _AzureGenerator;

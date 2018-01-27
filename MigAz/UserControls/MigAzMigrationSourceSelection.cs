@@ -16,7 +16,7 @@ namespace MigAz.UserControls
 {
     public partial class MigAzMigrationSourceSelection : UserControl
     {
-        public delegate void AfterMigrationSourceSelectedHandler(IMigrationSourceUserControl migrationSourceUserControl);
+        public delegate void AfterMigrationSourceSelectedHandler(UserControl migrationSourceUserControl);
         public event AfterMigrationSourceSelectedHandler AfterMigrationSourceSelected;
 
         public MigAzMigrationSourceSelection()

@@ -8,14 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
+using MigAz.Core.Interface;
 
 namespace MigAz.AWS.UserControls
 {
-    public partial class MigrationAWSSourceContext : IMigrationSourceUserControl
+    public partial class MigrationAWSSourceContext : UserControl, IMigrationSourceUserControl
     {
+        private bool _IsAuthenticated = false;
+
         public MigrationAWSSourceContext()
         {
             InitializeComponent();
+        }
+
+
+        public bool IsSourceContextAuthenticated
+        {
+            get { return _IsAuthenticated; }
+            set { _IsAuthenticated = value; }
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

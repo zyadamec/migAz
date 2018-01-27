@@ -16,7 +16,7 @@ using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationAzureSourceContext : IMigrationSourceUserControl
+    public partial class MigrationAzureSourceContext : UserControl, IMigrationSourceUserControl
     {
         private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
@@ -25,6 +25,7 @@ namespace MigAz.Azure.UserControls
         private ImageList _ImageList;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
         private bool _AutoSelectDependencies = true;
+        private bool _IsAuthenticated = false;
 
         #region Matching Events from AzureContext
 
@@ -104,6 +105,13 @@ namespace MigAz.Azure.UserControls
 
             _ImageList = imageList;
             treeAzureARM.ImageList = _ImageList;
+        }
+
+
+        public bool IsSourceContextAuthenticated
+        {
+            get { return _IsAuthenticated; }
+            set { _IsAuthenticated = value; }
         }
 
         private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)

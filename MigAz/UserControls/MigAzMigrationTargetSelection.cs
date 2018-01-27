@@ -15,9 +15,9 @@ namespace MigAz.UserControls
 {
     public partial class MigAzMigrationTargetSelection : UserControl
     {
-        private IMigrationSourceUserControl _IMigrationSource;
+        private UserControl _IMigrationSource;
 
-        public IMigrationSourceUserControl MigrationSource
+        public UserControl MigrationSource
         {
             get
             {
@@ -25,15 +25,26 @@ namespace MigAz.UserControls
             }
             internal set
             {
+                if (value == null)
+                {
+                    _IMigrationSource = value;
+                    return;
+                }
+
+                if (!value.GetType().GetInterfaces().Contains(typeof(IMigrationSourceUserControl)))
+                    throw new ArgumentException("Must implement IMigrationSourceUserControl.");
+
                 _IMigrationSource = value;
 
-                bool isMigrationSourceReady = (_IMigrationSource != null && _IMigrationSource.IsSourceContextAuthenticated);
+                IMigrationSourceUserControl migrationSourceUserControl = (IMigrationSourceUserControl)_IMigrationSource;
+
+                bool isMigrationSourceReady = (_IMigrationSource != null && migrationSourceUserControl.IsSourceContextAuthenticated);
 
                 if (_IMigrationSource == null)
                 {
                     lblMigrationSourceStatus.Text = "Select Migration Source prior to setting Migration Target.";
                 }
-                else if (_IMigrationSource != null && !_IMigrationSource.IsSourceContextAuthenticated)
+                else if (_IMigrationSource != null && !migrationSourceUserControl.IsSourceContextAuthenticated)
                 {
                     lblMigrationSourceStatus.Text = "Authenticate to Migration Source prior to setting Migration Target.";
                 }
@@ -44,7 +55,7 @@ namespace MigAz.UserControls
             }
         }
 
-        public delegate void AfterMigrationTargetSelectedHandler(IMigrationTargetUserControl migrationTargetUserControl);
+        public delegate void AfterMigrationTargetSelectedHandler(UserControl migrationTargetUserControl);
         public event AfterMigrationTargetSelectedHandler AfterMigrationTargetSelected;
 
         public MigAzMigrationTargetSelection()

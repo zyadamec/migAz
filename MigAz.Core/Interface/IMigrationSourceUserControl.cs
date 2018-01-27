@@ -3,18 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace MigAz.Azure.Interface
+namespace MigAz.Core.Interface
 {
-    public class IMigrationSourceUserControl : UserControl
+    public interface IMigrationSourceUserControl
     {
-        private bool _IsAuthenticated = false;
-
-        public bool IsSourceContextAuthenticated
-        {
-            get { return _IsAuthenticated; }
-            set { _IsAuthenticated = value; }
-        }
+        bool IsSourceContextAuthenticated { get; set; }
     }
 }

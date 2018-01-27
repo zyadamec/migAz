@@ -591,7 +591,7 @@ namespace MigAz.Forms
             }
         }
 
-        private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(IMigrationSourceUserControl migrationSourceUserControl)
+        private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
         {
             if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
@@ -666,7 +666,7 @@ namespace MigAz.Forms
             }
         }
 
-        private void migAzMigrationTargetSelection1_AfterMigrationTargetSelected(IMigrationTargetUserControl migrationTargetUserControl)
+        private void migAzMigrationTargetSelection1_AfterMigrationTargetSelected(UserControl migrationTargetUserControl)
         {
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
