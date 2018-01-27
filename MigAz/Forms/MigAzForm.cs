@@ -50,6 +50,7 @@ namespace MigAz.Forms
             if (targetTreeView != null)
             {
                 targetTreeView.ImageList = this.imageList1;
+                targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
         }
 

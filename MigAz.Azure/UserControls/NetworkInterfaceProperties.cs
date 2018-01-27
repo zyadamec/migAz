@@ -80,7 +80,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _TargetNetworkInterface.TargetName = txtSender.Text.Trim();
+            _TargetNetworkInterface.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

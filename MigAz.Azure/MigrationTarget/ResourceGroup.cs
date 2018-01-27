@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,12 @@ namespace MigAz.Azure.MigrationTarget
     public class ResourceGroup : IMigrationTarget
     {
         private String _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private Arm.Location _TargetLocation;
 
-        public ResourceGroup()
+        public ResourceGroup(TargetSettings targetSettings)
         {
-            _TargetName = "NewResourceGroup";
+            this.SetTargetName("NewResourceGroup", targetSettings);
         }
 
         public String SourceName
@@ -23,11 +25,6 @@ namespace MigAz.Azure.MigrationTarget
             get { return String.Empty; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
-        }
 
         public Arm.Location TargetLocation
         {
@@ -35,9 +32,25 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetLocation = value; }
         }
 
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
+        }
+
         public override string ToString()
         {
-            return this.TargetName;
+            return this.TargetNameResult;
         }
     }
 }

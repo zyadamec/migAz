@@ -133,7 +133,7 @@ namespace MigAz.Azure.UserControls
 
                     NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind((Azure.MigrationTarget.NetworkSecurityGroup)migrationTargetNode.Tag);
+                    properties.Bind((Azure.MigrationTarget.NetworkSecurityGroup)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
@@ -142,7 +142,7 @@ namespace MigAz.Azure.UserControls
 
                     VirtualNetworkProperties properties = new VirtualNetworkProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind((Azure.MigrationTarget.VirtualNetwork)migrationTargetNode.Tag);
+                    properties.Bind((Azure.MigrationTarget.VirtualNetwork)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
@@ -160,7 +160,7 @@ namespace MigAz.Azure.UserControls
 
                     StorageAccountProperties properties = new StorageAccountProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag);
+                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
@@ -198,7 +198,7 @@ namespace MigAz.Azure.UserControls
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(AzureContext, (Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag);
+                    await properties.Bind(AzureContext, (Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
@@ -217,7 +217,7 @@ namespace MigAz.Azure.UserControls
 
                     PublicIpProperties properties = new PublicIpProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag);
+                    properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
@@ -229,15 +229,15 @@ namespace MigAz.Azure.UserControls
                     properties.Bind(_TargetTreeView, (Azure.MigrationTarget.RouteTable)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
-                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-                {
-                    this.ResourceImage = imageList1.Images["VirtualMachineImage"];
+                //else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                //{
+                //    this.ResourceImage = imageList1.Images["VirtualMachineImage"];
 
-                    VirtualMachineImageProperties properties = new VirtualMachineImageProperties();
-                    properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachineImage)migrationTargetNode.Tag);
-                    this.PropertyDetailControl = properties;
-                }
+                //    VirtualMachineImageProperties properties = new VirtualMachineImageProperties();
+                //    properties.PropertyChanged += Properties_PropertyChanged;
+                //    properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachineImage)migrationTargetNode.Tag, _TargetTreeView);
+                //    this.PropertyDetailControl = properties;
+                //}
             }
 
             this.LogProvider.WriteLog("PropertyPanel Bind", "End");

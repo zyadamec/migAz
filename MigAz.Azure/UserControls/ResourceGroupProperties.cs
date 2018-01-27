@@ -5,13 +5,15 @@ using System.Net;
 using MigAz.Azure.Interface;
 using System.Linq;
 using System.Collections.Generic;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
         private AzureContext _AzureContext;
-        private MigrationTarget.ResourceGroup _ResourceGroup;
+        private ResourceGroup _ResourceGroup;
+        private TargetTreeView _TargetTreeView;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -21,10 +23,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AzureContext azureContext, MigrationTarget.ResourceGroup resourceGroup)
+        internal async Task Bind(AzureContext azureContext, ResourceGroup resourceGroup, TargetTreeView targetTreeView)
         {
             _AzureContext = azureContext;
             _ResourceGroup = resourceGroup;
+            _TargetTreeView = targetTreeView;
 
             txtTargetName.Text = resourceGroup.TargetName;
 
@@ -72,7 +75,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _ResourceGroup.TargetName = txtSender.Text;
+            _ResourceGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

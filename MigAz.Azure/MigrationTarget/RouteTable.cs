@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,37 +13,26 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext;
         private IRouteTable _SourceRouteTable;
         private String _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private List<Route> _Routes = new List<Route>();
 
         private RouteTable() { }
 
-        public RouteTable(AzureContext azureContext)
+         public RouteTable(IRouteTable source, TargetSettings targetSettings)
         {
-            this._AzureContext = azureContext;
-        }
-        public RouteTable(AzureContext azureContext, IRouteTable source)
-        {
-            _AzureContext = azureContext;
             _SourceRouteTable = source;
-            this.TargetName = source.Name;
+            this.SetTargetName(source.Name, targetSettings);
+        }
 
-        }
-        public RouteTable(AzureContext azureContext, Arm.RouteTable source)
+        public RouteTable(Arm.RouteTable source, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _SourceRouteTable = source;
-            this.TargetName = source.Name;
+            this.SetTargetName(source.Name, targetSettings);
 
             foreach (Arm.Route route in source.Routes)
             {
-                _Routes.Add(new Route(route));
+                _Routes.Add(new Route(route, targetSettings));
             }
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public IRouteTable Source
@@ -61,14 +51,30 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public override string ToString()
-        {
-            return this.TargetName;
-        }
-
         public List<Route> Routes
         {
             get { return _Routes; }
+        }
+
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
+        }
+
+        public override string ToString()
+        {
+            return this.TargetNameResult;
         }
     }
 }

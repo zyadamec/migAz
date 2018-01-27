@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using System.Collections.Generic;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -10,7 +11,7 @@ namespace MigAz.Azure.UserControls
     {
         private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
-        private MigrationTarget.VirtualMachine _VirtualMachine;
+        private VirtualMachine _VirtualMachine;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -20,7 +21,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, MigrationTarget.VirtualMachine virtualMachine)
+        public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, VirtualMachine virtualMachine)
         {
             _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
@@ -127,7 +128,7 @@ namespace MigAz.Azure.UserControls
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
-            _VirtualMachine.TargetName = txtTargetName.Text;
+            _VirtualMachine.SetTargetName(txtTargetName.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

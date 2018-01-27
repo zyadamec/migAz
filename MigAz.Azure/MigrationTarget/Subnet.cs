@@ -1,4 +1,5 @@
-﻿using MigAz.Core.ArmTemplate;
+﻿using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,13 @@ namespace MigAz.Azure.MigrationTarget
         private AzureContext _AzureContext = null;
         private ISubnet _SourceSubnet;
         private String _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private MigrationTarget.VirtualNetwork _ParentVirtualNetwork;
 
         private Subnet() { }
 
-        public Subnet(AzureContext azureContext, MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables)
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _ParentVirtualNetwork = parentVirtualNetwork;
             _SourceSubnet = source;
 
@@ -54,14 +55,14 @@ namespace MigAz.Azure.MigrationTarget
             }
 
             this.AddressPrefix = source.AddressPrefix;
-            this.TargetName = source.Name;
+            this.SetTargetName(source.Name, targetSettings);
         }
 
-        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet)
+        public Subnet(VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet, TargetSettings targetSettings)
         {
             this._ParentVirtualNetwork = parentVirtualNetwork;
             this._SourceSubnet = sourceSubnet;
-            this.TargetName = sourceSubnet.Name;
+            this.SetTargetName(sourceSubnet.Name, targetSettings);
             this.AddressPrefix = sourceSubnet.AddressPrefix;
         }
 
@@ -94,12 +95,6 @@ namespace MigAz.Azure.MigrationTarget
 
         public String AddressPrefix { get; set; }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty).Replace("-", String.Empty); }
-        }
-
         public ISubnet SourceSubnet
         {
             get { return _SourceSubnet; }
@@ -121,11 +116,6 @@ namespace MigAz.Azure.MigrationTarget
             get { return _ParentVirtualNetwork; }
         }
 
-        public override string ToString()
-        {
-            return this.TargetName;
-        }
-
         public string TargetId
         {
             get { return "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + this.ParentVirtualNetwork.ToString() + "/subnets/" + this.TargetName + "')]"; }
@@ -137,6 +127,27 @@ namespace MigAz.Azure.MigrationTarget
         public bool IsGatewaySubnet
         {
             get { return this.TargetName == ArmConst.GatewaySubnetName; }
+        }
+
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            _TargetNameResult = _TargetName;
+        }
+
+        public override string ToString()
+        {
+            return this.TargetNameResult;
         }
     }
 }

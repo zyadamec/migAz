@@ -9,6 +9,7 @@ using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
 using MigAz.Core.Interface;
+using MigAz.Core;
 
 namespace MigAz.Providers
 {
@@ -131,7 +132,7 @@ namespace MigAz.Providers
             saveSelectionWriter.Close();
         }
 
-        public async Task Read(Guid subscriptionId, AzureRetriever sourceAzureRetreiver, AzureRetriever targetAzureRetreiver, TreeView treeView)
+        public async Task Read(Guid subscriptionId, AzureRetriever sourceAzureRetreiver, AzureRetriever targetAzureRetreiver, TreeView treeView, TargetSettings targetSettings)
         {
             try
             {
@@ -172,7 +173,7 @@ namespace MigAz.Providers
                         {
                             Azure.MigrationTarget.StorageAccount storageAccount = (Azure.MigrationTarget.StorageAccount)treeNode.Tag;
                             if (saveSelectionStorageAccount.TargetStorageAccountName.Length > 0) // We aren't going to reload a blank name, should it occur, as a name is required
-                                storageAccount.TargetName = saveSelectionStorageAccount.TargetStorageAccountName;
+                                storageAccount.SetTargetName(saveSelectionStorageAccount.TargetStorageAccountName, targetSettings);
                             treeNode.Checked = true;
                         }
                     }

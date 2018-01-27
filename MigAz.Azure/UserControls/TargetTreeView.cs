@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.MigrationTarget;
 using MigAz.Core.Generator;
+using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
@@ -17,8 +18,9 @@ namespace MigAz.Azure.UserControls
     {
 
         private ExportArtifacts _ExportArtifacts;
-        private Azure.MigrationTarget.ResourceGroup _TargetResourceGroup = new MigrationTarget.ResourceGroup();
+        private ResourceGroup _TargetResourceGroup;
         private PropertyPanel _PropertyPanel;
+        private TargetSettings _TargetSettings;
 
         public delegate Task AfterTargetSelectedHandler(TreeNode selectedNode);
         public event AfterTargetSelectedHandler AfterTargetSelected;
@@ -47,7 +49,7 @@ namespace MigAz.Azure.UserControls
             set { this.treeTargetARM.ImageList = value; }
         }
 
-        public Azure.MigrationTarget.ResourceGroup TargetResourceGroup
+        public ResourceGroup TargetResourceGroup
         {
             get { return _TargetResourceGroup; }
         }
@@ -377,11 +379,11 @@ namespace MigAz.Azure.UserControls
                     childNode.ImageKey = "RouteTable";
                     childNode.SelectedImageKey = "RouteTable";
                 }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-                {
-                    childNode.ImageKey = "VirtualMachineImage";
-                    childNode.SelectedImageKey = "VirtualMachineImage";
-                }
+                //else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                //{
+                //    childNode.ImageKey = "VirtualMachineImage";
+                //    childNode.SelectedImageKey = "VirtualMachineImage";
+                //}
                 else
                     throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
 
@@ -528,14 +530,14 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return targetDiskNode;
             }
-            else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-            {
-                Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = (Azure.MigrationTarget.VirtualMachineImage)parentNode;
-                TreeNode targetVirtualMachineImageNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachineImage.SourceName, targetVirtualMachineImage.ToString(), targetVirtualMachineImage, true);
+            //else if (parentNode.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+            //{
+            //    Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = (Azure.MigrationTarget.VirtualMachineImage)parentNode;
+            //    TreeNode targetVirtualMachineImageNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualMachineImage.SourceName, targetVirtualMachineImage.ToString(), targetVirtualMachineImage, true);
 
-                targetResourceGroupNode.ExpandAll();
-                return targetVirtualMachineImageNode;
-            }
+            //    targetResourceGroupNode.ExpandAll();
+            //    return targetVirtualMachineImageNode;
+            //}
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
             {
                 Azure.MigrationTarget.NetworkInterface targetNetworkInterface = (Azure.MigrationTarget.NetworkInterface)parentNode;
@@ -768,5 +770,16 @@ namespace MigAz.Azure.UserControls
             }
         }
 
+        public TargetSettings TargetSettings
+        {
+            get { return _TargetSettings; }
+            set
+            {
+                _TargetSettings = value;
+
+                if (_TargetResourceGroup == null)
+                    _TargetResourceGroup = new ResourceGroup(value);
+            }
+        }
     }
 }

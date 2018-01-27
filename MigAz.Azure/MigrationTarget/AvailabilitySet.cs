@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class AvailabilitySet : IMigrationTarget
     {
-        private AzureContext _AzureContext;
+        private string _TargetNameResult = String.Empty;
         private IAvailabilitySetSource _SourceAvailabilitySet;
         private string _TargetName = String.Empty;
         private List<VirtualMachine> _TargetVirtualMachines = new List<VirtualMachine>();
@@ -18,30 +19,22 @@ namespace MigAz.Azure.MigrationTarget
 
         private AvailabilitySet() { }
 
-        public AvailabilitySet(AzureContext azureContext)
+        public AvailabilitySet(String targetName, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
+            this.SetTargetName(targetName, targetSettings);
         }
 
-        public AvailabilitySet(AzureContext azureContext, String targetName)
+        public AvailabilitySet(Asm.CloudService asmCloudService, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
-            this.TargetName = targetName;
-        }
-
-        public AvailabilitySet(AzureContext azureContext, Asm.CloudService asmCloudService)
-        {
-            _AzureContext = azureContext;
             _SourceAvailabilitySet = asmCloudService;
-            this.TargetName = _SourceAvailabilitySet.Name;
+            this.SetTargetName(_SourceAvailabilitySet.Name, targetSettings);
         }
 
-        public AvailabilitySet(AzureContext azureContext, Arm.AvailabilitySet availabilitySet)
+        public AvailabilitySet(Arm.AvailabilitySet availabilitySet, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _SourceAvailabilitySet = availabilitySet;
 
-            this.TargetName = _SourceAvailabilitySet.Name;
+            this.SetTargetName(_SourceAvailabilitySet.Name, targetSettings);
 
             if (availabilitySet.PlatformFaultDomainCount < Constants.AvailabilitySetMinPlatformFaultDomain)
             {
@@ -74,6 +67,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        internal void SetTargetName(string text, object targetSettings)
+        {
+            throw new NotImplementedException();
+        }
+
         public IAvailabilitySetSource SourceAvailabilitySet
         {
             get { return _SourceAvailabilitySet; }
@@ -93,12 +91,6 @@ namespace MigAz.Azure.MigrationTarget
         public List<VirtualMachine> TargetVirtualMachines
         {
             get { return _TargetVirtualMachines; }
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         // https://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability?toc=%2Fazure%2Fvirtual-machines%2Fwindows%2Ftoc.json
@@ -124,11 +116,6 @@ namespace MigAz.Azure.MigrationTarget
                 else
                     throw new ArgumentException("Platform Fault Domain Count must be between " + Constants.AvailabilitySetMinPlatformFaultDomain.ToString() + " and " + Constants.AvailabilitySetMaxPlatformFaultDomain.ToString() + ".");
             }
-        }
-
-        public override string ToString()
-        {
-            return this.TargetName + this._AzureContext.TargetSettings.AvailabilitySetSuffix;
         }
 
         internal bool IsManagedDisks
@@ -158,5 +145,27 @@ namespace MigAz.Azure.MigrationTarget
                 return true;
             }
         }
+
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
+        }
+
+        public override string ToString()
+        {
+            return this.TargetNameResult;
+        }
+
     }
 }

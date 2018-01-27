@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,18 +12,19 @@ namespace MigAz.Azure.MigrationTarget
     public class Disk : IMigrationTarget
     {
         private string _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private Int32 _DiskSizeInGB = 0;
         private VirtualMachine _ParentVirtualMachine;
 
         private Disk() { }
 
-        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine)
+        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings)
         {
             this.SourceDisk = sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
             this.TargetStorage = new ManagedDiskStorage(sourceDisk);
 
-            this.TargetName = sourceDisk.DiskName;
+            this.SetTargetName(sourceDisk.DiskName, targetSettings);
             this.Lun = sourceDisk.Lun;
             this.HostCaching = sourceDisk.HostCaching;
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
@@ -31,7 +33,7 @@ namespace MigAz.Azure.MigrationTarget
 
         }
 
-        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine)
+        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings)
         {
             this.SourceDisk = (IDisk)sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
@@ -41,7 +43,7 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)sourceDisk;
 
-                this.TargetName = armDisk.Name;
+                this.SetTargetName(armDisk.Name, targetSettings);
                 this.Lun = armDisk.Lun;
                 this.HostCaching = armDisk.Caching;
                 this.DiskSizeInGB = armDisk.DiskSizeGb;
@@ -52,7 +54,7 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
-                this.TargetName = armManagedDisk.Name;
+                this.SetTargetName(armManagedDisk.Name, targetSettings);
                 this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
             }
         }
@@ -61,12 +63,6 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _ParentVirtualMachine; }
             set { _ParentVirtualMachine = value; }
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public string HostCaching
@@ -187,9 +183,25 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName;
+        }
+
         public override string ToString()
         {
-            return this.TargetName;
+            return this.TargetNameResult;
         }
     }
 }

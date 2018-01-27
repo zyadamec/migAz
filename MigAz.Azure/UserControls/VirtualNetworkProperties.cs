@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class VirtualNetworkProperties : UserControl
     {
-        MigrationTarget.VirtualNetwork _VirtualNetwork;
+        private TargetTreeView _TargetTreeView;
+        private VirtualNetwork _VirtualNetwork;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -23,9 +24,10 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public void Bind(MigrationTarget.VirtualNetwork targetVirtualNetwork)
+        public void Bind(VirtualNetwork targetVirtualNetwork, TargetTreeView targetTreeView)
         {
             _VirtualNetwork = targetVirtualNetwork;
+            _TargetTreeView = targetTreeView;
 
             if (targetVirtualNetwork.SourceVirtualNetwork != null)
             {
@@ -51,7 +53,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _VirtualNetwork.TargetName = txtSender.Text.Trim();
+            _VirtualNetwork.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings); ;
 
             PropertyChanged();
         }

@@ -895,11 +895,11 @@ namespace MigAz.Azure.Generator
                         ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
 
                         Reference loadBalancerBackendAddressPool = new Reference();
-                        loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
+                        loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.TargetName + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
 
                         loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.TargetName + "')]");
                     }
                 }
 
@@ -910,7 +910,7 @@ namespace MigAz.Azure.Generator
                     if (_ExportArtifacts.ContainsLoadBalancer(inboundNatRule.LoadBalancer))
                     {
                         Reference loadBalancerInboundNatRule = new Reference();
-                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
+                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.TargetName + "/inboundNatRules/" + inboundNatRule.Name + "')]";
 
                         loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
                     }

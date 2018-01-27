@@ -7,7 +7,9 @@ namespace MigAz.Azure.UserControls
 {
     public partial class NetworkSecurityGroupProperties : UserControl
     {
-        private MigrationTarget.NetworkSecurityGroup _NetworkSecurityGroup;
+
+        private TargetTreeView _TargetTreeView;
+        private NetworkSecurityGroup _NetworkSecurityGroup;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -17,9 +19,10 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(MigrationTarget.NetworkSecurityGroup networkSecurityGroup)
+        internal void Bind(NetworkSecurityGroup networkSecurityGroup, TargetTreeView targetTreeView)
         {
             _NetworkSecurityGroup = networkSecurityGroup;
+            _TargetTreeView = targetTreeView;
 
             if (_NetworkSecurityGroup.SourceNetworkSecurityGroup != null)
             {
@@ -42,7 +45,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _NetworkSecurityGroup.TargetName = txtSender.Text;
+            _NetworkSecurityGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }
