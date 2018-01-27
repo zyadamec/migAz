@@ -10,6 +10,7 @@ using MigAz.Azure.Generator;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
+using MigAz.Azure.Forms;
 
 namespace MigAz.Forms
 {
@@ -49,8 +50,6 @@ namespace MigAz.Forms
             if (targetTreeView != null)
             {
                 targetTreeView.ImageList = this.imageList1;
-                targetTreeView.AfterTargetSelected += Control_AfterTargetSelected;
-                targetTreeView.AfterExportArtifactRefresh += MigrationTargetControl_AfterExportArtifactRefresh;
             }
         }
 
@@ -132,14 +131,6 @@ namespace MigAz.Forms
 
         #endregion
 
-        private async Task MigrationTargetControl_AfterExportArtifactRefresh(TargetTreeView sender)
-        {
-            dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
-            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
-            btnRefreshOutput.Enabled = true;
-        }
-
         private IMigrationSourceUserControl MigrationSourceControl
         {
             get
@@ -191,30 +182,8 @@ namespace MigAz.Forms
         {
             //if (_SourceAsmNode == null && treeTargetARM.EventSourceNode == null) // we are not going to update on every property bind during TreeView updates
             //{
-            if (splitContainer3.Panel2.Controls.Count == 1)
-            {
-                MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                await MigrationTargetTreeView.RefreshExportArtifacts();
-
-            }
+            await this.MigrationTargetTreeView.RefreshExportArtifacts();
             //}
-        }
-
-        private async Task Control_AfterTargetSelected(TreeNode sender)
-        {
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
-
-            _EventSourceNode = sender;
-            await this.propertyPanel1.Bind(sender);
-            _EventSourceNode = null;
-
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("Control_AfterTargetSelected", "End");
-
-            if (this.StatusProvider != null)
-                StatusProvider.UpdateStatus("Ready");
-
         }
 
         private void _logProvider_OnMessage(string message)
@@ -326,18 +295,15 @@ namespace MigAz.Forms
             if (splitContainer3.Panel2.Controls.Count == 1)
             {
                 MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                
-                // todo now russell
-                //if (control.TargetTreeView.HasErrors)
-                //{
-                //    tabMigAzMonitoring.SelectTab("tabMessages");
-                //    MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
-                //    return;
-                //}
+
+                if (AssertHasTargetErrors())
+                {
+                    return;
+                }
 
                 if (this.TemplateGenerator != null)
                 {
-                    // todo now russell this.TemplateGenerator.ExportArtifacts = control.TargetTreeView.ExportArtifacts;
+                    this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
                     this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
                     // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
@@ -396,10 +362,8 @@ namespace MigAz.Forms
 
         private async Task RefreshOutput()
         {
-            if (MigrationTargetTreeView.HasErrors)
+            if (AssertHasTargetErrors())
             {
-                tabMigAzMonitoring.SelectTab("tabMessages");
-                MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                 return;
             }
 
@@ -418,7 +382,7 @@ namespace MigAz.Forms
                 this.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext) migrationSourceControl).AzureContext.AzureSubscription;
                 this.TemplateGenerator.TargetSubscription = migrationTargetControl.AzureContext.AzureSubscription;
                 this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
-                // todo now russell this.TemplateGenerator.ExportArtifacts = migrationTargetControl.TargetTreeView.ExportArtifacts;
+                this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
 
                 await this.TemplateGenerator.GenerateStreams();
                 await this.TemplateGenerator.SerializeStreams();
@@ -642,8 +606,6 @@ namespace MigAz.Forms
                 //// This will move to be based on the source context (upon instantiation)
                 azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
 
-                this.propertyPanel1.AzureContext = azureControl.AzureContext;
-
                 azureControl.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
                 azureControl.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
                 azureControl.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
@@ -704,5 +666,48 @@ namespace MigAz.Forms
         }
 
         #endregion
+
+        public bool AssertHasTargetErrors()
+        {
+            if (MigrationTargetTreeView.HasErrors)
+            {
+                tabMigAzMonitoring.SelectTab("tabMessages");
+                MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
+            }
+
+            return MigrationTargetTreeView.HasErrors;
+        }
+
+        private async Task targetTreeView1_AfterExportArtifactRefresh(TargetTreeView sender)
+        {
+            dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
+            btnRefreshOutput.Enabled = true;
+        }
+
+        private async Task targetTreeView1_AfterTargetSelected(TreeNode selectedNode)
+        {
+            try
+            {
+                if (this.LogProvider != null)
+                    LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
+
+                _EventSourceNode = selectedNode;
+                await this.propertyPanel1.Bind(selectedNode);
+                _EventSourceNode = null;
+
+                if (this.LogProvider != null)
+                    LogProvider.WriteLog("Control_AfterTargetSelected", "End");
+
+                if (this.StatusProvider != null)
+                    StatusProvider.UpdateStatus("Ready");
+            }
+            catch (Exception exc)
+            {
+                UnhandledExceptionDialog unhandledExceptionDialog = new UnhandledExceptionDialog(this.LogProvider, exc);
+                unhandledExceptionDialog.ShowDialog();
+            }
+        }
     }
 }

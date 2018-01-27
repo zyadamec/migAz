@@ -39,6 +39,7 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.migAzMigrationSourceSelection1 = new MigAz.UserControls.MigAzMigrationSourceSelection();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.migAzMigrationTargetSelection1 = new MigAz.UserControls.MigAzMigrationTargetSelection();
             this.targetTreeView1 = new MigAz.Azure.UserControls.TargetTreeView();
             this.tabMigAzMonitoring = new System.Windows.Forms.TabControl();
             this.tabMessages = new System.Windows.Forms.TabPage();
@@ -68,7 +69,6 @@
             this.visitMigAzOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportAnIssueOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.migAzMigrationTargetSelection1 = new MigAz.UserControls.MigAzMigrationTargetSelection();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -235,6 +235,14 @@
             this.splitContainer4.SplitterDistance = 259;
             this.splitContainer4.TabIndex = 0;
             // 
+            // migAzMigrationTargetSelection1
+            // 
+            this.migAzMigrationTargetSelection1.Location = new System.Drawing.Point(3, 6);
+            this.migAzMigrationTargetSelection1.Name = "migAzMigrationTargetSelection1";
+            this.migAzMigrationTargetSelection1.Size = new System.Drawing.Size(387, 141);
+            this.migAzMigrationTargetSelection1.TabIndex = 0;
+            this.migAzMigrationTargetSelection1.AfterMigrationTargetSelected += new MigAz.UserControls.MigAzMigrationTargetSelection.AfterMigrationTargetSelectedHandler(this.migAzMigrationTargetSelection1_AfterMigrationTargetSelected);
+            // 
             // targetTreeView1
             // 
             this.targetTreeView1.ImageList = null;
@@ -248,6 +256,8 @@
             this.targetTreeView1.Size = new System.Drawing.Size(198, 189);
             this.targetTreeView1.StatusProvider = null;
             this.targetTreeView1.TabIndex = 0;
+            this.targetTreeView1.AfterTargetSelected += new MigAz.Azure.UserControls.TargetTreeView.AfterTargetSelectedHandler(this.targetTreeView1_AfterTargetSelected);
+            this.targetTreeView1.AfterExportArtifactRefresh += new MigAz.Azure.UserControls.TargetTreeView.AfterExportArtifactRefreshHandler(this.targetTreeView1_AfterExportArtifactRefresh);
             // 
             // tabMigAzMonitoring
             // 
@@ -508,14 +518,6 @@
             this.reportAnIssueOnGithubToolStripMenuItem.Size = new System.Drawing.Size(301, 30);
             this.reportAnIssueOnGithubToolStripMenuItem.Text = "Report an issue on Github";
             this.reportAnIssueOnGithubToolStripMenuItem.Click += new System.EventHandler(this.reportAnIssueOnGithubToolStripMenuItem_Click);
-            // 
-            // migAzMigrationTargetSelection1
-            // 
-            this.migAzMigrationTargetSelection1.Location = new System.Drawing.Point(3, 6);
-            this.migAzMigrationTargetSelection1.Name = "migAzMigrationTargetSelection1";
-            this.migAzMigrationTargetSelection1.Size = new System.Drawing.Size(387, 141);
-            this.migAzMigrationTargetSelection1.TabIndex = 0;
-            this.migAzMigrationTargetSelection1.AfterMigrationTargetSelected += new MigAz.UserControls.MigAzMigrationTargetSelection.AfterMigrationTargetSelectedHandler(this.migAzMigrationTargetSelection1_AfterMigrationTargetSelected);
             // 
             // MigAzForm
             // 

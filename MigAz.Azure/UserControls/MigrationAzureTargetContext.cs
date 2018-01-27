@@ -37,7 +37,7 @@ namespace MigAz.Azure.UserControls
 
         public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, TargetSettings targetSettings, PropertyPanel propertyPanel)
         {
-            _AzureContextTarget = new AzureContext(logProvider, statusProvider, targetSettings);
+            _AzureContextTarget = new AzureContext(logProvider, statusProvider);
             //_AzureContextTarget.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             //_AzureContextTarget.UserAuthenticated += _AzureContext_UserAuthenticated;
             //_AzureContextTarget.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;

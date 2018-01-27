@@ -34,7 +34,7 @@ namespace MigAz.Azure.Asm
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, CloudService asmCloudService, TargetSettings targetSettings, XmlNode virtualMachineXml, Hashtable vmDetails)
+        public VirtualMachine(AzureContext azureContext, CloudService asmCloudService, XmlNode virtualMachineXml, Hashtable vmDetails)
         {
             this._AsmCloudService = asmCloudService;
             this._AzureContext = azureContext;

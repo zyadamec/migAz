@@ -903,7 +903,7 @@ namespace MigAz.Azure
 
             Hashtable vmDetails = await this.GetVMDetails(asmCloudService.Name, virtualMachineName);
             XmlDocument virtualMachineXml = await this.GetAzureAsmResources("VirtualMachine", vmDetails);
-            Asm.VirtualMachine asmVirtualMachine = new Asm.VirtualMachine(this._AzureContext, asmCloudService, this._AzureContext.TargetSettings, virtualMachineXml, vmDetails);
+            Asm.VirtualMachine asmVirtualMachine = new Asm.VirtualMachine(this._AzureContext, asmCloudService, virtualMachineXml, vmDetails);
             await asmVirtualMachine.InitializeChildren();
 
             return asmVirtualMachine;

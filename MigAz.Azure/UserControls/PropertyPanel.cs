@@ -114,134 +114,129 @@ namespace MigAz.Azure.UserControls
             if (this.LogProvider == null)
                 throw new ArgumentException("LogProvider Property must be set on Property Panel before Binding.");
 
-            if (this.AzureContext == null)
-                this.LogProvider.WriteLog("PropertyPanel Bind", "AzureContext Property must be set on Property Panel before Binding.");
-            else
+            if (migrationTargetNode != null && migrationTargetNode.Tag != null)
             {
-                if (migrationTargetNode != null && migrationTargetNode.Tag != null)
+                this.ResourceText = migrationTargetNode.Tag.ToString();
+
+                if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                 {
-                    this.ResourceText = migrationTargetNode.Tag.ToString();
+                    this.ResourceImage = imageList1.Images["VirtualMachine"];
 
-                    if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    {
-                        this.ResourceImage = imageList1.Images["VirtualMachine"];
+                    VirtualMachineProperties properties = new VirtualMachineProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
+                {
+                    this.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
 
-                        VirtualMachineProperties properties = new VirtualMachineProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    {
-                        this.ResourceImage = imageList1.Images["NetworkSecurityGroup"];
+                    NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind((Azure.MigrationTarget.NetworkSecurityGroup)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                {
+                    this.ResourceImage = imageList1.Images["VirtualNetwork"];
 
-                        NetworkSecurityGroupProperties properties = new NetworkSecurityGroupProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind((Azure.MigrationTarget.NetworkSecurityGroup)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                    {
-                        this.ResourceImage = imageList1.Images["VirtualNetwork"];
+                    VirtualNetworkProperties properties = new VirtualNetworkProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind((Azure.MigrationTarget.VirtualNetwork)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
+                {
+                    this.ResourceImage = imageList1.Images["VirtualNetwork"];
 
-                        VirtualNetworkProperties properties = new VirtualNetworkProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind((Azure.MigrationTarget.VirtualNetwork)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                    {
-                        this.ResourceImage = imageList1.Images["VirtualNetwork"];
+                    SubnetProperties properties = new SubnetProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(_TargetTreeView, (Azure.MigrationTarget.Subnet)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    this.ResourceImage = imageList1.Images["StorageAccount"];
 
-                        SubnetProperties properties = new SubnetProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.Subnet)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                    {
-                        this.ResourceImage = imageList1.Images["StorageAccount"];
+                    StorageAccountProperties properties = new StorageAccountProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(this.AzureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
+                {
+                    Azure.MigrationTarget.Disk migrationDisk = (Azure.MigrationTarget.Disk)migrationTargetNode.Tag;
 
-                        StorageAccountProperties properties = new StorageAccountProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(this.AzureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
-                    {
-                        Azure.MigrationTarget.Disk migrationDisk = (Azure.MigrationTarget.Disk)migrationTargetNode.Tag;
+                    this.ResourceImage = imageList1.Images["Disk"];
 
-                        this.ResourceImage = imageList1.Images["Disk"];
+                    DiskProperties properties = new DiskProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(this.AzureContext, _TargetTreeView, migrationTargetNode, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
+                {
+                    this.ResourceImage = imageList1.Images["AvailabilitySet"];
 
-                        DiskProperties properties = new DiskProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(this.AzureContext, _TargetTreeView, migrationTargetNode, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                    {
-                        this.ResourceImage = imageList1.Images["AvailabilitySet"];
+                    AvailabilitySetProperties properties = new AvailabilitySetProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(_TargetTreeView, migrationTargetNode);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
+                {
+                    this.ResourceImage = imageList1.Images["NetworkInterface"];
 
-                        AvailabilitySetProperties properties = new AvailabilitySetProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(_TargetTreeView, migrationTargetNode);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                    {
-                        this.ResourceImage = imageList1.Images["NetworkInterface"];
+                    NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                {
+                    this.ResourceImage = imageList1.Images["ResourceGroup"];
 
-                        NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        await properties.Bind(this.AzureContext, _TargetTreeView, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
-                    {
-                        this.ResourceImage = imageList1.Images["ResourceGroup"];
+                    ResourceGroupProperties properties = new ResourceGroupProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(AzureContext, (Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
+                {
+                    this.ResourceImage = imageList1.Images["LoadBalancer"];
 
-                        ResourceGroupProperties properties = new ResourceGroupProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        await properties.Bind(AzureContext, (Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
-                    {
-                        this.ResourceImage = imageList1.Images["LoadBalancer"];
+                    LoadBalancerProperties properties = new LoadBalancerProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    await properties.Bind(this.AzureContext, _TargetTreeView);
+                    properties.LoadBalancer = (Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag;
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
+                {
+                    this.ResourceImage = imageList1.Images["PublicIp"];
 
-                        LoadBalancerProperties properties = new LoadBalancerProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        await properties.Bind(this.AzureContext, _TargetTreeView);
-                        properties.LoadBalancer = (Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag;
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
-                    {
-                        this.ResourceImage = imageList1.Images["PublicIp"];
+                    PublicIpProperties properties = new PublicIpProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
+                {
+                    this.ResourceImage = imageList1.Images["RouteTable"];
 
-                        PublicIpProperties properties = new PublicIpProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind((Azure.MigrationTarget.PublicIp)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
-                    {
-                        this.ResourceImage = imageList1.Images["RouteTable"];
+                    RouteTableProperties properties = new RouteTableProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(_TargetTreeView, (Azure.MigrationTarget.RouteTable)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
+                }
+                else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
+                {
+                    this.ResourceImage = imageList1.Images["VirtualMachineImage"];
 
-                        RouteTableProperties properties = new RouteTableProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.RouteTable)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
-                    else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-                    {
-                        this.ResourceImage = imageList1.Images["VirtualMachineImage"];
-
-                        VirtualMachineImageProperties properties = new VirtualMachineImageProperties();
-                        properties.PropertyChanged += Properties_PropertyChanged;
-                        properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachineImage)migrationTargetNode.Tag);
-                        this.PropertyDetailControl = properties;
-                    }
+                    VirtualMachineImageProperties properties = new VirtualMachineImageProperties();
+                    properties.PropertyChanged += Properties_PropertyChanged;
+                    properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachineImage)migrationTargetNode.Tag);
+                    this.PropertyDetailControl = properties;
                 }
             }
 

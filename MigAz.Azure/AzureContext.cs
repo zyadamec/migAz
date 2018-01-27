@@ -20,7 +20,6 @@ namespace MigAz.Azure
         private ITokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
-        private TargetSettings _TargetSettings;
 
         public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
         public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
@@ -50,11 +49,10 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, TargetSettings targetSetings)
+        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
-            _TargetSettings = targetSetings;
             _AzureServiceUrls = new AzureServiceUrls(this);
             _TokenProvider = new AzureTokenProvider(this);
             _AzureRetriever = new AzureRetriever(this);
@@ -119,11 +117,6 @@ namespace MigAz.Azure
         public IStatusProvider StatusProvider
         {
             get { return _StatusProvider; }
-        }
-
-        public TargetSettings TargetSettings
-        {
-            get { return _TargetSettings; }
         }
 
         public async Task CopyContext(AzureContext sourceContext)
