@@ -139,7 +139,7 @@ namespace MigAz.Forms
             {
                 foreach (Control control in splitContainer3.Panel1.Controls)
                 {
-                    if (control.GetType() == typeof(IMigrationSourceUserControl))
+                    if (control.GetType().GetInterfaces().Contains(typeof(IMigrationSourceUserControl)))
                     {
                         IMigrationSourceUserControl migrationSourceControl = (IMigrationSourceUserControl)control;
                         return migrationSourceControl;
@@ -265,14 +265,6 @@ namespace MigAz.Forms
             txtLog.Height = tabMigAzMonitoring.Height - 30;
             txtRest.Width = tabMigAzMonitoring.Width - 10;
             txtRest.Height = tabMigAzMonitoring.Height - 30;
-        }
-
-        private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(Azure.AzureContext sender)
-        {
-            dgvMigAzMessages.DataSource = null;
-            tabOutputResults.TabPages.Clear();
-            btnRefreshOutput.Enabled = false;
-            lblLastOutputRefresh.Text = String.Empty;
         }
 
         private void panel1_Resize(object sender, EventArgs e)
@@ -620,9 +612,6 @@ namespace MigAz.Forms
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
-
-                //MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
-                //migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this._appSettingsProvider.GetTargetSettings(), this.propertyPanel1);
             }
 
             MigrationSourceSelectionControlVisible = false;
@@ -682,6 +671,7 @@ namespace MigAz.Forms
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
+                azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
 
                 IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
                 if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))

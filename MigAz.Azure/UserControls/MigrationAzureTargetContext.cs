@@ -80,7 +80,7 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, ITelemetryProvider telemetryProvider, TargetSettings targetSettings, PropertyPanel propertyPanel)
+        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider)
         {
             _AzureContextTarget = new AzureContext(logProvider, statusProvider);
             _AzureContextTarget.AzureEnvironmentChanged += _AzureContextTarget_AzureEnvironmentChanged;
@@ -94,7 +94,7 @@ namespace MigAz.Azure.UserControls
 
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
 
-            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider, telemetryProvider);
+            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
         }
 
         #endregion

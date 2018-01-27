@@ -29,8 +29,6 @@ namespace MigAz.Azure.Generator
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
         private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
-        private ITelemetryProvider _telemetryProvider;
-        //private ISettingsProvider _settingsProvider;
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
@@ -40,13 +38,12 @@ namespace MigAz.Azure.Generator
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription, ITelemetryProvider telemetryProvider)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription)
         {
             _logProvider = logProvider;
             _statusProvider = statusProvider;
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
-            _telemetryProvider = telemetryProvider;
         }
 
         public ILogProvider LogProvider
