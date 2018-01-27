@@ -679,6 +679,18 @@ namespace MigAz.Forms
 
         private void migAzMigrationTargetSelection1_AfterMigrationTargetSelected(IMigrationTargetUserControl migrationTargetUserControl)
         {
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
+
+                IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
+                if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))
+                {
+                    MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
+                    azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
+                }
+            }
+
             MigrationTargetSelectionControlVisible = false;
             splitContainer4.Panel1.Controls.Add(migrationTargetUserControl);
             splitContainer4_Panel1_Resize(this, null);
