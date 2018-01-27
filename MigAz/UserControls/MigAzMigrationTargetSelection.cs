@@ -29,7 +29,16 @@ namespace MigAz.UserControls
 
                 bool isMigrationSourceReady = (_IMigrationSource != null && _IMigrationSource.IsSourceContextAuthenticated);
 
-                label1.Visible = !(isMigrationSourceReady);
+                if (_IMigrationSource == null)
+                {
+                    lblMigrationSourceStatus.Text = "Select Migration Source prior to setting Migration Target.";
+                }
+                else if (_IMigrationSource != null && !_IMigrationSource.IsSourceContextAuthenticated)
+                {
+                    lblMigrationSourceStatus.Text = "Authenticate to Migration Source prior to setting Migration Target.";
+                }
+
+                lblMigrationSourceStatus.Visible = !(isMigrationSourceReady);
                 btnAzure.Enabled = (isMigrationSourceReady);
                 btnAzureStack.Enabled = (isMigrationSourceReady);
             }
