@@ -43,6 +43,11 @@ namespace MigAz.Azure.UserControls
                         cboTargetLocation.Items.Add(armLocation);
                     }
                 }
+                else
+                {
+                    cboTargetLocation.Visible = false;
+                    lblTargetContext.Visible = true;
+                }
             }
             catch (WebException)
             {
