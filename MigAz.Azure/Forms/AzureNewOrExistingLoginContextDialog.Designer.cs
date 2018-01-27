@@ -189,6 +189,7 @@
             this.cboSubscription.Size = new System.Drawing.Size(687, 28);
             this.cboSubscription.Sorted = true;
             this.cboSubscription.TabIndex = 78;
+            this.cboSubscription.SelectedIndexChanged += new System.EventHandler(this.cboSubscription_SelectedIndexChanged);
             // 
             // label8
             // 

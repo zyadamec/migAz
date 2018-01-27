@@ -380,7 +380,6 @@
             // 
             // propertyPanel1
             // 
-            this.propertyPanel1.AzureContext = null;
             this.propertyPanel1.Location = new System.Drawing.Point(12, 6);
             this.propertyPanel1.LogProvider = null;
             this.propertyPanel1.Name = "propertyPanel1";

@@ -7,13 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.UserControls;
-using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Azure.Generator;
 using MigAz.Core.Interface;
-using MigAz.Core;
-using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.UserControls
 {
@@ -53,6 +48,9 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterUserSignOutHandler();
         public event AfterUserSignOutHandler AfterUserSignOut;
 
+        public delegate Task AfterContextChangedHandler(AzureLoginContextViewer sender);
+        public event AfterContextChangedHandler AfterContextChanged;
+
         #endregion
 
         #region Properties
@@ -91,10 +89,15 @@ namespace MigAz.Azure.UserControls
             _AzureContextTarget.AfterUserSignOut += _AzureContextTarget_AfterUserSignOut;
             _AzureContextTarget.BeforeAzureTenantChange += _AzureContextTarget_BeforeAzureTenantChange;
             _AzureContextTarget.AfterAzureTenantChange += _AzureContextTarget_AfterAzureTenantChange;
-
+            azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
-
+            
             this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
+        }
+
+        private async Task AzureLoginContextViewerTarget_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            this.AfterContextChanged?.Invoke(sender);
         }
 
         #endregion

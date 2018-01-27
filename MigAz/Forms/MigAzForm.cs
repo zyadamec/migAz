@@ -89,14 +89,26 @@ namespace MigAz.Forms
 
         private async Task MigrationSourceControl_BeforeAzureTenantChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
+
         }
 
         private async Task MigrationSourceControl_AfterAzureTenantChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
+
         }
 
         private async Task MigrationSourceControl_AfterUserSignOut()
@@ -109,26 +121,46 @@ namespace MigAz.Forms
 
         private async Task MigrationSourceControl_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_BeforeAzureSubscriptionChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_UserAuthenticated(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_AzureEnvironmentChanged(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         #endregion
@@ -150,14 +182,17 @@ namespace MigAz.Forms
             }
         }
 
-        private MigrationAzureTargetContext MigrationTargetControl
+        private IMigrationTargetUserControl MigrationTargetControl
         {
             get
             {
-                if (splitContainer4.Panel1.Controls.Count == 1)
+                foreach (Control control in splitContainer3.Panel1.Controls)
                 {
-                    MigrationAzureTargetContext migrationTargetControl = (MigrationAzureTargetContext)splitContainer4.Panel1.Controls[0];
-                    return migrationTargetControl;
+                    if (control.GetType().GetInterfaces().Contains(typeof(IMigrationTargetUserControl)))
+                    {
+                        IMigrationTargetUserControl migrationSourceControl = (IMigrationTargetUserControl)control;
+                        return migrationSourceControl;
+                    }
                 }
 
                 return null;
@@ -205,18 +240,18 @@ namespace MigAz.Forms
 
         #region Properties
 
-        public TemplateGenerator TemplateGenerator
-        {
-            get
-            {
-                MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
+        //public TemplateGenerator TemplateGenerator
+        //{
+        //    get
+        //    {
+        //        MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
 
-                if (migrationTargetControl == null)
-                    return null;
+        //        if (migrationTargetControl == null)
+        //            return null;
 
-                return migrationTargetControl.TemplateGenerator;
-            }
-        }
+        //        return migrationTargetControl.TemplateGenerator;
+        //    }
+        //}
 
         public ILogProvider LogProvider
         {
@@ -288,28 +323,30 @@ namespace MigAz.Forms
         {
             if (splitContainer3.Panel2.Controls.Count == 1)
             {
-                MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
+                IMigrationTargetUserControl control = this.MigrationTargetControl;
+
+                //MigrationAzureTargetContext
 
                 if (AssertHasTargetErrors())
                 {
                     return;
                 }
 
-                if (this.TemplateGenerator != null)
-                {
-                    this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
-                    this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                //if (this.TemplateGenerator != null)
+                //{
+                //    this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+                //    this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                    await RefreshOutput();
+                //    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                //    await RefreshOutput();
 
-                    this.TemplateGenerator.Write();
+                //    this.TemplateGenerator.Write();
 
-                    StatusProvider.UpdateStatus("Ready");
+                //    StatusProvider.UpdateStatus("Ready");
 
-                    var exportResults = new ExportResultsDialog(this.TemplateGenerator);
-                    exportResults.ShowDialog(this);
-                }
+                //    var exportResults = new ExportResultsDialog(this.TemplateGenerator);
+                //    exportResults.ShowDialog(this);
+                //}
             }
         }
 
@@ -365,123 +402,127 @@ namespace MigAz.Forms
             if (migrationSourceControl == null)
                 throw new ArgumentException("Unable to Refresh Output:  NULL MigrationSourceControl Context")
 ;
-            MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
+            IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
             if (migrationTargetControl == null)
                 throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
 ;
+            //if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+            //{
+            //    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-            if (this.TemplateGenerator != null)
-            {
-                // todo now russell, this needs to be improved to handle error of wrong type
-                this.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext) migrationSourceControl).AzureContext.AzureSubscription;
-                this.TemplateGenerator.TargetSubscription = migrationTargetControl.AzureContext.AzureSubscription;
-                this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
-                this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+            //    if (azureTargetContext.TemplateGenerator != null)
+            //    {
+            //        // todo now russell, this needs to be improved to handle error of wrong type
+            //        azureTargetContext.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext)migrationSourceControl).AzureContext.AzureSubscription;
+            //        azureTargetContext.TemplateGenerator.TargetSubscription = azureTargetContext.AzureContext.AzureSubscription;
+            //        azureTargetContext.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
+            //        azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
 
-                await this.TemplateGenerator.GenerateStreams();
-                await this.TemplateGenerator.SerializeStreams();
+            //        await azureTargetContext.TemplateGenerator.GenerateStreams();
+            //        await azureTargetContext.TemplateGenerator.SerializeStreams();
 
-                foreach (TabPage tabPage in tabOutputResults.TabPages)
-                {
-                    if (!this.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
-                        tabOutputResults.TabPages.Remove(tabPage);
-                }
+            //        foreach (TabPage tabPage in tabOutputResults.TabPages)
+            //        {
+            //            if (!this.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
+            //                tabOutputResults.TabPages.Remove(tabPage);
+            //        }
 
-                foreach (var templateStream in this.TemplateGenerator.TemplateStreams)
-                {
-                    TabPage tabPage = null;
-                    if (!tabOutputResults.TabPages.ContainsKey(templateStream.Key))
-                    {
-                        tabPage = new TabPage(templateStream.Key);
-                        tabPage.Name = templateStream.Key;
-                        tabOutputResults.TabPages.Add(tabPage);
+            //        foreach (var templateStream in azureTargetContext.TemplateGenerator.TemplateStreams)
+            //        {
+            //            TabPage tabPage = null;
+            //            if (!tabOutputResults.TabPages.ContainsKey(templateStream.Key))
+            //            {
+            //                tabPage = new TabPage(templateStream.Key);
+            //                tabPage.Name = templateStream.Key;
+            //                tabOutputResults.TabPages.Add(tabPage);
 
-                        if (templateStream.Key.EndsWith(".html"))
-                        {
-                            WebBrowser webBrowser = new WebBrowser();
-                            webBrowser.Width = tabOutputResults.Width - 15;
-                            webBrowser.Height = tabOutputResults.Height - 30;
-                            webBrowser.AllowNavigation = false;
-                            webBrowser.ScrollBarsEnabled = true;
-                            tabPage.Controls.Add(webBrowser);
-                        }
-                        else if (templateStream.Key.EndsWith(".json") || templateStream.Key.EndsWith(".ps1"))
-                        {
-                            TextBox textBox = new TextBox();
-                            textBox.Width = tabOutputResults.Width - 15;
-                            textBox.Height = tabOutputResults.Height - 30;
-                            textBox.ReadOnly = true;
-                            textBox.Multiline = true;
-                            textBox.WordWrap = false;
-                            textBox.ScrollBars = ScrollBars.Both;
-                            tabPage.Controls.Add(textBox);
-                        }
-                    }
-                    else
-                    {
-                        tabPage = tabOutputResults.TabPages[templateStream.Key];
-                    }
+            //                if (templateStream.Key.EndsWith(".html"))
+            //                {
+            //                    WebBrowser webBrowser = new WebBrowser();
+            //                    webBrowser.Width = tabOutputResults.Width - 15;
+            //                    webBrowser.Height = tabOutputResults.Height - 30;
+            //                    webBrowser.AllowNavigation = false;
+            //                    webBrowser.ScrollBarsEnabled = true;
+            //                    tabPage.Controls.Add(webBrowser);
+            //                }
+            //                else if (templateStream.Key.EndsWith(".json") || templateStream.Key.EndsWith(".ps1"))
+            //                {
+            //                    TextBox textBox = new TextBox();
+            //                    textBox.Width = tabOutputResults.Width - 15;
+            //                    textBox.Height = tabOutputResults.Height - 30;
+            //                    textBox.ReadOnly = true;
+            //                    textBox.Multiline = true;
+            //                    textBox.WordWrap = false;
+            //                    textBox.ScrollBars = ScrollBars.Both;
+            //                    tabPage.Controls.Add(textBox);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                tabPage = tabOutputResults.TabPages[templateStream.Key];
+            //            }
 
-                    if (tabPage.Controls[0].GetType() == typeof(TextBox))
-                    {
-                        TextBox textBox = (TextBox)tabPage.Controls[0];
-                        templateStream.Value.Position = 0;
-                        textBox.Text = new StreamReader(templateStream.Value).ReadToEnd();
-                    }
-                    else if (tabPage.Controls[0].GetType() == typeof(WebBrowser))
-                    {
-                        WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
-                        templateStream.Value.Position = 0;
+            //            if (tabPage.Controls[0].GetType() == typeof(TextBox))
+            //            {
+            //                TextBox textBox = (TextBox)tabPage.Controls[0];
+            //                templateStream.Value.Position = 0;
+            //                textBox.Text = new StreamReader(templateStream.Value).ReadToEnd();
+            //            }
+            //            else if (tabPage.Controls[0].GetType() == typeof(WebBrowser))
+            //            {
+            //                WebBrowser webBrowser = (WebBrowser)tabPage.Controls[0];
+            //                templateStream.Value.Position = 0;
 
-                        if (webBrowser.Document == null)
-                        {
-                            webBrowser.DocumentText = new StreamReader(templateStream.Value).ReadToEnd();
-                        }
-                        else
-                        {
-                            webBrowser.Document.OpenNew(true);
-                            webBrowser.Document.Write(new StreamReader(templateStream.Value).ReadToEnd());
-                        }
-                    }
-                }
+            //                if (webBrowser.Document == null)
+            //                {
+            //                    webBrowser.DocumentText = new StreamReader(templateStream.Value).ReadToEnd();
+            //                }
+            //                else
+            //                {
+            //                    webBrowser.Document.OpenNew(true);
+            //                    webBrowser.Document.Write(new StreamReader(templateStream.Value).ReadToEnd());
+            //                }
+            //            }
+            //        }
 
-                if (tabOutputResults.TabPages.Count != this.TemplateGenerator.TemplateStreams.Count)
-                    throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + this.TemplateGenerator.TemplateStreams.Count);
+            //        if (tabOutputResults.TabPages.Count != this.TemplateGenerator.TemplateStreams.Count)
+            //            throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + this.TemplateGenerator.TemplateStreams.Count);
 
-                // Ensure Tabs are in same order as output streams
-                int streamIndex = 0;
-                foreach (string templateStreamKey in this.TemplateGenerator.TemplateStreams.Keys)
-                {
-                    int rotationCounter = 0;
+            //        // Ensure Tabs are in same order as output streams
+            //        int streamIndex = 0;
+            //        foreach (string templateStreamKey in this.TemplateGenerator.TemplateStreams.Keys)
+            //        {
+            //            int rotationCounter = 0;
 
-                    // This while loop is to bubble the tab to the end, as to rotate the tab sequence to ensure they match the order returned from the stream outputs
-                    // The addition/removal of Streams may result in order of existing tabPages being "out of order" to the streams generated, so we may need to consider reordering
-                    while (tabOutputResults.TabPages[streamIndex].Name != templateStreamKey)
-                    {
-                        TabPage currentTabpage = tabOutputResults.TabPages[streamIndex];
-                        tabOutputResults.TabPages.Remove(currentTabpage);
-                        tabOutputResults.TabPages.Add(currentTabpage);
+            //            // This while loop is to bubble the tab to the end, as to rotate the tab sequence to ensure they match the order returned from the stream outputs
+            //            // The addition/removal of Streams may result in order of existing tabPages being "out of order" to the streams generated, so we may need to consider reordering
+            //            while (tabOutputResults.TabPages[streamIndex].Name != templateStreamKey)
+            //            {
+            //                TabPage currentTabpage = tabOutputResults.TabPages[streamIndex];
+            //                tabOutputResults.TabPages.Remove(currentTabpage);
+            //                tabOutputResults.TabPages.Add(currentTabpage);
 
-                        rotationCounter++;
+            //                rotationCounter++;
 
-                        if (rotationCounter > this.TemplateGenerator.TemplateStreams.Count)
-                            throw new ArgumentException("Rotated through all tabs, unabled to locate tab '" + templateStreamKey + "' while ensuring tab order/sequencing.");
-                    }
+            //                if (rotationCounter > this.TemplateGenerator.TemplateStreams.Count)
+            //                    throw new ArgumentException("Rotated through all tabs, unabled to locate tab '" + templateStreamKey + "' while ensuring tab order/sequencing.");
+            //            }
 
-                    streamIndex++;
-                }
+            //            streamIndex++;
+            //        }
 
 
-                lblLastOutputRefresh.Text = "Last Refresh Completed: " + DateTime.Now.ToString();
-                btnRefreshOutput.Enabled = false;
+            //        lblLastOutputRefresh.Text = "Last Refresh Completed: " + DateTime.Now.ToString();
+            //        btnRefreshOutput.Enabled = false;
 
-                // post Telemetry Record to ASMtoARMToolAPI
-                if (AppSettingsProvider.AllowTelemetry)
-                {
-                    StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                    _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
-                }
-            }
+            //        // post Telemetry Record to ASMtoARMToolAPI
+            //        if (AppSettingsProvider.AllowTelemetry)
+            //        {
+            //            StatusProvider.UpdateStatus("BUSY: saving telemetry information");
+            //            _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
+            //        }
+            //    }
+            //}
 
             StatusProvider.UpdateStatus("Ready");
         }
@@ -672,11 +713,13 @@ namespace MigAz.Forms
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
                 azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
+                azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
 
                 IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
                 if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))
                 {
                     MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
+                    azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                 }
             }
@@ -684,6 +727,11 @@ namespace MigAz.Forms
             MigrationTargetSelectionControlVisible = false;
             splitContainer4.Panel1.Controls.Add(migrationTargetUserControl);
             splitContainer4_Panel1_Resize(this, null);
+        }
+
+        private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            await MigrationTargetTreeView.RefreshExportArtifacts();
         }
 
         #endregion
@@ -715,7 +763,7 @@ namespace MigAz.Forms
                     LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
                 _EventSourceNode = selectedNode;
-                await this.propertyPanel1.Bind(targetTreeView, selectedNode);
+                await this.propertyPanel1.Bind(((MigrationAzureTargetContext)MigrationTargetControl).AzureContext, targetTreeView, selectedNode);
                 _EventSourceNode = null;
 
                 if (this.LogProvider != null)
