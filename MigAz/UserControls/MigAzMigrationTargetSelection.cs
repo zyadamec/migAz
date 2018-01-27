@@ -27,9 +27,11 @@ namespace MigAz.UserControls
             {
                 _IMigrationSource = value;
 
-                label1.Visible = !(_IMigrationSource != null);
-                btnAzure.Enabled = (_IMigrationSource != null);
-                btnAzureStack.Enabled = (_IMigrationSource != null);
+                bool isMigrationSourceReady = (_IMigrationSource != null && _IMigrationSource.IsSourceContextAuthenticated);
+
+                label1.Visible = !(isMigrationSourceReady);
+                btnAzure.Enabled = (isMigrationSourceReady);
+                btnAzureStack.Enabled = (isMigrationSourceReady);
             }
         }
 

@@ -11,6 +11,7 @@ using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
+using MigAz.UserControls;
 
 namespace MigAz.Forms
 {
@@ -618,6 +619,7 @@ namespace MigAz.Forms
                 azureControl.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
+                azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
 
                 //MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
                 //migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this._appSettingsProvider.GetTargetSettings(), this.propertyPanel1);
@@ -632,29 +634,45 @@ namespace MigAz.Forms
             migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
 
-        private bool MigrationTargetSelectionControlVisible
+        private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
+        {
+            this.MigrationTargetSelectionControl.MigrationSource = sender;
+        }
+
+        private MigAzMigrationTargetSelection MigrationTargetSelectionControl
         {
             get
             {
                 foreach (Control control in splitContainer4.Panel1.Controls)
                 {
-                    if (control.GetType() == typeof(UserControls.MigAzMigrationTargetSelection))
+                    if (control.GetType() == typeof(MigAzMigrationTargetSelection))
                     {
-                        return control.Visible;
+                        return (MigAzMigrationTargetSelection)control;
                     }
                 }
+
+                return null;
+            }
+        }
+
+        private bool MigrationTargetSelectionControlVisible
+        {
+            get
+            {
+                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
+
+                if (targetSelectionControl != null)
+                    return targetSelectionControl.Visible;
 
                 return false;
             }
             set
             {
-                foreach (Control control in splitContainer4.Panel1.Controls)
+                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
+                if (targetSelectionControl != null)
                 {
-                    if (control.GetType() == typeof(UserControls.MigAzMigrationTargetSelection))
-                    {
-                        control.Visible = value;
-                        control.Enabled = value;
-                    }
+                    targetSelectionControl.Visible = value;
+                    targetSelectionControl.Enabled = value;
                 }
             }
         }

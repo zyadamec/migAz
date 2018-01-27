@@ -9,5 +9,12 @@ namespace MigAz.Azure.Interface
 {
     public class IMigrationSourceUserControl : UserControl
     {
+        private bool _IsAuthenticated = false;
+
+        public bool IsSourceContextAuthenticated
+        {
+            get { return _IsAuthenticated; }
+            set { _IsAuthenticated = value; }
+        }
     }
 }

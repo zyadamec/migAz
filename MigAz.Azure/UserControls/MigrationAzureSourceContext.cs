@@ -65,7 +65,12 @@ namespace MigAz.Azure.UserControls
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
+        public delegate void AfterContextChangedHandler(MigrationAzureSourceContext sender);
+        public event AfterContextChangedHandler AfterContextChanged;
+
         #endregion
+
+        #region Constructor(s)
 
         public MigrationAzureSourceContext()
         {
@@ -77,6 +82,8 @@ namespace MigAz.Azure.UserControls
             treeAzureARM.Left = 0;
             treeAzureARM.Width = this.Width;
         }
+
+        #endregion
 
         public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList)
         {
@@ -91,11 +98,17 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.AfterUserSignOut += _AzureContext_AfterUserSignOut;
             _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
+            azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
             await azureLoginContextViewerSource.Bind(_AzureContextSource);
 
             _ImageList = imageList;
             treeAzureARM.ImageList = _ImageList;
+        }
+
+        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            AfterContextChanged?.Invoke(this);
         }
 
         public AzureContext AzureContext
@@ -176,11 +189,7 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_UserAuthenticated(AzureContext sender)
         {
-            //if (_AzureContextTargetARM.TokenProvider.AuthenticationResult == null)
-            //{
-            //    await _AzureContextTargetARM.CopyContext(_AzureContextSource);
-            //}
-
+            this.IsSourceContextAuthenticated = true;
             UserAuthenticated?.Invoke(sender);
         }
 
@@ -194,6 +203,7 @@ namespace MigAz.Azure.UserControls
         private async Task _AzureContext_AfterUserSignOut()
         {
             ResetForm();
+            this.IsSourceContextAuthenticated = false;
 
             //if (_AzureContextTargetARM != null)
             //    await _AzureContextTargetARM.SetSubscriptionContext(null);
