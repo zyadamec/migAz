@@ -19,10 +19,9 @@ namespace MigAz.Azure.UserControls
 
         private ExportArtifacts _ExportArtifacts;
         private ResourceGroup _TargetResourceGroup;
-        private PropertyPanel _PropertyPanel;
         private TargetSettings _TargetSettings;
 
-        public delegate Task AfterTargetSelectedHandler(TreeNode selectedNode);
+        public delegate Task AfterTargetSelectedHandler(TargetTreeView sender, TreeNode selectedNode);
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
         public delegate Task AfterExportArtifactRefreshHandler(TargetTreeView sender);
@@ -52,19 +51,6 @@ namespace MigAz.Azure.UserControls
         public ResourceGroup TargetResourceGroup
         {
             get { return _TargetResourceGroup; }
-        }
-
-        public PropertyPanel PropertyPanel
-        {
-            get { return _PropertyPanel; }
-            set
-            {
-                _PropertyPanel = value;
-
-                if (_PropertyPanel != null)
-                    if (_PropertyPanel.TargetTreeView != this)
-                        _PropertyPanel.TargetTreeView = this;
-            }
         }
 
         public TreeNodeCollection Nodes
@@ -618,9 +604,6 @@ namespace MigAz.Azure.UserControls
                     }
                 }
             }
-
-            if (treeTargetARM.SelectedNode == null)
-                PropertyPanel.Clear();
         }
 
         private async Task RemoveAsmDiskTurnedManagedDiskFromARMTree(Disk disk)
@@ -713,7 +696,7 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            AfterTargetSelected?.Invoke(e.Node);
+            AfterTargetSelected?.Invoke(this, e.Node);
         }
 
         private void TargetTreeView_Resize(object sender, EventArgs e)

@@ -687,7 +687,7 @@ namespace MigAz.Forms
             btnRefreshOutput.Enabled = true;
         }
 
-        private async Task targetTreeView1_AfterTargetSelected(TreeNode selectedNode)
+        private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
         {
             try
             {
@@ -695,7 +695,7 @@ namespace MigAz.Forms
                     LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
                 _EventSourceNode = selectedNode;
-                await this.propertyPanel1.Bind(selectedNode);
+                await this.propertyPanel1.Bind(targetTreeView, selectedNode);
                 _EventSourceNode = null;
 
                 if (this.LogProvider != null)

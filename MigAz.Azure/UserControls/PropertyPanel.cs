@@ -39,19 +39,6 @@ namespace MigAz.Azure.UserControls
             get; set;
         }
 
-        public TargetTreeView TargetTreeView
-        {
-            get { return _TargetTreeView; }
-            set
-            {
-                _TargetTreeView = value;
-
-                if (_TargetTreeView != null)
-                    if (_TargetTreeView.PropertyPanel != this)
-                        _TargetTreeView.PropertyPanel = this;
-            }
-        }
-
         public Image ResourceImage
         {
             get { return pictureBox1.Image; }
@@ -104,11 +91,12 @@ namespace MigAz.Azure.UserControls
             pnlProperties.Height = groupBox1.Height - 90;
         }
 
-        public async Task Bind(TreeNode migrationTargetNode)
+        public async Task Bind(TargetTreeView targetTreeView, TreeNode migrationTargetNode)
         {
             this.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
+            this._TargetTreeView = targetTreeView;
             this._BoundTreeNode = migrationTargetNode;
 
             if (this.LogProvider == null)

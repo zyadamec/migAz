@@ -250,7 +250,6 @@
             this.targetTreeView1.LogProvider = null;
             this.targetTreeView1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.targetTreeView1.Name = "targetTreeView1";
-            this.targetTreeView1.PropertyPanel = null;
             this.targetTreeView1.SelectedNode = null;
             this.targetTreeView1.SettingsProvider = null;
             this.targetTreeView1.Size = new System.Drawing.Size(198, 189);
@@ -388,7 +387,6 @@
             this.propertyPanel1.Size = new System.Drawing.Size(450, 471);
             this.propertyPanel1.StatusProvider = null;
             this.propertyPanel1.TabIndex = 8;
-            this.propertyPanel1.TargetTreeView = null;
             // 
             // panel1
             // 

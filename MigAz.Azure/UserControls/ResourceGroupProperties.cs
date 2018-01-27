@@ -34,7 +34,7 @@ namespace MigAz.Azure.UserControls
             try
             {
                 cboTargetLocation.Items.Clear();
-                if (azureContext.AzureRetriever.SubscriptionContext != null)
+                if (azureContext != null && azureContext.AzureRetriever != null && azureContext.AzureRetriever.SubscriptionContext != null)
                 {
                     List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
 
