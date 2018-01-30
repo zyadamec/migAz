@@ -186,7 +186,7 @@ namespace MigAz.Forms
         {
             get
             {
-                foreach (Control control in splitContainer3.Panel1.Controls)
+                foreach (Control control in splitContainer4.Panel1.Controls)
                 {
                     if (control.GetType().GetInterfaces().Contains(typeof(IMigrationTargetUserControl)))
                     {
@@ -722,6 +722,7 @@ namespace MigAz.Forms
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                 }
+
             }
 
             MigrationTargetSelectionControlVisible = false;
