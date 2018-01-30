@@ -325,28 +325,35 @@ namespace MigAz.Forms
             {
                 IMigrationTargetUserControl control = this.MigrationTargetControl;
 
-                //MigrationAzureTargetContext
-
                 if (AssertHasTargetErrors())
                 {
                     return;
                 }
 
-                //if (this.TemplateGenerator != null)
-                //{
-                //    this.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
-                //    this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
+                if (migrationTargetControl == null)
+                    throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
+    ;
+                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+                {
+                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                //    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                //    await RefreshOutput();
+                    if (azureTargetContext.TemplateGenerator != null)
+                    {
+                        azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                //    this.TemplateGenerator.Write();
+                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                        await RefreshOutput();
 
-                //    StatusProvider.UpdateStatus("Ready");
+                        azureTargetContext.TemplateGenerator.Write();
 
-                //    var exportResults = new ExportResultsDialog(this.TemplateGenerator);
-                //    exportResults.ShowDialog(this);
-                //}
+                        StatusProvider.UpdateStatus("Ready");
+
+                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                        exportResults.ShowDialog(this);
+                    }
+                }
             }
         }
 
