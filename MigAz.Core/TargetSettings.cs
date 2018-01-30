@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Core.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ namespace MigAz.Core
         public string AvailabilitySetSuffix;
         public string NetworkSecurityGroupSuffix;
         public string VirtualNetworkSuffix;
+        public ArmDiskType DefaultTargetDiskType;
     }
 }

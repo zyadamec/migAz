@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,17 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class NetworkInterfaceIpConfiguration : IVirtualNetworkTarget, IMigrationTarget
     {
-        private AzureContext _AzureContext;
         private INetworkInterfaceIpConfiguration _SourceIpConfiguration;
         private string _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
 
         private NetworkInterfaceIpConfiguration() { }
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks)
+        public NetworkInterfaceIpConfiguration(Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _SourceIpConfiguration = ipConfiguration;
 
-            this.TargetName = ipConfiguration.Name;
+            this.SetTargetName(ipConfiguration.Name, targetSettings);
             this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
 
@@ -45,14 +45,13 @@ namespace MigAz.Azure.MigrationTarget
 
         }
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext, Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks)
+        public NetworkInterfaceIpConfiguration(Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _SourceIpConfiguration = ipConfiguration;
 
             #region Attempt to default Target Virtual Network and Target Subnet objects from source names
 
-            this.TargetName = ipConfiguration.Name;
+            this.SetTargetName(ipConfiguration.Name, targetSettings);
             this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
             this.TargetVirtualNetwork = SeekVirtualNetwork(virtualNetworks, ipConfiguration.VirtualNetworkName);
@@ -101,18 +100,28 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
-        }
-
         public PublicIp TargetPublicIp { get; set; }
         public NetworkSecurityGroup TargetNetworkSecurityGroup { get; set; }
 
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName;
+        }
+
         public override string ToString()
         {
-            return this.TargetName;
+            return this.TargetNameResult;
         }
     }
 }

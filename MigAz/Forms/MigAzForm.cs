@@ -9,6 +9,9 @@ using MigAz.Azure;
 using MigAz.Azure.Generator;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
+using MigAz.Azure.Interface;
+using MigAz.Azure.Forms;
+using MigAz.UserControls;
 
 namespace MigAz.Forms
 {
@@ -21,9 +24,6 @@ namespace MigAz.Forms
         private AppSettingsProvider _appSettingsProvider;
         private AzureTelemetryProvider _telemetryProvider = new AzureTelemetryProvider();
         private TreeNode _EventSourceNode;
-
-
-        private TargetTreeView _TreeTargetARM;
 
         #endregion
 
@@ -40,47 +40,18 @@ namespace MigAz.Forms
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             splitContainer3.SplitterDistance = splitContainer3.Width / 2;
+            splitContainer4.SplitterDistance = 45;
+
             lblLastOutputRefresh.Text = String.Empty;
 
             this.propertyPanel1.LogProvider = _logProvider;
             this.propertyPanel1.PropertyChanged += PropertyPanel1_PropertyChanged;
 
-            MigrationAzureTargetContext a;
-            if (splitContainer3.Panel2.Controls.Count == 1)
+            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
+            if (targetTreeView != null)
             {
-                a = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                _TreeTargetARM = a.TargetTreeView;
-                a.ImageList = this.imageList1;
-            }
-
-            MigrationAzureSourceContext migrationSourceControl = this.MigrationSourceControl;
-            if (migrationSourceControl != null)
-            {
-                // This will move to be based on the source context (upon instantiation)
-                migrationSourceControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
-
-                this.propertyPanel1.AzureContext = migrationSourceControl.AzureContext;
-
-                migrationSourceControl.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
-                migrationSourceControl.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
-                migrationSourceControl.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
-                migrationSourceControl.AfterAzureSubscriptionChange += MigrationSourceControl_AfterAzureSubscriptionChange;
-                migrationSourceControl.BeforeUserSignOut += MigrationSourceControl_BeforeUserSignOut;
-                migrationSourceControl.AfterUserSignOut += MigrationSourceControl_AfterUserSignOut;
-                migrationSourceControl.AfterAzureTenantChange += MigrationSourceControl_AfterAzureTenantChange;
-                migrationSourceControl.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
-                migrationSourceControl.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
-                migrationSourceControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
-                migrationSourceControl.ClearContext += MigrationSourceControl_ClearContext;
-            }
-
-
-            MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
-            if (migrationTargetControl != null)
-            {
-                migrationTargetControl.Bind(this.LogProvider, this.StatusProvider, this._telemetryProvider, this._appSettingsProvider.GetTargetSettings(), this.propertyPanel1);
-                migrationTargetControl.AfterTargetSelected += Control_AfterTargetSelected;
-                migrationTargetControl.AfterExportArtifactRefresh += MigrationTargetControl_AfterExportArtifactRefresh;
+                targetTreeView.ImageList = this.imageList1;
+                targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
         }
 
@@ -89,13 +60,7 @@ namespace MigAz.Forms
         private void MigrationSourceControl_ClearContext()
         {
             propertyPanel1.Clear();
-
-
-            if (splitContainer3.Panel2.Controls.Count == 1)
-            {
-                MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                control.Clear();
-            }
+            MigrationTargetTreeView.Clear();
 
             dgvMigAzMessages.DataSource = null;
             btnRefreshOutput.Enabled = false;
@@ -108,26 +73,42 @@ namespace MigAz.Forms
 
         private async Task MigrationSourceControl_AfterNodeChecked(IMigrationTarget sender)
         {
-            TreeNode resultUpdateARMTree = await _TreeTargetARM.AddMigrationTarget(sender);
-            await _TreeTargetARM.RefreshExportArtifacts();
+            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
+
+            TreeNode resultUpdateARMTree = await targetTreeView.AddMigrationTarget(sender);
+            await targetTreeView.RefreshExportArtifacts();
         }
 
         private async Task MigrationSourceControl_AfterNodeUnchecked(IMigrationTarget sender)
         {
-            await _TreeTargetARM.RemoveMigrationTarget(sender);
-            await _TreeTargetARM.RefreshExportArtifacts();
+            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
+
+            await targetTreeView.RemoveMigrationTarget(sender);
+            await targetTreeView.RefreshExportArtifacts();
         }
 
         private async Task MigrationSourceControl_BeforeAzureTenantChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
+
         }
 
         private async Task MigrationSourceControl_AfterAzureTenantChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
+
         }
 
         private async Task MigrationSourceControl_AfterUserSignOut()
@@ -140,60 +121,94 @@ namespace MigAz.Forms
 
         private async Task MigrationSourceControl_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_BeforeAzureSubscriptionChange(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_UserAuthenticated(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         private async Task MigrationSourceControl_AzureEnvironmentChanged(AzureContext sender)
         {
-            MigrationAzureTargetContext migrationTargetAzure = this.MigrationTargetControl;
-            migrationTargetAzure.ExistingContext = sender;
+            IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
+
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                migrationTargetAzure.ExistingContext = sender;
+            }
         }
 
         #endregion
 
-        private void MigrationTargetControl_AfterExportArtifactRefresh(TargetTreeView sender)
-        {
-            dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
-            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
-            btnRefreshOutput.Enabled = true;
-        }
-
-        private MigrationAzureSourceContext MigrationSourceControl
+        private IMigrationSourceUserControl MigrationSourceControl
         {
             get
             {
-                if (splitContainer3.Panel1.Controls.Count == 1)
+                foreach (Control control in splitContainer3.Panel1.Controls)
                 {
-                    MigrationAzureSourceContext migrationSourceControl = (MigrationAzureSourceContext)splitContainer3.Panel1.Controls[0];
-                    return migrationSourceControl;
+                    if (control.GetType().GetInterfaces().Contains(typeof(IMigrationSourceUserControl)))
+                    {
+                        IMigrationSourceUserControl migrationSourceControl = (IMigrationSourceUserControl)control;
+                        return migrationSourceControl;
+                    }
                 }
 
                 return null;
             }
         }
 
-        private MigrationAzureTargetContext MigrationTargetControl
+        private IMigrationTargetUserControl MigrationTargetControl
         {
             get
             {
-                if (splitContainer3.Panel2.Controls.Count == 1)
+                foreach (Control control in splitContainer4.Panel1.Controls)
                 {
-                    MigrationAzureTargetContext migrationTargetControl = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                    return migrationTargetControl;
+                    if (control.GetType().GetInterfaces().Contains(typeof(IMigrationTargetUserControl)))
+                    {
+                        IMigrationTargetUserControl migrationSourceControl = (IMigrationTargetUserControl)control;
+                        return migrationSourceControl;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        private TargetTreeView MigrationTargetTreeView
+        {
+            get
+            {
+                foreach (Control control in splitContainer4.Panel2.Controls)
+                {
+                    if (control.GetType() == typeof(TargetTreeView))
+                    {
+                        return (TargetTreeView)control;
+                    }
                 }
 
                 return null;
@@ -204,31 +219,8 @@ namespace MigAz.Forms
         {
             //if (_SourceAsmNode == null && treeTargetARM.EventSourceNode == null) // we are not going to update on every property bind during TreeView updates
             //{
-            if (splitContainer3.Panel2.Controls.Count == 1)
-            {
-                MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                await control.TargetTreeView.RefreshExportArtifacts();
-
-            }
+            await this.MigrationTargetTreeView.RefreshExportArtifacts();
             //}
-        }
-
-        private async Task Control_AfterTargetSelected(TreeNode sender)
-        {
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
-
-            _EventSourceNode = sender;
-            propertyPanel1.AzureContext = this.MigrationTargetControl.AzureContext;
-            await this.propertyPanel1.Bind(sender);
-            _EventSourceNode = null;
-
-            if (this.LogProvider != null)
-                LogProvider.WriteLog("Control_AfterTargetSelected", "End");
-
-            if (this.StatusProvider != null)
-                StatusProvider.UpdateStatus("Ready");
-
         }
 
         private void _logProvider_OnMessage(string message)
@@ -248,18 +240,18 @@ namespace MigAz.Forms
 
         #region Properties
 
-        public TemplateGenerator TemplateGenerator
-        {
-            get
-            {
-                MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
+        //public TemplateGenerator TemplateGenerator
+        //{
+        //    get
+        //    {
+        //        MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
 
-                if (migrationTargetControl == null)
-                    return null;
+        //        if (migrationTargetControl == null)
+        //            return null;
 
-                return migrationTargetControl.TemplateGenerator;
-            }
-        }
+        //        return migrationTargetControl.TemplateGenerator;
+        //    }
+        //}
 
         public ILogProvider LogProvider
         {
@@ -293,14 +285,6 @@ namespace MigAz.Forms
             System.Diagnostics.Process.Start("http://aka.ms/MigAz");
         }
 
-        private void splitContainer2_Panel2_Resize(object sender, EventArgs e)
-        {
-            this.tabMigAzMonitoring.Width = splitContainer2.Panel2.Width - 5;
-            this.tabMigAzMonitoring.Height = splitContainer2.Panel2.Height - 5;
-            this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
-            this.tabOutputResults.Height = splitContainer2.Panel2.Height - 55;
-        }
-
 
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -316,22 +300,6 @@ namespace MigAz.Forms
             txtLog.Height = tabMigAzMonitoring.Height - 30;
             txtRest.Width = tabMigAzMonitoring.Width - 10;
             txtRest.Height = tabMigAzMonitoring.Height - 30;
-        }
-
-        private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(Azure.AzureContext sender)
-        {
-            dgvMigAzMessages.DataSource = null;
-            tabOutputResults.TabPages.Clear();
-            btnRefreshOutput.Enabled = false;
-            lblLastOutputRefresh.Text = String.Empty;
-        }
-
-        private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
-        {
-            propertyPanel1.Width = splitContainer1.Panel2.Width - 10;
-            propertyPanel1.Height = splitContainer1.Panel2.Height - 100;
-            panel1.Top = splitContainer1.Panel2.Height - panel1.Height - 15;
-            panel1.Width = splitContainer1.Panel2.Width;
         }
 
         private void panel1_Resize(object sender, EventArgs e)
@@ -355,39 +323,48 @@ namespace MigAz.Forms
         {
             if (splitContainer3.Panel2.Controls.Count == 1)
             {
-                MigrationAzureTargetContext control = (MigrationAzureTargetContext)splitContainer3.Panel2.Controls[0];
-                
-                if (control.TargetTreeView.HasErrors)
+                IMigrationTargetUserControl control = this.MigrationTargetControl;
+
+                if (AssertHasTargetErrors())
                 {
-                    tabMigAzMonitoring.SelectTab("tabMessages");
-                    MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
                     return;
                 }
 
-                if (this.TemplateGenerator != null)
+                IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
+                if (migrationTargetControl == null)
+                    throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
+    ;
+                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
                 {
-                    this.TemplateGenerator.ExportArtifacts = control.TargetTreeView.ExportArtifacts;
-                    this.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                    await RefreshOutput();
+                    if (azureTargetContext.TemplateGenerator != null)
+                    {
+                        azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                    this.TemplateGenerator.Write();
+                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                        await RefreshOutput();
 
-                    StatusProvider.UpdateStatus("Ready");
+                        azureTargetContext.TemplateGenerator.Write();
 
-                    var exportResults = new ExportResultsDialog(this.TemplateGenerator);
-                    exportResults.ShowDialog(this);
+                        StatusProvider.UpdateStatus("Ready");
+
+                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                        exportResults.ShowDialog(this);
+                    }
                 }
             }
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (_TreeTargetARM != null && e.RowIndex > -1)
+            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
+
+            if (targetTreeView != null && e.RowIndex > -1)
             {
                 object alert = dgvMigAzMessages.Rows[e.RowIndex].Cells["SourceObject"].Value;
-                _TreeTargetARM.SeekAlertSource(alert);
+                targetTreeView.SeekAlertSource(alert);
             }
         }
 
@@ -423,35 +400,41 @@ namespace MigAz.Forms
 
         private async Task RefreshOutput()
         {
-            MigrationAzureSourceContext migrationSourceControl = this.MigrationSourceControl;
-            MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
-
-            if (migrationSourceControl != null && migrationTargetControl != null)
+            if (AssertHasTargetErrors())
             {
-                if (migrationTargetControl.TargetTreeView.HasErrors)
-                {
-                    tabMigAzMonitoring.SelectTab("tabMessages");
-                    MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
-                    return;
-                }
+                return;
+            }
 
-                if (this.TemplateGenerator != null)
-                {
-                    this.TemplateGenerator.SourceSubscription = migrationSourceControl.AzureContext.AzureSubscription;
-                    this.TemplateGenerator.TargetSubscription = migrationTargetControl.AzureContext.AzureSubscription;
-                    this.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
-                    this.TemplateGenerator.ExportArtifacts = migrationTargetControl.TargetTreeView.ExportArtifacts;
+            IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
+            if (migrationSourceControl == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL MigrationSourceControl Context")
+;
+            IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
+            if (migrationTargetControl == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
+;
+            if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                    await this.TemplateGenerator.GenerateStreams();
-                    await this.TemplateGenerator.SerializeStreams();
+                if (azureTargetContext.TemplateGenerator != null)
+                {
+                    // todo now russell, this needs to be improved to handle error of wrong type
+                    azureTargetContext.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext)migrationSourceControl).AzureContext.AzureSubscription;
+                    azureTargetContext.TemplateGenerator.TargetSubscription = azureTargetContext.AzureContext.AzureSubscription;
+                    azureTargetContext.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
+                    azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+
+                    await azureTargetContext.TemplateGenerator.GenerateStreams();
+                    await azureTargetContext.TemplateGenerator.SerializeStreams();
 
                     foreach (TabPage tabPage in tabOutputResults.TabPages)
                     {
-                        if (!this.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
+                        if (!azureTargetContext.TemplateGenerator.TemplateStreams.ContainsKey(tabPage.Name))
                             tabOutputResults.TabPages.Remove(tabPage);
                     }
 
-                    foreach (var templateStream in this.TemplateGenerator.TemplateStreams)
+                    foreach (var templateStream in azureTargetContext.TemplateGenerator.TemplateStreams)
                     {
                         TabPage tabPage = null;
                         if (!tabOutputResults.TabPages.ContainsKey(templateStream.Key))
@@ -509,12 +492,12 @@ namespace MigAz.Forms
                         }
                     }
 
-                    if (tabOutputResults.TabPages.Count != this.TemplateGenerator.TemplateStreams.Count)
-                        throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + this.TemplateGenerator.TemplateStreams.Count);
+                    if (tabOutputResults.TabPages.Count != azureTargetContext.TemplateGenerator.TemplateStreams.Count)
+                        throw new ArgumentException("Count mismatch between tabOutputResults TabPages and Migrator TemplateStreams.  Counts should match after addition/removal above.  tabOutputResults. TabPages Count: " + tabOutputResults.TabPages.Count + "  Migration TemplateStream Count: " + azureTargetContext.TemplateGenerator.TemplateStreams.Count);
 
                     // Ensure Tabs are in same order as output streams
                     int streamIndex = 0;
-                    foreach (string templateStreamKey in this.TemplateGenerator.TemplateStreams.Keys)
+                    foreach (string templateStreamKey in azureTargetContext.TemplateGenerator.TemplateStreams.Keys)
                     {
                         int rotationCounter = 0;
 
@@ -528,7 +511,7 @@ namespace MigAz.Forms
 
                             rotationCounter++;
 
-                            if (rotationCounter > this.TemplateGenerator.TemplateStreams.Count)
+                            if (rotationCounter > azureTargetContext.TemplateGenerator.TemplateStreams.Count)
                                 throw new ArgumentException("Rotated through all tabs, unabled to locate tab '" + templateStreamKey + "' while ensuring tab order/sequencing.");
                         }
 
@@ -543,12 +526,23 @@ namespace MigAz.Forms
                     if (AppSettingsProvider.AllowTelemetry)
                     {
                         StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                        _telemetryProvider.PostTelemetryRecord((AzureGenerator)this.TemplateGenerator);
+                        _telemetryProvider.PostTelemetryRecord((AzureGenerator)azureTargetContext.TemplateGenerator);
                     }
                 }
             }
 
             StatusProvider.UpdateStatus("Ready");
+        }
+
+
+        #region Split Container Resize Events
+
+        private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
+        {
+            propertyPanel1.Width = splitContainer1.Panel2.Width - 10;
+            propertyPanel1.Height = splitContainer1.Panel2.Height - 100;
+            panel1.Top = splitContainer1.Panel2.Height - panel1.Height - 15;
+            panel1.Width = splitContainer1.Panel2.Width;
         }
 
         private void splitContainer2_Panel1_Resize(object sender, EventArgs e)
@@ -562,16 +556,24 @@ namespace MigAz.Forms
             }
         }
 
+        private void splitContainer2_Panel2_Resize(object sender, EventArgs e)
+        {
+            this.tabMigAzMonitoring.Width = splitContainer2.Panel2.Width - 5;
+            this.tabMigAzMonitoring.Height = splitContainer2.Panel2.Height - 5;
+            this.tabOutputResults.Width = splitContainer2.Panel2.Width - 5;
+            this.tabOutputResults.Height = splitContainer2.Panel2.Height - 55;
+        }
+
         private void splitContainer3_Panel1_Resize(object sender, EventArgs e)
         {
-            if (splitContainer3.Panel1.Controls.Count == 1)
+            foreach (Control control in splitContainer3.Panel1.Controls)
             {
                 if (splitContainer3.Panel1.Height < 300)
-                    splitContainer3.Panel1.Controls[0].Height = 300;
+                    control.Height = 300;
                 else
-                    splitContainer3.Panel1.Controls[0].Height = splitContainer3.Panel1.Height - 20;
+                    control.Height = splitContainer3.Panel1.Height - 10;
 
-                splitContainer3.Panel1.Controls[0].Width = splitContainer3.Panel1.Width - 20;
+                control.Width = splitContainer3.Panel1.Width - 10;
             }
         }
 
@@ -585,6 +587,206 @@ namespace MigAz.Forms
                     splitContainer3.Panel2.Controls[0].Height = splitContainer3.Panel2.Height - 20;
 
                 splitContainer3.Panel2.Controls[0].Width = splitContainer3.Panel2.Width - 20;
+            }
+        }
+
+        private void splitContainer4_Panel2_Resize(object sender, EventArgs e)
+        {
+            foreach (Control control in splitContainer4.Panel2.Controls)
+            {
+                control.Width = splitContainer4.Panel2.Width;
+                control.Height = splitContainer4.Panel2.Height;
+            }
+        }
+
+        private void splitContainer4_Panel1_Resize(object sender, EventArgs e)
+        {
+            foreach (Control control in splitContainer4.Panel1.Controls)
+            {
+                control.Width = splitContainer4.Panel1.Width;
+                control.Height = splitContainer4.Panel1.Height;
+            }
+        }
+
+        #endregion
+
+        #region Source and Target Context Selection Events + Methods
+
+        private bool MigrationSourceSelectionControlVisible
+        {
+            get
+            {
+                foreach (Control control in splitContainer3.Panel1.Controls)
+                {
+                    if (control.GetType() == typeof(UserControls.MigAzMigrationSourceSelection))
+                    {
+                        return control.Visible;
+                    }
+                }
+
+                return false;
+            }
+            set
+            {
+                foreach (Control control in splitContainer3.Panel1.Controls)
+                {
+                    if (control.GetType() == typeof(UserControls.MigAzMigrationSourceSelection))
+                    {
+                        control.Visible = value;
+                        control.Enabled = value;
+                    }
+                }
+            }
+        }
+
+        private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
+        {
+            if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
+            {
+                MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
+
+                //// This will move to be based on the source context (upon instantiation)
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
+
+                azureControl.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
+                azureControl.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
+                azureControl.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
+                azureControl.AfterAzureSubscriptionChange += MigrationSourceControl_AfterAzureSubscriptionChange;
+                azureControl.BeforeUserSignOut += MigrationSourceControl_BeforeUserSignOut;
+                azureControl.AfterUserSignOut += MigrationSourceControl_AfterUserSignOut;
+                azureControl.AfterAzureTenantChange += MigrationSourceControl_AfterAzureTenantChange;
+                azureControl.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
+                azureControl.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
+                azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
+                azureControl.ClearContext += MigrationSourceControl_ClearContext;
+                azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
+            }
+
+            MigrationSourceSelectionControlVisible = false;
+            splitContainer3.Panel1.Controls.Add(migrationSourceUserControl);
+            migrationSourceUserControl.Top = 5;
+            migrationSourceUserControl.Left = 5;
+            splitContainer3_Panel1_Resize(this, null);
+
+            migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
+        }
+
+        private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
+        {
+            this.MigrationTargetSelectionControl.MigrationSource = sender;
+        }
+
+        private MigAzMigrationTargetSelection MigrationTargetSelectionControl
+        {
+            get
+            {
+                foreach (Control control in splitContainer4.Panel1.Controls)
+                {
+                    if (control.GetType() == typeof(MigAzMigrationTargetSelection))
+                    {
+                        return (MigAzMigrationTargetSelection)control;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        private bool MigrationTargetSelectionControlVisible
+        {
+            get
+            {
+                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
+
+                if (targetSelectionControl != null)
+                    return targetSelectionControl.Visible;
+
+                return false;
+            }
+            set
+            {
+                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
+                if (targetSelectionControl != null)
+                {
+                    targetSelectionControl.Visible = value;
+                    targetSelectionControl.Enabled = value;
+                }
+            }
+        }
+
+        private void migAzMigrationTargetSelection1_AfterMigrationTargetSelected(UserControl migrationTargetUserControl)
+        {
+            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            {
+                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
+                azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
+                azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
+
+                IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
+                if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))
+                {
+                    MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
+                    azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
+                    azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
+                }
+
+            }
+
+            MigrationTargetSelectionControlVisible = false;
+            splitContainer4.Panel1.Controls.Add(migrationTargetUserControl);
+            splitContainer4_Panel1_Resize(this, null);
+        }
+
+        private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            await MigrationTargetTreeView.RefreshExportArtifacts();
+        }
+
+        #endregion
+
+        public bool AssertHasTargetErrors()
+        {
+            if (MigrationTargetTreeView.HasErrors)
+            {
+                tabMigAzMonitoring.SelectTab("tabMessages");
+                MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
+            }
+
+            return MigrationTargetTreeView.HasErrors;
+        }
+
+        private async Task targetTreeView1_AfterExportArtifactRefresh(TargetTreeView sender)
+        {
+            dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvMigAzMessages.Columns["SourceObject"].Visible = false;
+            btnRefreshOutput.Enabled = true;
+        }
+
+        private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
+        {
+            try
+            {
+                if (this.LogProvider != null)
+                    LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
+
+                _EventSourceNode = selectedNode;
+                await this.propertyPanel1.Bind(
+                    MigrationTargetControl == null ? null : ((MigrationAzureTargetContext)MigrationTargetControl).AzureContext, 
+                    targetTreeView, 
+                    selectedNode);
+                _EventSourceNode = null;
+
+                if (this.LogProvider != null)
+                    LogProvider.WriteLog("Control_AfterTargetSelected", "End");
+
+                if (this.StatusProvider != null)
+                    StatusProvider.UpdateStatus("Ready");
+            }
+            catch (Exception exc)
+            {
+                UnhandledExceptionDialog unhandledExceptionDialog = new UnhandledExceptionDialog(this.LogProvider, exc);
+                unhandledExceptionDialog.ShowDialog();
             }
         }
     }

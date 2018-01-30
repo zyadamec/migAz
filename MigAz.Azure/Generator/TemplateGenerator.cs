@@ -29,8 +29,6 @@ namespace MigAz.Azure.Generator
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
         private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
-        private ITelemetryProvider _telemetryProvider;
-        //private ISettingsProvider _settingsProvider;
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
@@ -40,13 +38,12 @@ namespace MigAz.Azure.Generator
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription, ITelemetryProvider telemetryProvider)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription)
         {
             _logProvider = logProvider;
             _statusProvider = statusProvider;
             _SourceSubscription = sourceSubscription;
             _TargetSubscription = targetSubscription;
-            _telemetryProvider = telemetryProvider;
         }
 
         public ILogProvider LogProvider
@@ -236,7 +233,7 @@ namespace MigAz.Azure.Generator
                 foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _ExportArtifacts.VirtualMachines)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Virtual Machine : " + virtualMachine.ToString());
-                    await BuildVirtualMachineObject(virtualMachine);
+                    await BuildVirtualMachineObject(virtualMachine, _ExportArtifacts.ResourceGroup);
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
             }
@@ -895,11 +892,11 @@ namespace MigAz.Azure.Generator
                         ipconfiguration_properties.loadBalancerBackendAddressPools = loadBalancerBackendAddressPools;
 
                         Reference loadBalancerBackendAddressPool = new Reference();
-                        loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
+                        loadBalancerBackendAddressPool.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.TargetName + "/backendAddressPools/" + targetNetworkInterface.BackEndAddressPool.Name + "')]";
 
                         loadBalancerBackendAddressPools.Add(loadBalancerBackendAddressPool);
 
-                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.Name + "')]");
+                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + targetNetworkInterface.BackEndAddressPool.LoadBalancer.TargetName + "')]");
                     }
                 }
 
@@ -910,7 +907,7 @@ namespace MigAz.Azure.Generator
                     if (_ExportArtifacts.ContainsLoadBalancer(inboundNatRule.LoadBalancer))
                     {
                         Reference loadBalancerInboundNatRule = new Reference();
-                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.Name + "/inboundNatRules/" + inboundNatRule.Name + "')]";
+                        loadBalancerInboundNatRule.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + inboundNatRule.LoadBalancer.TargetName + "/inboundNatRules/" + inboundNatRule.Name + "')]";
 
                         loadBalancerInboundNatRules.Add(loadBalancerInboundNatRule);
                     }
@@ -958,7 +955,7 @@ namespace MigAz.Azure.Generator
             return networkInterface;
         }
 
-        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine targetVirtualMachine)
+        private async Task BuildVirtualMachineObject(Azure.MigrationTarget.VirtualMachine targetVirtualMachine, Azure.MigrationTarget.ResourceGroup targetResourceGroup)
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
 
@@ -1065,11 +1062,14 @@ namespace MigAz.Azure.Generator
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
 
-                    //if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null)
-                    //{
-                    //    if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
-                    //        storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
-                    //}
+                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                    {
+                        // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
+                        await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup);
+
+                        if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
+                            storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
+                    }
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
@@ -1112,11 +1112,15 @@ namespace MigAz.Azure.Generator
                         vhd.uri = dataDisk.TargetMediaLink;
                         datadisk.vhd = vhd;
 
-                        //if (dataDisk.TargetStorage != null)
-                        //{
-                        //    if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
-                        //        storageaccountdependencies.Add(dataDisk.TargetStorage);
-                        //}
+
+                        if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                        {
+                            // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
+                            await BuildCopyBlob(dataDisk, targetResourceGroup);
+
+                            if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
+                                storageaccountdependencies.Add(dataDisk.TargetStorage);
+                        }
                     }
                     else if (dataDisk.IsManagedDisk)
                     {

@@ -179,5 +179,11 @@ namespace MigAz.Azure.Forms
                     cboSubscription.SelectedIndex = 0;
             }
         }
+
+        private void cboSubscription_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AzureSubscription selectedSubscription = (AzureSubscription)cboSubscription.SelectedItem;
+            _AzureLoginContextViewer.AzureContext.SetSubscriptionContext(selectedSubscription);
+        }
     }
 }

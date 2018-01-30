@@ -20,7 +20,6 @@ namespace MigAz.Azure
         private ITokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
-        private TargetSettings _TargetSettings;
 
         public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
         public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
@@ -50,11 +49,10 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, TargetSettings targetSetings)
+        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
-            _TargetSettings = targetSetings;
             _AzureServiceUrls = new AzureServiceUrls(this);
             _TokenProvider = new AzureTokenProvider(this);
             _AzureRetriever = new AzureRetriever(this);
@@ -121,11 +119,6 @@ namespace MigAz.Azure
             get { return _StatusProvider; }
         }
 
-        public TargetSettings TargetSettings
-        {
-            get { return _TargetSettings; }
-        }
-
         public async Task CopyContext(AzureContext sourceContext)
         {
             this.IncludePreviewRegions = sourceContext.IncludePreviewRegions;
@@ -168,26 +161,29 @@ namespace MigAz.Azure
 
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
-            if (BeforeAzureSubscriptionChange != null)
-                await BeforeAzureSubscriptionChange?.Invoke(this);
-
-            if (azureSubscription != null)
-                if (azureSubscription.Parent != null)
-                    if (azureSubscription.Parent != this._AzureTenant)
-                        await SetTenantContext(azureSubscription.Parent);
-
-            _AzureSubscription = azureSubscription;
-
-            if (_AzureSubscription != null)
+            if (azureSubscription != _AzureSubscription)
             {
-                if (_TokenProvider != null)
-                    await _TokenProvider.GetToken(_AzureSubscription);
+                if (BeforeAzureSubscriptionChange != null)
+                    await BeforeAzureSubscriptionChange?.Invoke(this);
 
-                await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
+                if (azureSubscription != null)
+                    if (azureSubscription.Parent != null)
+                        if (azureSubscription.Parent != this._AzureTenant)
+                            await SetTenantContext(azureSubscription.Parent);
+
+                _AzureSubscription = azureSubscription;
+
+                if (_AzureSubscription != null)
+                {
+                    if (_TokenProvider != null)
+                        await _TokenProvider.GetToken(_AzureSubscription);
+
+                    await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
+                }
+
+                if (AfterAzureSubscriptionChange != null)
+                    await AfterAzureSubscriptionChange?.Invoke(this);
             }
-
-            if (AfterAzureSubscriptionChange != null)
-                await AfterAzureSubscriptionChange?.Invoke(this);
         }
 
         public async Task Logout()

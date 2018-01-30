@@ -7,16 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
 using MigAz.Azure;
 using MigAz.Core.Interface;
+using MigAz.Core;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class StorageAccountProperties : UserControl
     {
-        private MigrationTarget.StorageAccount _StorageAccount;
+        private StorageAccount _StorageAccount;
         private AzureContext _AzureContext;
+        private TargetTreeView _TargetTreeView;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,10 +28,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public void Bind(AzureContext azureContext, MigrationTarget.StorageAccount storageAccount)
+        public void Bind(AzureContext azureContext, StorageAccount storageAccount, TargetTreeView targetTreeView)
         {
             _AzureContext = azureContext;
-            txtTargetName.MaxLength = 24 - azureContext.TargetSettings.StorageAccountSuffix.Length;
+            _TargetTreeView = targetTreeView;
+            txtTargetName.MaxLength = StorageAccount.MaximumTargetNameLength(targetTreeView.TargetSettings);
 
             _StorageAccount = storageAccount;
             lblAccountType.Text = storageAccount.SourceAccount.AccountType;
@@ -49,8 +52,7 @@ namespace MigAz.Azure.UserControls
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
-
-            _StorageAccount.TargetName = txtSender.Text;
+            _StorageAccount.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

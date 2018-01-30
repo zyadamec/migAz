@@ -57,7 +57,7 @@ namespace MigAz.Azure.UserControls
 
             Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
 
-            targetAvailabilitySet.TargetName = txtSender.Text;
+            targetAvailabilitySet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
             _armAvailabilitySetNode.Text = targetAvailabilitySet.ToString();
 
             PropertyChanged();

@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +10,17 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class VirtualNetworkGateway : IMigrationTarget, IMigrationVirtualNetworkGateway
     {
-        private AzureContext _AzureContext;
         private string _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private IVirtualNetworkGateway _SourceVirtualNetworkGateway;
         private List<Subnet> _TargetSubnets = new List<Subnet>();
 
         private VirtualNetworkGateway() { }
 
-        public VirtualNetworkGateway(AzureContext azureContext, IVirtualNetworkGateway virtualNetworkGateway)
+        public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings)
         {
-            this._AzureContext = azureContext;
             this._SourceVirtualNetworkGateway = virtualNetworkGateway;
+            this.SetTargetName(this.SourceName, targetSettings);
         }
 
         public IVirtualNetworkGateway SourceVirtualNetworkGateway { get; }
@@ -38,14 +39,22 @@ namespace MigAz.Azure.MigrationTarget
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName;
         }
 
         public override string ToString()
         {
-            return this.TargetName + _AzureContext.TargetSettings.VirtualNetworkSuffix;
+            return this.TargetNameResult;
         }
-
-
     }
 }

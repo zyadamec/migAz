@@ -34,8 +34,8 @@ namespace MigAz.Tests
         {
             ILogProvider logProvider = new FakeLogProvider();
             IStatusProvider statusProvider = new FakeStatusProvider();
-            TargetSettings settingsProvider = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContext = new AzureContext(logProvider, statusProvider, settingsProvider);
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
+            AzureContext azureContext = new AzureContext(logProvider, statusProvider);
             azureContext.AzureEnvironment = azureEnvironment;
             azureContext.TokenProvider = new FakeTokenProvider();
             azureContext.AzureRetriever = new TestRetriever(azureContext);
@@ -51,7 +51,7 @@ namespace MigAz.Tests
         public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
         {
             ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
-            return new AzureGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), azureContext.LogProvider, azureContext.StatusProvider, telemetryProvider);
+            return new AzureGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), azureContext.LogProvider, azureContext.StatusProvider);
         }
 
         public static JObject GetJsonData(MemoryStream closedStream)
@@ -65,7 +65,8 @@ namespace MigAz.Tests
         internal static async Task<Azure.MigrationTarget.ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
             List<Azure.Arm.Location> azureLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
-            Azure.MigrationTarget.ResourceGroup targetResourceGroup = new Azure.MigrationTarget.ResourceGroup();
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
+            Azure.MigrationTarget.ResourceGroup targetResourceGroup = new Azure.MigrationTarget.ResourceGroup(targetSettings);
             targetResourceGroup.TargetLocation = azureLocations[0];
             return targetResourceGroup;
         }

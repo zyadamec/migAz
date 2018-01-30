@@ -154,7 +154,7 @@ namespace MigAz.Azure
 
             foreach (MigrationTarget.LoadBalancer targetLoadBalancer in this.LoadBalancers)
             {
-                if (targetLoadBalancer.Name == string.Empty)
+                if (targetLoadBalancer.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Load Balancer must be specified.", targetLoadBalancer);
 
                 if (targetLoadBalancer.FrontEndIpConfigurations.Count == 0)
@@ -192,7 +192,7 @@ namespace MigAz.Azure
                             bool publicIpExistsInMigration = false;
                             foreach (Azure.MigrationTarget.PublicIp publicIp in this.PublicIPs)
                             {
-                                if (publicIp.Name == targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.Name)
+                                if (publicIp.TargetName == targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.TargetName)
                                 {
                                     publicIpExistsInMigration = true;
                                     break;
@@ -200,7 +200,7 @@ namespace MigAz.Azure
                             }
 
                             if (!publicIpExistsInMigration)
-                                this.AddAlert(AlertType.Error, "Public IP '" + targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.Name + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                                this.AddAlert(AlertType.Error, "Public IP '" + targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.TargetName + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
                         }
                     }
                 }

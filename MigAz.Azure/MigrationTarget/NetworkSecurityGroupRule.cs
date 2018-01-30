@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 
 namespace MigAz.Azure.MigrationTarget
@@ -7,12 +8,12 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private string _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private bool _IsSystemRule = false;
 
-        public NetworkSecurityGroupRule(AzureContext azureContext, Asm.NetworkSecurityGroupRule asmRule)
+        public NetworkSecurityGroupRule(Asm.NetworkSecurityGroupRule asmRule, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
-            this.TargetName = asmRule.Name;
+            this.SetTargetName(asmRule.Name, targetSettings);
             this.Access = asmRule.Action;
             this.DestinationAddressPrefix = asmRule.DestinationAddressPrefix;
             this.DestinationPortRange = asmRule.DestinationPortRange;
@@ -24,10 +25,9 @@ namespace MigAz.Azure.MigrationTarget
             this.SourcePortRange = asmRule.SourcePortRange;
         }
 
-        public NetworkSecurityGroupRule(AzureContext azureContext, Arm.NetworkSecurityGroupRule armRule)
+        public NetworkSecurityGroupRule(Arm.NetworkSecurityGroupRule armRule, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
-            this.TargetName = armRule.Name;
+            this.SetTargetName(armRule.Name, targetSettings);
             this.Access = armRule.Access;
             this.DestinationAddressPrefix = armRule.DestinationAddressPrefix;
             this.DestinationPortRange = armRule.DestinationPortRange;
@@ -95,12 +95,22 @@ namespace MigAz.Azure.MigrationTarget
         public string TargetName
         {
             get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName;
         }
 
         public override string ToString()
         {
-            return this.TargetName;
+            return this.TargetNameResult;
         }
     }
 }

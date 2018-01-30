@@ -16,14 +16,16 @@ using MigAz.Core;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class MigrationAzureSourceContext : UserControl
+    public partial class MigrationAzureSourceContext : UserControl, IMigrationSourceUserControl
     {
         private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private TreeNode _SourceAsmNode;
+        private TargetSettings _TargetSettings;
         private ImageList _ImageList;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
         private bool _AutoSelectDependencies = true;
+        private bool _IsAuthenticated = false;
 
         #region Matching Events from AzureContext
 
@@ -64,7 +66,12 @@ namespace MigAz.Azure.UserControls
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
+        public delegate void AfterContextChangedHandler(MigrationAzureSourceContext sender);
+        public event AfterContextChangedHandler AfterContextChanged;
+
         #endregion
+
+        #region Constructor(s)
 
         public MigrationAzureSourceContext()
         {
@@ -77,9 +84,13 @@ namespace MigAz.Azure.UserControls
             treeAzureARM.Width = this.Width;
         }
 
+        #endregion
+
         public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList)
         {
-            _AzureContextSource = new AzureContext(logProvider, statusProvider, targetSettings);
+            _TargetSettings = targetSettings;
+
+            _AzureContextSource = new AzureContext(logProvider, statusProvider);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -88,11 +99,24 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.AfterUserSignOut += _AzureContext_AfterUserSignOut;
             _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
+            azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
             await azureLoginContextViewerSource.Bind(_AzureContextSource);
 
             _ImageList = imageList;
             treeAzureARM.ImageList = _ImageList;
+        }
+
+
+        public bool IsSourceContextAuthenticated
+        {
+            get { return _IsAuthenticated; }
+            set { _IsAuthenticated = value; }
+        }
+
+        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            AfterContextChanged?.Invoke(this);
         }
 
         public AzureContext AzureContext
@@ -173,11 +197,7 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_UserAuthenticated(AzureContext sender)
         {
-            //if (_AzureContextTargetARM.TokenProvider.AuthenticationResult == null)
-            //{
-            //    await _AzureContextTargetARM.CopyContext(_AzureContextSource);
-            //}
-
+            this.IsSourceContextAuthenticated = true;
             UserAuthenticated?.Invoke(sender);
         }
 
@@ -191,6 +211,7 @@ namespace MigAz.Azure.UserControls
         private async Task _AzureContext_AfterUserSignOut()
         {
             ResetForm();
+            this.IsSourceContextAuthenticated = false;
 
             //if (_AzureContextTargetARM != null)
             //    await _AzureContextTargetARM.SetSubscriptionContext(null);
@@ -225,10 +246,10 @@ namespace MigAz.Azure.UserControls
                         switch (cmbAzureResourceTypeSource.SelectedItem.ToString())
                         {
                             case "Azure Service Management (ASM / Classic)":
-                                await BindAsmResources();
+                                await BindAsmResources(_TargetSettings);
                                 break;
                             case "Azure Resource Manager (ARM)":
-                                await BindArmResources();
+                                await BindArmResources(_TargetSettings);
                                 break;
                             default:
                                 throw new ArgumentException("Unexpected Source Resource Tab: " + cmbAzureResourceTypeSource.SelectedValue);
@@ -252,7 +273,7 @@ namespace MigAz.Azure.UserControls
         }
 
 
-        private async Task BindAsmResources()
+        private async Task BindAsmResources(TargetSettings targetSettings)
         {
             treeAzureASM.Nodes.Clear();
 
@@ -261,7 +282,7 @@ namespace MigAz.Azure.UserControls
                 if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                 {
 
-                    await _AzureContextSource.AzureSubscription.BindAsmResources();
+                    await _AzureContextSource.AzureSubscription.BindAsmResources(targetSettings);
 
                     if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                     {
@@ -381,7 +402,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.StatusProvider.UpdateStatus("Ready");
         }
 
-        private async Task BindArmResources()
+        private async Task BindArmResources(TargetSettings targetSettings)
         {
             treeAzureARM.Nodes.Clear();
 
@@ -389,7 +410,7 @@ namespace MigAz.Azure.UserControls
             {
                 if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                 {
-                    await _AzureContextSource.AzureSubscription.BindArmResources();
+                    await _AzureContextSource.AzureSubscription.BindArmResources(targetSettings);
 
                     if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                     {
@@ -399,7 +420,7 @@ namespace MigAz.Azure.UserControls
                         treeAzureARM.Nodes.Add(subscriptionNodeARM);
                         subscriptionNodeARM.Expand();
 
-                        foreach (Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _AzureContextSource.AzureSubscription.ArmTargetNetworkSecurityGroups)
+                        foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _AzureContextSource.AzureSubscription.ArmTargetNetworkSecurityGroups)
                         {
                             TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup).ResourceGroup);
 
@@ -411,7 +432,7 @@ namespace MigAz.Azure.UserControls
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
-                        foreach (Azure.MigrationTarget.PublicIp targetPublicIP in _AzureContextSource.AzureSubscription.ArmTargetPublicIPs)
+                        foreach (MigrationTarget.PublicIp targetPublicIP in _AzureContextSource.AzureSubscription.ArmTargetPublicIPs)
                         {
                             TreeNode publicIpParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.PublicIP)targetPublicIP.Source).ResourceGroup); ;
 
@@ -423,7 +444,7 @@ namespace MigAz.Azure.UserControls
                             publicIpParentNode.Nodes.Add(tnPublicIP);
                         }
 
-                        foreach (Azure.MigrationTarget.RouteTable targetRouteTable in _AzureContextSource.AzureSubscription.ArmTargetRouteTables)
+                        foreach (MigrationTarget.RouteTable targetRouteTable in _AzureContextSource.AzureSubscription.ArmTargetRouteTables)
                         {
                             TreeNode routeTableParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.RouteTable)targetRouteTable.Source).ResourceGroup);
 
@@ -435,7 +456,7 @@ namespace MigAz.Azure.UserControls
                             routeTableParentNode.Nodes.Add(tnRouteTable);
                         }
 
-                        foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in _AzureContextSource.AzureSubscription.ArmTargetVirtualNetworks)
+                        foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in _AzureContextSource.AzureSubscription.ArmTargetVirtualNetworks)
                         {
                             TreeNode virtualNetworkParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork).ResourceGroup);
 
@@ -447,7 +468,7 @@ namespace MigAz.Azure.UserControls
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                         }
 
-                        foreach (Azure.MigrationTarget.StorageAccount targetStorageAccount in _AzureContextSource.AzureSubscription.ArmTargetStorageAccounts)
+                        foreach (MigrationTarget.StorageAccount targetStorageAccount in _AzureContextSource.AzureSubscription.ArmTargetStorageAccounts)
                         {
                             TreeNode storageAccountParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.StorageAccount)targetStorageAccount.SourceAccount).ResourceGroup);
 
@@ -459,7 +480,7 @@ namespace MigAz.Azure.UserControls
                             storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         }
 
-                        foreach (Azure.MigrationTarget.Disk targetManagedDisk in _AzureContextSource.AzureSubscription.ArmTargetManagedDisks)
+                        foreach (MigrationTarget.Disk targetManagedDisk in _AzureContextSource.AzureSubscription.ArmTargetManagedDisks)
                         {
                             Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
                             TreeNode managedDiskParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, armManagedDisk.ResourceGroup);
@@ -472,7 +493,7 @@ namespace MigAz.Azure.UserControls
                             managedDiskParentNode.Nodes.Add(tnDisk);
                         }
 
-                        foreach (Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet in _AzureContextSource.AzureSubscription.ArmTargetAvailabilitySets)
+                        foreach (MigrationTarget.AvailabilitySet targetAvailabilitySet in _AzureContextSource.AzureSubscription.ArmTargetAvailabilitySets)
                         {
                             TreeNode availabilitySetParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet).ResourceGroup);
 
@@ -484,7 +505,7 @@ namespace MigAz.Azure.UserControls
                             availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
                         }
 
-                        foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in _AzureContextSource.AzureSubscription.ArmTargetNetworkInterfaces)
+                        foreach (MigrationTarget.NetworkInterface targetNetworkInterface in _AzureContextSource.AzureSubscription.ArmTargetNetworkInterfaces)
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkInterface)targetNetworkInterface.SourceNetworkInterface).ResourceGroup);
 
@@ -496,7 +517,7 @@ namespace MigAz.Azure.UserControls
                             tnResourceGroup.Nodes.Add(txNetworkInterface);
                         }
 
-                        foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in _AzureContextSource.AzureSubscription.ArmTargetVirtualMachines)
+                        foreach (MigrationTarget.VirtualMachine targetVirtualMachine in _AzureContextSource.AzureSubscription.ArmTargetVirtualMachines)
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachine)targetVirtualMachine.Source).ResourceGroup);
 
@@ -508,7 +529,7 @@ namespace MigAz.Azure.UserControls
                             tnResourceGroup.Nodes.Add(tnVirtualMachine);
                         }
 
-                        foreach (Azure.MigrationTarget.LoadBalancer targetLoadBalancer in _AzureContextSource.AzureSubscription.ArmTargetLoadBalancers)
+                        foreach (MigrationTarget.LoadBalancer targetLoadBalancer in _AzureContextSource.AzureSubscription.ArmTargetLoadBalancers)
                         {
                             TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.LoadBalancer)targetLoadBalancer.Source).ResourceGroup);
 
@@ -520,17 +541,17 @@ namespace MigAz.Azure.UserControls
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
-                        foreach (Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage in _AzureContextSource.AzureSubscription.ArmTargetVirtualMachineImages)
-                        {
-                            TreeNode virtualMachineImageParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachineImage)targetVirtualMachineImage.Source).ResourceGroup);
+                        //foreach (MigrationTarget.VirtualMachineImage targetVirtualMachineImage in _AzureContextSource.AzureSubscription.ArmTargetVirtualMachineImages)
+                        //{
+                        //    TreeNode virtualMachineImageParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachineImage)targetVirtualMachineImage.Source).ResourceGroup);
 
-                            TreeNode tnVirtualMachineImage = new TreeNode(targetVirtualMachineImage.SourceName);
-                            tnVirtualMachineImage.Name = targetVirtualMachineImage.SourceName;
-                            tnVirtualMachineImage.Tag = targetVirtualMachineImage;
-                            tnVirtualMachineImage.ImageKey = "VirtualMachineImage";
-                            tnVirtualMachineImage.SelectedImageKey = "VirtualMachineImage";
-                            virtualMachineImageParentNode.Nodes.Add(tnVirtualMachineImage);
-                        }
+                        //    TreeNode tnVirtualMachineImage = new TreeNode(targetVirtualMachineImage.SourceName);
+                        //    tnVirtualMachineImage.Name = targetVirtualMachineImage.SourceName;
+                        //    tnVirtualMachineImage.Tag = targetVirtualMachineImage;
+                        //    tnVirtualMachineImage.ImageKey = "VirtualMachineImage";
+                        //    tnVirtualMachineImage.SelectedImageKey = "VirtualMachineImage";
+                        //    virtualMachineImageParentNode.Nodes.Add(tnVirtualMachineImage);
+                        //}
 
                         subscriptionNodeARM.Expand();
                         treeAzureARM.Sort();
@@ -933,7 +954,7 @@ namespace MigAz.Azure.UserControls
                     (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
                     (tagType == typeof(Azure.MigrationTarget.AvailabilitySet)) ||
                     (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
+                    //(tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
                     (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
                     (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
@@ -1142,7 +1163,7 @@ namespace MigAz.Azure.UserControls
                     treeAzureARM.Enabled = false;
                     treeAzureARM.Visible = false;
 
-                    BindAsmResources();
+                    BindAsmResources(_TargetSettings);
 
                     break;
                 case "Azure Resource Manager (ARM)":
@@ -1151,7 +1172,7 @@ namespace MigAz.Azure.UserControls
                     treeAzureARM.Enabled = true;
                     treeAzureARM.Visible = true;
 
-                    BindArmResources();
+                    BindArmResources(_TargetSettings);
 
                     break;
                 default:

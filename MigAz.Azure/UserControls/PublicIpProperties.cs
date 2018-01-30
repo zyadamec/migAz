@@ -7,12 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class PublicIpProperties : UserControl
     {
-        MigrationTarget.PublicIp _PublicIp;
+        PublicIp _PublicIp;
+        private TargetTreeView _TargetTreeView;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -22,11 +24,12 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(MigrationTarget.PublicIp publicIp)
+        internal void Bind(PublicIp publicIp, TargetTreeView targetTreeView)
         {
             _PublicIp = publicIp;
+            _TargetTreeView = targetTreeView;
 
-            txtTargetName.Text = _PublicIp.Name;
+            txtTargetName.Text = _PublicIp.TargetName;
             txtDomainNameLabel.Text = _PublicIp.DomainNameLabel;
         }
 
@@ -34,7 +37,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _PublicIp.Name = txtSender.Text;
+            _PublicIp.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

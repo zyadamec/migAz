@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Core;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -14,7 +16,7 @@ namespace MigAz.Azure.UserControls
     {
         private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
-        private Azure.MigrationTarget.LoadBalancer _LoadBalancer;
+        private LoadBalancer _LoadBalancer;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -45,7 +47,7 @@ namespace MigAz.Azure.UserControls
                 _LoadBalancer = value;
 
                 cmbLoadBalancerType.SelectedIndex = cmbLoadBalancerType.FindString(_LoadBalancer.LoadBalancerType.ToString());
-                txtTargetName.Text = _LoadBalancer.Name;
+                txtTargetName.Text = _LoadBalancer.TargetName;
             }
         }
 
@@ -53,7 +55,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _LoadBalancer.Name = txtSender.Text;
+            _LoadBalancer.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

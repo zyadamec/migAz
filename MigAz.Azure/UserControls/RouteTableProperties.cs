@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class RouteTableProperties : UserControl
     {
         private TargetTreeView _TargetTreeView;
-        private MigrationTarget.RouteTable _RouteTable;
+        private RouteTable _RouteTable;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -23,7 +24,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, MigrationTarget.RouteTable targetRouteTable)
+        internal void Bind(TargetTreeView targetTreeView, RouteTable targetRouteTable)
         {
             _TargetTreeView = targetTreeView;
             _RouteTable = targetRouteTable;
@@ -37,7 +38,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _RouteTable.TargetName = txtSender.Text;
+            _RouteTable.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private IRoute _Source;
         private String _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private NextHopTypeEnum _NextHopType = NextHopTypeEnum.VnetLocal;
         private String _AddressPrefix = String.Empty;
         private String _NextHopIpAddress = String.Empty;
@@ -18,11 +20,11 @@ namespace MigAz.Azure.MigrationTarget
 
         private Route() { }
 
-        public Route(IRoute route)
+        public Route(IRoute route, TargetSettings targetSettings)
         {
             _Source = route;
 
-            this.TargetName = route.Name;
+            this.SetTargetName(route.Name, targetSettings);
             this.NextHopType = route.NextHopType;
             this.AddressPrefix = route.AddressPrefix;
             this.NextHopIpAddress = route.NextHopIpAddress;
@@ -57,27 +59,30 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set
-            {
-                if (value == null)
-                    _TargetName = String.Empty;
-                else
-                    _TargetName = value.Trim().Replace(" ", String.Empty);
-            }
-        }
-
         public String SourceName
         {
             get { return String.Empty; }
         }
 
-        public override string ToString()
+        public string TargetName
         {
-            return this.TargetName;
+            get { return _TargetName; }
         }
 
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            _TargetName = targetName.Trim().Replace(" ", String.Empty);
+            _TargetNameResult = _TargetName;
+        }
+
+        public override string ToString()
+        {
+            return this.TargetNameResult;
+        }
     }
 }

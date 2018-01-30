@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using MigAz.Azure.Arm;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.MigrationTarget;
+using MigAz.Core;
 
 namespace MigAz.Tests
 {
@@ -27,8 +28,9 @@ namespace MigAz.Tests
         public async Task LoadASMObjectsFromSampleOfflineFile()
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\AsmObjectsOffline.json");
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindAsmResources();
+            await azureContextUSCommercial.AzureSubscription.BindAsmResources(targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -59,8 +61,9 @@ namespace MigAz.Tests
         public async Task LoadARMObjectsFromSampleOfflineFile()
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\ArmObjectsOffline.json");
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -93,8 +96,9 @@ namespace MigAz.Tests
         public async Task LoadARMObjectsFromSampleOfflineFile2()
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -170,8 +174,9 @@ namespace MigAz.Tests
         public async Task OfflineUITargetTreeViewTest()
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
+            TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources();
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -179,6 +184,7 @@ namespace MigAz.Tests
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
             TargetTreeView targetTreeView = new TargetTreeView();
+            targetTreeView.TargetSettings = targetSettings;
 
             await targetTreeView.AddMigrationTarget(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);
             targetTreeView.SeekAlertSource(azureContextUSCommercial.AzureSubscription.ArmTargetRouteTables[0]);

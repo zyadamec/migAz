@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
+using MigAz.Azure.MigrationTarget;
 using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Azure.UserControls
@@ -36,14 +36,14 @@ namespace MigAz.Azure.UserControls
             {
                 if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
                 {
-                    Azure.Asm.Subnet asmSubnet = (Azure.Asm.Subnet)targetSubnet.SourceSubnet;
+                    Asm.Subnet asmSubnet = (Asm.Subnet)targetSubnet.SourceSubnet;
 
                     lblSourceName.Text = asmSubnet.Name;
                     lblAddressSpace.Text = asmSubnet.AddressPrefix;
                 }
                 else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
                 {
-                    Azure.Arm.Subnet armSubnet = (Azure.Arm.Subnet)targetSubnet.SourceSubnet;
+                    Arm.Subnet armSubnet = (Arm.Subnet)targetSubnet.SourceSubnet;
 
                     lblSourceName.Text = armSubnet.Name;
                     lblAddressSpace.Text = armSubnet.AddressPrefix;
@@ -64,7 +64,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _Subnet.TargetName = txtSender.Text;
+            _Subnet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged();
         }

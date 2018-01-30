@@ -74,6 +74,12 @@
     <Compile Include="UserControls\AmazonWebServiceLoginViewer.Designer.cs">
       <DependentUpon>AmazonWebServiceLoginViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MigrationAWSSourceContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAWSSourceContext.Designer.cs">
+      <DependentUpon>MigrationAWSSourceContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="VPC.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +100,9 @@
   <ItemGroup>
     <EmbeddedResource Include="UserControls\AmazonWebServiceLoginViewer.resx">
       <DependentUpon>AmazonWebServiceLoginViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAWSSourceContext.resx">
+      <DependentUpon>MigrationAWSSourceContext.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

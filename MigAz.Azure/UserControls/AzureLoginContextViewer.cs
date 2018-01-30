@@ -26,6 +26,9 @@ namespace MigAz.Azure.UserControls
         private AzureLoginChangeType _ChangeType = AzureLoginChangeType.NewContext;
         private AzureContextSelectedType _AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
 
+        public delegate Task AfterContextChangedHandler(AzureLoginContextViewer sender);
+        public event AfterContextChangedHandler AfterContextChanged;
+
         public AzureLoginContextViewer()
         {
             InitializeComponent();
@@ -183,6 +186,8 @@ namespace MigAz.Azure.UserControls
                 azureSubscriptionContextDialog.ShowDialog();
                 azureSubscriptionContextDialog.Dispose();
             }
+
+            AfterContextChanged?.Invoke(this);
         }
 
         private void AzureLoginContextViewer_EnabledChanged(object sender, EventArgs e)

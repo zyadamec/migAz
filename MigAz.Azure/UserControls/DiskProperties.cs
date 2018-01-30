@@ -334,7 +334,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            _TargetDisk.TargetName = txtSender.Text.Trim();
+            _TargetDisk.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             PropertyChanged?.Invoke();
         }

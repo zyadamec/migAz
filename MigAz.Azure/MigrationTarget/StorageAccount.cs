@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Core;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,43 +10,39 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class StorageAccount : IStorageTarget, IMigrationTarget
     {
-        private AzureContext _AzureContext = null;
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
+        private string _TargetNameResult = String.Empty;
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
         public StorageAccount()
         {
-            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            _TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            _TargetNameResult = _TargetName;
         }
         public StorageAccount(StorageAccountType storageAccountType)
         {
-            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            _TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            _TargetNameResult = _TargetName;
             this.StorageAccountType = storageAccountType;
         }
 
-        public StorageAccount(AzureContext azureContext, IStorageAccount source)
+        public StorageAccount(IStorageAccount source, TargetSettings targetSettings)
         {
-            _AzureContext = azureContext;
             _Source = source;
-            this.TargetName = source.Name;
+            this.SetTargetName(source.Name, targetSettings);
             this.StorageAccountType = MigrationTarget.StorageAccount.GetStorageAccountType(source.AccountType);
-        }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-            set { _TargetName = value.Trim().Replace(" ", String.Empty); }
         }
 
         public string BlobStorageNamespace
         {
             get
             {
-                if (_AzureContext == null)
-                    return String.Empty;
-                else
-                    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+                return "RussellTODONOW";
+                //if (_AzureContext == null)
+                //    return String.Empty;
+                //else
+                //    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
             }
         }
 
@@ -71,15 +68,6 @@ namespace MigAz.Azure.MigrationTarget
             set { _StorageAccountType = value; }
         }
 
-        public override string ToString()
-        {
-            if (_AzureContext == null)
-                return this.TargetName;
-            else if (this.TargetName.Length + this._AzureContext.TargetSettings.StorageAccountSuffix.Length > 24)
-                return this.TargetName.Substring(0, 24 - this._AzureContext.TargetSettings.StorageAccountSuffix.Length) + this._AzureContext.TargetSettings.StorageAccountSuffix;
-            else
-                return this.TargetName + this._AzureContext.TargetSettings.StorageAccountSuffix;
-        }
 
         private static StorageAccountType GetStorageAccountType(string storageAccountType)
         {
@@ -89,6 +77,41 @@ namespace MigAz.Azure.MigrationTarget
                 return StorageAccountType.Premium_LRS;
 
             return StorageAccountType.Standard_LRS;
+        }
+
+        public string TargetName
+        {
+            get { return _TargetName; }
+        }
+
+        public string TargetNameResult
+        {
+            get { return _TargetNameResult; }
+        }
+
+        public static int MaximumTargetNameLength(TargetSettings targetSettings)
+        {
+            return 24 - targetSettings.StorageAccountSuffix.Length;
+        }
+
+        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        {
+            string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
+            if (value.Length + targetSettings.StorageAccountSuffix.Length > 24)
+                throw new ArgumentException("Storage Account target name cannot exceed " + MaximumTargetNameLength(targetSettings).ToString() + " character(s) due to Suffix character requirements.");
+
+            _TargetName = targetName.Trim().Replace(" ", String.Empty).ToLower();
+            _TargetNameResult = _TargetName + targetSettings.StorageAccountSuffix;
+
+            if (this.TargetName.Length + targetSettings.StorageAccountSuffix.Length > 24)
+                _TargetNameResult = this.TargetName.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length) + targetSettings.StorageAccountSuffix;
+            else
+                _TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
+        }
+
+        public override string ToString()
+        {
+            return this.TargetNameResult;
         }
     }
 }

@@ -134,6 +134,18 @@
     <Compile Include="Providers\UIStatusProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\MigAzMigrationSourceSelection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigAzMigrationSourceSelection.Designer.cs">
+      <DependentUpon>MigAzMigrationSourceSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MigAzMigrationTargetSelection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigAzMigrationTargetSelection.Designer.cs">
+      <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -153,6 +165,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\MigAzMigrationSourceSelection.resx">
+      <DependentUpon>MigAzMigrationSourceSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigAzMigrationTargetSelection.resx">
+      <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>app.Designer.cs</LastGenOutput>
@@ -205,6 +223,10 @@
       <Project>{9752882b-fd87-495e-92fa-33243df8ee68}</Project>
       <Name>MigAz.AWS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MigAz.AzureStack\MigAz.AzureStack.csproj">
+      <Project>{2bc31932-94f3-459f-8bc5-48f6bb3c6d59}</Project>
+      <Name>MigAz.AzureStack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">
       <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
       <Name>MigAz.Azure</Name>
@@ -214,9 +236,7 @@
       <Name>MigAz.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MigrationSource\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
