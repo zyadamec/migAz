@@ -763,7 +763,10 @@ namespace MigAz.Forms
                     LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
                 _EventSourceNode = selectedNode;
-                await this.propertyPanel1.Bind(((MigrationAzureTargetContext)MigrationTargetControl).AzureContext, targetTreeView, selectedNode);
+                await this.propertyPanel1.Bind(
+                    MigrationTargetControl == null ? null : ((MigrationAzureTargetContext)MigrationTargetControl).AzureContext, 
+                    targetTreeView, 
+                    selectedNode);
                 _EventSourceNode = null;
 
                 if (this.LogProvider != null)

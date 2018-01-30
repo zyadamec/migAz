@@ -385,7 +385,7 @@
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(316, 20);
             this.label11.TabIndex = 8;
-            this.label11.Text = "Managed DIsk Access SAS Duration";
+            this.label11.Text = "Managed Disk Access SAS Duration";
             // 
             // label10
             // 
