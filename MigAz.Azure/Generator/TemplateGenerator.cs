@@ -1062,10 +1062,10 @@ namespace MigAz.Azure.Generator
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
 
-                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                    if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && (targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount) || targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(MigrationTarget.StorageAccount)))
                     {
                         // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
-                        await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup);
+                        this._CopyBlobDetails.Add(await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup));
 
                         if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
                             storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
@@ -1113,10 +1113,10 @@ namespace MigAz.Azure.Generator
                         datadisk.vhd = vhd;
 
 
-                        if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount))
+                        if (dataDisk.TargetStorage != null && (dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount) || dataDisk.TargetStorage.GetType() == typeof(MigrationTarget.StorageAccount)))
                         {
                             // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
-                            await BuildCopyBlob(dataDisk, targetResourceGroup);
+                            this._CopyBlobDetails.Add(await BuildCopyBlob(dataDisk, targetResourceGroup));
 
                             if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
                                 storageaccountdependencies.Add(dataDisk.TargetStorage);

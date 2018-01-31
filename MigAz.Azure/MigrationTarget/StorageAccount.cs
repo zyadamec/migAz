@@ -97,16 +97,12 @@ namespace MigAz.Azure.MigrationTarget
         public void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
+
             if (value.Length + targetSettings.StorageAccountSuffix.Length > 24)
-                throw new ArgumentException("Storage Account target name cannot exceed " + MaximumTargetNameLength(targetSettings).ToString() + " character(s) due to Suffix character requirements.");
+                value = value.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length);
 
-            _TargetName = targetName.Trim().Replace(" ", String.Empty).ToLower();
+            _TargetName = value;
             _TargetNameResult = _TargetName + targetSettings.StorageAccountSuffix;
-
-            if (this.TargetName.Length + targetSettings.StorageAccountSuffix.Length > 24)
-                _TargetNameResult = this.TargetName.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length) + targetSettings.StorageAccountSuffix;
-            else
-                _TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
         }
 
         public override string ToString()
