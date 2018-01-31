@@ -132,22 +132,7 @@ namespace MigAz.AWS.UserControls
 //            // this.Text = "migAz AWS (" + Assembly.GetEntryAssembly().GetName().Version.ToString() + ")";
 //            AlertIfNewVersionAvailable();
 //        }
-
-//        #region New Version Check
-
-//        private async Task AlertIfNewVersionAvailable()
-//        {
-//            string currentVersion = "2.3.1.0";
-//            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
-//            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/v1/version/AWStoARM", currentVersion);
-//            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
-//            {
-//                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-//            }
-//        }
-
-//        #endregion
-
+//
 //        //TODO CHECK
 //        private void Window_FormClosing(object sender, FormClosingEventArgs e)
 //        {
