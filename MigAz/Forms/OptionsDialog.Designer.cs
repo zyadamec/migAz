@@ -66,6 +66,8 @@
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.cmbDefaultAzureEnvironment = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).BeginInit();
@@ -75,7 +77,7 @@
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(632, 626);
+            this.btnOK.Location = new System.Drawing.Point(632, 691);
             this.btnOK.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(111, 35);
@@ -87,7 +89,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(762, 626);
+            this.btnCancel.Location = new System.Drawing.Point(762, 691);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(111, 35);
             this.btnCancel.TabIndex = 16;
@@ -119,7 +121,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtNetworkInterfaceCardSuffix);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(20, 274);
+            this.groupBox1.Location = new System.Drawing.Point(20, 339);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(855, 332);
             this.groupBox1.TabIndex = 10;
@@ -349,6 +351,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cmbDefaultAzureEnvironment);
+            this.groupBox2.Controls.Add(this.label13);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.label10);
@@ -360,7 +364,7 @@
             this.groupBox2.Controls.Add(this.chkAllowTelemetry);
             this.groupBox2.Location = new System.Drawing.Point(20, 26);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(854, 225);
+            this.groupBox2.Size = new System.Drawing.Size(854, 292);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
@@ -369,7 +373,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(482, 29);
+            this.label12.Location = new System.Drawing.Point(482, 108);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(220, 20);
@@ -380,7 +384,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(482, 138);
+            this.label11.Location = new System.Drawing.Point(482, 217);
             this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(316, 20);
@@ -390,7 +394,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(618, 175);
+            this.label10.Location = new System.Drawing.Point(618, 254);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(65, 20);
@@ -399,7 +403,7 @@
             // 
             // upDownAccessSASMinutes
             // 
-            this.upDownAccessSASMinutes.Location = new System.Drawing.Point(534, 169);
+            this.upDownAccessSASMinutes.Location = new System.Drawing.Point(534, 248);
             this.upDownAccessSASMinutes.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.upDownAccessSASMinutes.Maximum = new decimal(new int[] {
             1440,
@@ -425,7 +429,7 @@
             // 
             this.panel1.Controls.Add(this.rbManagedDisk);
             this.panel1.Controls.Add(this.rbClassicDisk);
-            this.panel1.Location = new System.Drawing.Point(530, 63);
+            this.panel1.Location = new System.Drawing.Point(530, 142);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(273, 65);
@@ -509,13 +513,39 @@
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(482, 22);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(235, 20);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "Default Azure Environment";
+            // 
+            // cmbDefaultAzureEnvironment
+            // 
+            this.cmbDefaultAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDefaultAzureEnvironment.FormattingEnabled = true;
+            this.cmbDefaultAzureEnvironment.Items.AddRange(new object[] {
+            "AzureCloud",
+            "AzureGermanCloud",
+            "AzureChinaCloud",
+            "AzureUSGovernment"});
+            this.cmbDefaultAzureEnvironment.Location = new System.Drawing.Point(530, 57);
+            this.cmbDefaultAzureEnvironment.Name = "cmbDefaultAzureEnvironment";
+            this.cmbDefaultAzureEnvironment.Size = new System.Drawing.Size(273, 28);
+            this.cmbDefaultAzureEnvironment.TabIndex = 11;
+            this.cmbDefaultAzureEnvironment.SelectedIndexChanged += new System.EventHandler(this.cmbDefaultAzureEnvironment_SelectedIndexChanged);
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(885, 678);
+            this.ClientSize = new System.Drawing.Size(885, 742);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -580,5 +610,7 @@
         private System.Windows.Forms.RadioButton rbClassicDisk;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox cmbDefaultAzureEnvironment;
+        private System.Windows.Forms.Label label13;
     }
 }

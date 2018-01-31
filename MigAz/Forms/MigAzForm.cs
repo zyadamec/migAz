@@ -648,6 +648,22 @@ namespace MigAz.Forms
                 //// This will move to be based on the source context (upon instantiation)
                 azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
 
+                switch (app.Default.AzureEnvironment)
+                {
+                    case "AzureCloud":
+                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureCloud;
+                        break;
+                    case "AzureGermanCloud":
+                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureGermanCloud;
+                        break;
+                    case "AzureChinaCloud":
+                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureChinaCloud;
+                        break;
+                    case "AzureUSGovernment":
+                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureUSGovernment;
+                        break;
+                }
+
                 azureControl.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
                 azureControl.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
                 azureControl.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
