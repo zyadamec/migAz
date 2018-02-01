@@ -24,7 +24,6 @@ namespace MigAz.Azure.Arm
         public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
             _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
-            this.SourceManagedDisk = await azureContext.AzureSubscription.GetAzureARMManagedDisk(this.ParentVirtualMachine, this.Name);
         }
 
         public Arm.VirtualMachine ParentVirtualMachine
@@ -220,8 +219,6 @@ namespace MigAz.Azure.Arm
                 return (string)this.ResourceToken["encryptionSettings"]["keyEncryptionKey"]["keyUrl"];
             }
         }
-
-        public ManagedDisk SourceManagedDisk { get; internal set; }
 
         public override string ToString()
         {

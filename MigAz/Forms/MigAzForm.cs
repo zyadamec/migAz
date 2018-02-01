@@ -321,38 +321,28 @@ namespace MigAz.Forms
 
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
-            if (splitContainer3.Panel2.Controls.Count == 1)
+            IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
+            if (migrationTargetControl == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
+;
+            if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
             {
-                IMigrationTargetUserControl control = this.MigrationTargetControl;
+                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                if (AssertHasTargetErrors())
+                if (azureTargetContext.TemplateGenerator != null)
                 {
-                    return;
-                }
+                    azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+                    azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
-                if (migrationTargetControl == null)
-                    throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
-    ;
-                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
-                {
-                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
+                    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                    await RefreshOutput();
 
-                    if (azureTargetContext.TemplateGenerator != null)
-                    {
-                        azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
-                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                    azureTargetContext.TemplateGenerator.Write();
 
-                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                        await RefreshOutput();
+                    StatusProvider.UpdateStatus("Ready");
 
-                        azureTargetContext.TemplateGenerator.Write();
-
-                        StatusProvider.UpdateStatus("Ready");
-
-                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
-                        exportResults.ShowDialog(this);
-                    }
+                    var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                    exportResults.ShowDialog(this);
                 }
             }
         }
@@ -426,7 +416,6 @@ namespace MigAz.Forms
                     azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
 
                     await azureTargetContext.TemplateGenerator.GenerateStreams();
-                    await azureTargetContext.TemplateGenerator.SerializeStreams();
 
                     foreach (TabPage tabPage in tabOutputResults.TabPages)
                     {
