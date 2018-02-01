@@ -132,6 +132,8 @@ namespace MigAz.Azure.Generator
 
         public async Task GenerateStreams()
         {
+            _ExecutionGuid = Guid.NewGuid();
+
             LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
             TemplateStreams.Clear();

@@ -19,6 +19,7 @@ namespace MigAz.Forms
     {
         #region Variables
 
+        private Guid _AppSessionGuid = Guid.NewGuid();
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private AppSettingsProvider _appSettingsProvider;
@@ -322,27 +323,26 @@ namespace MigAz.Forms
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
             IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
-            if (migrationTargetControl == null)
-                throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
-;
-            if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+            if (migrationTargetControl != null)
             {
-                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
-
-                if (azureTargetContext.TemplateGenerator != null)
+                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
                 {
-                    azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
-                    azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                    // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                    await RefreshOutput();
+                    if (azureTargetContext.TemplateGenerator != null)
+                    {
+                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                    azureTargetContext.TemplateGenerator.Write();
+                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                        await RefreshOutput();
 
-                    StatusProvider.UpdateStatus("Ready");
+                        azureTargetContext.TemplateGenerator.Write();
 
-                    var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
-                    exportResults.ShowDialog(this);
+                        StatusProvider.UpdateStatus("Ready");
+
+                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                        exportResults.ShowDialog(this);
+                    }
                 }
             }
         }
@@ -515,7 +515,7 @@ namespace MigAz.Forms
                     if (AppSettingsProvider.AllowTelemetry)
                     {
                         StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                        _telemetryProvider.PostTelemetryRecord((AzureGenerator)azureTargetContext.TemplateGenerator);
+                        _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, (AzureGenerator)azureTargetContext.TemplateGenerator);
                     }
                 }
             }
