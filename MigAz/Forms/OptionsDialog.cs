@@ -73,6 +73,8 @@ namespace MigAz.Forms
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
             app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
 
+            app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
+
             if (rbClassicDisk.Checked)
                 app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ClassicDisk;
             else
@@ -106,6 +108,12 @@ namespace MigAz.Forms
             chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
             upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
+
+            int defaultAzureEnvironmentIndex = cmbDefaultAzureEnvironment.FindString(app.Default.AzureEnvironment);
+            if (defaultAzureEnvironmentIndex >= 0)
+                cmbDefaultAzureEnvironment.SelectedIndex = defaultAzureEnvironmentIndex;
+            else
+                cmbDefaultAzureEnvironment.SelectedIndex = 0;
 
             if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
                 rbClassicDisk.Checked = true;
@@ -168,6 +176,11 @@ namespace MigAz.Forms
         private void btnCancel_Click(object sender, EventArgs e)
         {
             _HasChanges = false;
+        }
+
+        private void cmbDefaultAzureEnvironment_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _HasChanges = true;
         }
     }
 }

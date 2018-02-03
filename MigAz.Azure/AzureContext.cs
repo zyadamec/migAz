@@ -161,26 +161,29 @@ namespace MigAz.Azure
 
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
-            if (BeforeAzureSubscriptionChange != null)
-                await BeforeAzureSubscriptionChange?.Invoke(this);
-
-            if (azureSubscription != null)
-                if (azureSubscription.Parent != null)
-                    if (azureSubscription.Parent != this._AzureTenant)
-                        await SetTenantContext(azureSubscription.Parent);
-
-            _AzureSubscription = azureSubscription;
-
-            if (_AzureSubscription != null)
+            if (azureSubscription != _AzureSubscription)
             {
-                if (_TokenProvider != null)
-                    await _TokenProvider.GetToken(_AzureSubscription);
+                if (BeforeAzureSubscriptionChange != null)
+                    await BeforeAzureSubscriptionChange?.Invoke(this);
 
-                await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
+                if (azureSubscription != null)
+                    if (azureSubscription.Parent != null)
+                        if (azureSubscription.Parent != this._AzureTenant)
+                            await SetTenantContext(azureSubscription.Parent);
+
+                _AzureSubscription = azureSubscription;
+
+                if (_AzureSubscription != null)
+                {
+                    if (_TokenProvider != null)
+                        await _TokenProvider.GetToken(_AzureSubscription);
+
+                    await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
+                }
+
+                if (AfterAzureSubscriptionChange != null)
+                    await AfterAzureSubscriptionChange?.Invoke(this);
             }
-
-            if (AfterAzureSubscriptionChange != null)
-                await AfterAzureSubscriptionChange?.Invoke(this);
         }
 
         public async Task Logout()

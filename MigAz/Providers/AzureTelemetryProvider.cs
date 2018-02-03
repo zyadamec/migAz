@@ -27,16 +27,30 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(AzureGenerator templateGenerator)
+        public void PostTelemetryRecord(Guid appSessionGuid, AzureGenerator templateGenerator)
         {
+            if (templateGenerator == null)
+                throw new ArgumentException("Template Generator cannot be null.");
+
             TelemetryRecord telemetryrecord = new TelemetryRecord();
-            telemetryrecord.ExecutionId = templateGenerator.ExecutionGuid;
+            telemetryrecord.AppSessionGuid = appSessionGuid;
+            telemetryrecord.ExecutionGuid = templateGenerator.ExecutionGuid;
+
             if (templateGenerator.SourceSubscription != null)
             {
-                telemetryrecord.SubscriptionId = templateGenerator.SourceSubscription.SubscriptionId;
-                telemetryrecord.TenantId = templateGenerator.SourceSubscription.AzureAdTenantId;
+                telemetryrecord.SourceEnvironment = templateGenerator.SourceSubscription.AzureEnvironment.ToString();
+                telemetryrecord.SourceSubscriptionGuid = templateGenerator.SourceSubscription.SubscriptionId;
+                telemetryrecord.SourceTenantGuid = templateGenerator.SourceSubscription.AzureAdTenantId;
                 telemetryrecord.OfferCategories = templateGenerator.SourceSubscription.offercategories;
             }
+
+            if (templateGenerator.TargetSubscription != null)
+            {
+                telemetryrecord.TargetEnvironment = templateGenerator.TargetSubscription.AzureEnvironment.ToString();
+                telemetryrecord.TargetSubscriptionGuid = templateGenerator.TargetSubscription.SubscriptionId;
+                telemetryrecord.TargetTenantGuid = templateGenerator.TargetSubscription.AzureAdTenantId;
+            }
+
             telemetryrecord.SourceVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
             telemetryrecord.ProcessedResources = this.GetProcessedItems(templateGenerator);
 

@@ -282,16 +282,12 @@ namespace MigAz.Azure
             get { return Convert.ToDateTime(_XmlNode.SelectSingleNode("CreatedTime").InnerText); }
         }
 
-        public override string ToString()
-        {
-            return Name + " (" + SubscriptionId + ")";
-        }
 
         public static bool operator ==(AzureSubscription lhs, AzureSubscription rhs)
         {
             bool status = false;
-            if (((object)lhs == null && (object)rhs == null) || 
-                    ((object)lhs != null && (object)rhs != null && lhs.SubscriptionId   == rhs.SubscriptionId))
+            if (((object)lhs == null && (object)rhs == null) ||
+                    ((object)lhs != null && (object)rhs != null && ((AzureSubscription)lhs).SubscriptionId == ((AzureSubscription)rhs).SubscriptionId))
             {
                 status = true;
             }
@@ -301,6 +297,18 @@ namespace MigAz.Azure
         public static bool operator !=(AzureSubscription lhs, AzureSubscription rhs)
         {
             return !(lhs == rhs);
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null || obj.GetType() != typeof(AzureSubscription))
+                return false;
+
+            return ((AzureSubscription)obj).SubscriptionId == this.SubscriptionId;
+        }
+
+        public override string ToString()
+        {
+            return Name + " (" + SubscriptionId + ")";
         }
 
         public void ClearCache()
