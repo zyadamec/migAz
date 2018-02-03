@@ -17,7 +17,7 @@ namespace MigAz.Azure
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
-        private ITokenProvider _TokenProvider;
+        private AzureTokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
 
@@ -54,7 +54,7 @@ namespace MigAz.Azure
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
             _AzureServiceUrls = new AzureServiceUrls(this);
-            _TokenProvider = new AzureTokenProvider(this);
+            _TokenProvider = new AzureTokenProvider(_LogProvider);
             _AzureRetriever = new AzureRetriever(this);
         }
 
@@ -103,7 +103,7 @@ namespace MigAz.Azure
             set { _AzureRetriever = value; }
         }
 
-        public ITokenProvider TokenProvider
+        public AzureTokenProvider TokenProvider
         {
             get { return _TokenProvider; }
             set { _TokenProvider = value; }
@@ -141,7 +141,7 @@ namespace MigAz.Azure
 
         public async Task Login()
         {
-            await this.TokenProvider.LoginAzureProvider();
+            await this.TokenProvider.LoginAzureProvider(this.AzureServiceUrls.GetAzureLoginUrl(), this.AzureServiceUrls.GetASMServiceManagementUrl());
             UserAuthenticated?.Invoke(this);
         }
 
@@ -167,16 +167,15 @@ namespace MigAz.Azure
                     await BeforeAzureSubscriptionChange?.Invoke(this);
 
                 if (azureSubscription != null)
-                    if (azureSubscription.Parent != null)
-                        if (azureSubscription.Parent != this._AzureTenant)
-                            await SetTenantContext(azureSubscription.Parent);
+                    if (azureSubscription.Parent != this.AzureTenant)
+                        await SetTenantContext(azureSubscription.Parent);
 
                 _AzureSubscription = azureSubscription;
 
                 if (_AzureSubscription != null)
                 {
                     if (_TokenProvider != null)
-                        await _TokenProvider.GetToken(_AzureSubscription);
+                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetAzureLoginUrl(), this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
 
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }
