@@ -102,7 +102,7 @@ namespace MigAz.Azure
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             _AzureSubscription = azureSubscription;
-            await this._AzureContext.TokenProvider.GetToken(azureSubscription);
+            await this._AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), azureSubscription.AzureAdTenantId);
         }
 
 
@@ -157,7 +157,7 @@ namespace MigAz.Azure
 
             String domainUrl = _AzureContext.AzureServiceUrls.GetGraphApiUrl() + "myorganization/domains?api-version=1.6";
 
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetGraphToken(azureTenant.TenantId.ToString());
+            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId);
             if (tenantAuthenticationResult != null)
                 accessToken = tenantAuthenticationResult.AccessToken;
 
@@ -188,7 +188,7 @@ namespace MigAz.Azure
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
             String accessToken = _AzureContext.TokenProvider.AccessToken;
 
-            AuthenticationResult subscriptionAuthenticationResult = await _AzureContext.TokenProvider.GetAzureToken(azureTenant.TenantId.ToString());
+            AuthenticationResult subscriptionAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
             if (subscriptionAuthenticationResult != null)
                 accessToken = subscriptionAuthenticationResult.AccessToken;
 
