@@ -1,16 +1,17 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
+using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using MigAz.Azure;
 
-namespace MigAz.Azure
+namespace MigAz.AzureStack
     {
-        public class AzureTokenProvider : ITokenProvider
+        public class AzureStackTokenProvider : ITokenProvider
         {
             private const string strReturnUrl = "urn:ietf:wg:oauth:2.0:oob";
             private const string strClientId = "1950a258-227b-4e31-a9cf-717495945fc2";
@@ -18,12 +19,12 @@ namespace MigAz.Azure
             private ILogProvider _LogProvider;
             private AzureContext _AzureContext;
 
-            private AzureTokenProvider() { }
+            private AzureStackTokenProvider() { }
 
-            internal AzureTokenProvider(AzureContext azureContext)
+            internal AzureStackTokenProvider(ILogProvider logProvider)
             {
-                _AzureContext = azureContext;
-                _LogProvider = azureContext.LogProvider;
+                //_AzureContext = azureContext;
+                _LogProvider = logProvider; //azureContext.LogProvider;
             }
 
             public AuthenticationResult AuthenticationResult
@@ -72,15 +73,15 @@ namespace MigAz.Azure
             public async Task<AuthenticationResult> LoginAzureProvider()
             {
                 _LogProvider.WriteLog("LoginAzureProvider", "Start token request");
-                _LogProvider.WriteLog("LoginAzureProvider", "Azure Environment: " + _AzureContext.AzureEnvironment.ToString());
+                //_LogProvider.WriteLog("LoginAzureProvider", "Azure Environment: " + _AzureContext.AzureEnvironment.ToString());
 
-                string authenticationUrl = _AzureContext.AzureServiceUrls.GetAzureLoginUrl() + "common";
+            string authenticationUrl = "https://login.windows.net/common"; // _AzureContext.AzureServiceUrls.GetAzureLoginUrl() + "common";
                 _LogProvider.WriteLog("LoginAzureProvider", "Authentication Url: " + authenticationUrl);
 
                 AuthenticationContext context = new AuthenticationContext(authenticationUrl);
 
                 PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
-                AuthenticationResult authenticationResult = await context.AcquireTokenAsync(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), strClientId, new Uri(strReturnUrl), platformParams);
+                AuthenticationResult authenticationResult = await context.AcquireTokenAsync("https://management.core.windows.net/", strClientId, new Uri(strReturnUrl), platformParams); //_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), strClientId, new Uri(strReturnUrl), platformParams);
                 if (authenticationResult == null)
                 {
                     _LogProvider.WriteLog("LoginAzureProvider", "Failed to obtain the token (null AuthenticationResult returned).");
@@ -88,7 +89,7 @@ namespace MigAz.Azure
 
                 _AuthenticationResult = authenticationResult;
 
-                _LogProvider.WriteLog("LoginAzureProvider", "End token request for Azure Environment " + _AzureContext.AzureEnvironment.ToString());
+            _LogProvider.WriteLog("LoginAzureProvider", "End token request for Azure Environment "); // + _AzureContext.AzureEnvironment.ToString());
 
                 return _AuthenticationResult;
             }
@@ -139,7 +140,7 @@ namespace MigAz.Azure
                 return authenticationResult;
             }
 
-            public static bool operator ==(AzureTokenProvider lhs, AzureTokenProvider rhs)
+            public static bool operator ==(AzureStackTokenProvider lhs, AzureStackTokenProvider rhs)
             {
                 bool status = false;
                 if (((object)lhs == null && (object)rhs == null) ||
@@ -151,7 +152,7 @@ namespace MigAz.Azure
                 return status;
             }
 
-            public static bool operator !=(AzureTokenProvider lhs, AzureTokenProvider rhs)
+            public static bool operator !=(AzureStackTokenProvider lhs, AzureStackTokenProvider rhs)
             {
                 return !(lhs == rhs);
             }

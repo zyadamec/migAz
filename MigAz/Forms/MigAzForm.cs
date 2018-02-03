@@ -12,6 +12,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
+using MigAz.AzureStack.UserControls;
 
 namespace MigAz.Forms
 {
@@ -672,6 +673,11 @@ namespace MigAz.Forms
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
+            }
+            else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
+            {
+                MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
+                azureStackSourceContext.Bind(_logProvider);
             }
 
             MigrationSourceSelectionControlVisible = false;
