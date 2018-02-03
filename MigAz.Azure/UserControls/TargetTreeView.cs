@@ -759,9 +759,9 @@ namespace MigAz.Azure.UserControls
             set
             {
                 _TargetSettings = value;
-
-                if (_TargetResourceGroup == null)
-                    _TargetResourceGroup = new ResourceGroup(value);
+                if (value != null)
+                    if (_TargetResourceGroup == null)
+                        _TargetResourceGroup = new ResourceGroup(value);
             }
         }
     }

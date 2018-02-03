@@ -255,6 +255,7 @@
             this.targetTreeView1.Size = new System.Drawing.Size(198, 189);
             this.targetTreeView1.StatusProvider = null;
             this.targetTreeView1.TabIndex = 0;
+            this.targetTreeView1.TargetSettings = null;
             this.targetTreeView1.AfterTargetSelected += new MigAz.Azure.UserControls.TargetTreeView.AfterTargetSelectedHandler(this.targetTreeView1_AfterTargetSelected);
             this.targetTreeView1.AfterExportArtifactRefresh += new MigAz.Azure.UserControls.TargetTreeView.AfterExportArtifactRefreshHandler(this.targetTreeView1_AfterExportArtifactRefresh);
             // 
@@ -401,6 +402,7 @@
             // btnExport
             // 
             this.btnExport.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnExport.Enabled = false;
             this.btnExport.Location = new System.Drawing.Point(12, 45);
             this.btnExport.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnExport.Name = "btnExport";

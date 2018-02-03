@@ -65,6 +65,7 @@ namespace MigAz.Forms
 
             dgvMigAzMessages.DataSource = null;
             btnRefreshOutput.Enabled = false;
+            btnExport.Enabled = false;
 
             foreach (TabPage t in tabOutputResults.TabPages)
             {
@@ -166,6 +167,8 @@ namespace MigAz.Forms
 
         #endregion
 
+        #region Form Objects
+
         private IMigrationSourceUserControl MigrationSourceControl
         {
             get
@@ -215,6 +218,8 @@ namespace MigAz.Forms
                 return null;
             }
         }
+
+        #endregion
 
         private async Task PropertyPanel1_PropertyChanged()
         {
@@ -322,26 +327,27 @@ namespace MigAz.Forms
 
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
-            IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
-            if (migrationTargetControl != null)
+            // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+            if (await RefreshOutput())
             {
-                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+                IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
+                if (migrationTargetControl != null)
                 {
-                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
-
-                    if (azureTargetContext.TemplateGenerator != null)
+                    if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
                     {
-                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                        MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                        await RefreshOutput();
+                        if (azureTargetContext.TemplateGenerator != null)
+                        {
+                            azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                        azureTargetContext.TemplateGenerator.Write();
+                            azureTargetContext.TemplateGenerator.Write();
 
-                        StatusProvider.UpdateStatus("Ready");
+                            StatusProvider.UpdateStatus("Ready");
 
-                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
-                        exportResults.ShowDialog(this);
+                            var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                            exportResults.ShowDialog(this);
+                        }
                     }
                 }
             }
@@ -388,11 +394,11 @@ namespace MigAz.Forms
             await RefreshOutput();
         }
 
-        private async Task RefreshOutput()
+        private async Task<bool> RefreshOutput()
         {
             if (AssertHasTargetErrors())
             {
-                return;
+                return false;
             }
 
             IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
@@ -521,6 +527,7 @@ namespace MigAz.Forms
             }
 
             StatusProvider.UpdateStatus("Ready");
+            return true;
         }
 
 
@@ -734,7 +741,6 @@ namespace MigAz.Forms
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                 }
-
             }
 
             MigrationTargetSelectionControlVisible = false;
@@ -766,6 +772,7 @@ namespace MigAz.Forms
             dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
+            btnExport.Enabled = true;
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
