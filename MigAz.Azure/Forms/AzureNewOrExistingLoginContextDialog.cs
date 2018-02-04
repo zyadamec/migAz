@@ -200,7 +200,8 @@ namespace MigAz.Azure.Forms
                 AzureTenant azureTenant = (AzureTenant)cboTenant.SelectedItem;
                 foreach (AzureSubscription azureSubscription in azureTenant.Subscriptions)
                 {
-                    cboSubscription.Items.Add(azureSubscription);
+                    if (azureSubscription != _AzureLoginContextViewer.ExistingContext.AzureSubscription) // Do not add if same as existing subscription.  Combobox intent is to pick a different subscription.
+                        cboSubscription.Items.Add(azureSubscription);
                 }
 
                 if (cboSubscription.Items.Count > 0)
