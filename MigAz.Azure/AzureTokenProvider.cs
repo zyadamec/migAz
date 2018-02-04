@@ -41,7 +41,7 @@ namespace MigAz.Azure
             }
         }
 
-        public async Task<AuthenticationResult> GetToken(string loginUrl, string resourceUrl, Guid azureAdTenantGuid)
+        public async Task<AuthenticationResult> GetToken(string loginUrl, string resourceUrl, Guid azureAdTenantGuid, PromptBehavior promptBehavior = PromptBehavior.Auto)
         {
             _LogProvider.WriteLog("GetToken", "Start token request : Azure AD Tenant ID " + azureAdTenantGuid.ToString());
             _LogProvider.WriteLog("GetToken", " - Login Url: " + loginUrl);
@@ -54,7 +54,7 @@ namespace MigAz.Azure
             _AuthenticationResult = null;
             AuthenticationContext context = new AuthenticationContext(authenticationUrl);
 
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Auto, null);
+            PlatformParameters platformParams = new PlatformParameters(promptBehavior, null);
             _AuthenticationResult = await context.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
 
             _LogProvider.WriteLog("GetToken", "End token request");
@@ -62,7 +62,7 @@ namespace MigAz.Azure
             return _AuthenticationResult;
         }
 
-        public async Task<AuthenticationResult> LoginAzureProvider(string loginUrl, string resourceUrl)
+        public async Task<AuthenticationResult> LoginAzureProvider(string loginUrl, string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto)
         {
             _LogProvider.WriteLog("LoginAzureProvider", "Start token request");
             _LogProvider.WriteLog("GetToken", " - Login Url: " + loginUrl);
@@ -73,7 +73,7 @@ namespace MigAz.Azure
 
             AuthenticationContext context = new AuthenticationContext(authenticationUrl);
 
-            PlatformParameters platformParams = new PlatformParameters(PromptBehavior.Always, null);
+            PlatformParameters platformParams = new PlatformParameters(promptBehavior, null);
             AuthenticationResult authenticationResult = await context.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
             if (authenticationResult == null)
             {

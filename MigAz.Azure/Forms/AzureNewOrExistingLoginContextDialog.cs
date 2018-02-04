@@ -14,6 +14,7 @@ namespace MigAz.Azure.Forms
 {
     public partial class AzureNewOrExistingLoginContextDialog : Form
     {
+        private bool _IsInitializing = false;
         private AzureLoginContextViewer _AzureLoginContextViewer;
 
         public AzureNewOrExistingLoginContextDialog()
@@ -23,71 +24,78 @@ namespace MigAz.Azure.Forms
 
         public async Task InitializeDialog(AzureLoginContextViewer azureLoginContextViewer)
         {
-            _AzureLoginContextViewer = azureLoginContextViewer;
-            await azureArmLoginControl1.BindContext(azureLoginContextViewer.AzureContext);
+            try {
+                _IsInitializing = true;
 
-            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
+                _AzureLoginContextViewer = azureLoginContextViewer;
+                await azureArmLoginControl1.BindContext(azureLoginContextViewer.AzureContext);
 
-            lblSameEnviroronment.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
-            lblSameUsername.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
-            lblSameTenant.Text = azureLoginContextViewer.ExistingContext.AzureTenant.ToString();
-            lblSameSubscription.Text = azureLoginContextViewer.ExistingContext.AzureSubscription.ToString();
+                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
 
-            lblSameEnvironment2.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
-            lblSameUsername2.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                lblSameEnviroronment.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
+                lblSameUsername.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                lblSameTenant.Text = azureLoginContextViewer.ExistingContext.AzureTenant.ToString();
+                lblSameSubscription.Text = azureLoginContextViewer.ExistingContext.AzureSubscription.ToString();
 
-            int subscriptionCount = 0;
-            cboTenant.Items.Clear();
-            if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null && azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult != null)
-            {
-                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
-                foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.AzureRetriever.GetAzureARMTenants())
+                lblSameEnvironment2.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
+                lblSameUsername2.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+
+                int subscriptionCount = 0;
+                cboTenant.Items.Clear();
+                if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null && azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult != null)
                 {
-                    subscriptionCount += azureTenant.Subscriptions.Count;
+                    azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
+                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.AzureRetriever.GetAzureARMTenants())
+                    {
+                        subscriptionCount += azureTenant.Subscriptions.Count;
 
-                    if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
-                    {
-                        cboTenant.Items.Add(azureTenant);
-                        azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                        if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
+                        {
+                            cboTenant.Items.Add(azureTenant);
+                            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                        }
+                        else
+                        {
+                            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "'.  Contains no subscriptions.");
+                        }
                     }
-                    else
+                    cboTenant.Enabled = true;
+
+                    if (azureLoginContextViewer.SelectedAzureContext != null && azureLoginContextViewer.SelectedAzureContext.AzureTenant != null)
                     {
-                        azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "'.  Contains no subscriptions.");
+                        foreach (AzureTenant azureTenant in cboTenant.Items)
+                        {
+                            if (azureLoginContextViewer.SelectedAzureContext.AzureTenant == azureTenant)
+                                cboTenant.SelectedItem = azureTenant;
+                        }
                     }
                 }
-                cboTenant.Enabled = true;
 
-                if (azureLoginContextViewer.ExistingContext.AzureTenant != null)
+                rbSameUserDifferentSubscription.Enabled = subscriptionCount > 1;
+
+                switch (azureLoginContextViewer.AzureContextSelectedType)
                 {
-                    foreach (AzureTenant azureTenant in cboTenant.Items)
-                    {
-                        if (azureLoginContextViewer.ExistingContext.AzureTenant == azureTenant)
-                            cboTenant.SelectedItem = azureTenant;
-                    }
-                }
-            }
-
-            rbSameUserDifferentSubscription.Enabled = subscriptionCount > 1;
-
-            switch (azureLoginContextViewer.AzureContextSelectedType)
-            {
-                case AzureContextSelectedType.ExistingContext:
-                    rbExistingContext.Checked = true;
-                    break;
-                case AzureContextSelectedType.SameUserDifferentSubscription:
-                    if (rbSameUserDifferentSubscription.Enabled)
-                        rbSameUserDifferentSubscription.Checked = true;
-                    else
+                    case AzureContextSelectedType.ExistingContext:
                         rbExistingContext.Checked = true;
-                    break;
-                case AzureContextSelectedType.NewContext:
-                    rbNewContext.Checked = true;
-                    break;
+                        break;
+                    case AzureContextSelectedType.SameUserDifferentSubscription:
+                        if (rbSameUserDifferentSubscription.Enabled)
+                            rbSameUserDifferentSubscription.Checked = true;
+                        else
+                            rbExistingContext.Checked = true;
+                        break;
+                    case AzureContextSelectedType.NewContext:
+                        rbNewContext.Checked = true;
+                        break;
+                }
+
+                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "End AzureSubscriptionContextDialog InitializeDialog");
             }
-
-            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "End AzureSubscriptionContextDialog InitializeDialog");
+            finally
+            {
+                _IsInitializing = false;
+            }
         }
-
 
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -110,12 +118,15 @@ namespace MigAz.Azure.Forms
 
         private void rbSameUserDifferentSubscription_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbSameUserDifferentSubscription.Checked)
+            if (!_IsInitializing)
             {
-                _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
-                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
+                if (rbSameUserDifferentSubscription.Checked)
+                {
+                    _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
+                    _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
 
-                _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
+                    _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
+                }
             }
 
             azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);
