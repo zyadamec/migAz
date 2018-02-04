@@ -51,8 +51,15 @@ namespace MigAz.Azure.Forms
 
                         if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                         {
-                            cboTenant.Items.Add(azureTenant);
-                            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                            if (azureTenant.Subscriptions.Count == 1 && azureTenant.Subscriptions[0] == azureLoginContextViewer.ExistingContext.AzureSubscription)
+                            {
+                                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "', as it has only one subscription, which is the same as the Existing Azure Context.");
+                            }
+                            else
+                            {
+                                cboTenant.Items.Add(azureTenant);
+                                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                            }
                         }
                         else
                         {
@@ -95,6 +102,11 @@ namespace MigAz.Azure.Forms
             {
                 _IsInitializing = false;
             }
+
+            if (rbSameUserDifferentSubscription.Checked && cboTenant.SelectedIndex == -1 && cboTenant.Items.Count > 0)
+            {
+                cboTenant.SelectedIndex = 0;
+            }
         }
 
 
@@ -126,6 +138,11 @@ namespace MigAz.Azure.Forms
                     _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
 
                     _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
+
+                    if (cboTenant.SelectedIndex == -1 && cboTenant.Items.Count > 0)
+                    {
+                        cboTenant.SelectedIndex = 0;
+                    }
                 }
             }
 
