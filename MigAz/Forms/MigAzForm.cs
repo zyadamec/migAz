@@ -12,6 +12,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
+using MigAz.Core;
 
 namespace MigAz.Forms
 {
@@ -54,7 +55,24 @@ namespace MigAz.Forms
                 targetTreeView.ImageList = this.imageList1;
                 targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
+
+            AlertIfNewVersionAvailable();
         }
+
+        #region New Version Check
+
+        private async Task AlertIfNewVersionAvailable()
+        {
+            string currentVersion = "2.3.3.2";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #endregion
 
         #region Azure Migration Source Context Events
 
