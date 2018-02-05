@@ -12,6 +12,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
+using MigAz.Core;
 
 namespace MigAz.Forms
 {
@@ -54,7 +55,24 @@ namespace MigAz.Forms
                 targetTreeView.ImageList = this.imageList1;
                 targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
+
+            AlertIfNewVersionAvailable();
         }
+
+        #region New Version Check
+
+        private async Task AlertIfNewVersionAvailable()
+        {
+            string currentVersion = "2.3.3.2";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #endregion
 
         #region Azure Migration Source Context Events
 
@@ -245,19 +263,6 @@ namespace MigAz.Forms
         #endregion
 
         #region Properties
-
-        //public TemplateGenerator TemplateGenerator
-        //{
-        //    get
-        //    {
-        //        MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
-
-        //        if (migrationTargetControl == null)
-        //            return null;
-
-        //        return migrationTargetControl.TemplateGenerator;
-        //    }
-        //}
 
         public ILogProvider LogProvider
         {
@@ -672,6 +677,7 @@ namespace MigAz.Forms
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
+                azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
 
             MigrationSourceSelectionControlVisible = false;
@@ -733,6 +739,7 @@ namespace MigAz.Forms
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
                 azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
+                azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
 
                 IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
                 if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))
