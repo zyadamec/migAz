@@ -1947,7 +1947,9 @@ namespace MigAz.Azure
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, _AzureContext.TokenProvider.AccessToken);
+            AuthenticationResult asmToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), this.AzureAdTenantId);
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, asmToken.AccessToken);
             azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
 
@@ -1986,8 +1988,6 @@ namespace MigAz.Azure
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
             if (_AzureContext.TokenProvider.AccessToken == null)
                 throw new ArgumentNullException("AccessToken Context is null.  Unable to call Azure API without AccessToken.");
-
-            String accessToken = _AzureContext.TokenProvider.AccessToken;
 
             switch (resourceType)
             {
@@ -2072,7 +2072,9 @@ namespace MigAz.Azure
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, accessToken, methodType, useCached);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId);
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             return JObject.Parse(azureRestResponse.Response);
         }

@@ -19,6 +19,7 @@ namespace MigAz.Forms
     {
         #region Variables
 
+        private Guid _AppSessionGuid = Guid.NewGuid();
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
         private AppSettingsProvider _appSettingsProvider;
@@ -64,6 +65,7 @@ namespace MigAz.Forms
 
             dgvMigAzMessages.DataSource = null;
             btnRefreshOutput.Enabled = false;
+            btnExport.Enabled = false;
 
             foreach (TabPage t in tabOutputResults.TabPages)
             {
@@ -165,6 +167,8 @@ namespace MigAz.Forms
 
         #endregion
 
+        #region Form Objects
+
         private IMigrationSourceUserControl MigrationSourceControl
         {
             get
@@ -214,6 +218,8 @@ namespace MigAz.Forms
                 return null;
             }
         }
+
+        #endregion
 
         private async Task PropertyPanel1_PropertyChanged()
         {
@@ -321,37 +327,27 @@ namespace MigAz.Forms
 
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
-            if (splitContainer3.Panel2.Controls.Count == 1)
+            // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+            if (await RefreshOutput())
             {
-                IMigrationTargetUserControl control = this.MigrationTargetControl;
-
-                if (AssertHasTargetErrors())
-                {
-                    return;
-                }
-
                 IMigrationTargetUserControl migrationTargetControl = this.MigrationTargetControl;
-                if (migrationTargetControl == null)
-                    throw new ArgumentException("Unable to Refresh Output:  NULL MigrationTargetControl Context")
-    ;
-                if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
+                if (migrationTargetControl != null)
                 {
-                    MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
-
-                    if (azureTargetContext.TemplateGenerator != null)
+                    if (migrationTargetControl.GetType() == typeof(MigrationAzureTargetContext))
                     {
-                        azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
-                        azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
+                        MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetControl;
 
-                        // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-                        await RefreshOutput();
+                        if (azureTargetContext.TemplateGenerator != null)
+                        {
+                            azureTargetContext.TemplateGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                        azureTargetContext.TemplateGenerator.Write();
+                            azureTargetContext.TemplateGenerator.Write();
 
-                        StatusProvider.UpdateStatus("Ready");
+                            StatusProvider.UpdateStatus("Ready");
 
-                        var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
-                        exportResults.ShowDialog(this);
+                            var exportResults = new ExportResultsDialog(azureTargetContext.TemplateGenerator);
+                            exportResults.ShowDialog(this);
+                        }
                     }
                 }
             }
@@ -398,11 +394,11 @@ namespace MigAz.Forms
             await RefreshOutput();
         }
 
-        private async Task RefreshOutput()
+        private async Task<bool> RefreshOutput()
         {
             if (AssertHasTargetErrors())
             {
-                return;
+                return false;
             }
 
             IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
@@ -426,7 +422,6 @@ namespace MigAz.Forms
                     azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
 
                     await azureTargetContext.TemplateGenerator.GenerateStreams();
-                    await azureTargetContext.TemplateGenerator.SerializeStreams();
 
                     foreach (TabPage tabPage in tabOutputResults.TabPages)
                     {
@@ -526,12 +521,13 @@ namespace MigAz.Forms
                     if (AppSettingsProvider.AllowTelemetry)
                     {
                         StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                        _telemetryProvider.PostTelemetryRecord((AzureGenerator)azureTargetContext.TemplateGenerator);
+                        _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, (AzureGenerator)azureTargetContext.TemplateGenerator);
                     }
                 }
             }
 
             StatusProvider.UpdateStatus("Ready");
+            return true;
         }
 
 
@@ -745,7 +741,6 @@ namespace MigAz.Forms
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                 }
-
             }
 
             MigrationTargetSelectionControlVisible = false;
@@ -777,6 +772,7 @@ namespace MigAz.Forms
             dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
+            btnExport.Enabled = true;
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)

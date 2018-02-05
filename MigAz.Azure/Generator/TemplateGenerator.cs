@@ -132,10 +132,9 @@ namespace MigAz.Azure.Generator
 
         public async Task GenerateStreams()
         {
-            if (_ExportArtifacts.HasErrors)
-            {
-                throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
-            }
+            _ExecutionGuid = Guid.NewGuid();
+
+            LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
 
             TemplateStreams.Clear();
             Resources.Clear();
@@ -143,11 +142,13 @@ namespace MigAz.Azure.Generator
             _CopyBlobDetails.Clear();
             _TemporaryStorageAccounts.Clear();
 
-            LogProvider.WriteLog("GenerateStreams", "Start - Execution " + this.ExecutionGuid.ToString());
-
             if (_ExportArtifacts != null)
             {
-                LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+                if (_ExportArtifacts.HasErrors)
+                {
+                    throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
+                }               LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+
                 foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
@@ -236,9 +237,24 @@ namespace MigAz.Azure.Generator
                     await BuildVirtualMachineObject(virtualMachine, _ExportArtifacts.ResourceGroup);
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Cloud Services / Virtual Machines");
+
+                // Serialize
+
+                TemplateStreams.Clear();
+
+                await SerializeDeploymentInstructions();
+
+                if (HasBlobCopyDetails)
+                {
+                    await SerializeBlobCopyDetails(); // Serialize blob copy details
+                    await SerializeMigAzPowerShell();
+                }
+
+                await SerializeExportTemplate();
+                await SerializeParameterTemplate();
             }
             else
-                LogProvider.WriteLog("GenerateStreams", "_ExportArtifacts is null, nothing to export.");
+                LogProvider.WriteLog("GenerateStreams", "ExportArtifacts is null, nothing to export.");
 
             StatusProvider.UpdateStatus("Ready");
             LogProvider.WriteLog("GenerateStreams", "End - Execution " + this.ExecutionGuid.ToString());
@@ -1061,7 +1077,7 @@ namespace MigAz.Azure.Generator
                     Vhd vhd = new Vhd();
                     osdisk.vhd = vhd;
                     vhd.uri = targetVirtualMachine.OSVirtualHardDisk.TargetMediaLink;
-
+                    
                     if (targetVirtualMachine.OSVirtualHardDisk.TargetStorage != null && (targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount) || targetVirtualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(MigrationTarget.StorageAccount)))
                     {
                         // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
@@ -1350,30 +1366,6 @@ namespace MigAz.Azure.Generator
             {
                 return _CopyBlobDetails.Count > 0;
             }
-        }
-
-
-
-        public async Task SerializeStreams()
-        {
-            LogProvider.WriteLog("SerializeStreams", "Start");
-
-            TemplateStreams.Clear();
-
-            await SerializeDeploymentInstructions();
-
-            if (HasBlobCopyDetails)
-            {
-                await SerializeBlobCopyDetails(); // Serialize blob copy details
-                await SerializeMigAzPowerShell();
-            }
-
-            await SerializeExportTemplate();
-            await SerializeParameterTemplate();
-
-            StatusProvider.UpdateStatus("Ready");
-
-            LogProvider.WriteLog("SerializeStreams", "End");
         }
 
         private async Task SerializeBlobCopyDetails()

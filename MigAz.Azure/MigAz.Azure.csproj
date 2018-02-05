@@ -217,7 +217,6 @@
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />
     <Compile Include="Generator\AzureGenerator.cs" />
-    <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Models\CloudServiceVM.cs" />
     <Compile Include="Models\BlobCopyDetail.cs" />
     <Compile Include="Models\SaveSelection.cs" />

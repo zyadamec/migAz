@@ -5,9 +5,14 @@ namespace MigAz.Azure.Models
 {
     public class TelemetryRecord
     {
-        public Guid ExecutionId;
-        public Guid TenantId;
-        public Guid SubscriptionId;
+        public Guid AppSessionGuid;
+        public Guid ExecutionGuid;
+        public Guid SourceTenantGuid;
+        public Guid SourceSubscriptionGuid;
+        public string SourceEnvironment;
+        public Guid TargetTenantGuid;
+        public Guid TargetSubscriptionGuid;
+        public string TargetEnvironment;
         public Dictionary<string, string> ProcessedResources;
         public string OfferCategories;
         public string SourceVersion;
