@@ -20,10 +20,14 @@ namespace MigAz.Azure.Forms
             _AzureContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
 
             lblAzureEnvironment.Text = _AzureContext.AzureEnvironment.ToString();
-            lblAzureUsername.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+
+            if (_AzureContext.TokenProvider.LastUserInfo != null)
+            {
+                lblAzureUsername.Text = _AzureContext.TokenProvider.LastUserInfo.DisplayableId;
+            }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.AuthenticationResult != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
                 _AzureContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
                 foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())

@@ -13,40 +13,22 @@ namespace MigAz.Tests.Fakes
 {
     class FakeTokenProvider : ITokenProvider
     {
-        public AuthenticationResult AuthenticationResult
+        public string LogonUrl
+        {
+            get { return "https://logon.contoso.com"; }
+        }
+
+        public UserInfo LastUserInfo
         {
             get { return null; }
-            set => throw new NotImplementedException();
         }
 
-        public string AccessToken => "FakeTokenValue";
-
-        public async Task<AuthenticationResult> GetToken(AzureSubscription azureSubscription)
+        public async Task<AuthenticationResult> GetToken(string resourceUrl, Guid tenantGuid, PromptBehavior promptBehavior)
         {
             return null;
         }
 
-        public async Task<AuthenticationResult> GetCommonToken(string azureEnvironment)
-        {
-            return null;
-        }
-
-        public async Task<List<AzureSubscription>> GetSubscriptions()
-        {
-            return new List<AzureSubscription>();
-        }
-
-        public Task<AuthenticationResult> LoginAzureProvider()
-        {
-            return null;
-        }
-
-        public Task<AuthenticationResult> GetGraphToken(string v)
-        {
-            return null;
-        }
-
-        public Task<AuthenticationResult> GetAzureToken(string v)
+        public Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior)
         {
             return null;
         }

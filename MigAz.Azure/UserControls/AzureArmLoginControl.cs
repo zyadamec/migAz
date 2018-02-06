@@ -29,7 +29,7 @@ namespace MigAz.Azure.UserControls
             else
                 cboAzureEnvironment.SelectedIndex = 0;
 
-            if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.AuthenticationResult == null)
+            if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.LastUserInfo == null)
             {
                 lblAuthenticatedUser.Text = "-";
                 cboAzureEnvironment.Enabled = true;
@@ -37,13 +37,13 @@ namespace MigAz.Azure.UserControls
             }
             else
             {
-                lblAuthenticatedUser.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                lblAuthenticatedUser.Text = _AzureContext.TokenProvider.LastUserInfo.DisplayableId;
                 cboAzureEnvironment.Enabled = false;
                 btnAuthenticate.Text = "Sign Out";
             }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.AuthenticationResult != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
                 {
@@ -123,7 +123,7 @@ namespace MigAz.Azure.UserControls
 
                     if (_AzureContext.TokenProvider != null)
                     {
-                        lblAuthenticatedUser.Text = _AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                        lblAuthenticatedUser.Text = _AzureContext.TokenProvider.LastUserInfo.DisplayableId;
                         btnAuthenticate.Text = "Sign Out";
 
                         cboTenant.Items.Clear();
