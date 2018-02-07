@@ -17,6 +17,7 @@ namespace MigAz.Azure
         private ILogProvider _LogProvider;
         private string _LogonUrl = String.Empty;
         private AuthenticationContext _AuthenticationContext;
+        private Dictionary<Guid, AuthenticationContext> _TenantAuthenticationContext = new Dictionary<Guid, AuthenticationContext>();
         private UserInfo _LastUserInfo;
 
         private AzureTokenProvider() { }
@@ -24,7 +25,7 @@ namespace MigAz.Azure
         internal AzureTokenProvider(string logonUrl, ILogProvider logProvider)
         {
             _LogonUrl = logonUrl;
-            _AuthenticationContext = new AuthenticationContext(_LogonUrl);
+            _AuthenticationContext = new AuthenticationContext(_LogonUrl + "common");
             _LogProvider = logProvider;
         }
 
@@ -38,17 +39,31 @@ namespace MigAz.Azure
             get { return _LastUserInfo; }
         }
 
+        private AuthenticationContext GetTenantAuthenticationContext(Guid tenantGuid)
+        {
+            if (tenantGuid == Guid.Empty)
+                return _AuthenticationContext;
+
+            if (_TenantAuthenticationContext.Keys.Contains(tenantGuid))
+                return _TenantAuthenticationContext[tenantGuid];
+            else
+            {
+                AuthenticationContext tenantAuthenticationContext = new AuthenticationContext(_LogonUrl + tenantGuid.ToString() + "/");
+                _TenantAuthenticationContext.Add(tenantGuid, tenantAuthenticationContext);
+                return tenantAuthenticationContext;
+            }
+        }
+
         public async Task<AuthenticationResult> GetToken(string resourceUrl, Guid azureAdTenantGuid, PromptBehavior promptBehavior = PromptBehavior.Auto)
         {
             _LogProvider.WriteLog("GetToken", "Start token request : Azure AD Tenant ID " + azureAdTenantGuid.ToString());
             _LogProvider.WriteLog("GetToken", " - Resource Url: " + resourceUrl);
             _LogProvider.WriteLog("GetToken", " - Azure AD Tenant Guid: " + azureAdTenantGuid.ToString());
 
-            string authenticationUrl = _AuthenticationContext.Authority + azureAdTenantGuid;
-            _LogProvider.WriteLog("GetToken", "Authentication Url: " + authenticationUrl);
+            AuthenticationContext tenantAuthenticationContext = GetTenantAuthenticationContext(azureAdTenantGuid);
             
             PlatformParameters platformParams = new PlatformParameters(promptBehavior, null);
-            AuthenticationResult authenticationResult = await _AuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
+            AuthenticationResult authenticationResult = await tenantAuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
 
             if (authenticationResult == null)
                 _LastUserInfo = null;
