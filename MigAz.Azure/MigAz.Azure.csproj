@@ -145,7 +145,6 @@
     </Compile>
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IArmDisk.cs" />
-    <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\BackEndAddressPool.cs" />

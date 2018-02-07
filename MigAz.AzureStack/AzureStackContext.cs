@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +11,24 @@ namespace MigAz.AzureStack
     public class AzureStackContext
     {
         private ILogProvider _LogProvider;
-        private AzureStackTokenProvider _TokenProvider;
+        private AzureTokenProvider _TokenProvider;
 
         private AzureStackContext() { }
 
         public AzureStackContext(ILogProvider logProvider)
         {
             _LogProvider = logProvider;
-            _TokenProvider = new AzureStackTokenProvider(_LogProvider);
+            _TokenProvider = new AzureTokenProvider(_LogProvider);
         }
 
-        public AzureStackTokenProvider TokenProvider
+        public AzureTokenProvider TokenProvider
         {
             get { return _TokenProvider; }
         }
 
         public async Task Login()
         {
-            await this.TokenProvider.LoginAzureProvider();
+            await this.TokenProvider.LoginAzureProvider("https://login.microsoftonline.com/", "https://management.core.windows.net/");
             //UserAuthenticated?.Invoke(this);
         }
     }

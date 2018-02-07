@@ -19,7 +19,7 @@ namespace MigAz.Azure
 
         private AzureTokenProvider() { }
 
-        internal AzureTokenProvider(ILogProvider logProvider)
+        public AzureTokenProvider(ILogProvider logProvider)
         {
             _LogProvider = logProvider;
         }
