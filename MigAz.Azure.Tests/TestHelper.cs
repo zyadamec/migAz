@@ -41,7 +41,7 @@ namespace MigAz.Tests
             azureContext.AzureRetriever = new TestRetriever(azureContext);
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
 
-            List<AzureSubscription> subscriptions = await azureContext.AzureRetriever.GetAzureARMSubscriptions();
+            List<AzureSubscription> subscriptions = await azureContext.AzureRetriever.GetAzureARMSubscriptions(Guid.Empty);
             await azureContext.SetSubscriptionContext(subscriptions[0]);
             await azureContext.AzureRetriever.SetSubscriptionContext(subscriptions[0]);
 

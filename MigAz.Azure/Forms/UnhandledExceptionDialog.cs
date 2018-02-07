@@ -14,7 +14,7 @@ namespace MigAz.Azure.Forms
 {
     public partial class UnhandledExceptionDialog : Form
     {
-        Exception _UnhandledException;
+        Exception _SourceException;
         ILogProvider _LogProvider;
 
         private UnhandledExceptionDialog() { }
@@ -22,10 +22,15 @@ namespace MigAz.Azure.Forms
         public UnhandledExceptionDialog(ILogProvider fileLogProvider, Exception e)
         {
             InitializeComponent();
-            
-            if (e != null)
+            _SourceException = e;
+
+            Exception exc = e;
+            while (exc != null)
             {
-                _UnhandledException = e;
+                if (textBox1.Text.Length > 0)
+                {
+                    textBox1.Text = textBox1.Text + Environment.NewLine + Environment.NewLine;
+                }
 
                 if (e.GetType() == typeof(System.Net.WebException))
                 {
@@ -38,6 +43,8 @@ namespace MigAz.Azure.Forms
                 }
                 else
                     textBox1.Text = e.Message + Environment.NewLine + e.StackTrace;
+
+                exc = exc.InnerException;
             }
 
             if (fileLogProvider != null)

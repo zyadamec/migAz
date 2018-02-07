@@ -12,6 +12,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
+using MigAz.Core;
 using MigAz.AzureStack.UserControls;
 
 namespace MigAz.Forms
@@ -55,7 +56,24 @@ namespace MigAz.Forms
                 targetTreeView.ImageList = this.imageList1;
                 targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
+
+            AlertIfNewVersionAvailable();
         }
+
+        #region New Version Check
+
+        private async Task AlertIfNewVersionAvailable()
+        {
+            string currentVersion = "2.3.3.2";
+            VersionCheck versionCheck = new VersionCheck(this.LogProvider);
+            string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
+            if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
+            {
+                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        #endregion
 
         #region Azure Migration Source Context Events
 
@@ -247,19 +265,6 @@ namespace MigAz.Forms
 
         #region Properties
 
-        //public TemplateGenerator TemplateGenerator
-        //{
-        //    get
-        //    {
-        //        MigrationAzureTargetContext migrationTargetControl = this.MigrationTargetControl;
-
-        //        if (migrationTargetControl == null)
-        //            return null;
-
-        //        return migrationTargetControl.TemplateGenerator;
-        //    }
-        //}
-
         public ILogProvider LogProvider
         {
             get { return _logProvider; }
@@ -381,6 +386,16 @@ namespace MigAz.Forms
         {
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
+
+            IMigrationSourceUserControl sourceUserControl = this.MigrationSourceControl;
+            if (sourceUserControl != null)
+            {
+                if (sourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
+                {
+                    MigrationAzureSourceContext migrationAzureSourceContext = (MigrationAzureSourceContext)sourceUserControl;
+                    migrationAzureSourceContext.AzureContext.PromptBehavior = app.Default.PromptBehavior;
+                }
+            }
         }
 
         private void btnChoosePath_Click(object sender, EventArgs e)
@@ -643,7 +658,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.PromptBehavior);
 
                 switch (app.Default.AzureEnvironment)
                 {
@@ -673,6 +688,7 @@ namespace MigAz.Forms
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
+                azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
@@ -739,6 +755,7 @@ namespace MigAz.Forms
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
                 azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
+                azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
 
                 IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
                 if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))

@@ -13,6 +13,7 @@ using System.Net;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Forms;
 using MigAz.Core;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure.UserControls
 {
@@ -86,7 +87,7 @@ namespace MigAz.Azure.UserControls
 
         #endregion
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
         {
             _TargetSettings = targetSettings;
 
@@ -100,6 +101,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
+            _AzureContextSource.PromptBehavior = promptBehavior;
 
             await azureLoginContextViewerSource.Bind(_AzureContextSource);
 
