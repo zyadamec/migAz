@@ -22,7 +22,7 @@ namespace MigAz.Azure
 
         private AzureTokenProvider() { }
 
-        internal AzureTokenProvider(string logonUrl, ILogProvider logProvider)
+        public AzureTokenProvider(string logonUrl, ILogProvider logProvider)
         {
             _LogonUrl = logonUrl;
             _AuthenticationContext = new AuthenticationContext(_LogonUrl + "common");

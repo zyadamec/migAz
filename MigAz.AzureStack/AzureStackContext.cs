@@ -18,7 +18,7 @@ namespace MigAz.AzureStack
         public AzureStackContext(ILogProvider logProvider)
         {
             _LogProvider = logProvider;
-            _TokenProvider = new AzureTokenProvider(_LogProvider);
+            _TokenProvider = new AzureTokenProvider("https://login.microsoftonline.com/", _LogProvider);
         }
 
         public AzureTokenProvider TokenProvider
@@ -28,7 +28,7 @@ namespace MigAz.AzureStack
 
         public async Task Login()
         {
-            await this.TokenProvider.LoginAzureProvider("https://login.microsoftonline.com/", "https://management.core.windows.net/");
+            await this.TokenProvider.Login("https://management.core.windows.net/", Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Always);
             //UserAuthenticated?.Invoke(this);
         }
     }
