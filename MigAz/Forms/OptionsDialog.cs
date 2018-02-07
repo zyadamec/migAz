@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
 using System.Windows.Forms;
 
 namespace MigAz.Forms
@@ -72,6 +73,28 @@ namespace MigAz.Forms
             app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
             app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
+            
+            switch (cmbPromptBehavior.SelectedItem)
+            {
+                case "Always":
+                    app.Default.PromptBehavior = PromptBehavior.Always;
+                    break;
+                case "Auto":
+                    app.Default.PromptBehavior = PromptBehavior.Auto;
+                    break;
+                case "Never":
+                    app.Default.PromptBehavior = PromptBehavior.Never;
+                    break;
+                case "RefreshSession":
+                    app.Default.PromptBehavior = PromptBehavior.RefreshSession;
+                    break;
+                case "SelectAccount":
+                    app.Default.PromptBehavior = PromptBehavior.SelectAccount;
+                    break;
+                default:
+                    app.Default.PromptBehavior = PromptBehavior.Auto;
+                    break;
+            }
 
             app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
 
@@ -119,6 +142,9 @@ namespace MigAz.Forms
                 rbClassicDisk.Checked = true;
             else
                 rbManagedDisk.Checked = true;
+
+            int promptBehaviorIndex = cmbPromptBehavior.FindStringExact(app.Default.PromptBehavior.ToString());
+            cmbPromptBehavior.SelectedIndex = promptBehaviorIndex;
 
             _HasChanges = false;
         }
@@ -178,7 +204,7 @@ namespace MigAz.Forms
             _HasChanges = false;
         }
 
-        private void cmbDefaultAzureEnvironment_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             _HasChanges = true;
         }

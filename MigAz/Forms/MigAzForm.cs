@@ -385,6 +385,16 @@ namespace MigAz.Forms
         {
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
+
+            IMigrationSourceUserControl sourceUserControl = this.MigrationSourceControl;
+            if (sourceUserControl != null)
+            {
+                if (sourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
+                {
+                    MigrationAzureSourceContext migrationAzureSourceContext = (MigrationAzureSourceContext)sourceUserControl;
+                    migrationAzureSourceContext.AzureContext.PromptBehavior = app.Default.PromptBehavior;
+                }
+            }
         }
 
         private void btnChoosePath_Click(object sender, EventArgs e)
@@ -647,7 +657,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.PromptBehavior);
 
                 switch (app.Default.AzureEnvironment)
                 {
