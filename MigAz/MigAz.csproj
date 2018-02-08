@@ -65,11 +65,11 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.17.3.35304, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.3\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.1.3001, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.17.3.35304, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.17.3\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.1.3001, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -109,6 +109,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewVersionAvailableDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewVersionAvailableDialog.Designer.cs">
+      <DependentUpon>NewVersionAvailableDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MigAzForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +152,9 @@
     <Compile Include="UserControls\MigAzMigrationTargetSelection.Designer.cs">
       <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\NewVersionAvailableDialog.resx">
+      <DependentUpon>NewVersionAvailableDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>

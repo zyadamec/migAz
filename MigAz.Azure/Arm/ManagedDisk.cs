@@ -1,4 +1,5 @@
-﻿using MigAz.Azure.Interface;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Azure.Interface;
 using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
@@ -172,9 +173,11 @@ namespace MigAz.Azure.Arm
             string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
 
+            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), _AzureContext.AzureSubscription.AzureAdTenantId);
+
             using (var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _AzureContext.TokenProvider.AccessToken);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.BaseAddress = new Uri(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl());
 

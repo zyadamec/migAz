@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
 using System.Windows.Forms;
 
 namespace MigAz.Forms
@@ -72,6 +73,22 @@ namespace MigAz.Forms
             app.Default.BuildEmpty = chkBuildEmpty.Checked;
             app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
             app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
+            
+            switch (cmbLoginPromptBehavior.SelectedItem)
+            {
+                case "Always":
+                    app.Default.LoginPromptBehavior = PromptBehavior.Always;
+                    break;
+                case "Auto":
+                    app.Default.LoginPromptBehavior = PromptBehavior.Auto;
+                    break;
+                case "SelectAccount":
+                    app.Default.LoginPromptBehavior = PromptBehavior.SelectAccount;
+                    break;
+                default:
+                    app.Default.LoginPromptBehavior = PromptBehavior.Auto;
+                    break;
+            }
 
             app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
 
@@ -119,6 +136,9 @@ namespace MigAz.Forms
                 rbClassicDisk.Checked = true;
             else
                 rbManagedDisk.Checked = true;
+
+            int promptBehaviorIndex = cmbLoginPromptBehavior.FindStringExact(app.Default.LoginPromptBehavior.ToString());
+            cmbLoginPromptBehavior.SelectedIndex = promptBehaviorIndex;
 
             _HasChanges = false;
         }
@@ -178,7 +198,7 @@ namespace MigAz.Forms
             _HasChanges = false;
         }
 
-        private void cmbDefaultAzureEnvironment_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             _HasChanges = true;
         }

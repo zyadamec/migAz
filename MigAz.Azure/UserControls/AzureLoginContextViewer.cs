@@ -103,10 +103,9 @@ namespace MigAz.Azure.UserControls
                     lblTenantName.Text = selectedContext.AzureTenant.ToString();
 
                 if (selectedContext.TokenProvider != null &&
-                    selectedContext.TokenProvider.AuthenticationResult != null &&
-                    selectedContext.TokenProvider.AuthenticationResult.UserInfo != null)
+                    selectedContext.TokenProvider.LastUserInfo != null)
                 {
-                    lblSourceUser.Text = selectedContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                    lblSourceUser.Text = selectedContext.TokenProvider.LastUserInfo.DisplayableId;
                 }
 
                 if (selectedContext.AzureSubscription != null)

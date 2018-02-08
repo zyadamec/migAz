@@ -13,11 +13,12 @@ namespace MigAz.Azure
         private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureServiceUrls _AzureServiceUrls;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
+        private PromptBehavior _LoginPromptBehavior = PromptBehavior.Auto;
 
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
-        private AzureTokenProvider _TokenProvider;
+        private ITokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
 
@@ -54,7 +55,6 @@ namespace MigAz.Azure
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
             _AzureServiceUrls = new AzureServiceUrls(this);
-            _TokenProvider = new AzureTokenProvider(_LogProvider);
             _AzureRetriever = new AzureRetriever(this);
         }
 
@@ -72,13 +72,13 @@ namespace MigAz.Azure
             get { return _AzureEnvironment; }
             set
             {
-                // Only allow value change when not authenticated
-                if (_TokenProvider != null && _TokenProvider.AuthenticationResult != null && _AzureEnvironment != value)
-                    throw new ArgumentException("Azure Environment cannot be changed while authenticated.  Sign out before chaning environments.");
-                else
+                if (_AzureEnvironment != value)
+                {
                     _AzureEnvironment = value;
+                    _TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), _LogProvider);
 
-                AzureEnvironmentChanged?.Invoke(this);
+                    AzureEnvironmentChanged?.Invoke(this);
+                }
             }
         }
 
@@ -103,7 +103,7 @@ namespace MigAz.Azure
             set { _AzureRetriever = value; }
         }
 
-        public AzureTokenProvider TokenProvider
+        public ITokenProvider TokenProvider
         {
             get { return _TokenProvider; }
             set { _TokenProvider = value; }
@@ -125,8 +125,14 @@ namespace MigAz.Azure
             this.AzureEnvironment = sourceContext.AzureEnvironment;
             await this.SetTenantContext(sourceContext.AzureTenant);
             await this.SetSubscriptionContext(sourceContext.AzureSubscription);
-            this.TokenProvider.AuthenticationResult = sourceContext.TokenProvider.AuthenticationResult;
+            this.LoginPromptBehavior = sourceContext.LoginPromptBehavior;
             await UserAuthenticated?.Invoke(this);
+        }
+
+        public PromptBehavior LoginPromptBehavior
+        {
+            get { return _LoginPromptBehavior; }
+            set { _LoginPromptBehavior = value; }
         }
 
         public ArmDiskType DefaultTargetDiskType
@@ -141,7 +147,10 @@ namespace MigAz.Azure
 
         public async Task Login()
         {
-            await this.TokenProvider.LoginAzureProvider(this.AzureServiceUrls.GetAzureLoginUrl(), this.AzureServiceUrls.GetASMServiceManagementUrl());
+            if (this.TokenProvider == null)
+                this.TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), this.LogProvider);
+
+            await this.TokenProvider.Login(this.AzureServiceUrls.GetASMServiceManagementUrl(), this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
         }
 
@@ -175,7 +184,7 @@ namespace MigAz.Azure
                 if (_AzureSubscription != null)
                 {
                     if (_TokenProvider != null)
-                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetAzureLoginUrl(), this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
+                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
 
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }
@@ -193,7 +202,7 @@ namespace MigAz.Azure
             await this.SetTenantContext(null);
 
             _AzureRetriever.ClearCache();
-            _TokenProvider.AuthenticationResult = null;
+            _TokenProvider = null;
 
             if (AfterUserSignOut != null)
                 await AfterUserSignOut?.Invoke();

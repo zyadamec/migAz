@@ -55,6 +55,10 @@
             this.txtNetworkInterfaceCardSuffix = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbLoginPromptBehavior = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cmbDefaultAzureEnvironment = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -66,8 +70,7 @@
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.cmbDefaultAzureEnvironment = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).BeginInit();
@@ -351,6 +354,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.cmbLoginPromptBehavior);
+            this.groupBox2.Controls.Add(this.label14);
             this.groupBox2.Controls.Add(this.cmbDefaultAzureEnvironment);
             this.groupBox2.Controls.Add(this.label13);
             this.groupBox2.Controls.Add(this.label12);
@@ -368,6 +374,57 @@
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
+            // 
+            // cmbLoginPromptBehavior
+            // 
+            this.cmbLoginPromptBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLoginPromptBehavior.FormattingEnabled = true;
+            this.cmbLoginPromptBehavior.Items.AddRange(new object[] {
+            "Always",
+            "Auto",
+            "SelectAccount"});
+            this.cmbLoginPromptBehavior.Location = new System.Drawing.Point(129, 222);
+            this.cmbLoginPromptBehavior.Name = "cmbLoginPromptBehavior";
+            this.cmbLoginPromptBehavior.Size = new System.Drawing.Size(149, 28);
+            this.cmbLoginPromptBehavior.TabIndex = 13;
+            this.cmbLoginPromptBehavior.SelectedIndexChanged += new System.EventHandler(this.comboBox_SelectedIndexChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(35, 187);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(303, 20);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Default Azure AD Prompt Behavior";
+            // 
+            // cmbDefaultAzureEnvironment
+            // 
+            this.cmbDefaultAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDefaultAzureEnvironment.FormattingEnabled = true;
+            this.cmbDefaultAzureEnvironment.Items.AddRange(new object[] {
+            "AzureCloud",
+            "AzureGermanCloud",
+            "AzureChinaCloud",
+            "AzureUSGovernment"});
+            this.cmbDefaultAzureEnvironment.Location = new System.Drawing.Point(530, 57);
+            this.cmbDefaultAzureEnvironment.Name = "cmbDefaultAzureEnvironment";
+            this.cmbDefaultAzureEnvironment.Size = new System.Drawing.Size(273, 28);
+            this.cmbDefaultAzureEnvironment.TabIndex = 11;
+            this.cmbDefaultAzureEnvironment.SelectedIndexChanged += new System.EventHandler(this.comboBox_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(482, 22);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(235, 20);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "Default Azure Environment";
             // 
             // label12
             // 
@@ -513,31 +570,14 @@
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
             // 
-            // label13
+            // label15
             // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(482, 22);
-            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(235, 20);
-            this.label13.TabIndex = 10;
-            this.label13.Text = "Default Azure Environment";
-            // 
-            // cmbDefaultAzureEnvironment
-            // 
-            this.cmbDefaultAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDefaultAzureEnvironment.FormattingEnabled = true;
-            this.cmbDefaultAzureEnvironment.Items.AddRange(new object[] {
-            "AzureCloud",
-            "AzureGermanCloud",
-            "AzureChinaCloud",
-            "AzureUSGovernment"});
-            this.cmbDefaultAzureEnvironment.Location = new System.Drawing.Point(530, 57);
-            this.cmbDefaultAzureEnvironment.Name = "cmbDefaultAzureEnvironment";
-            this.cmbDefaultAzureEnvironment.Size = new System.Drawing.Size(273, 28);
-            this.cmbDefaultAzureEnvironment.TabIndex = 11;
-            this.cmbDefaultAzureEnvironment.SelectedIndexChanged += new System.EventHandler(this.cmbDefaultAzureEnvironment_SelectedIndexChanged);
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(68, 225);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(52, 20);
+            this.label15.TabIndex = 14;
+            this.label15.Text = "Login:";
             // 
             // OptionsDialog
             // 
@@ -545,7 +585,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(885, 742);
+            this.ClientSize = new System.Drawing.Size(893, 755);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -612,5 +652,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbDefaultAzureEnvironment;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox cmbLoginPromptBehavior;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
     }
 }

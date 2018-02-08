@@ -14,10 +14,16 @@ namespace MigAz.AzureStack.UserControls
     public partial class MigrationAzureStackSourceContext : UserControl, IMigrationSourceUserControl
     {
         private bool _IsAuthenticated = false;
+        private ILogProvider _LogProvider;
 
         public MigrationAzureStackSourceContext()
         {
             InitializeComponent();
+        }
+
+        public void Bind(ILogProvider logProvider)
+        {
+            _LogProvider = logProvider;
         }
 
 
@@ -25,6 +31,12 @@ namespace MigAz.AzureStack.UserControls
         {
             get { return _IsAuthenticated; }
             set { _IsAuthenticated = value; }
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            AzureStackContext azureStackContext = new AzureStackContext(_LogProvider);
+            await azureStackContext.Login();
         }
     }
 }

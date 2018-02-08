@@ -33,16 +33,19 @@ namespace MigAz.Azure.Forms
                 azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
 
                 lblSameEnviroronment.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
-                lblSameUsername.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
                 lblSameTenant.Text = azureLoginContextViewer.ExistingContext.AzureTenant.ToString();
                 lblSameSubscription.Text = azureLoginContextViewer.ExistingContext.AzureSubscription.ToString();
 
                 lblSameEnvironment2.Text = azureLoginContextViewer.ExistingContext.AzureEnvironment.ToString();
-                lblSameUsername2.Text = azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId;
+                if (azureLoginContextViewer.ExistingContext.TokenProvider != null && azureLoginContextViewer.ExistingContext.TokenProvider.LastUserInfo != null)
+                {
+                    lblSameUsername.Text = azureLoginContextViewer.ExistingContext.TokenProvider.LastUserInfo.DisplayableId;
+                    lblSameUsername2.Text = azureLoginContextViewer.ExistingContext.TokenProvider.LastUserInfo.DisplayableId;
+                }
 
                 int subscriptionCount = 0;
                 cboTenant.Items.Clear();
-                if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null && azureLoginContextViewer.ExistingContext.TokenProvider.AuthenticationResult != null)
+                if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null)
                 {
                     azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
                     foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.AzureRetriever.GetAzureARMTenants())
@@ -122,7 +125,7 @@ namespace MigAz.Azure.Forms
                 cboTenant.Enabled = false;
                 cboSubscription.Enabled = false;
                 _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
-                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
+                _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
             }
 
             _AzureLoginContextViewer.UpdateLabels();
@@ -135,7 +138,7 @@ namespace MigAz.Azure.Forms
                 if (rbSameUserDifferentSubscription.Checked)
                 {
                     _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
-                    _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.Auto;
+                    _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
 
                     _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
 
@@ -159,7 +162,7 @@ namespace MigAz.Azure.Forms
                 cboTenant.Enabled = false;
                 cboSubscription.Enabled = false;
                 _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.NewContext;
-                _AzureLoginContextViewer.AzureContext.AzureRetriever.PromptBehavior = PromptBehavior.SelectAccount;
+                _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.SelectAccount;
             }
 
             azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);

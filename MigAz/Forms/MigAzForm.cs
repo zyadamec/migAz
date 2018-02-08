@@ -13,6 +13,7 @@ using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
 using MigAz.Core;
+using MigAz.AzureStack.UserControls;
 
 namespace MigAz.Forms
 {
@@ -63,12 +64,14 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.3.3.2";
+            string currentVersion = "2.3.3.3";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
-                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                NewVersionAvailableDialog newVersionDialog = new NewVersionAvailableDialog();
+                newVersionDialog.Bind(currentVersion, newVersionNumber);
+                newVersionDialog.ShowDialog();
             }
         }
 
@@ -165,10 +168,13 @@ namespace MigAz.Forms
         {
             IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
 
-            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            if (migrationTargetUserControl != null)
             {
-                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
-                migrationTargetAzure.ExistingContext = sender;
+                if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+                {
+                    MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                    migrationTargetAzure.ExistingContext = sender;
+                }
             }
         }
 
@@ -296,8 +302,6 @@ namespace MigAz.Forms
             System.Diagnostics.Process.Start("http://aka.ms/MigAz");
         }
 
-
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -385,6 +389,16 @@ namespace MigAz.Forms
         {
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog();
+
+            IMigrationSourceUserControl sourceUserControl = this.MigrationSourceControl;
+            if (sourceUserControl != null)
+            {
+                if (sourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
+                {
+                    MigrationAzureSourceContext migrationAzureSourceContext = (MigrationAzureSourceContext)sourceUserControl;
+                    migrationAzureSourceContext.AzureContext.LoginPromptBehavior = app.Default.LoginPromptBehavior;
+                }
+            }
         }
 
         private void btnChoosePath_Click(object sender, EventArgs e)
@@ -647,7 +661,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1);
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
 
                 switch (app.Default.AzureEnvironment)
                 {
@@ -678,6 +692,11 @@ namespace MigAz.Forms
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
                 azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
+            }
+            else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
+            {
+                MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
+                azureStackSourceContext.Bind(_logProvider);
             }
 
             MigrationSourceSelectionControlVisible = false;

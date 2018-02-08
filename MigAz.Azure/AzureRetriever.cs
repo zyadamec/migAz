@@ -24,7 +24,6 @@ namespace MigAz.Azure
         private object _lockObject = new object();
         private AzureSubscription _AzureSubscription = null;
         private List<AzureSubscription> _AzureSubscriptions;
-        private PromptBehavior _PromptBehavior = PromptBehavior.Auto;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
@@ -48,12 +47,6 @@ namespace MigAz.Azure
             get { return _AzureSubscription; }
         }
 
-        public PromptBehavior PromptBehavior
-        {
-            get { return _PromptBehavior; }
-            set { _PromptBehavior = value; }
-        }
-
         public void ClearCache()
         {
             _RestApiCache = new Dictionary<string, AzureRestResponse>();
@@ -74,7 +67,7 @@ namespace MigAz.Azure
             string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
             if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }
 
-            string filePath = filedir + "\\AzureRestResponse-" + this._AzureContext.AzureEnvironment.ToString() + "-" + this._AzureContext.TokenProvider.AuthenticationResult.UserInfo.DisplayableId + ".json";
+            string filePath = filedir + "\\AzureRestResponse-" + this._AzureContext.AzureEnvironment.ToString() + "-" + this._AzureContext.AzureSubscription.SubscriptionId + ".json";
 
             StreamWriter saveSelectionWriter = new StreamWriter(filePath);
             saveSelectionWriter.Write(jsontext);
@@ -102,7 +95,13 @@ namespace MigAz.Azure
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             _AzureSubscription = azureSubscription;
-            await this._AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), azureSubscription.AzureAdTenantId);
+
+            if (_AzureContext.TokenProvider == null)
+                _AzureContext.TokenProvider = new AzureTokenProvider(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.LogProvider);
+            else
+            {
+            }
+            // russell await this._AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), azureSubscription.AzureAdTenantId);
         }
 
 
@@ -117,13 +116,13 @@ namespace MigAz.Azure
                 throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
             if (_AzureContext.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-            if (_AzureContext.TokenProvider.AccessToken == null)
-                throw new ArgumentNullException("AccessToken Context is null.  Unable to call Azure API without AccessToken.");
+
+            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty);
 
             String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, _AzureContext.TokenProvider.AccessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult.AccessToken, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -150,20 +149,14 @@ namespace MigAz.Azure
                 throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
             if (_AzureContext.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-            if (_AzureContext.TokenProvider.AccessToken == null)
-                throw new ArgumentNullException("AccessToken Context is null.  Unable to call Azure API without AccessToken.");
-
-            String accessToken = _AzureContext.TokenProvider.AccessToken;
 
             String domainUrl = _AzureContext.AzureServiceUrls.GetGraphApiUrl() + "myorganization/domains?api-version=1.6";
 
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId);
-            if (tenantAuthenticationResult != null)
-                accessToken = tenantAuthenticationResult.AccessToken;
+            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, accessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult.AccessToken, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject domainsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -186,15 +179,11 @@ namespace MigAz.Azure
             _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-            String accessToken = _AzureContext.TokenProvider.AccessToken;
-
-            AuthenticationResult subscriptionAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
-            if (subscriptionAuthenticationResult != null)
-                accessToken = subscriptionAuthenticationResult.AccessToken;
+            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, accessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult.AccessToken, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -212,31 +201,32 @@ namespace MigAz.Azure
             return tenantSubscriptions;
         }
 
-        public async Task<List<AzureSubscription>> GetSubscriptions()
-        {
-            if (_AzureSubscriptions != null)
-                return _AzureSubscriptions;
+        //public async Task<List<AzureSubscription>> GetSubscriptions()
+        //{
+        //    if (_AzureSubscriptions != null)
+        //        return _AzureSubscriptions;
 
-            String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl() + "subscriptions";
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, _AzureContext.TokenProvider.AccessToken);
-            azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+        //    String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl() + "subscriptions";
+        //    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            XmlDocument subscriptionsXml = AzureSubscription.RemoveXmlns(azureRestResponse.Response);
+        //    AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, _AzureContext.TokenProvider.AccessToken);
+        //    azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
+        //    AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
 
-            _AzureSubscriptions = new List<AzureSubscription>();
-            foreach (XmlNode subscriptionXml in subscriptionsXml.SelectNodes("//Subscription"))
-            {
-                AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, subscriptionXml, this._AzureContext.AzureEnvironment);
-                _AzureSubscriptions.Add(azureSubscription);
-            }
+        //    XmlDocument subscriptionsXml = AzureSubscription.RemoveXmlns(azureRestResponse.Response);
 
-            return _AzureSubscriptions;
-        }
+        //    _AzureSubscriptions = new List<AzureSubscription>();
+        //    foreach (XmlNode subscriptionXml in subscriptionsXml.SelectNodes("//Subscription"))
+        //    {
+        //        AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, subscriptionXml, this._AzureContext.AzureEnvironment);
+        //        _AzureSubscriptions.Add(azureSubscription);
+        //    }
 
-        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions()
+        //    return _AzureSubscriptions;
+        //}
+
+        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(Guid tenantGuid)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start");
 
@@ -244,11 +234,12 @@ namespace MigAz.Azure
                 return _ArmSubscriptions;
 
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-            String accessToken = _AzureContext.TokenProvider.AccessToken;
+
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), tenantGuid);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, accessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken.AccessToken, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
