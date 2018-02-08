@@ -101,7 +101,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
-            _AzureContextSource.PromptBehavior = promptBehavior;
+            _AzureContextSource.LoginPromptBehavior = promptBehavior;
 
             await azureLoginContextViewerSource.Bind(_AzureContextSource);
 

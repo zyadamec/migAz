@@ -55,7 +55,7 @@
             this.txtNetworkInterfaceCardSuffix = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cmbPromptBehavior = new System.Windows.Forms.ComboBox();
+            this.cmbLoginPromptBehavior = new System.Windows.Forms.ComboBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cmbDefaultAzureEnvironment = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -70,6 +70,7 @@
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).BeginInit();
@@ -353,7 +354,8 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.cmbPromptBehavior);
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.cmbLoginPromptBehavior);
             this.groupBox2.Controls.Add(this.label14);
             this.groupBox2.Controls.Add(this.cmbDefaultAzureEnvironment);
             this.groupBox2.Controls.Add(this.label13);
@@ -373,21 +375,19 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
             // 
-            // cmbPromptBehavior
+            // cmbLoginPromptBehavior
             // 
-            this.cmbPromptBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPromptBehavior.FormattingEnabled = true;
-            this.cmbPromptBehavior.Items.AddRange(new object[] {
+            this.cmbLoginPromptBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLoginPromptBehavior.FormattingEnabled = true;
+            this.cmbLoginPromptBehavior.Items.AddRange(new object[] {
             "Always",
             "Auto",
-            "Never",
-            "RefreshSession",
             "SelectAccount"});
-            this.cmbPromptBehavior.Location = new System.Drawing.Point(83, 222);
-            this.cmbPromptBehavior.Name = "cmbPromptBehavior";
-            this.cmbPromptBehavior.Size = new System.Drawing.Size(273, 28);
-            this.cmbPromptBehavior.TabIndex = 13;
-            this.cmbPromptBehavior.SelectedIndexChanged += new System.EventHandler(this.comboBox_SelectedIndexChanged);
+            this.cmbLoginPromptBehavior.Location = new System.Drawing.Point(129, 222);
+            this.cmbLoginPromptBehavior.Name = "cmbLoginPromptBehavior";
+            this.cmbLoginPromptBehavior.Size = new System.Drawing.Size(149, 28);
+            this.cmbLoginPromptBehavior.TabIndex = 13;
+            this.cmbLoginPromptBehavior.SelectedIndexChanged += new System.EventHandler(this.comboBox_SelectedIndexChanged);
             // 
             // label14
             // 
@@ -570,6 +570,15 @@
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(68, 225);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(52, 20);
+            this.label15.TabIndex = 14;
+            this.label15.Text = "Login:";
+            // 
             // OptionsDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -643,7 +652,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbDefaultAzureEnvironment;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ComboBox cmbPromptBehavior;
+        private System.Windows.Forms.ComboBox cmbLoginPromptBehavior;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
     }
 }

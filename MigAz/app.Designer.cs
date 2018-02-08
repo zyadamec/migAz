@@ -280,13 +280,13 @@ namespace MigAz {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Auto")]
-        public global::Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior PromptBehavior {
+        [global::System.Configuration.DefaultSettingValueAttribute("Always")]
+        public global::Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior LoginPromptBehavior {
             get {
-                return ((global::Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior)(this["PromptBehavior"]));
+                return ((global::Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior)(this["LoginPromptBehavior"]));
             }
             set {
-                this["PromptBehavior"] = value;
+                this["LoginPromptBehavior"] = value;
             }
         }
     }

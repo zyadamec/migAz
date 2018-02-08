@@ -59,6 +59,7 @@ namespace MigAz.Azure
             _LogProvider.WriteLog("GetToken", "Start token request : Azure AD Tenant ID " + azureAdTenantGuid.ToString());
             _LogProvider.WriteLog("GetToken", " - Resource Url: " + resourceUrl);
             _LogProvider.WriteLog("GetToken", " - Azure AD Tenant Guid: " + azureAdTenantGuid.ToString());
+            _LogProvider.WriteLog("GetToken", " - Prompt Behavior: " + promptBehavior.ToString());
 
             AuthenticationContext tenantAuthenticationContext = GetTenantAuthenticationContext(azureAdTenantGuid);
             
@@ -75,13 +76,11 @@ namespace MigAz.Azure
             return authenticationResult;
         }
 
-        public async Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto)
+        public async Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Always)
         {
             _LogProvider.WriteLog("LoginAzureProvider", "Start token request");
             _LogProvider.WriteLog("GetToken", " - Resource Url: " + resourceUrl);
-
-            string authenticationUrl = _AuthenticationContext.Authority + "common";
-            _LogProvider.WriteLog("LoginAzureProvider", "Authentication Url: " + authenticationUrl);
+            _LogProvider.WriteLog("GetToken", " - Prompt Behavior: " + promptBehavior.ToString());
 
             PlatformParameters platformParams = new PlatformParameters(promptBehavior, null);
             AuthenticationResult authenticationResult = await _AuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);

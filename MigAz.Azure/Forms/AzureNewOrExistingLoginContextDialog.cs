@@ -125,7 +125,7 @@ namespace MigAz.Azure.Forms
                 cboTenant.Enabled = false;
                 cboSubscription.Enabled = false;
                 _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
-                _AzureLoginContextViewer.AzureContext.PromptBehavior = PromptBehavior.Auto;
+                _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
             }
 
             _AzureLoginContextViewer.UpdateLabels();
@@ -138,7 +138,7 @@ namespace MigAz.Azure.Forms
                 if (rbSameUserDifferentSubscription.Checked)
                 {
                     _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
-                    _AzureLoginContextViewer.AzureContext.PromptBehavior = PromptBehavior.Auto;
+                    _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
 
                     _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
 
@@ -162,7 +162,7 @@ namespace MigAz.Azure.Forms
                 cboTenant.Enabled = false;
                 cboSubscription.Enabled = false;
                 _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.NewContext;
-                _AzureLoginContextViewer.AzureContext.PromptBehavior = PromptBehavior.SelectAccount;
+                _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.SelectAccount;
             }
 
             azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);

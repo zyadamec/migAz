@@ -68,8 +68,8 @@
     <Setting Name="AccessSASTokenLifetimeSeconds" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3600</Value>
     </Setting>
-    <Setting Name="PromptBehavior" Type="Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior" Scope="User">
-      <Value Profile="(Default)">Auto</Value>
+    <Setting Name="LoginPromptBehavior" Type="Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior" Scope="User">
+      <Value Profile="(Default)">Always</Value>
     </Setting>
   </Settings>
 </SettingsFile>

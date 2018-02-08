@@ -166,10 +166,13 @@ namespace MigAz.Forms
         {
             IMigrationTargetUserControl migrationTargetUserControl = this.MigrationTargetControl;
 
-            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+            if (migrationTargetUserControl != null)
             {
-                MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
-                migrationTargetAzure.ExistingContext = sender;
+                if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
+                {
+                    MigrationAzureTargetContext migrationTargetAzure = (MigrationAzureTargetContext)migrationTargetUserControl;
+                    migrationTargetAzure.ExistingContext = sender;
+                }
             }
         }
 
@@ -393,7 +396,7 @@ namespace MigAz.Forms
                 if (sourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
                 {
                     MigrationAzureSourceContext migrationAzureSourceContext = (MigrationAzureSourceContext)sourceUserControl;
-                    migrationAzureSourceContext.AzureContext.PromptBehavior = app.Default.PromptBehavior;
+                    migrationAzureSourceContext.AzureContext.LoginPromptBehavior = app.Default.LoginPromptBehavior;
                 }
             }
         }
@@ -658,7 +661,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.PromptBehavior);
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
 
                 switch (app.Default.AzureEnvironment)
                 {

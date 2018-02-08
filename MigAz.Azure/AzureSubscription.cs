@@ -1415,7 +1415,7 @@ namespace MigAz.Azure
             if (_AzureContext.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.PromptBehavior);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.LoginPromptBehavior);
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
             string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
@@ -1450,7 +1450,7 @@ namespace MigAz.Azure
             string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Virtual Machine Details : '" + virtualMachine.ResourceGroup.ToString() + "' / '" + virtualMachine.ToString() + "' " + this.SubscriptionId);
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.PromptBehavior);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.LoginPromptBehavior);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
@@ -1947,7 +1947,7 @@ namespace MigAz.Azure
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AuthenticationResult asmToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.PromptBehavior);
+            AuthenticationResult asmToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.LoginPromptBehavior);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, asmToken.AccessToken);
             azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
@@ -2070,7 +2070,7 @@ namespace MigAz.Azure
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.PromptBehavior);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId, _AzureContext.LoginPromptBehavior);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);

@@ -13,7 +13,7 @@ namespace MigAz.Azure
         private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
         private AzureServiceUrls _AzureServiceUrls;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
-        private PromptBehavior _PromptBehavior = PromptBehavior.Auto;
+        private PromptBehavior _LoginPromptBehavior = PromptBehavior.Auto;
 
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
@@ -125,14 +125,14 @@ namespace MigAz.Azure
             this.AzureEnvironment = sourceContext.AzureEnvironment;
             await this.SetTenantContext(sourceContext.AzureTenant);
             await this.SetSubscriptionContext(sourceContext.AzureSubscription);
-            this.PromptBehavior = sourceContext.PromptBehavior;
+            this.LoginPromptBehavior = sourceContext.LoginPromptBehavior;
             await UserAuthenticated?.Invoke(this);
         }
 
-        public PromptBehavior PromptBehavior
+        public PromptBehavior LoginPromptBehavior
         {
-            get { return _PromptBehavior; }
-            set { _PromptBehavior = value; }
+            get { return _LoginPromptBehavior; }
+            set { _LoginPromptBehavior = value; }
         }
 
         public ArmDiskType DefaultTargetDiskType
@@ -150,7 +150,7 @@ namespace MigAz.Azure
             if (this.TokenProvider == null)
                 this.TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), this.LogProvider);
 
-            await this.TokenProvider.Login(this.AzureServiceUrls.GetASMServiceManagementUrl(), this.PromptBehavior);
+            await this.TokenProvider.Login(this.AzureServiceUrls.GetASMServiceManagementUrl(), this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
         }
 
@@ -184,7 +184,7 @@ namespace MigAz.Azure
                 if (_AzureSubscription != null)
                 {
                     if (_TokenProvider != null)
-                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId, this.PromptBehavior);
+                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId, this.LoginPromptBehavior);
 
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }
