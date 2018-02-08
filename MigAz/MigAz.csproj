@@ -109,6 +109,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="Forms\NewVersionAvailableDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewVersionAvailableDialog.Designer.cs">
+      <DependentUpon>NewVersionAvailableDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MigAzForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +152,9 @@
     <Compile Include="UserControls\MigAzMigrationTargetSelection.Designer.cs">
       <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\NewVersionAvailableDialog.resx">
+      <DependentUpon>NewVersionAvailableDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MigAzForm.resx">
       <DependentUpon>MigAzForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -173,7 +173,7 @@ namespace MigAz.Azure.Arm
             string url = "/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
 
-            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), _AzureContext.AzureSubscription.AzureAdTenantId, _AzureContext.LoginPromptBehavior);
+            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), _AzureContext.AzureSubscription.AzureAdTenantId);
 
             using (var client = new HttpClient())
             {

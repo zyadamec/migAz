@@ -184,7 +184,7 @@ namespace MigAz.Azure
                 if (_AzureSubscription != null)
                 {
                     if (_TokenProvider != null)
-                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId, this.LoginPromptBehavior);
+                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
 
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }

@@ -186,14 +186,7 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_AzureEnvironmentChanged(AzureContext sender)
         {
-            //app.Default.AzureEnvironment = sender.AzureEnvironment.ToString();
-            //app.Default.Save();
-
-            //if (_AzureContextTargetARM.TokenProvider == null)
-            //    _AzureContextTargetARM.AzureEnvironment = sender.AzureEnvironment;
-
             AzureEnvironmentChanged?.Invoke(sender);
-
         }
 
 

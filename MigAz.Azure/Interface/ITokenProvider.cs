@@ -12,7 +12,7 @@ namespace MigAz.Azure.Interface
         UserInfo LastUserInfo { get; }
         string LogonUrl { get; }
 
-        Task<AuthenticationResult> GetToken(string resourceUrl, Guid tenantGuid, PromptBehavior promptBehavior);
+        Task<AuthenticationResult> GetToken(string resourceUrl, Guid tenantGuid, PromptBehavior promptBehavior = PromptBehavior.Auto);
         Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto);
     }
 }

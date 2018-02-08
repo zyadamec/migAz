@@ -64,12 +64,14 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.3.3.2";
+            string currentVersion = "2.3.3.3";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
             {
-                DialogResult dialogresult = MessageBox.Show("New version " + newVersionNumber + " is available at http://aka.ms/MigAz", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                NewVersionAvailableDialog newVersionDialog = new NewVersionAvailableDialog();
+                newVersionDialog.Bind(currentVersion, newVersionNumber);
+                newVersionDialog.ShowDialog();
             }
         }
 
@@ -299,8 +301,6 @@ namespace MigAz.Forms
         {
             System.Diagnostics.Process.Start("http://aka.ms/MigAz");
         }
-
-
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {

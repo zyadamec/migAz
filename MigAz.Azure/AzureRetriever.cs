@@ -117,7 +117,7 @@ namespace MigAz.Azure
             if (_AzureContext.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty, _AzureContext.LoginPromptBehavior);
+            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty);
 
             String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
@@ -152,7 +152,7 @@ namespace MigAz.Azure
 
             String domainUrl = _AzureContext.AzureServiceUrls.GetGraphApiUrl() + "myorganization/domains?api-version=1.6";
 
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId, _AzureContext.LoginPromptBehavior);
+            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
 
@@ -179,7 +179,7 @@ namespace MigAz.Azure
             _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId, _AzureContext.LoginPromptBehavior);
+            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
@@ -235,7 +235,7 @@ namespace MigAz.Azure
 
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), tenantGuid, _AzureContext.LoginPromptBehavior);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), tenantGuid);
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
