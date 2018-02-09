@@ -809,6 +809,31 @@ namespace MigAz.Azure.UserControls
             AfterNewTargetResourceAdded?.Invoke(this, newNode);
         }
 
+        public static int GetChildNodeCount(TreeNode treeNode)
+        {
+            int childCount = 0;
+
+            foreach (TreeNode childNode in treeNode.Nodes)
+            {
+                childCount += GetChildNodeCountRecursive(childNode);
+            }
+
+            return childCount;
+        }
+
+        private static int GetChildNodeCountRecursive(TreeNode treeNode)
+        {
+            int childCount = 0;
+
+            childCount += 1; // Count this node
+            foreach (TreeNode childNode in treeNode.Nodes)
+            {
+                childCount += GetChildNodeCountRecursive(childNode);
+            }
+
+            return childCount;
+        }
+
         private void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -816,8 +841,14 @@ namespace MigAz.Azure.UserControls
                 if (treeTargetARM.SelectedNode != null)
                 {
                     IMigrationTarget migrationTarget = (IMigrationTarget)treeTargetARM.SelectedNode.Tag;
-                    string deleteConfirmationText = String.Format("Are you sure you want to delete {0} '{1}'?", new string[] { migrationTarget.GetType().ToString(), migrationTarget.ToString() });
-                    if (MessageBox.Show(deleteConfirmationText, "Delete Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
+
+                    int countChildNodes = GetChildNodeCount(treeTargetARM.SelectedNode);
+                    String strChildNodeCount = String.Empty;
+                    if (countChildNodes > 0)
+                        strChildNodeCount = " **AND** " + countChildNodes.ToString() + " child resource(s)";
+
+                    string deleteConfirmationText = String.Format("Are you sure you want to remove {0} '{1}'{2} as a target resource?", new string[] { migrationTarget.GetType().ToString(), migrationTarget.ToString(), strChildNodeCount });
+                    if (MessageBox.Show(deleteConfirmationText, "Remove Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         treeTargetARM.Nodes.Remove(treeTargetARM.SelectedNode);
                     }
@@ -868,7 +899,7 @@ namespace MigAz.Azure.UserControls
                     }
 
                     if (!isMigAzTargetDragDropHandled)
-                        this.LogProvider.WriteLog(methodName, "Drag from " + sourceNodeTarget.GetType().ToString() + " to " + destinationNodeTarget.GetType().ToString() + " is was not handled.  No DragDrop action taken.");
+                        this.LogProvider.WriteLog(methodName, "Drag from " + sourceNodeTarget.GetType().ToString() + " to " + destinationNodeTarget.GetType().ToString() + " was not handled.  No DragDrop action taken.");
                     else
                     {
                         await this.RefreshExportArtifacts();
