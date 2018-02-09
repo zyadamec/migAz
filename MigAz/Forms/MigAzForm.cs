@@ -176,6 +176,8 @@ namespace MigAz.Forms
                     migrationTargetAzure.ExistingContext = sender;
                 }
             }
+
+            this.targetTreeView1.Enabled = true;
         }
 
         private async Task MigrationSourceControl_AzureEnvironmentChanged(AzureContext sender)
@@ -792,6 +794,14 @@ namespace MigAz.Forms
             return MigrationTargetTreeView.HasErrors;
         }
 
+        #region Target Tree View Events
+
+        private async Task targetTreeView1_AfterNewTargetResourceAdded(TargetTreeView sender, TreeNode selectedNode)
+        {
+            // Refresh Alerts from new item
+            await targetTreeView1_AfterExportArtifactRefresh(sender);
+        }
+
         private async Task targetTreeView1_AfterExportArtifactRefresh(TargetTreeView sender)
         {
             dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
@@ -827,5 +837,8 @@ namespace MigAz.Forms
                 unhandledExceptionDialog.ShowDialog();
             }
         }
+
+        #endregion
+
     }
 }

@@ -24,6 +24,9 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterTargetSelectedHandler(TargetTreeView sender, TreeNode selectedNode);
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
+        public delegate Task AfterNewTargetResourceAddedHandler(TargetTreeView sender, TreeNode selectedNode);
+        public event AfterNewTargetResourceAddedHandler AfterNewTargetResourceAdded;
+
         public delegate Task AfterExportArtifactRefreshHandler(TargetTreeView sender);
         public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
@@ -45,7 +48,11 @@ namespace MigAz.Azure.UserControls
         public ImageList ImageList
         {
             get { return this.treeTargetARM.ImageList; }
-            set { this.treeTargetARM.ImageList = value; }
+            set
+            {
+                this.treeTargetARM.ImageList = value;
+                this.btnNewAvailabilitySet.ImageList = value;
+            }
         }
 
         public ResourceGroup TargetResourceGroup
@@ -72,6 +79,16 @@ namespace MigAz.Azure.UserControls
                     return this.Nodes[0];
                 else
                     return null;
+            }
+        }
+
+        public new bool Enabled
+        {
+            get { return treeTargetARM.Enabled; }
+            set
+            {
+                treeTargetARM.Enabled = value;
+                panel1.Enabled = value;
             }
         }
 
@@ -701,8 +718,10 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_Resize(object sender, EventArgs e)
         {
-            treeTargetARM.Width = this.Width - 10;
-            treeTargetARM.Height = this.Height - 10;
+            treeTargetARM.Width = this.Width - panel1.Width - 10 - 10;
+            treeTargetARM.Height = this.Height - 40;
+            panel1.Left = treeTargetARM.Left + treeTargetARM.Width + 10;
+            lblAddNew.Left = panel1.Left;
         }
 
         public List<Azure.MigrationTarget.VirtualNetwork> GetVirtualNetworksInMigration()
@@ -764,5 +783,47 @@ namespace MigAz.Azure.UserControls
                         _TargetResourceGroup = new ResourceGroup(value);
             }
         }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "AvailabilitySet";
+            int counter = 0;
+            bool nameExists = true;
+
+            string newResourceName = "New" + baseResourceName;
+            while (nameExists)
+            {
+                if (counter > 0)
+                    newResourceName = "New" + baseResourceName + counter.ToString();
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            AvailabilitySet availabilitySet = new AvailabilitySet(newResourceName, this.TargetSettings);
+            TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        private void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (treeTargetARM.SelectedNode != null)
+                {
+                    IMigrationTarget migrationTarget = (IMigrationTarget)treeTargetARM.SelectedNode.Tag;
+                    string deleteConfirmationText = String.Format("Are you sure you want to delete {0} '{1}'?", new string[] { migrationTarget.GetType().ToString(), migrationTarget.ToString() });
+                    if (MessageBox.Show(deleteConfirmationText, "Delete Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        treeTargetARM.Nodes.Remove(treeTargetARM.SelectedNode);
+                    }
+                }
+            }
+        }
+
     }
 }
