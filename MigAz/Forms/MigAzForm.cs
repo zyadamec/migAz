@@ -53,6 +53,9 @@ namespace MigAz.Forms
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
             if (targetTreeView != null)
             {
+                // Future thought, do away with the "Set"s and consolidate to a Bind?
+                targetTreeView.LogProvider = this.LogProvider;
+                targetTreeView.StatusProvider = this.StatusProvider;
                 targetTreeView.ImageList = this.imageList1;
                 targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
@@ -809,6 +812,8 @@ namespace MigAz.Forms
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
+
+            propertyPanel1.Rebind();
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)

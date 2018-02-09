@@ -41,12 +41,16 @@
             // 
             // treeTargetARM
             // 
+            this.treeTargetARM.AllowDrop = true;
             this.treeTargetARM.Enabled = false;
             this.treeTargetARM.Location = new System.Drawing.Point(5, 45);
             this.treeTargetARM.Name = "treeTargetARM";
             this.treeTargetARM.Size = new System.Drawing.Size(128, 129);
             this.treeTargetARM.TabIndex = 58;
+            this.treeTargetARM.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeTargetARM_ItemDrag);
             this.treeTargetARM.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TargetTreeView_AfterSelect);
+            this.treeTargetARM.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeTargetARM_DragDrop);
+            this.treeTargetARM.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeTargetARM_DragEnter);
             this.treeTargetARM.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeTargetARM_KeyUp);
             // 
             // label1

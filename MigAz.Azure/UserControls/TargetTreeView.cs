@@ -825,5 +825,82 @@ namespace MigAz.Azure.UserControls
             }
         }
 
+        private async void treeTargetARM_DragDrop(object sender, DragEventArgs e)
+        {
+            string methodName = "treeTargetARM_DragDrop";
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+                TreeNode destinationNode = ((TreeView)sender).GetNodeAt(pt);
+                TreeNode sourceNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+                if (sourceNode != null && sourceNode.Tag != null && sourceNode.Tag.GetType().GetInterfaces().Contains(typeof(IMigrationTarget)) && destinationNode != null && destinationNode.Tag != null && destinationNode.Tag.GetType().GetInterfaces().Contains(typeof(IMigrationTarget)))
+                {
+                    bool isMigAzTargetDragDropHandled = false;
+                    IMigrationTarget sourceNodeTarget = (IMigrationTarget)sourceNode.Tag;
+                    IMigrationTarget destinationNodeTarget = (IMigrationTarget)destinationNode.Tag;
+                    this.LogProvider.WriteLog(methodName, "Source Node Tag - Name '" + sourceNodeTarget.ToString() + "' Type '" + sourceNodeTarget.GetType() + "'");
+                    this.LogProvider.WriteLog(methodName, "Target Node Tag - Name '" + destinationNodeTarget.ToString() + "' Type '" + destinationNodeTarget.GetType() + "'");
+
+                    if (sourceNodeTarget.GetType() == typeof(VirtualMachine))
+                    {
+                        VirtualMachine virtualMachine = (VirtualMachine)sourceNodeTarget;
+
+                        if (destinationNodeTarget.GetType() == typeof(AvailabilitySet))
+                        {
+                            AvailabilitySet availabilitySet = (AvailabilitySet)destinationNodeTarget;
+                            
+                            // If virtual machines is currently in an Availability Set
+                            if (virtualMachine.TargetAvailabilitySet != null)
+                            {
+                                // Remove it from the existing Availability Set
+                                virtualMachine.TargetAvailabilitySet.TargetVirtualMachines.Remove(virtualMachine);
+                            }
+
+                            // Add Virtual Machine into new Target Availability Set
+                            availabilitySet.TargetVirtualMachines.Add(virtualMachine);
+
+                            // Update Virtual Machine to reflect ownership in new target Availability Set
+                            virtualMachine.TargetAvailabilitySet = availabilitySet;
+
+                            isMigAzTargetDragDropHandled = true;
+                        }
+                    }
+
+                    if (!isMigAzTargetDragDropHandled)
+                        this.LogProvider.WriteLog(methodName, "Drag from " + sourceNodeTarget.GetType().ToString() + " to " + destinationNodeTarget.GetType().ToString() + " is was not handled.  No DragDrop action taken.");
+                    else
+                    {
+                        await this.RefreshExportArtifacts();
+                    }
+                }
+                else
+                {
+                    if (sourceNode == null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode is null.  No DragDrop action taken.");
+                    else if (sourceNode.Tag == null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode exists, but Tag is null.  No DragDrop action taken.");
+                    else if (sourceNode.Tag != null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode exists, Tag is not null, but not of type IMigrationTarget.  No DragDrop action taken.");
+
+                    if (destinationNode == null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode is null.  No DragDrop action taken.");
+                    else if (destinationNode.Tag == null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode exists, but Tag is null.  No DragDrop action taken.");
+                    else if (destinationNode.Tag != null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode exists, Tag is not null, but not of type IMigrationTarget.  No DragDrop action taken.");
+                }
+            }
+        }
+
+        private void treeTargetARM_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void treeTargetARM_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
     }
 }
