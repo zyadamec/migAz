@@ -8,10 +8,17 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
+    public enum PrivateIPAllocationMethodEnum
+    {
+        Dynamic,
+        Static
+    }
+
     public class FrontEndIpConfiguration : IVirtualNetworkTarget
     {
         private String _Name = "default";
-
+        private PrivateIPAllocationMethodEnum _TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+        private String _TargetStaticIpAddress = String.Empty;
         private PublicIp _PublicIp = null;
 
         private LoadBalancer _ParentLoadBalancer = null;
@@ -31,11 +38,22 @@ namespace MigAz.Azure.MigrationTarget
             _Source = armFrontEndIpConfiguration;
 
             this.Name = armFrontEndIpConfiguration.Name;
-            this.TargetPrivateIPAllocationMethod = armFrontEndIpConfiguration.PrivateIPAllocationMethod;
+            if (armFrontEndIpConfiguration.PrivateIPAllocationMethod.Trim().ToLower() == "static")
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+            else
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
             this.TargetPrivateIpAddress = armFrontEndIpConfiguration.PrivateIPAddress;
             this.TargetVirtualNetwork = armFrontEndIpConfiguration.VirtualNetwork;
             this.TargetSubnet = armFrontEndIpConfiguration.Subnet;
         }
+
+        #region IVirtualNetworkTarget Interface Implementation
+        public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
+        public IMigrationSubnet TargetSubnet { get; set; }
+        public PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
+        public string TargetPrivateIpAddress { get; set; }
+
+        #endregion
 
         public LoadBalancer LoadBalancer
         {

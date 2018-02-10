@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class AvailabilitySet : IMigrationTarget
+    public class AvailabilitySet : Core.MigrationTarget
     {
         private string _TargetNameResult = String.Empty;
         private IAvailabilitySetSource _SourceAvailabilitySet;
@@ -67,10 +67,6 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        internal void SetTargetName(string text, object targetSettings)
-        {
-            throw new NotImplementedException();
-        }
 
         public IAvailabilitySetSource SourceAvailabilitySet
         {
@@ -156,7 +152,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;

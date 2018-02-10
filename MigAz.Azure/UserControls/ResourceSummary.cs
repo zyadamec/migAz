@@ -13,7 +13,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class ResourceSummary : UserControl
     {
-        private IMigrationTarget _MigrationTarget;
+        private Core.MigrationTarget _MigrationTarget;
         private TargetTreeView _TargetTreeView;
 
         public ResourceSummary()
@@ -21,13 +21,13 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public ResourceSummary(IMigrationTarget migrationTarget, TargetTreeView targetTreeView)
+        public ResourceSummary(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView)
         {
             InitializeComponent();
             Bind(migrationTarget, targetTreeView);
         }
 
-        public void Bind(IMigrationTarget migrationTarget, TargetTreeView targetTreeView)
+        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView)
         {
             _MigrationTarget = migrationTarget;
             _TargetTreeView = targetTreeView;

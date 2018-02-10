@@ -53,9 +53,10 @@
     <Compile Include="Interface\ILoadBalancer.cs" />
     <Compile Include="Interface\ILocation.cs" />
     <Compile Include="Interface\ILogProvider.cs" />
+    <Compile Include="Interface\IMigrationSource.cs" />
     <Compile Include="Interface\IMigrationSourceUserControl.cs" />
     <Compile Include="Interface\IMigrationSubnet.cs" />
-    <Compile Include="Interface\IMigrationTarget.cs" />
+    <Compile Include="MigrationTarget.cs" />
     <Compile Include="Interface\IMigrationTargetUserControl.cs" />
     <Compile Include="Interface\IMigrationVirtualNetwork.cs" />
     <Compile Include="Interface\IMigrationVirtualNetworkGateway.cs" />

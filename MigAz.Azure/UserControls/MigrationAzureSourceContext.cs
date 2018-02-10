@@ -58,10 +58,10 @@ namespace MigAz.Azure.UserControls
 
         #region New Events from MigrationSourceAzure
 
-        public delegate Task AfterNodeCheckedHandler(IMigrationTarget sender);
+        public delegate Task AfterNodeCheckedHandler(Core.MigrationTarget sender);
         public event AfterNodeCheckedHandler AfterNodeChecked;
 
-        public delegate Task AfterNodeUncheckedHandler(IMigrationTarget sender);
+        public delegate Task AfterNodeUncheckedHandler(Core.MigrationTarget sender);
         public event AfterNodeUncheckedHandler AfterNodeUnchecked;
 
         public delegate void ClearContextHandler();
@@ -957,7 +957,7 @@ namespace MigAz.Azure.UserControls
                     (tagType == typeof(Azure.MigrationTarget.Disk)) ||
                     (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
                 {
-                    IMigrationTarget migrationTarget = (IMigrationTarget)e.Node.Tag;
+                    Core.MigrationTarget migrationTarget = (Core.MigrationTarget)e.Node.Tag;
 
                     if (e.Node.Checked)
                     {

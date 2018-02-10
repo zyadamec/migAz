@@ -9,6 +9,7 @@ using MigAz.Core.Interface;
 using Amazon.ElasticLoadBalancing.Model;
 using Amazon.ElasticLoadBalancing;
 using System.Net;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.AWS.Generator
 {
@@ -190,7 +191,7 @@ namespace MigAz.AWS.Generator
                                 }
                             }
 
-                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Static";
+                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
                             try
                             {
                                 IPHostEntry host = Dns.GetHostEntry(loadBalancerDescription.DNSName);
@@ -198,7 +199,7 @@ namespace MigAz.AWS.Generator
                             }
                             catch
                             {
-                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Dynamic";
+                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
                             }
                         }
                         else // if external (public) load balancer

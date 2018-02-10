@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class Disk : IMigrationTarget
+    public class Disk : Core.MigrationTarget
     {
         private string _TargetName = String.Empty;
         private string _TargetNameResult = String.Empty;
@@ -193,7 +193,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName;

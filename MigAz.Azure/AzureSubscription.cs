@@ -465,7 +465,7 @@ namespace MigAz.Azure
 
                         if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
                         {
-                            frontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Static";
+                            frontEndIpConfiguration.TargetPrivateIPAllocationMethod = MigrationTarget.PrivateIPAllocationMethodEnum.Static;
                             frontEndIpConfiguration.TargetPrivateIpAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
                         }
 

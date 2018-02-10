@@ -4,7 +4,7 @@ using System;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkSecurityGroupRule : IMigrationTarget
+    public class NetworkSecurityGroupRule : Core.MigrationTarget
     {
         private AzureContext _AzureContext;
         private string _TargetName = String.Empty;
@@ -102,7 +102,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class StorageAccount : IStorageTarget, IMigrationTarget
+    public class StorageAccount : Core.MigrationTarget, IStorageTarget
     {
         private IStorageAccount _Source;
         private string _TargetName = String.Empty;
@@ -94,7 +94,7 @@ namespace MigAz.Azure.MigrationTarget
             return 24 - targetSettings.StorageAccountSuffix.Length;
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
 

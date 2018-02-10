@@ -260,6 +260,7 @@
             this.targetTreeView1.AfterTargetSelected += new MigAz.Azure.UserControls.TargetTreeView.AfterTargetSelectedHandler(this.targetTreeView1_AfterTargetSelected);
             this.targetTreeView1.AfterNewTargetResourceAdded += new MigAz.Azure.UserControls.TargetTreeView.AfterNewTargetResourceAddedHandler(this.targetTreeView1_AfterNewTargetResourceAdded);
             this.targetTreeView1.AfterExportArtifactRefresh += new MigAz.Azure.UserControls.TargetTreeView.AfterExportArtifactRefreshHandler(this.targetTreeView1_AfterExportArtifactRefresh);
+            this.targetTreeView1.AfterSourceNodeRemoved += new MigAz.Azure.UserControls.TargetTreeView.AfterSourceNodeRemovedHandler(this.targetTreeView1_AfterSourceNodeRemoved);
             // 
             // tabMigAzMonitoring
             // 

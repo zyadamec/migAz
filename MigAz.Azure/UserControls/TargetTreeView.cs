@@ -30,6 +30,9 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterExportArtifactRefreshHandler(TargetTreeView sender);
         public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
 
+        public delegate Task AfterSourceNodeRemovedHandler(TargetTreeView sender, TreeNode removedNode);
+        public event AfterSourceNodeRemovedHandler AfterSourceNodeRemoved;
+
         public TargetTreeView()
         {
             InitializeComponent();
@@ -403,7 +406,7 @@ namespace MigAz.Azure.UserControls
             return targetResourceGroupNode;
         }
 
-        public async Task<TreeNode> AddMigrationTarget(IMigrationTarget parentNode)
+        public async Task<TreeNode> AddMigrationTarget(Core.MigrationTarget parentNode)
         {
             if (parentNode == null)
                 throw new ArgumentNullException("Migration Target cannot be null.");
@@ -584,7 +587,7 @@ namespace MigAz.Azure.UserControls
             return tnAvailabilitySet;
         }
 
-        public async Task RemoveMigrationTarget(IMigrationTarget migrationTarget)
+        public async Task RemoveMigrationTarget(Core.MigrationTarget migrationTarget)
         {
 
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
@@ -834,13 +837,13 @@ namespace MigAz.Azure.UserControls
             return childCount;
         }
 
-        private void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
+        private async void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
             {
                 if (treeTargetARM.SelectedNode != null)
                 {
-                    IMigrationTarget migrationTarget = (IMigrationTarget)treeTargetARM.SelectedNode.Tag;
+                    Core.MigrationTarget migrationTarget = (Core.MigrationTarget)treeTargetARM.SelectedNode.Tag;
 
                     int countChildNodes = GetChildNodeCount(treeTargetARM.SelectedNode);
                     String strChildNodeCount = String.Empty;
@@ -850,26 +853,44 @@ namespace MigAz.Azure.UserControls
                     string deleteConfirmationText = String.Format("Are you sure you want to remove {0} '{1}'{2} as a target resource?", new string[] { migrationTarget.GetType().ToString(), migrationTarget.ToString(), strChildNodeCount });
                     if (MessageBox.Show(deleteConfirmationText, "Remove Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        treeTargetARM.Nodes.Remove(treeTargetARM.SelectedNode);
+                        await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, treeTargetARM.SelectedNode);
                     }
                 }
+            }
+        }
+
+        private async Task RemoveNodeStartingWithLastChildrenBackUpTree(TreeView treeTargetARM, TreeNode selectedNode)
+        {
+            if (selectedNode != null)
+            {
+                foreach (TreeNode childNode in selectedNode.Nodes)
+                {
+                    await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, childNode);
+                }
+
+                treeTargetARM.Nodes.Remove(selectedNode);
+
+                AfterSourceNodeRemoved?.Invoke(this, selectedNode);
             }
         }
 
         private async void treeTargetARM_DragDrop(object sender, DragEventArgs e)
         {
             string methodName = "treeTargetARM_DragDrop";
+            
+            this.LogProvider.WriteLog(methodName, "Start");
+
             if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
             {
                 Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
                 TreeNode destinationNode = ((TreeView)sender).GetNodeAt(pt);
                 TreeNode sourceNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
 
-                if (sourceNode != null && sourceNode.Tag != null && sourceNode.Tag.GetType().GetInterfaces().Contains(typeof(IMigrationTarget)) && destinationNode != null && destinationNode.Tag != null && destinationNode.Tag.GetType().GetInterfaces().Contains(typeof(IMigrationTarget)))
+                if (sourceNode != null && sourceNode.Tag != null && sourceNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget) && destinationNode != null && destinationNode.Tag != null && destinationNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
                 {
                     bool isMigAzTargetDragDropHandled = false;
-                    IMigrationTarget sourceNodeTarget = (IMigrationTarget)sourceNode.Tag;
-                    IMigrationTarget destinationNodeTarget = (IMigrationTarget)destinationNode.Tag;
+                    Core.MigrationTarget sourceNodeTarget = (Core.MigrationTarget)sourceNode.Tag;
+                    Core.MigrationTarget destinationNodeTarget = (Core.MigrationTarget)destinationNode.Tag;
                     this.LogProvider.WriteLog(methodName, "Source Node Tag - Name '" + sourceNodeTarget.ToString() + "' Type '" + sourceNodeTarget.GetType() + "'");
                     this.LogProvider.WriteLog(methodName, "Target Node Tag - Name '" + destinationNodeTarget.ToString() + "' Type '" + destinationNodeTarget.GetType() + "'");
 
@@ -922,6 +943,8 @@ namespace MigAz.Azure.UserControls
                         this.LogProvider.WriteLog(methodName, "DestinationNode exists, Tag is not null, but not of type IMigrationTarget.  No DragDrop action taken.");
                 }
             }
+
+            this.LogProvider.WriteLog(methodName, "End");
         }
 
         private void treeTargetARM_DragEnter(object sender, DragEventArgs e)

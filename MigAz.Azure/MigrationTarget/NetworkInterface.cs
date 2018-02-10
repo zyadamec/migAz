@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkInterface : IMigrationTarget
+    public class NetworkInterface : Core.MigrationTarget
     {
         private INetworkInterface _SourceNetworkInterface;
         private bool _EnableIPForwarding = false;
@@ -122,7 +122,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName + targetSettings.NetworkInterfaceCardSuffix;

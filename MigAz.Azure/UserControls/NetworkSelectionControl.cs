@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -80,7 +81,7 @@ namespace MigAz.Azure.UserControls
 
                     if (_NetworkInterfaceTarget != null)
                     {
-                        cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod);
+                        cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod.ToString());
                     }
                 }
             }
@@ -283,8 +284,12 @@ namespace MigAz.Azure.UserControls
         {
             if (_NetworkInterfaceTarget != null)
             {
-                _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = cmbAllocationMethod.SelectedItem.ToString();
-                txtStaticIp.Enabled = cmbAllocationMethod.SelectedItem.ToString() == "Static";
+                if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                else
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+
+                txtStaticIp.Enabled = _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod == PrivateIPAllocationMethodEnum.Static;
                 if (txtStaticIp.Enabled)
                     txtStaticIp.Text = _NetworkInterfaceTarget.TargetPrivateIpAddress;
                 else

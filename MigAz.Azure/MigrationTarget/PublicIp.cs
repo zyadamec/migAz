@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class PublicIp : IMigrationTarget
+    public class PublicIp : Core.MigrationTarget
     {
         private String _SourceName = String.Empty;
         private String _TargetName = String.Empty;
@@ -54,7 +54,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName;

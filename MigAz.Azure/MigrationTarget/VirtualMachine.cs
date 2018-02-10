@@ -11,7 +11,7 @@ using MigAz.Core;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class VirtualMachine : IMigrationTarget
+    public class VirtualMachine : Core.MigrationTarget
     {
         private AvailabilitySet _TargetAvailabilitySet = null;
         private string _TargetName = String.Empty;
@@ -324,7 +324,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName + targetSettings.VirtualMachineSuffix;

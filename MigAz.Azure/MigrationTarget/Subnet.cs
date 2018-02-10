@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class Subnet : IMigrationTarget, IMigrationSubnet
+    public class Subnet : Core.MigrationTarget, IMigrationSubnet
     {
         private AzureContext _AzureContext = null;
         private ISubnet _SourceSubnet;
@@ -139,7 +139,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
             _TargetNameResult = _TargetName;

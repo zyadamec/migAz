@@ -387,7 +387,7 @@ namespace MigAz.Azure.Generator
 
                 if (loadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
                 {
-                    frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod;
+                    frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod.ToString();
                     frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.TargetPrivateIpAddress;
 
                     if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
@@ -885,8 +885,8 @@ namespace MigAz.Azure.Generator
                     subnet_ref.id = ipConfiguration.TargetSubnet.TargetId;
                 }
 
-                ipconfiguration_properties.privateIPAllocationMethod = ipConfiguration.TargetPrivateIPAllocationMethod;
-                if (String.Compare(ipConfiguration.TargetPrivateIPAllocationMethod, "Static") == 0)
+                ipconfiguration_properties.privateIPAllocationMethod = ipConfiguration.TargetPrivateIPAllocationMethod.ToString();
+                if (ipConfiguration.TargetPrivateIPAllocationMethod == MigrationTarget.PrivateIPAllocationMethodEnum.Static)
                     ipconfiguration_properties.privateIPAddress = ipConfiguration.TargetPrivateIpAddress;
 
                 if (ipConfiguration.TargetVirtualNetwork != null)

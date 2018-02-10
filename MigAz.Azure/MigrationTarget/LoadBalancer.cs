@@ -14,7 +14,7 @@ namespace MigAz.Azure.MigrationTarget
         Internal
     }
 
-    public class LoadBalancer : IMigrationTarget
+    public class LoadBalancer : Core.MigrationTarget
     {
         private String _SourceName = String.Empty;
         private string _TargetName = String.Empty;
@@ -135,7 +135,7 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetNameResult; }
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             _TargetName = targetName.Trim().Replace(" ", String.Empty);
             _TargetNameResult = _TargetName;
