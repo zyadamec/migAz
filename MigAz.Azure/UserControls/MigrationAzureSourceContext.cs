@@ -27,6 +27,7 @@ namespace MigAz.Azure.UserControls
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
         private bool _AutoSelectDependencies = true;
         private bool _IsAuthenticated = false;
+        private ILogProvider _LogProvider;
 
         #region Matching Events from AzureContext
 
@@ -93,6 +94,7 @@ namespace MigAz.Azure.UserControls
         public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
         {
             _TargetSettings = targetSettings;
+            _LogProvider = logProvider;
 
             _AzureContextSource = new AzureContext(logProvider, statusProvider);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
@@ -112,6 +114,11 @@ namespace MigAz.Azure.UserControls
             treeAzureARM.ImageList = _ImageList;
         }
 
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+        }
 
         public bool IsSourceContextAuthenticated
         {
@@ -1172,6 +1179,26 @@ namespace MigAz.Azure.UserControls
             treeAzureASM.Height = this.Height - 135;
             treeAzureASM.Width = this.Width;
             azureLoginContextViewerSource.Width = this.Width;
+        }
+
+        public async Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)
+        {
+            LogProvider.WriteLog("UncheckMigrationTarget", "Start");
+
+            LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode");
+            TreeNode sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureARM.Nodes, migrationTarget);
+
+            if (sourceMigrationNode == null)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Originating MigrationTarget TreeNode not found.");
+            }
+            else
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode");
+                sourceMigrationNode.Checked = false;
+            }
+
+            LogProvider.WriteLog("UncheckMigrationTarget", "End");
         }
     }
 }

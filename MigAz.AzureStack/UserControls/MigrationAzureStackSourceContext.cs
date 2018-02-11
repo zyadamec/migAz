@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Core;
 
 namespace MigAz.AzureStack.UserControls
 {
@@ -37,6 +38,11 @@ namespace MigAz.AzureStack.UserControls
         {
             AzureStackContext azureStackContext = new AzureStackContext(_LogProvider);
             await azureStackContext.Login();
+        }
+
+        public Task UncheckMigrationTarget(MigrationTarget migrationTarget)
+        {
+            throw new NotImplementedException();
         }
     }
 }

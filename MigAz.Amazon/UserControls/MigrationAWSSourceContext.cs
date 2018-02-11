@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
+using MigAz.Core;
 
 namespace MigAz.AWS.UserControls
 {
@@ -26,6 +27,11 @@ namespace MigAz.AWS.UserControls
         {
             get { return _IsAuthenticated; }
             set { _IsAuthenticated = value; }
+        }
+
+        public Task UncheckMigrationTarget(MigrationTarget migrationTarget)
+        {
+            throw new NotImplementedException();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

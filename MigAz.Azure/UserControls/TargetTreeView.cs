@@ -587,7 +587,12 @@ namespace MigAz.Azure.UserControls
             return tnAvailabilitySet;
         }
 
-        private TreeNode SeekMigrationTargetTreeNode(TreeNodeCollection treeNodeCollection, Core.MigrationTarget migrationTarget)
+        public TreeNode SeekMigrationTargetTreeNode(Core.MigrationTarget migrationTarget)
+        {
+            return SeekMigrationTargetTreeNode(this.treeTargetARM.Nodes, migrationTarget);
+        }
+
+        public static TreeNode SeekMigrationTargetTreeNode(TreeNodeCollection treeNodeCollection, Core.MigrationTarget migrationTarget)
         {
             foreach (TreeNode treeNode in treeNodeCollection)
             {
@@ -599,20 +604,20 @@ namespace MigAz.Azure.UserControls
             return null;
         }
 
-        private TreeNode SeekMigrationTargetTreeNodeRecursive(TreeNode treeNode, Core.MigrationTarget migrationTarget)
+        private static TreeNode SeekMigrationTargetTreeNodeRecursive(TreeNode treeNode, Core.MigrationTarget migrationTarget)
         {
             if (treeNode.Tag != null && treeNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
             {
                 Core.MigrationTarget treeNodeMigrationTarget = (Core.MigrationTarget)treeNode.Tag;
                 if (treeNodeMigrationTarget == migrationTarget)
                     return treeNode;
+            }
 
-                foreach (TreeNode treeNodeChild in treeNode.Nodes)
-                {
-                    TreeNode treeNodeChildMatch = SeekMigrationTargetTreeNodeRecursive(treeNodeChild, migrationTarget);
-                    if (treeNodeChildMatch != null)
-                        return treeNodeChildMatch;
-                }
+            foreach (TreeNode treeNodeChild in treeNode.Nodes)
+            {
+                TreeNode treeNodeChildMatch = SeekMigrationTargetTreeNodeRecursive(treeNodeChild, migrationTarget);
+                if (treeNodeChildMatch != null)
+                    return treeNodeChildMatch;
             }
 
             return null;
@@ -620,41 +625,37 @@ namespace MigAz.Azure.UserControls
 
         public async Task RemoveMigrationTarget(Core.MigrationTarget migrationTarget)
         {
-            TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
-            if (targetResourceGroupNode != null)
+            TreeNode matchingNode = SeekMigrationTargetTreeNode(migrationTarget);
+            if (matchingNode != null)
             {
-                TreeNode matchingNode = SeekMigrationTargetTreeNode(targetResourceGroupNode.Nodes, migrationTarget);
-                if (matchingNode != null)
+                Core.MigrationTarget matchingNodeMigrationTarget = (Core.MigrationTarget)matchingNode.Tag;
+                if (matchingNodeMigrationTarget == migrationTarget)
                 {
-                    Core.MigrationTarget matchingNodeMigrationTarget = (Core.MigrationTarget)matchingNode.Tag;
-                    if (matchingNodeMigrationTarget == migrationTarget)
+                    if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                     {
-                        if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                        {
-                            await RemoveTreeNodeCascadeUp(matchingNode);
+                        await RemoveTreeNodeCascadeUp(matchingNode);
 
-                            Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)matchingNode.Tag;
+                        Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)matchingNode.Tag;
 
-                            // if there are VMs that have originating Classic Disks, we may need to clean them up from the Resource Group if they were being moved to a Managed Disk (not under the VM in the Treeview)
-                            await RemoveAsmDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
-                            foreach (MigrationTarget.Disk disk in targetVirtualMachine.DataDisks)
-                            {
-                                await RemoveAsmDiskTurnedManagedDiskFromARMTree(disk);
-                            }
-                            foreach (MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
-                            {
-                                await RemoveAsmNetworkTurnedArmNetworkFromARMTree(networkInterface);
-                            }
-                            await RemoveCloudServiceTurnedAvailabilitySetFromARMTree(targetVirtualMachine.TargetAvailabilitySet);
-                        }
-                        else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
-                            await RemoveTreeNodeCascadeUp(matchingNode);
-                        else if (matchingNode.Tag.GetType() == typeof(TreeNode))
+                        // if there are VMs that have originating Classic Disks, we may need to clean them up from the Resource Group if they were being moved to a Managed Disk (not under the VM in the Treeview)
+                        await RemoveAsmDiskTurnedManagedDiskFromARMTree(targetVirtualMachine.OSVirtualHardDisk);
+                        foreach (MigrationTarget.Disk disk in targetVirtualMachine.DataDisks)
                         {
-                            TreeNode childTreeNode = (TreeNode)matchingNode.Tag;
-                            if (migrationTarget.GetType() == childTreeNode.Tag.GetType())
-                                await RemoveTreeNodeCascadeUp(matchingNode);
+                            await RemoveAsmDiskTurnedManagedDiskFromARMTree(disk);
                         }
+                        foreach (MigrationTarget.NetworkInterface networkInterface in targetVirtualMachine.NetworkInterfaces)
+                        {
+                            await RemoveAsmNetworkTurnedArmNetworkFromARMTree(networkInterface);
+                        }
+                        await RemoveCloudServiceTurnedAvailabilitySetFromARMTree(targetVirtualMachine.TargetAvailabilitySet);
+                    }
+                    else if (matchingNode.Tag.GetType() == migrationTarget.GetType())
+                        await RemoveTreeNodeCascadeUp(matchingNode);
+                    else if (matchingNode.Tag.GetType() == typeof(TreeNode))
+                    {
+                        TreeNode childTreeNode = (TreeNode)matchingNode.Tag;
+                        if (migrationTarget.GetType() == childTreeNode.Tag.GetType())
+                            await RemoveTreeNodeCascadeUp(matchingNode);
                     }
                 }
             }

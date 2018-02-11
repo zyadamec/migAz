@@ -100,16 +100,15 @@ namespace MigAz.Forms
         private async Task MigrationSourceControl_AfterNodeChecked(MigrationTarget sender)
         {
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-
             TreeNode resultUpdateARMTree = await targetTreeView.AddMigrationTarget(sender);
         }
 
         private async Task MigrationSourceControl_AfterNodeUnchecked(MigrationTarget sender)
         {
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-
             await targetTreeView.RemoveMigrationTarget(sender);
         }
+
         private async Task MigrationSourceControl_AfterNodeChanged(MigrationTarget sender)
         {
             await targetTreeView1.RefreshExportArtifacts();
@@ -849,14 +848,17 @@ namespace MigAz.Forms
 
         private async Task targetTreeView1_AfterSourceNodeRemoved(TargetTreeView sender, TreeNode removedNode)
         {
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("targetTreeView1_AfterSourceNodeRemoved", "Start");
+
             if (removedNode.Tag != null)
             {
                 MigrationTarget migrationTarget = (MigrationTarget)removedNode.Tag;
-                //if (migrationTarget.Source != null)
-                //{
-                //    // Event back to Source Tree View to "uncheck"
-                //}
+                await this.MigrationSourceControl.UncheckMigrationTarget(migrationTarget);
             }
+
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("targetTreeView1_AfterSourceNodeRemoved", "End");
         }
 
         #endregion
