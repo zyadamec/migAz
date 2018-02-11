@@ -1185,8 +1185,18 @@ namespace MigAz.Azure.UserControls
         {
             LogProvider.WriteLog("UncheckMigrationTarget", "Start");
 
-            LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode");
-            TreeNode sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureARM.Nodes, migrationTarget);
+            TreeNode sourceMigrationNode = null;
+            
+            if (treeAzureARM.Enabled)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode in treeAzureARM");
+                sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureARM.Nodes, migrationTarget);
+            }
+            else if (treeAzureASM.Enabled)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode in treeAzureASM");
+                sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureASM.Nodes, migrationTarget);
+            }
 
             if (sourceMigrationNode == null)
             {
