@@ -11,8 +11,6 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class ResourceGroup : Core.MigrationTarget
     {
-        private String _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private Arm.Location _TargetLocation;
 
         public ResourceGroup(TargetSettings targetSettings)
@@ -32,25 +30,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetLocation = value; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.AvailabilitySetSuffix;
         }
 
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

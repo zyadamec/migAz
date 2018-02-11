@@ -11,8 +11,6 @@ namespace MigAz.Azure.MigrationTarget
     public class NetworkSecurityGroup : Core.MigrationTarget
     {
         private INetworkSecurityGroup _SourceNetworkSecurityGroup;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
         private NetworkSecurityGroup() { }
@@ -73,26 +71,11 @@ namespace MigAz.Azure.MigrationTarget
                     return this.SourceNetworkSecurityGroup.ToString();
             }
         }
-
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
+        
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.NetworkSecurityGroupSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.NetworkSecurityGroupSuffix;
         }
     }
 }

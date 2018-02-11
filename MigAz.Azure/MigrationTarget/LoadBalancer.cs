@@ -17,8 +17,6 @@ namespace MigAz.Azure.MigrationTarget
     public class LoadBalancer : Core.MigrationTarget
     {
         private String _SourceName = String.Empty;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private ILoadBalancer _source;
         private List<FrontEndIpConfiguration> _FrontEndIpConfiguration = new List<FrontEndIpConfiguration>();
         private List<BackEndAddressPool> _BackEndAddressPools = new List<BackEndAddressPool>();
@@ -125,25 +123,11 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
 
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

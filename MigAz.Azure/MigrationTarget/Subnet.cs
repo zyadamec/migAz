@@ -13,8 +13,6 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext = null;
         private ISubnet _SourceSubnet;
-        private String _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private MigrationTarget.VirtualNetwork _ParentVirtualNetwork;
 
         private Subnet() { }
@@ -129,25 +127,10 @@ namespace MigAz.Azure.MigrationTarget
             get { return this.TargetName == ArmConst.GatewaySubnetName; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
-            _TargetNameResult = _TargetName;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
     }
 }

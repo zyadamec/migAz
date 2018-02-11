@@ -10,9 +10,7 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class AvailabilitySet : Core.MigrationTarget
     {
-        private string _TargetNameResult = String.Empty;
         private IAvailabilitySetSource _SourceAvailabilitySet;
-        private string _TargetName = String.Empty;
         private List<VirtualMachine> _TargetVirtualMachines = new List<VirtualMachine>();
         private Int32 _PlatformUpdateDomainCount = 5;
         private Int32 _PlatformFaultDomainCount = 3;
@@ -142,25 +140,10 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.AvailabilitySetSuffix;
         }
 
     }

@@ -12,8 +12,6 @@ namespace MigAz.Azure.MigrationTarget
     {
         private AzureContext _AzureContext;
         private IRouteTable _SourceRouteTable;
-        private String _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private List<Route> _Routes = new List<Route>();
 
         private RouteTable() { }
@@ -56,25 +54,11 @@ namespace MigAz.Azure.MigrationTarget
             get { return _Routes; }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.AvailabilitySetSuffix;
         }
     }
 }
