@@ -902,16 +902,6 @@ namespace MigAz.Azure.UserControls
                         {
                             AvailabilitySet availabilitySet = (AvailabilitySet)destinationNodeTarget;
                             
-                            // If virtual machines is currently in an Availability Set
-                            if (virtualMachine.TargetAvailabilitySet != null)
-                            {
-                                // Remove it from the existing Availability Set
-                                virtualMachine.TargetAvailabilitySet.TargetVirtualMachines.Remove(virtualMachine);
-                            }
-
-                            // Add Virtual Machine into new Target Availability Set
-                            availabilitySet.TargetVirtualMachines.Add(virtualMachine);
-
                             // Update Virtual Machine to reflect ownership in new target Availability Set
                             virtualMachine.TargetAvailabilitySet = availabilitySet;
 

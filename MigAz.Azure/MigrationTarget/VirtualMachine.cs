@@ -266,16 +266,20 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetAvailabilitySet; }
             set
             {
-                if (_TargetAvailabilitySet != null)
+                if (value != _TargetAvailabilitySet)
                 {
-                    _TargetAvailabilitySet.TargetVirtualMachines.Remove(this);
-                }
+                    if (_TargetAvailabilitySet != null)
+                    {
+                        _TargetAvailabilitySet.TargetVirtualMachines.Remove(this);
+                    }
 
-                _TargetAvailabilitySet = value;
+                    _TargetAvailabilitySet = value;
 
-                if (_TargetAvailabilitySet != null)
-                {
-                    _TargetAvailabilitySet.TargetVirtualMachines.Add(this);
+                    if (_TargetAvailabilitySet != null)
+                    {
+                        if (!_TargetAvailabilitySet.TargetVirtualMachines.Contains(this))
+                            _TargetAvailabilitySet.TargetVirtualMachines.Add(this);
+                    }
                 }
             }
         }

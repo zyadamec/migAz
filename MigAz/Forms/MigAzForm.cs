@@ -812,8 +812,6 @@ namespace MigAz.Forms
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
-
-            propertyPanel1.Rebind();
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
