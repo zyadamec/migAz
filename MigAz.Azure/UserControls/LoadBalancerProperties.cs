@@ -17,6 +17,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private LoadBalancer _LoadBalancer;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -28,15 +29,23 @@ namespace MigAz.Azure.UserControls
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView)
         {
-            networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
-            _AzureContext = azureContext;
-            _TargetTreeView = targetTreeView;
+            try
+            {
+                _IsBinding = true;
+                networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+                _AzureContext = azureContext;
+                _TargetTreeView = targetTreeView;
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         public MigrationTarget.LoadBalancer LoadBalancer
@@ -57,7 +66,8 @@ namespace MigAz.Azure.UserControls
 
             _LoadBalancer.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private async void cmbLoadBalancerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -81,7 +91,8 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            await PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private VirtualMachine _VirtualMachine;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -23,92 +24,100 @@ namespace MigAz.Azure.UserControls
 
         public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, VirtualMachine virtualMachine)
         {
-            _AzureContext = azureContext;
-            _TargetTreeView = targetTreeView;
-            _VirtualMachine = virtualMachine;
-
-            txtTargetName.Text = _VirtualMachine.TargetName;
-
-            if (_VirtualMachine.Source != null)
+            try
             {
-                if (_VirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
+                _IsBinding = true;
+                _AzureContext = azureContext;
+                _TargetTreeView = targetTreeView;
+                _VirtualMachine = virtualMachine;
+
+                txtTargetName.Text = _VirtualMachine.TargetName;
+
+                if (_VirtualMachine.Source != null)
                 {
-                    Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)_VirtualMachine.Source;
-
-                    if (asmVirtualMachine.RoleSize != null)
+                    if (_VirtualMachine.Source.GetType() == typeof(Azure.Asm.VirtualMachine))
                     {
-                        lblRoleSize.Text = asmVirtualMachine.RoleSize.Name;
-                        lblSourceCPUCores.Text = asmVirtualMachine.RoleSize.Cores.ToString();
-                        lblSourceMemoryInGb.Text = ((double)asmVirtualMachine.RoleSize.MemoryInMb / 1024).ToString();
-                        lblSourceMaxDataDisks.Text = asmVirtualMachine.RoleSize.MaxDataDiskCount.ToString();
-                    }
+                        Azure.Asm.VirtualMachine asmVirtualMachine = (Azure.Asm.VirtualMachine)_VirtualMachine.Source;
 
-                    lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
-                }
-                else if (_VirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
-                {
-                    Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)_VirtualMachine.Source;
-
-                    if (armVirtualMachine.VmSize != null)
-                    {
-                        lblRoleSize.Text = armVirtualMachine.VmSize.ToString();
-                        lblSourceCPUCores.Text = armVirtualMachine.VmSize.NumberOfCores.ToString();
-                        lblSourceMemoryInGb.Text = ((double)armVirtualMachine.VmSize.memoryInMB / 1024).ToString();
-                        lblSourceMaxDataDisks.Text = armVirtualMachine.VmSize.maxDataDiskCount.ToString();
-                    }
-
-                    lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
-                }
-            }
-
-            cbRoleSizes.Items.Clear();
-            if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)
-            {
-                cbRoleSizes.Enabled = true;
-                cbRoleSizes.Visible = true;
-                lblTargetLocationRequired.Enabled = false;
-                lblTargetLocationRequired.Visible = false;
-
-                if (targetTreeView.TargetResourceGroup.TargetLocation.VMSizes != null)
-                {
-                    foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
-                    {
-                        if (vmSize.IsStorageTypeSupported(_VirtualMachine.OSVirtualHardDisk.StorageAccountType))
+                        if (asmVirtualMachine.RoleSize != null)
                         {
-                            cbRoleSizes.Items.Add(vmSize);
+                            lblRoleSize.Text = asmVirtualMachine.RoleSize.Name;
+                            lblSourceCPUCores.Text = asmVirtualMachine.RoleSize.Cores.ToString();
+                            lblSourceMemoryInGb.Text = ((double)asmVirtualMachine.RoleSize.MemoryInMb / 1024).ToString();
+                            lblSourceMaxDataDisks.Text = asmVirtualMachine.RoleSize.MaxDataDiskCount.ToString();
+                        }
+
+                        lblOS.Text = asmVirtualMachine.OSVirtualHardDiskOS;
+                    }
+                    else if (_VirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
+                    {
+                        Azure.Arm.VirtualMachine armVirtualMachine = (Azure.Arm.VirtualMachine)_VirtualMachine.Source;
+
+                        if (armVirtualMachine.VmSize != null)
+                        {
+                            lblRoleSize.Text = armVirtualMachine.VmSize.ToString();
+                            lblSourceCPUCores.Text = armVirtualMachine.VmSize.NumberOfCores.ToString();
+                            lblSourceMemoryInGb.Text = ((double)armVirtualMachine.VmSize.memoryInMB / 1024).ToString();
+                            lblSourceMaxDataDisks.Text = armVirtualMachine.VmSize.maxDataDiskCount.ToString();
+                        }
+
+                        lblOS.Text = armVirtualMachine.OSVirtualHardDiskOS;
+                    }
+                }
+
+                cbRoleSizes.Items.Clear();
+                if (targetTreeView.TargetResourceGroup != null && targetTreeView.TargetResourceGroup.TargetLocation != null)
+                {
+                    cbRoleSizes.Enabled = true;
+                    cbRoleSizes.Visible = true;
+                    lblTargetLocationRequired.Enabled = false;
+                    lblTargetLocationRequired.Visible = false;
+
+                    if (targetTreeView.TargetResourceGroup.TargetLocation.VMSizes != null)
+                    {
+                        foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
+                        {
+                            if (vmSize.IsStorageTypeSupported(_VirtualMachine.OSVirtualHardDisk.StorageAccountType))
+                            {
+                                cbRoleSizes.Items.Add(vmSize);
+                            }
                         }
                     }
-                }
 
-                if (_VirtualMachine.TargetSize != null)
+                    if (_VirtualMachine.TargetSize != null)
+                    {
+                        int sizeIndex = cbRoleSizes.FindStringExact(_VirtualMachine.TargetSize.ToString());
+                        cbRoleSizes.SelectedIndex = sizeIndex;
+                    }
+                }
+                else
                 {
-                    int sizeIndex = cbRoleSizes.FindStringExact(_VirtualMachine.TargetSize.ToString());
-                    cbRoleSizes.SelectedIndex = sizeIndex;
+                    cbRoleSizes.Enabled = false;
+                    cbRoleSizes.Visible = false;
+                    lblTargetLocationRequired.Enabled = true;
+                    lblTargetLocationRequired.Visible = true;
                 }
-            }
-            else
-            {
-                cbRoleSizes.Enabled = false;
-                cbRoleSizes.Visible = false;
-                lblTargetLocationRequired.Enabled = true;
-                lblTargetLocationRequired.Visible = true;
-            }
 
-            availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
-            osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView);
-            primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView);
+                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
+                osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView);
+                primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView);
 
-            foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
-            {
-                AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
-            }
-            foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
-            {
-                if (!targetNIC.IsPrimary)
-                    AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
-            }
+                foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
+                {
+                    AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
+                }
+                foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
+                {
+                    if (!targetNIC.IsPrimary)
+                        AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
+                }
 
-            label15.Visible = pictureBox1.Controls.Count > 0;
+                label15.Visible = pictureBox1.Controls.Count > 0;
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         private void AddResourceSummary(ResourceSummary resourceSummary)
@@ -121,16 +130,12 @@ namespace MigAz.Azure.UserControls
             pictureBox1.Controls.Add(resourceSummary);
         }
 
-        private async Task Properties1_PropertyChanged()
-        {
-            await PropertyChanged();
-        }
-
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             _VirtualMachine.SetTargetName(txtTargetName.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -156,7 +161,8 @@ namespace MigAz.Azure.UserControls
             else
                 _VirtualMachine.TargetSize = null;
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
     }
 }

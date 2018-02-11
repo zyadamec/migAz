@@ -16,6 +16,7 @@ namespace MigAz.Azure.UserControls
     {
         private TargetTreeView _TargetTreeView;
         private MigrationTarget.Subnet _Subnet;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -27,37 +28,45 @@ namespace MigAz.Azure.UserControls
 
         internal void Bind(TargetTreeView targetTreeView, MigrationTarget.Subnet targetSubnet)
         {
-            _TargetTreeView = targetTreeView;
-            _Subnet = targetSubnet;
-
-            txtTargetName.Text = targetSubnet.TargetName;
-
-            if (targetSubnet.SourceSubnet != null)
+            try
             {
-                if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
-                {
-                    Asm.Subnet asmSubnet = (Asm.Subnet)targetSubnet.SourceSubnet;
+                _IsBinding = true;
+                _TargetTreeView = targetTreeView;
+                _Subnet = targetSubnet;
 
-                    lblSourceName.Text = asmSubnet.Name;
-                    lblAddressSpace.Text = asmSubnet.AddressPrefix;
-                }
-                else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
-                {
-                    Arm.Subnet armSubnet = (Arm.Subnet)targetSubnet.SourceSubnet;
+                txtTargetName.Text = targetSubnet.TargetName;
 
-                    lblSourceName.Text = armSubnet.Name;
-                    lblAddressSpace.Text = armSubnet.AddressPrefix;
+                if (targetSubnet.SourceSubnet != null)
+                {
+                    if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Asm.Subnet))
+                    {
+                        Asm.Subnet asmSubnet = (Asm.Subnet)targetSubnet.SourceSubnet;
+
+                        lblSourceName.Text = asmSubnet.Name;
+                        lblAddressSpace.Text = asmSubnet.AddressPrefix;
+                    }
+                    else if (targetSubnet.SourceSubnet.GetType() == typeof(Azure.Arm.Subnet))
+                    {
+                        Arm.Subnet armSubnet = (Arm.Subnet)targetSubnet.SourceSubnet;
+
+                        lblSourceName.Text = armSubnet.Name;
+                        lblAddressSpace.Text = armSubnet.AddressPrefix;
+                    }
                 }
+
+                if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+                {
+                    // if gateway subnet, the name can't be changed
+                    txtTargetName.Enabled = false;
+                }
+
+                networkSecurityGroup.Bind(_Subnet.NetworkSecurityGroup, _TargetTreeView);
+                routeTable.Bind(_Subnet.RouteTable, _TargetTreeView);
             }
-
-            if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+            finally
             {
-                // if gateway subnet, the name can't be changed
-                txtTargetName.Enabled = false;
+                _IsBinding = false;
             }
-
-            networkSecurityGroup.Bind(_Subnet.NetworkSecurityGroup, _TargetTreeView);
-            routeTable.Bind(_Subnet.RouteTable, _TargetTreeView);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -66,7 +75,8 @@ namespace MigAz.Azure.UserControls
 
             _Subnet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

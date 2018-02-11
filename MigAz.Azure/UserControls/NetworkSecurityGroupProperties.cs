@@ -10,6 +10,7 @@ namespace MigAz.Azure.UserControls
 
         private TargetTreeView _TargetTreeView;
         private NetworkSecurityGroup _NetworkSecurityGroup;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -21,24 +22,32 @@ namespace MigAz.Azure.UserControls
 
         internal void Bind(NetworkSecurityGroup networkSecurityGroup, TargetTreeView targetTreeView)
         {
-            _NetworkSecurityGroup = networkSecurityGroup;
-            _TargetTreeView = targetTreeView;
-
-            if (_NetworkSecurityGroup.SourceNetworkSecurityGroup != null)
+            try
             {
-                if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
-                {
-                    Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
-                    lblSourceName.Text = asmNetworkSecurityGroup.Name;
-                }
-                else if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
-                {
-                    Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
-                    lblSourceName.Text = armNetworkSecurityGroup.Name;
-                }
-            }
+                _IsBinding = true;
+                _NetworkSecurityGroup = networkSecurityGroup;
+                _TargetTreeView = targetTreeView;
 
-            txtTargetName.Text = _NetworkSecurityGroup.TargetName;
+                if (_NetworkSecurityGroup.SourceNetworkSecurityGroup != null)
+                {
+                    if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Asm.NetworkSecurityGroup))
+                    {
+                        Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup = (Azure.Asm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
+                        lblSourceName.Text = asmNetworkSecurityGroup.Name;
+                    }
+                    else if (_NetworkSecurityGroup.SourceNetworkSecurityGroup.GetType() == typeof(Azure.Arm.NetworkSecurityGroup))
+                    {
+                        Azure.Arm.NetworkSecurityGroup armNetworkSecurityGroup = (Azure.Arm.NetworkSecurityGroup)_NetworkSecurityGroup.SourceNetworkSecurityGroup;
+                        lblSourceName.Text = armNetworkSecurityGroup.Name;
+                    }
+                }
+
+                txtTargetName.Text = _NetworkSecurityGroup.TargetName;
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -47,7 +56,8 @@ namespace MigAz.Azure.UserControls
 
             _NetworkSecurityGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

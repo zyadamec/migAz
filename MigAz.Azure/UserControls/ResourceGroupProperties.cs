@@ -14,6 +14,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContext;
         private ResourceGroup _ResourceGroup;
         private TargetTreeView _TargetTreeView;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -25,54 +26,62 @@ namespace MigAz.Azure.UserControls
 
         internal async Task Bind(AzureContext azureContext, ResourceGroup resourceGroup, TargetTreeView targetTreeView)
         {
-            _AzureContext = azureContext;
-            _ResourceGroup = resourceGroup;
-            _TargetTreeView = targetTreeView;
-
-            txtTargetName.Text = resourceGroup.TargetName;
-
             try
             {
-                cboTargetLocation.Items.Clear();
-                if (azureContext != null && azureContext.AzureRetriever != null && azureContext.AzureRetriever.SubscriptionContext != null)
-                {
-                    List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
+                _IsBinding = true;
+                _AzureContext = azureContext;
+                _ResourceGroup = resourceGroup;
+                _TargetTreeView = targetTreeView;
 
-                    foreach (Azure.Arm.Location armLocation in armLocations.OrderBy(a => a.DisplayName))
+                txtTargetName.Text = resourceGroup.TargetName;
+
+                try
+                {
+                    cboTargetLocation.Items.Clear();
+                    if (azureContext != null && azureContext.AzureRetriever != null && azureContext.AzureRetriever.SubscriptionContext != null)
                     {
-                        cboTargetLocation.Items.Add(armLocation);
+                        List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
+
+                        foreach (Azure.Arm.Location armLocation in armLocations.OrderBy(a => a.DisplayName))
+                        {
+                            cboTargetLocation.Items.Add(armLocation);
+                        }
+                    }
+                    else
+                    {
+                        cboTargetLocation.Visible = false;
+                        lblTargetContext.Visible = true;
                     }
                 }
-                else
+                catch (WebException)
                 {
-                    cboTargetLocation.Visible = false;
-                    lblTargetContext.Visible = true;
-                }
-            }
-            catch (WebException)
-            {
-                // We are trying to load the ARM defined subscription locations above first; however, this as of Feb 24 2017, this ARM query
-                // does not succeed (503 Forbidden) across all Azure Environments.  For example, it works in Azure Commercial, but Azure US Gov
-                // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
+                    // We are trying to load the ARM defined subscription locations above first; however, this as of Feb 24 2017, this ARM query
+                    // does not succeed (503 Forbidden) across all Azure Environments.  For example, it works in Azure Commercial, but Azure US Gov
+                    // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
 
-                cboTargetLocation.Items.Clear();
+                    cboTargetLocation.Items.Clear();
 
-                if (azureContext.AzureRetriever.SubscriptionContext != null)
-                {
-                    foreach (Azure.Asm.Location asmLocation in await azureContext.AzureSubscription.GetAzureASMLocations())
+                    if (azureContext.AzureRetriever.SubscriptionContext != null)
                     {
-                        cboTargetLocation.Items.Add(asmLocation);
+                        foreach (Azure.Asm.Location asmLocation in await azureContext.AzureSubscription.GetAzureASMLocations())
+                        {
+                            cboTargetLocation.Items.Add(asmLocation);
+                        }
+                    }
+                }
+
+                if (resourceGroup.TargetLocation != null)
+                {
+                    foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
+                    {
+                        if (armLocation.Name == resourceGroup.TargetLocation.Name)
+                            cboTargetLocation.SelectedItem = armLocation;
                     }
                 }
             }
-
-            if (resourceGroup.TargetLocation != null)
+            finally
             {
-                foreach (Azure.Arm.Location armLocation in cboTargetLocation.Items)
-                {
-                    if (armLocation.Name == resourceGroup.TargetLocation.Name)
-                        cboTargetLocation.SelectedItem = armLocation;
-                }
+                _IsBinding = false;
             }
         }
 
@@ -82,7 +91,8 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -99,8 +109,9 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.TargetLocation = (Arm.Location) cmbSender.SelectedItem;
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
-        
+
     }
 }

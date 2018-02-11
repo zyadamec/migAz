@@ -15,6 +15,7 @@ namespace MigAz.Azure.UserControls
     {
         private TargetTreeView _TargetTreeView;
         private RouteTable _RouteTable;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,12 +27,19 @@ namespace MigAz.Azure.UserControls
 
         internal void Bind(TargetTreeView targetTreeView, RouteTable targetRouteTable)
         {
-            _TargetTreeView = targetTreeView;
-            _RouteTable = targetRouteTable;
+            try
+            {
+                _IsBinding = true;
+                _TargetTreeView = targetTreeView;
+                _RouteTable = targetRouteTable;
 
-            lblSourceName.Text = _RouteTable.SourceName;
-            txtTargetName.Text = targetRouteTable.TargetName;
-
+                lblSourceName.Text = _RouteTable.SourceName;
+                txtTargetName.Text = targetRouteTable.TargetName;
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -40,7 +48,8 @@ namespace MigAz.Azure.UserControls
 
             _RouteTable.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

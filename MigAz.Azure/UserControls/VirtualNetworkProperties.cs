@@ -15,6 +15,7 @@ namespace MigAz.Azure.UserControls
     {
         private TargetTreeView _TargetTreeView;
         private VirtualNetwork _VirtualNetwork;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,27 +27,35 @@ namespace MigAz.Azure.UserControls
 
         public void Bind(VirtualNetwork targetVirtualNetwork, TargetTreeView targetTreeView)
         {
-            _VirtualNetwork = targetVirtualNetwork;
-            _TargetTreeView = targetTreeView;
-
-            if (targetVirtualNetwork.SourceVirtualNetwork != null)
+            try
             {
-                if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                {
-                    Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
-                    lblVNetName.Text = asmVirtualNetwork.Name;
-                }
-                else if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
-                {
-                    Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
-                    lblVNetName.Text = armVirtualNetwork.Name;
-                }
-            }
-            else
-                lblVNetName.Text = "(None)";
+                _IsBinding = true;
+                _VirtualNetwork = targetVirtualNetwork;
+                _TargetTreeView = targetTreeView;
 
-            txtVirtualNetworkName.Text = targetVirtualNetwork.TargetName;
-            dgvAddressSpaces.DataSource = targetVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+                if (targetVirtualNetwork.SourceVirtualNetwork != null)
+                {
+                    if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
+                    {
+                        Azure.Asm.VirtualNetwork asmVirtualNetwork = (Azure.Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+                        lblVNetName.Text = asmVirtualNetwork.Name;
+                    }
+                    else if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork))
+                    {
+                        Azure.Arm.VirtualNetwork armVirtualNetwork = (Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+                        lblVNetName.Text = armVirtualNetwork.Name;
+                    }
+                }
+                else
+                    lblVNetName.Text = "(None)";
+
+                txtVirtualNetworkName.Text = targetVirtualNetwork.TargetName;
+                dgvAddressSpaces.DataSource = targetVirtualNetwork.AddressPrefixes.Select(x => new { AddressPrefix = x }).ToList();
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -55,7 +64,8 @@ namespace MigAz.Azure.UserControls
 
             _VirtualNetwork.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings); ;
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
