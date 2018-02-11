@@ -102,7 +102,6 @@ namespace MigAz.Forms
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
 
             TreeNode resultUpdateARMTree = await targetTreeView.AddMigrationTarget(sender);
-            await targetTreeView.RefreshExportArtifacts();
         }
 
         private async Task MigrationSourceControl_AfterNodeUnchecked(MigrationTarget sender)
@@ -110,7 +109,10 @@ namespace MigAz.Forms
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
 
             await targetTreeView.RemoveMigrationTarget(sender);
-            await targetTreeView.RefreshExportArtifacts();
+        }
+        private async Task MigrationSourceControl_AfterNodeChanged(MigrationTarget sender)
+        {
+            await targetTreeView1.RefreshExportArtifacts();
         }
 
         private async Task MigrationSourceControl_BeforeAzureTenantChange(AzureContext sender)
@@ -694,6 +696,7 @@ namespace MigAz.Forms
                 azureControl.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
                 azureControl.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
+                azureControl.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
                 azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
@@ -712,6 +715,7 @@ namespace MigAz.Forms
 
             migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
+
 
         private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
         {

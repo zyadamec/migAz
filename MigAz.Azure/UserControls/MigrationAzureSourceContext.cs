@@ -64,6 +64,9 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterNodeUncheckedHandler(Core.MigrationTarget sender);
         public event AfterNodeUncheckedHandler AfterNodeUnchecked;
 
+        public delegate Task AfterNodeChangedHandler(Core.MigrationTarget sender);
+        public event AfterNodeChangedHandler AfterNodeChanged;
+
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
@@ -942,32 +945,19 @@ namespace MigAz.Azure.UserControls
 
             TreeNode resultUpdateARMTree = null;
 
-            if (e.Node.Tag != null)
+            Core.MigrationTarget migrationTarget = null;
+            if (e.Node.Tag != null && e.Node.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
             {
-                Type tagType = e.Node.Tag.GetType();
-                if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
-                    (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
-                    (tagType == typeof(Azure.MigrationTarget.AvailabilitySet)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
-                    //(tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
-                    (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
-                    (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
-                    (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
-                    (tagType == typeof(Azure.MigrationTarget.RouteTable)) ||
-                    (tagType == typeof(Azure.MigrationTarget.Disk)) ||
-                    (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
-                {
-                    Core.MigrationTarget migrationTarget = (Core.MigrationTarget)e.Node.Tag;
+                migrationTarget = (Core.MigrationTarget)e.Node.Tag;
 
-                    if (e.Node.Checked)
-                    {
-                        resultUpdateARMTree = e.Node;
-                        AfterNodeChecked?.Invoke(migrationTarget);
-                    }
-                    else
-                    {
-                        AfterNodeUnchecked?.Invoke(migrationTarget);
-                    }
+                if (e.Node.Checked)
+                {
+                    resultUpdateARMTree = e.Node;
+                    AfterNodeChecked?.Invoke(migrationTarget);
+                }
+                else
+                {
+                    AfterNodeUnchecked?.Invoke(migrationTarget);
                 }
             }
 
@@ -987,12 +977,9 @@ namespace MigAz.Azure.UserControls
 
                 _SelectedNodes = this.GetSelectedNodes(treeAzureARM);
 
-                //await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
-
                 _SourceAsmNode = null;
 
-                //if (resultUpdateARMTree != null)
-                //    treeTargetARM.SelectedNode = resultUpdateARMTree;
+                AfterNodeChanged?.Invoke(migrationTarget);
             }
         }
 
