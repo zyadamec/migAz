@@ -822,31 +822,6 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            // Code has been slightly strucutured with anticipate of need for reuse across different object types
-            string baseResourceName = "AvailabilitySet";
-            int counter = 0;
-            bool nameExists = true;
-
-            string newResourceName = "New" + baseResourceName;
-            while (nameExists)
-            {
-                if (counter > 0)
-                    newResourceName = "New" + baseResourceName + counter.ToString();
-
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
-                nameExists = matchingNodes.Count() > 0;
-                counter++;
-            }
-
-            AvailabilitySet availabilitySet = new AvailabilitySet(newResourceName, this.TargetSettings);
-            TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
-
-            await this.RefreshExportArtifacts();
-            AfterNewTargetResourceAdded?.Invoke(this, newNode);
-        }
-
         public static int GetChildNodeCount(TreeNode treeNode)
         {
             int childCount = 0;
@@ -981,5 +956,81 @@ namespace MigAz.Azure.UserControls
         {
             DoDragDrop(e.Item, DragDropEffects.Move);
         }
+
+        private async void btnNewPublicIp_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "PublicIp";
+            int counter = 0;
+            bool nameExists = true;
+
+            string newResourceName = "New" + baseResourceName;
+            while (nameExists)
+            {
+                if (counter > 0)
+                    newResourceName = "New" + baseResourceName + counter.ToString();
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            PublicIp publicIp = new PublicIp(newResourceName, this.TargetSettings);
+            TreeNode newNode = this.AddMigrationTarget(publicIp).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        private async void btnNewStorageAccount_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "storageaccount";
+            int counter = 0;
+            bool nameExists = true;
+
+            string newResourceName = "new" + baseResourceName;
+            while (nameExists)
+            {
+                if (counter > 0)
+                    newResourceName = "new" + baseResourceName + counter.ToString();
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            StorageAccount storageAccount = new StorageAccount(newResourceName, this.TargetSettings);
+            TreeNode newNode = this.AddMigrationTarget(storageAccount).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        private async void btnNewAvailabilitySet_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "AvailabilitySet";
+            int counter = 0;
+            bool nameExists = true;
+
+            string newResourceName = "New" + baseResourceName;
+            while (nameExists)
+            {
+                if (counter > 0)
+                    newResourceName = "New" + baseResourceName + counter.ToString();
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            AvailabilitySet availabilitySet = new AvailabilitySet(newResourceName, this.TargetSettings);
+            TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
     }
 }

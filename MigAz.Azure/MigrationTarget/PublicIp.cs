@@ -16,6 +16,11 @@ namespace MigAz.Azure.MigrationTarget
 
         public PublicIp() { }
 
+        public PublicIp(string targetName, TargetSettings targetSettings)
+        {
+            this.SetTargetName(targetName, targetSettings);
+        }
+
         public PublicIp(Arm.PublicIP armPublicIP, TargetSettings targetSettings)
         {
             this._Source = armPublicIP;

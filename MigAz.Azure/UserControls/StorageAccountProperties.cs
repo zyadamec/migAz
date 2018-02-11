@@ -36,11 +36,19 @@ namespace MigAz.Azure.UserControls
                 _IsBinding = true;
                 _AzureContext = azureContext;
                 _TargetTreeView = targetTreeView;
+                _StorageAccount = storageAccount;
                 txtTargetName.MaxLength = StorageAccount.MaximumTargetNameLength(targetTreeView.TargetSettings);
 
-                _StorageAccount = storageAccount;
-                lblAccountType.Text = storageAccount.SourceAccount.AccountType;
-                lblSourceASMName.Text = storageAccount.SourceAccount.Name;
+                if (_StorageAccount.SourceAccount != null)
+                {
+                    lblAccountType.Text = String.Empty;
+                    lblSourceASMName.Text = String.Empty;
+                }
+                else
+                {
+                    lblAccountType.Text = _StorageAccount.SourceAccount.AccountType;
+                    lblSourceASMName.Text = _StorageAccount.SourceAccount.Name;
+                }
 
                 if (storageAccount.TargetName != null)
                 {

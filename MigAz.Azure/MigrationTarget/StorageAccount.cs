@@ -24,6 +24,10 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetNameResult = this.TargetName;
             this.StorageAccountType = storageAccountType;
         }
+        public StorageAccount(string name, TargetSettings targetSettings)
+        {
+            this.SetTargetName(name, targetSettings);
+        }
 
         public StorageAccount(IStorageAccount source, TargetSettings targetSettings)
         {

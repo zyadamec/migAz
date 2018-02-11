@@ -36,6 +36,8 @@
             this.btnNewAvailabilitySet = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.lblAddNew = new System.Windows.Forms.Label();
+            this.btnNewPublicIp = new System.Windows.Forms.Button();
+            this.btnNewStorageAccount = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,15 +66,18 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnNewStorageAccount);
+            this.panel1.Controls.Add(this.btnNewPublicIp);
             this.panel1.Controls.Add(this.btnNewAvailabilitySet);
             this.panel1.Enabled = false;
             this.panel1.Location = new System.Drawing.Point(138, 77);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(181, 97);
+            this.panel1.Size = new System.Drawing.Size(181, 211);
             this.panel1.TabIndex = 60;
             // 
             // btnNewAvailabilitySet
             // 
+            this.btnNewAvailabilitySet.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnNewAvailabilitySet.ImageKey = "AvailabilitySet";
             this.btnNewAvailabilitySet.ImageList = this.imageList1;
             this.btnNewAvailabilitySet.Location = new System.Drawing.Point(0, 0);
@@ -80,9 +85,10 @@
             this.btnNewAvailabilitySet.Size = new System.Drawing.Size(178, 39);
             this.btnNewAvailabilitySet.TabIndex = 0;
             this.btnNewAvailabilitySet.Text = "Availability Set";
+            this.btnNewAvailabilitySet.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnNewAvailabilitySet.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNewAvailabilitySet.UseVisualStyleBackColor = true;
-            this.btnNewAvailabilitySet.Click += new System.EventHandler(this.button1_Click);
+            this.btnNewAvailabilitySet.Click += new System.EventHandler(this.btnNewAvailabilitySet_Click);
             // 
             // imageList1
             // 
@@ -110,6 +116,36 @@
             this.lblAddNew.TabIndex = 61;
             this.lblAddNew.Text = "Add New:";
             // 
+            // btnNewPublicIp
+            // 
+            this.btnNewPublicIp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewPublicIp.ImageKey = "PublicIp";
+            this.btnNewPublicIp.ImageList = this.imageList1;
+            this.btnNewPublicIp.Location = new System.Drawing.Point(0, 45);
+            this.btnNewPublicIp.Name = "btnNewPublicIp";
+            this.btnNewPublicIp.Size = new System.Drawing.Size(178, 39);
+            this.btnNewPublicIp.TabIndex = 1;
+            this.btnNewPublicIp.Text = "Public IP";
+            this.btnNewPublicIp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewPublicIp.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNewPublicIp.UseVisualStyleBackColor = true;
+            this.btnNewPublicIp.Click += new System.EventHandler(this.btnNewPublicIp_Click);
+            // 
+            // btnNewStorageAccount
+            // 
+            this.btnNewStorageAccount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewStorageAccount.ImageKey = "StorageAccount";
+            this.btnNewStorageAccount.ImageList = this.imageList1;
+            this.btnNewStorageAccount.Location = new System.Drawing.Point(1, 90);
+            this.btnNewStorageAccount.Name = "btnNewStorageAccount";
+            this.btnNewStorageAccount.Size = new System.Drawing.Size(178, 39);
+            this.btnNewStorageAccount.TabIndex = 2;
+            this.btnNewStorageAccount.Text = "Storage Account";
+            this.btnNewStorageAccount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewStorageAccount.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNewStorageAccount.UseVisualStyleBackColor = true;
+            this.btnNewStorageAccount.Click += new System.EventHandler(this.btnNewStorageAccount_Click);
+            // 
             // TargetTreeView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -120,7 +156,7 @@
             this.Controls.Add(this.treeTargetARM);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "TargetTreeView";
-            this.Size = new System.Drawing.Size(378, 189);
+            this.Size = new System.Drawing.Size(378, 374);
             this.Resize += new System.EventHandler(this.TargetTreeView_Resize);
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -136,5 +172,7 @@
         private System.Windows.Forms.Button btnNewAvailabilitySet;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Label lblAddNew;
+        private System.Windows.Forms.Button btnNewStorageAccount;
+        private System.Windows.Forms.Button btnNewPublicIp;
     }
 }
