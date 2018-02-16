@@ -74,7 +74,7 @@ namespace MigAz.Azure
             _AzureEnvironment = azureEnvironment;
         }
 
-        internal AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
+        public AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
         {
             _AzureContext = azureContext;
             _SubscriptionJson = subscriptionJson;

@@ -703,7 +703,7 @@ namespace MigAz.Forms
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
                 MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                azureStackSourceContext.Bind(_logProvider);
+                azureStackSourceContext.Bind(_logProvider, _statusProvider);
             }
 
             MigrationSourceSelectionControlVisible = false;
