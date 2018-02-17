@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.azureStackLoginContextViewer1 = new MigAz.AzureStack.UserControls.AzureStackLoginContextViewer();
+            this.treeAzureARM = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
             // azureStackLoginContextViewer1
@@ -43,14 +44,24 @@
             this.azureStackLoginContextViewer1.TabIndex = 2;
             this.azureStackLoginContextViewer1.Title = "Azure Stack Subscription";
             // 
+            // treeAzureARM
+            // 
+            this.treeAzureARM.CheckBoxes = true;
+            this.treeAzureARM.Location = new System.Drawing.Point(2, 99);
+            this.treeAzureARM.Margin = new System.Windows.Forms.Padding(2);
+            this.treeAzureARM.Name = "treeAzureARM";
+            this.treeAzureARM.Size = new System.Drawing.Size(217, 284);
+            this.treeAzureARM.TabIndex = 73;
+            // 
             // MigrationAzureStackSourceContext
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.treeAzureARM);
             this.Controls.Add(this.azureStackLoginContextViewer1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MigrationAzureStackSourceContext";
-            this.Size = new System.Drawing.Size(448, 188);
+            this.Size = new System.Drawing.Size(448, 660);
             this.Resize += new System.EventHandler(this.MigrationAzureStackSourceContext_Resize);
             this.ResumeLayout(false);
 
@@ -58,5 +69,6 @@
 
         #endregion
         private AzureStackLoginContextViewer azureStackLoginContextViewer1;
+        private System.Windows.Forms.TreeView treeAzureARM;
     }
 }

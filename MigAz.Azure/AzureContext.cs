@@ -50,10 +50,11 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider)
+        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
+            _LoginPromptBehavior = defaultPromptBehavior;
             _AzureServiceUrls = new AzureServiceUrls(this);
             _AzureRetriever = new AzureRetriever(this);
         }

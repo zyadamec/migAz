@@ -39,11 +39,11 @@ namespace MigAz.AzureStack.UserControls
         public async Task Bind(AzureStackContext azureStackContext)
         {
             _AzureStackContext = azureStackContext;
-            _AzureStackContext.AzureContext.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
-            _AzureStackContext.AzureContext.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
-            _AzureStackContext.AzureContext.UserAuthenticated += _AzureContext_UserAuthenticated;
-            _AzureStackContext.AzureContext.AfterUserSignOut += _AzureContext_AfterUserSignOut;
-            _AzureStackContext.AzureContext.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
+            _AzureStackContext.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
+            _AzureStackContext.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
+            _AzureStackContext.UserAuthenticated += _AzureContext_UserAuthenticated;
+            _AzureStackContext.AfterUserSignOut += _AzureContext_AfterUserSignOut;
+            _AzureStackContext.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
         }
 
         public AzureContextSelectedType AzureContextSelectedType
@@ -143,7 +143,7 @@ namespace MigAz.AzureStack.UserControls
                         if (_AzureStackContext == null)
                             return null;
                         else
-                            return _AzureStackContext.AzureContext;
+                            return _AzureStackContext;
                     }
                 }
                 else
@@ -151,20 +151,16 @@ namespace MigAz.AzureStack.UserControls
                     if (_AzureStackContext == null)
                         return null;
                     else
-                        return _AzureStackContext.AzureContext;
+                        return _AzureStackContext;
                 }
             }
         }
 
-        public AzureContext AzureContext
-        {
-            get { return _AzureStackContext.AzureContext; }
-        }
 
         private async void btnAzureContext_Click(object sender, EventArgs e)
         {
-            if (_AzureStackContext.AzureContext == null)
-                throw new ArgumentException("Azure Context not set.  You must initiate the AzureLoginContextViewer control with the Bind Method.");
+            if (_AzureStackContext == null)
+                throw new ArgumentException("Azure Stack Context not set.  You must initiate the AzureStackLoginContextViewer control with the Bind Method.");
 
             if (_ChangeType == AzureLoginChangeType.NewOrExistingContext)
             {

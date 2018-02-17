@@ -15,7 +15,7 @@ namespace MigAz.AzureStack.Forms
         public async Task InitializeDialog(AzureStackContext azureStackContext)
         {
             await this.azureStackArmLoginControl1.BindContext(azureStackContext);
-            azureStackContext.AzureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            azureStackContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)

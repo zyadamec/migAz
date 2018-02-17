@@ -22,7 +22,7 @@ namespace MigAz.AzureStack.UserControls
 
             cboAzureEnvironment.SelectedItem = null;
 
-            int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureStackContext.AzureContext.AzureEnvironment.ToString());
+            int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureStackContext.AzureEnvironment.ToString());
             if (environmentIndex >= 0)
             {
                 cboAzureEnvironment.SelectedIndex = environmentIndex;
@@ -30,7 +30,7 @@ namespace MigAz.AzureStack.UserControls
             else
                 cboAzureEnvironment.SelectedIndex = 0;
 
-            if (_AzureStackContext.AzureContext.TokenProvider == null || _AzureStackContext.AzureContext.TokenProvider.LastUserInfo == null)
+            if (_AzureStackContext.TokenProvider == null || _AzureStackContext.TokenProvider.LastUserInfo == null)
             {
                 lblAuthenticatedUser.Text = "-";
                 cboAzureEnvironment.Enabled = true;
@@ -38,26 +38,26 @@ namespace MigAz.AzureStack.UserControls
             }
             else
             {
-                lblAuthenticatedUser.Text = _AzureStackContext.AzureContext.TokenProvider.LastUserInfo.DisplayableId;
+                lblAuthenticatedUser.Text = _AzureStackContext.TokenProvider.LastUserInfo.DisplayableId;
                 cboAzureEnvironment.Enabled = false;
                 btnAuthenticate.Text = "Sign Out";
             }
 
             cboTenant.Items.Clear();
-            if (_AzureStackContext.AzureContext.AzureRetriever != null && _AzureStackContext.AzureContext.TokenProvider != null)
+            if (_AzureStackContext.AzureRetriever != null && _AzureStackContext.TokenProvider != null)
             {
-                foreach (AzureTenant azureTenant in await _AzureStackContext.AzureContext.AzureRetriever.GetAzureARMTenants())
+                foreach (AzureTenant azureTenant in await _AzureStackContext.AzureRetriever.GetAzureARMTenants())
                 {
                     if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                         cboTenant.Items.Add(azureTenant);
                 }
                 cboTenant.Enabled = true;
 
-                if (_AzureStackContext.AzureContext.AzureTenant != null)
+                if (_AzureStackContext.AzureTenant != null)
                 {
                     foreach (AzureTenant azureTenant in cboTenant.Items)
                     {
-                        if (_AzureStackContext.AzureContext.AzureTenant == azureTenant)
+                        if (_AzureStackContext.AzureTenant == azureTenant)
                             cboTenant.SelectedItem = azureTenant;
                     }
                 }
@@ -65,20 +65,20 @@ namespace MigAz.AzureStack.UserControls
                 if (cboTenant.SelectedItem != null)
                 {
                     cmbSubscriptions.Items.Clear();
-                    if (_AzureStackContext.AzureContext.AzureRetriever != null)
+                    if (_AzureStackContext.AzureRetriever != null)
                     {
-                        foreach (AzureSubscription azureSubscription in await _AzureStackContext.AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureStackContext.AzureContext.AzureTenant))
+                        foreach (AzureSubscription azureSubscription in await _AzureStackContext.AzureRetriever.GetAzureARMSubscriptions(_AzureStackContext.AzureTenant))
                         {
                             cmbSubscriptions.Items.Add(azureSubscription);
                         }
                         cmbSubscriptions.Enabled = true;
                     }
 
-                    if (_AzureStackContext.AzureContext.AzureSubscription != null)
+                    if (_AzureStackContext.AzureSubscription != null)
                     {
                         foreach (AzureSubscription azureSubscription in cmbSubscriptions.Items)
                         {
-                            if (_AzureStackContext.AzureContext.AzureSubscription == azureSubscription)
+                            if (_AzureStackContext.AzureSubscription == azureSubscription)
                                 cmbSubscriptions.SelectedItem = azureSubscription;
                         }
                     }
@@ -96,12 +96,12 @@ namespace MigAz.AzureStack.UserControls
 
         private void cboAzureEnvironment_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_AzureStackContext.AzureContext != null)
+            if (_AzureStackContext != null)
             {
                 if (cboAzureEnvironment.SelectedItem == null)
-                    _AzureStackContext.AzureContext.AzureEnvironment = _AzureStackContext.AzureContext.AzureEnvironment;
+                    _AzureStackContext.AzureEnvironment = _AzureStackContext.AzureEnvironment;
                 else
-                    _AzureStackContext.AzureContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
+                    _AzureStackContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
             }
 
             Application.DoEvents();
@@ -109,7 +109,7 @@ namespace MigAz.AzureStack.UserControls
 
         private async void btnAuthenticate_Click(object sender, EventArgs e)
         {
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "Start");
+            _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "Start");
 
             if (btnAuthenticate.Text == "Sign In")
             {
@@ -120,15 +120,15 @@ namespace MigAz.AzureStack.UserControls
                     cmbSubscriptions.Enabled = false;
                     cmbSubscriptions.Items.Clear();
 
-                    await _AzureStackContext.AzureContext.Login();
+                    await _AzureStackContext.Login();
 
-                    if (_AzureStackContext.AzureContext.TokenProvider != null)
+                    if (_AzureStackContext.TokenProvider != null)
                     {
-                        lblAuthenticatedUser.Text = _AzureStackContext.AzureContext.TokenProvider.LastUserInfo.DisplayableId;
+                        lblAuthenticatedUser.Text = _AzureStackContext.TokenProvider.LastUserInfo.DisplayableId;
                         btnAuthenticate.Text = "Sign Out";
 
                         cboTenant.Items.Clear();
-                        foreach (AzureTenant azureTenant in await _AzureStackContext.AzureContext.AzureRetriever.GetAzureARMTenants())
+                        foreach (AzureTenant azureTenant in await _AzureStackContext.AzureRetriever.GetAzureARMTenants())
                         {
                             if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
                                 cboTenant.Items.Add(azureTenant);
@@ -150,12 +150,12 @@ namespace MigAz.AzureStack.UserControls
                         }
                         else if (cboTenant.Items.Count > 1)
                         {
-                            _AzureStackContext.AzureContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Tenant");
+                            _AzureStackContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Tenant");
                         }
                     }
                     else
                     {
-                        _AzureStackContext.AzureContext.LogProvider.WriteLog("GetToken_Click", "Failed to get token");
+                        _AzureStackContext.LogProvider.WriteLog("GetToken_Click", "Failed to get token");
                     }
                 }
                 catch (Microsoft.IdentityModel.Clients.ActiveDirectory.AdalServiceException exc)
@@ -170,7 +170,7 @@ namespace MigAz.AzureStack.UserControls
             }
             else
             {
-                await _AzureStackContext.AzureContext.Logout();
+                await _AzureStackContext.Logout();
                 lblAuthenticatedUser.Text = "<Not Authenticated>";
                 btnAuthenticate.Text = "Sign In";
                 cboTenant.Items.Clear();
@@ -180,30 +180,30 @@ namespace MigAz.AzureStack.UserControls
                 cboAzureEnvironment.Enabled = true;
             }
 
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
+            _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
         }
 
         private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("cmbSubscriptions_SelectedIndexChanged", "Start");
+            _AzureStackContext.LogProvider.WriteLog("cmbSubscriptions_SelectedIndexChanged", "Start");
 
             ComboBox cmbSender = (ComboBox)sender;
 
             if (cmbSender.SelectedItem != null)
             {
                 AzureSubscription selectedSubscription = (AzureSubscription)cmbSender.SelectedItem;
-                if (_AzureStackContext.AzureContext.AzureSubscription != selectedSubscription)
+                if (_AzureStackContext.AzureSubscription != selectedSubscription)
                 {
-                    await _AzureStackContext.AzureContext.SetSubscriptionContext((AzureSubscription)cmbSender.SelectedItem);
+                    await _AzureStackContext.SetSubscriptionContext((AzureSubscription)cmbSender.SelectedItem);
                 }
             }
 
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("cmbSubscriptions_SelectedIndexChanged", "End");
+            _AzureStackContext.LogProvider.WriteLog("cmbSubscriptions_SelectedIndexChanged", "End");
         }
 
         private async void cboTenant_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "Start");
+            _AzureStackContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "Start");
 
             cmbSubscriptions.Items.Clear();
 
@@ -211,7 +211,7 @@ namespace MigAz.AzureStack.UserControls
             if (cmbSender.SelectedItem != null)
             {
                 AzureTenant selectedTenant = (AzureTenant)cmbSender.SelectedItem;
-                await _AzureStackContext.AzureContext.SetTenantContext(selectedTenant);
+                await _AzureStackContext.SetTenantContext(selectedTenant);
 
                 foreach (AzureSubscription azureSubscription in await _AzureStackContext.GetAzureStackARMSubscriptions(selectedTenant)) // selectedTenant.Subscriptions)
                 {
@@ -224,20 +224,20 @@ namespace MigAz.AzureStack.UserControls
                 }
                 else if (cboTenant.Items.Count > 1)
                 {
-                    _AzureStackContext.AzureContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Subscription");
+                    _AzureStackContext.StatusProvider.UpdateStatus("WAIT: Awaiting user selection of Azure Subscription");
                 }
             }
 
             cmbSubscriptions.Enabled = true;
 
-            _AzureStackContext.AzureContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "End");
+            _AzureStackContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "End");
 
             Application.DoEvents();
         }
 
         private void ckbIncludePreviewRegions_CheckedChanged(object sender, EventArgs e)
         {
-            _AzureStackContext.AzureContext.IncludePreviewRegions = ckbIncludePreviewRegions.Checked;
+            _AzureStackContext.IncludePreviewRegions = ckbIncludePreviewRegions.Checked;
         }
     }
 }
