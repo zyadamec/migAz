@@ -62,7 +62,7 @@
             // lblSubscriptions
             // 
             this.lblSubscriptions.AutoSize = true;
-            this.lblSubscriptions.Location = new System.Drawing.Point(4, 159);
+            this.lblSubscriptions.Location = new System.Drawing.Point(6, 116);
             this.lblSubscriptions.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSubscriptions.Name = "lblSubscriptions";
             this.lblSubscriptions.Size = new System.Drawing.Size(68, 13);
@@ -75,7 +75,7 @@
             this.cmbSubscriptions.Enabled = false;
             this.cmbSubscriptions.FormattingEnabled = true;
             this.cmbSubscriptions.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cmbSubscriptions.Location = new System.Drawing.Point(120, 155);
+            this.cmbSubscriptions.Location = new System.Drawing.Point(120, 113);
             this.cmbSubscriptions.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.cmbSubscriptions.MaxDropDownItems = 15;
             this.cmbSubscriptions.Name = "cmbSubscriptions";
@@ -153,7 +153,7 @@
             this.Controls.Add(this.btnAuthenticate);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "AzureStackArmLoginControl";
-            this.Size = new System.Drawing.Size(586, 227);
+            this.Size = new System.Drawing.Size(586, 145);
             this.ResumeLayout(false);
             this.PerformLayout();
 

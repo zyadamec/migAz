@@ -28,30 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.azureStackLoginContextViewer1 = new MigAz.AzureStack.UserControls.AzureStackLoginContextViewer();
             this.SuspendLayout();
             // 
-            // button1
+            // azureStackLoginContextViewer1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.azureStackLoginContextViewer1.AzureContextSelectedType = MigAz.AzureStack.UserControls.AzureContextSelectedType.ExistingContext;
+            this.azureStackLoginContextViewer1.ChangeType = MigAz.AzureStack.UserControls.AzureLoginChangeType.NewContext;
+            this.azureStackLoginContextViewer1.ExistingContext = null;
+            this.azureStackLoginContextViewer1.Location = new System.Drawing.Point(5, 5);
+            this.azureStackLoginContextViewer1.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            this.azureStackLoginContextViewer1.Name = "azureStackLoginContextViewer1";
+            this.azureStackLoginContextViewer1.Size = new System.Drawing.Size(447, 110);
+            this.azureStackLoginContextViewer1.TabIndex = 0;
+            this.azureStackLoginContextViewer1.Title = "Azure Subscription";
             // 
             // MigrationAzureStackTargetContext
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.azureStackLoginContextViewer1);
             this.Name = "MigrationAzureStackTargetContext";
+            this.Size = new System.Drawing.Size(337, 150);
+            this.Resize += new System.EventHandler(this.MigrationAzureStackTargetContext_Resize);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
+        private AzureStackLoginContextViewer azureStackLoginContextViewer1;
     }
 }

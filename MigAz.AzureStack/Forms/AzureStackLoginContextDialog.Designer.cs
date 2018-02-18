@@ -47,7 +47,7 @@
             // btnCloseDialog
             // 
             this.btnCloseDialog.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnCloseDialog.Location = new System.Drawing.Point(483, 207);
+            this.btnCloseDialog.Location = new System.Drawing.Point(483, 175);
             this.btnCloseDialog.Margin = new System.Windows.Forms.Padding(2);
             this.btnCloseDialog.Name = "btnCloseDialog";
             this.btnCloseDialog.Size = new System.Drawing.Size(112, 27);
@@ -59,16 +59,16 @@
             // azureStackArmLoginControl1
             // 
             this.azureStackArmLoginControl1.Location = new System.Drawing.Point(9, 27);
-            this.azureStackArmLoginControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.azureStackArmLoginControl1.Margin = new System.Windows.Forms.Padding(2);
             this.azureStackArmLoginControl1.Name = "azureStackArmLoginControl1";
-            this.azureStackArmLoginControl1.Size = new System.Drawing.Size(586, 176);
+            this.azureStackArmLoginControl1.Size = new System.Drawing.Size(586, 144);
             this.azureStackArmLoginControl1.TabIndex = 55;
             // 
             // AzureStackLoginContextDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(606, 358);
+            this.ClientSize = new System.Drawing.Size(606, 218);
             this.Controls.Add(this.azureStackArmLoginControl1);
             this.Controls.Add(this.btnCloseDialog);
             this.Controls.Add(this.label4);

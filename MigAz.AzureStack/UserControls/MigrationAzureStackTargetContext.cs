@@ -16,5 +16,11 @@ namespace MigAz.AzureStack.UserControls
         {
             InitializeComponent();
         }
+
+        private void MigrationAzureStackTargetContext_Resize(object sender, EventArgs e)
+        {
+            this.azureStackLoginContextViewer1.Width = this.Width - 10;
+            this.azureStackLoginContextViewer1.Height = this.Height - 10;
+        }
     }
 }
