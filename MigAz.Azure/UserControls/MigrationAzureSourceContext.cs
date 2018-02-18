@@ -72,7 +72,7 @@ namespace MigAz.Azure.UserControls
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
-        public delegate void AfterContextChangedHandler(MigrationAzureSourceContext sender);
+        public delegate void AfterContextChangedHandler(UserControl sender);
         public event AfterContextChangedHandler AfterContextChanged;
 
         #endregion

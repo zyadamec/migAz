@@ -78,6 +78,12 @@
     <Compile Include="UserControls\MigrationAzureStackSourceContext.Designer.cs">
       <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MigrationAzureStackTargetContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureStackTargetContext.Designer.cs">
+      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">

@@ -733,7 +733,7 @@ namespace MigAz.Forms
                 azureStackSourceContext.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
                 azureStackSourceContext.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
                 azureStackSourceContext.ClearContext += MigrationSourceControl_ClearContext;
-                // todo russell azureStackSourceContext.AzureStackContext.AfterContextChanged += AzureControl_AfterContextChanged;
+                azureStackSourceContext.AfterContextChanged += AzureControl_AfterContextChanged;
                 azureStackSourceContext.AzureStackContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
 
@@ -747,7 +747,7 @@ namespace MigAz.Forms
         }
 
 
-        private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
+        private void AzureControl_AfterContextChanged(UserControl sender)
         {
             this.MigrationTargetSelectionControl.MigrationSource = sender;
         }

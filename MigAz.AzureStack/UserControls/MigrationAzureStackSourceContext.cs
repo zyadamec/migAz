@@ -81,7 +81,7 @@ namespace MigAz.AzureStack.UserControls
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
 
-            _AzureStackContextSource = new AzureStackContext(_LogProvider, _StatusProvider);
+            _AzureStackContextSource = new AzureStackContext(_LogProvider, _StatusProvider, promptBehavior);
             _AzureStackContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureStackContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureStackContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
