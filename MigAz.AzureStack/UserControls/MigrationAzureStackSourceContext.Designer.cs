@@ -47,7 +47,7 @@
             // treeAzureARM
             // 
             this.treeAzureARM.CheckBoxes = true;
-            this.treeAzureARM.Location = new System.Drawing.Point(2, 99);
+            this.treeAzureARM.Location = new System.Drawing.Point(2, 105);
             this.treeAzureARM.Margin = new System.Windows.Forms.Padding(2);
             this.treeAzureARM.Name = "treeAzureARM";
             this.treeAzureARM.Size = new System.Drawing.Size(217, 284);

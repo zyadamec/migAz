@@ -111,14 +111,16 @@ namespace MigAz.AzureStack.UserControls
 
         #endregion
 
-        public Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)
+        public async Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)
         {
-            throw new NotImplementedException();
+            throw new Exception("Not Here");
         }
 
         private void MigrationAzureStackSourceContext_Resize(object sender, EventArgs e)
         {
             this.azureStackLoginContextViewer1.Width = this.Width;
+            this.treeAzureARM.Width = this.Width - 5;
+            this.treeAzureARM.Height = this.Height - 110;
         }
 
 

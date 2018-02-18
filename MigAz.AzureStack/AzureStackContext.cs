@@ -20,10 +20,9 @@ namespace MigAz.AzureStack
 
          public async Task Login()
         {
-            // AzureStack:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
+            // AzureStack via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
             await base.Login();
-            //_AzureContext.AzureEnvironment = AzureEnvironment.AzureCloud;
-            //await _AzureContext.TokenProvider.Login("https://management.core.windows.net/", Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Always);
+
             List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
             List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(tenants[0]);
             List<AzureSubscription> subscriptions = await GetAzureStackARMSubscriptions(tenants[0]);
