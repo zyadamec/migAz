@@ -33,12 +33,10 @@
             this.lblSubscriptions = new System.Windows.Forms.Label();
             this.cmbSubscriptions = new System.Windows.Forms.ComboBox();
             this.btnAuthenticate = new System.Windows.Forms.Button();
-            this.cboAzureEnvironment = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.cboTenant = new System.Windows.Forms.ComboBox();
-            this.ckbIncludePreviewRegions = new System.Windows.Forms.CheckBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtAzureStackEnvironment = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblAuthenticatedUser
@@ -97,32 +95,6 @@
             this.btnAuthenticate.UseVisualStyleBackColor = true;
             this.btnAuthenticate.Click += new System.EventHandler(this.btnAuthenticate_Click);
             // 
-            // cboAzureEnvironment
-            // 
-            this.cboAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboAzureEnvironment.FormattingEnabled = true;
-            this.cboAzureEnvironment.Items.AddRange(new object[] {
-            "AzureCloud",
-            "AzureChinaCloud",
-            "AzureGermanCloud",
-            "AzureUSGovernment"});
-            this.cboAzureEnvironment.Location = new System.Drawing.Point(120, 7);
-            this.cboAzureEnvironment.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cboAzureEnvironment.Name = "cboAzureEnvironment";
-            this.cboAzureEnvironment.Size = new System.Drawing.Size(164, 21);
-            this.cboAzureEnvironment.TabIndex = 0;
-            this.cboAzureEnvironment.SelectedIndexChanged += new System.EventHandler(this.cboAzureEnvironment_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 8);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(99, 13);
-            this.label1.TabIndex = 57;
-            this.label1.Text = "Azure Environment:";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -148,33 +120,30 @@
             this.cboTenant.TabIndex = 61;
             this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
             // 
-            // ckbIncludePreviewRegions
+            // txtAzureStackEnvironment
             // 
-            this.ckbIncludePreviewRegions.AutoSize = true;
-            this.ckbIncludePreviewRegions.Location = new System.Drawing.Point(350, 8);
-            this.ckbIncludePreviewRegions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ckbIncludePreviewRegions.Name = "ckbIncludePreviewRegions";
-            this.ckbIncludePreviewRegions.Size = new System.Drawing.Size(187, 21);
-            this.ckbIncludePreviewRegions.TabIndex = 63;
-            this.ckbIncludePreviewRegions.Text = "Include preview regions (France)";
-            this.ckbIncludePreviewRegions.UseVisualStyleBackColor = true;
-            this.ckbIncludePreviewRegions.CheckedChanged += new System.EventHandler(this.ckbIncludePreviewRegions_CheckedChanged);
+            this.txtAzureStackEnvironment.Location = new System.Drawing.Point(121, 3);
+            this.txtAzureStackEnvironment.Name = "txtAzureStackEnvironment";
+            this.txtAzureStackEnvironment.Size = new System.Drawing.Size(462, 20);
+            this.txtAzureStackEnvironment.TabIndex = 64;
+            this.txtAzureStackEnvironment.Text = "https://adminmanagement.local.azurestack.external";
             // 
-            // textBox1
+            // label1
             // 
-            this.textBox1.Location = new System.Drawing.Point(120, 112);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(462, 20);
-            this.textBox1.TabIndex = 64;
-            this.textBox1.Text = "https://adminmanagement.azstackcspmulti1.onmicrosoft.com/3f59c3a8-6c85-479f-a7a7-" +
-    "51ec04e1d05a";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 6);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(68, 13);
+            this.label1.TabIndex = 65;
+            this.label1.Text = "Azure Stack:";
             // 
             // AzureStackArmLoginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.ckbIncludePreviewRegions);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtAzureStackEnvironment);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cboTenant);
             this.Controls.Add(this.lblAuthenticatedUser);
@@ -182,9 +151,7 @@
             this.Controls.Add(this.lblSubscriptions);
             this.Controls.Add(this.cmbSubscriptions);
             this.Controls.Add(this.btnAuthenticate);
-            this.Controls.Add(this.cboAzureEnvironment);
-            this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "AzureStackArmLoginControl";
             this.Size = new System.Drawing.Size(586, 227);
             this.ResumeLayout(false);
@@ -199,11 +166,9 @@
         private System.Windows.Forms.Label lblSubscriptions;
         private System.Windows.Forms.ComboBox cmbSubscriptions;
         private System.Windows.Forms.Button btnAuthenticate;
-        private System.Windows.Forms.ComboBox cboAzureEnvironment;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cboTenant;
-        private System.Windows.Forms.CheckBox ckbIncludePreviewRegions;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtAzureStackEnvironment;
+        private System.Windows.Forms.Label label1;
     }
 }

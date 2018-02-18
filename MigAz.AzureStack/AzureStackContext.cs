@@ -12,6 +12,8 @@ namespace MigAz.AzureStack
 {
     public class AzureStackContext : AzureContext
     {
+        AzureStackEndpoints _AzureStackEndpoints;
+
         private AzureStackContext() : base(null, null) { }
 
         public AzureStackContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always) : base(logProvider, statusProvider, defaultPromptBehavior)
@@ -21,7 +23,7 @@ namespace MigAz.AzureStack
          public async Task Login()
         {
             // AzureStack via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
-            await base.Login();
+            await base.Login(_AzureStackEndpoints.LoginEndpoint);
 
             List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
             List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(tenants[0]);
@@ -57,5 +59,18 @@ namespace MigAz.AzureStack
             return tenantSubscriptions;
         }
 
+        internal async Task LoadMetadataEndpoints(string azureStackEnvironment)
+        {
+            string metadataEndpointsUrl = azureStackEnvironment;
+
+            if (!metadataEndpointsUrl.EndsWith("/"))
+                metadataEndpointsUrl += "/";
+
+            metadataEndpointsUrl += "metadata/endpoints?api-version=2015-01-01";
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(metadataEndpointsUrl);
+            AzureRestResponse azureRestResponse = await AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            _AzureStackEndpoints = new AzureStackEndpoints(azureRestResponse);
+        }
     }
 }

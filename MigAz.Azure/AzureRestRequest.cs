@@ -17,6 +17,11 @@ namespace MigAz.Azure
 
         private AzureRestRequest() { }
 
+        public AzureRestRequest(String url)
+        {
+            this._Url = url;
+        }
+
         public AzureRestRequest(String url, String accessToken)
         {
             this._Url = url;

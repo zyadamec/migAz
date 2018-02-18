@@ -272,10 +272,14 @@ namespace MigAz.Azure
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(azureRestRequest.Url);
-            string authorizationHeader = "Bearer " + azureRestRequest.AccessToken;
-            request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
-
             request.Method = azureRestRequest.Method;
+
+            if (azureRestRequest.AccessToken != String.Empty)
+            {
+                string authorizationHeader = "Bearer " + azureRestRequest.AccessToken;
+                request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
+                writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, authorizationHeader);
+            }
 
             if (request.Method == "POST")
                 request.ContentLength = 0;
@@ -344,7 +348,6 @@ namespace MigAz.Azure
 
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
-                writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, authorizationHeader);
                 writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, webRequesetResult);
                 _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
             }

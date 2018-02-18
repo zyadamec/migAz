@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureStackContext.cs" />
+    <Compile Include="AzureStackEndpoints.cs" />
     <Compile Include="Forms\AzureStackLoginContextDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +108,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MigrationAzureStackSourceContext.resx">
       <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureStackTargetContext.resx">
+      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

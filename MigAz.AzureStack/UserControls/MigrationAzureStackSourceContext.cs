@@ -196,17 +196,6 @@ namespace MigAz.AzureStack.UserControls
 
                 if (sender.AzureSubscription != null)
                 {
-                    //        if (_AzureContextTargetARM.AzureSubscription == null)
-                    //        {
-                    //            await _AzureContextTargetARM.SetSubscriptionContext(_AzureStackContext.AzureSubscription);
-                    //        }
-
-                    //        AzureStackLoginContextViewerARM.Enabled = true;
-
-                    //        this.TemplateGenerator.SourceSubscription = _AzureStackContext.AzureSubscription;
-                    //        this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
-
-
                     await BindArmResources(_TargetSettings);
 
                     //        _AzureStackContext.AzureRetriever.SaveRestCache();

@@ -20,26 +20,14 @@ namespace MigAz.AzureStack.UserControls
         {
             _AzureStackContext = azureStackContext;
 
-            cboAzureEnvironment.SelectedItem = null;
-
-            int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureStackContext.AzureEnvironment.ToString());
-            if (environmentIndex >= 0)
-            {
-                cboAzureEnvironment.SelectedIndex = environmentIndex;
-            }
-            else
-                cboAzureEnvironment.SelectedIndex = 0;
-
             if (_AzureStackContext.TokenProvider == null || _AzureStackContext.TokenProvider.LastUserInfo == null)
             {
                 lblAuthenticatedUser.Text = "-";
-                cboAzureEnvironment.Enabled = true;
                 btnAuthenticate.Text = "Sign In";
             }
             else
             {
                 lblAuthenticatedUser.Text = _AzureStackContext.TokenProvider.LastUserInfo.DisplayableId;
-                cboAzureEnvironment.Enabled = false;
                 btnAuthenticate.Text = "Sign Out";
             }
 
@@ -86,27 +74,6 @@ namespace MigAz.AzureStack.UserControls
             }
         }
 
-        internal void RemoveEnvironment(AzureEnvironment azureEnvironment)
-        {
-            cboAzureEnvironment.Items.Remove(azureEnvironment);
-
-            if (cboAzureEnvironment.SelectedItem == null)
-                cboAzureEnvironment.SelectedIndex = 0;
-        }
-
-        private void cboAzureEnvironment_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (_AzureStackContext != null)
-            {
-                if (cboAzureEnvironment.SelectedItem == null)
-                    _AzureStackContext.AzureEnvironment = _AzureStackContext.AzureEnvironment;
-                else
-                    _AzureStackContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
-            }
-
-            Application.DoEvents();
-        }
-
         private async void btnAuthenticate_Click(object sender, EventArgs e)
         {
             _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "Start");
@@ -119,6 +86,10 @@ namespace MigAz.AzureStack.UserControls
                     cboTenant.Items.Clear();
                     cmbSubscriptions.Enabled = false;
                     cmbSubscriptions.Items.Clear();
+
+                    // Obtain Azure Stack Envrionment Metadata
+                    await _AzureStackContext.LoadMetadataEndpoints(txtAzureStackEnvironment.Text);
+                    txtAzureStackEnvironment.Enabled = false;
 
                     await _AzureStackContext.Login();
 
@@ -134,7 +105,6 @@ namespace MigAz.AzureStack.UserControls
                                 cboTenant.Items.Add(azureTenant);
                         }
 
-                        cboAzureEnvironment.Enabled = false;
                         cboTenant.Enabled = true;
 
                         Application.DoEvents();
@@ -177,7 +147,6 @@ namespace MigAz.AzureStack.UserControls
                 cboTenant.Enabled = false;
                 cmbSubscriptions.Items.Clear();
                 cmbSubscriptions.Enabled = false;
-                cboAzureEnvironment.Enabled = true;
             }
 
             _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
@@ -233,11 +202,6 @@ namespace MigAz.AzureStack.UserControls
             _AzureStackContext.LogProvider.WriteLog("cboTenant_SelectedIndexChanged", "End");
 
             Application.DoEvents();
-        }
-
-        private void ckbIncludePreviewRegions_CheckedChanged(object sender, EventArgs e)
-        {
-            _AzureStackContext.IncludePreviewRegions = ckbIncludePreviewRegions.Checked;
         }
     }
 }
