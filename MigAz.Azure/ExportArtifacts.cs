@@ -20,7 +20,7 @@ namespace MigAz.Azure
         {
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             RouteTables = new List<RouteTable>();
-            //StorageAccounts = new List<StorageAccount>();
+            StorageAccounts = new List<StorageAccount>();
             VirtualNetworks = new List<VirtualNetwork>();
             AvailablitySets = new List<AvailabilitySet>();
             VirtualMachines = new List<VirtualMachine>();
@@ -34,7 +34,7 @@ namespace MigAz.Azure
 
         public ResourceGroup ResourceGroup { get; set; }
         public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
-        //public List<StorageAccount> StorageAccounts { get; }
+        public List<StorageAccount> StorageAccounts { get; }
         public List<VirtualNetwork> VirtualNetworks { get; }
         public List<AvailabilitySet> AvailablitySets { get; }
         public List<VirtualMachine> VirtualMachines { get; }
@@ -124,11 +124,14 @@ namespace MigAz.Azure
                 }
             }
 
-            //foreach (MigrationTarget.StorageAccount targetStorageAccount in this.StorageAccounts)
-            //{
-            //    if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
-            //        this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
-            //}
+            foreach (MigrationTarget.StorageAccount targetStorageAccount in this.StorageAccounts)
+            {
+                if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
+                    this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
+
+                if (targetStorageAccount.BlobStorageNamespace == null || targetStorageAccount.BlobStorageNamespace.Trim().Length <= 0)
+                    this.AddAlert(AlertType.Error, "Blob Storage Namespace for Target Storage Account '" + targetStorageAccount.ToString() + "' must be specified.", targetStorageAccount);
+            }
 
             foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in this.VirtualNetworks)
             {

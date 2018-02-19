@@ -774,6 +774,7 @@ namespace MigAz.Forms
                     MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
+                    targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
                 }
             }
 
@@ -784,6 +785,7 @@ namespace MigAz.Forms
 
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
+            targetTreeView1.TargetBlobStorageNamespace = sender.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
             await MigrationTargetTreeView.RefreshExportArtifacts();
         }
 

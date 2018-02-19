@@ -38,14 +38,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public string BlobStorageNamespace
         {
-            get
-            {
-                return "RussellTODONOW";
-                //if (_AzureContext == null)
-                //    return String.Empty;
-                //else
-                //    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
-            }
+            get;set;
         }
 
         public IStorageAccount SourceAccount

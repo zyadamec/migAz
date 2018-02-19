@@ -63,6 +63,8 @@ namespace MigAz.Azure.UserControls
             get { return _TargetResourceGroup; }
         }
 
+        public string TargetBlobStorageNamespace { get; set; }
+
         public TreeNodeCollection Nodes
         {
             get { return this.treeTargetARM.Nodes; }
@@ -138,10 +140,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.VirtualNetworks.Add((Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag);
                 }
-                //else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
-                //{
-                //    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
-                //}
+                else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                }
                 else if (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                 {
                     exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
@@ -198,6 +200,11 @@ namespace MigAz.Azure.UserControls
             foreach (TreeNode treeNode in treeTargetARM.Nodes)
             {
                 GetExportArtifactsRecursive(treeNode, ref _ExportArtifacts);
+            }
+
+            foreach (StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
+            {
+                targetStorageAccount.BlobStorageNamespace = this.TargetBlobStorageNamespace;
             }
 
             await _ExportArtifacts.ValidateAzureResources();
@@ -324,6 +331,7 @@ namespace MigAz.Azure.UserControls
             {
                 childNode = new TreeNode(text);
                 childNode.Name = name;
+                childNode.Text = name;
                 childNode.Tag = tag;
                 if (tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
                 {
@@ -430,7 +438,7 @@ namespace MigAz.Azure.UserControls
             {
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)parentNode;
 
-                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.SourceName, targetStorageAccount.ToString(), targetStorageAccount, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.ToString(), targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -438,7 +446,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
             {
                 Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (Azure.MigrationTarget.NetworkSecurityGroup)parentNode;
-                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.SourceName, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
@@ -446,7 +454,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
             {
                 Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)parentNode;
-                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.SourceName, targetLoadBalancer.ToString(), targetLoadBalancer, true);
+                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.ToString(), targetLoadBalancer.ToString(), targetLoadBalancer, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetLoadBalancerNode;
@@ -454,7 +462,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.PublicIp))
             {
                 Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)parentNode;
-                TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.SourceName, targetPublicIp.ToString(), targetPublicIp, true);
+                TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.ToString(), targetPublicIp.ToString(), targetPublicIp, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetPublicIpNode;
@@ -480,7 +488,7 @@ namespace MigAz.Azure.UserControls
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
-                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
+                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.ToString(), targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
                 if (targetVirtualMachine.TargetAvailabilitySet != null)
                 {
@@ -531,7 +539,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.Disk))
             {
                 Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)parentNode;
-                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.SourceName, targetDisk.ToString(), targetDisk, true);
+                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetDiskNode;
@@ -555,7 +563,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.RouteTable))
             {
                 Azure.MigrationTarget.RouteTable targetRouteTable = (Azure.MigrationTarget.RouteTable)parentNode;
-                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.SourceName, targetRouteTable.ToString(), targetRouteTable, true);
+                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.ToString(), targetRouteTable.ToString(), targetRouteTable, true);
 
                 targetRouteTableNode.ExpandAll();
                 return targetRouteTableNode;
@@ -964,18 +972,17 @@ namespace MigAz.Azure.UserControls
             int counter = 0;
             bool nameExists = true;
 
-            string newResourceName = "New" + baseResourceName;
+            PublicIp publicIp = new PublicIp("New" + baseResourceName, this.TargetSettings);
             while (nameExists)
             {
                 if (counter > 0)
-                    newResourceName = "New" + baseResourceName + counter.ToString();
+                    publicIp.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
 
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(publicIp.ToString(), true);
                 nameExists = matchingNodes.Count() > 0;
                 counter++;
             }
 
-            PublicIp publicIp = new PublicIp(newResourceName, this.TargetSettings);
             TreeNode newNode = this.AddMigrationTarget(publicIp).Result;
 
             await this.RefreshExportArtifacts();
@@ -989,18 +996,17 @@ namespace MigAz.Azure.UserControls
             int counter = 0;
             bool nameExists = true;
 
-            string newResourceName = "new" + baseResourceName;
+            StorageAccount storageAccount = new StorageAccount("new" + baseResourceName, this.TargetSettings);
             while (nameExists)
             {
                 if (counter > 0)
-                    newResourceName = "new" + baseResourceName + counter.ToString();
+                    storageAccount.SetTargetName("new" + baseResourceName + counter.ToString(), this.TargetSettings);
 
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(storageAccount.ToString(), true);
                 nameExists = matchingNodes.Count() > 0;
                 counter++;
             }
 
-            StorageAccount storageAccount = new StorageAccount(newResourceName, this.TargetSettings);
             TreeNode newNode = this.AddMigrationTarget(storageAccount).Result;
 
             await this.RefreshExportArtifacts();
@@ -1014,18 +1020,17 @@ namespace MigAz.Azure.UserControls
             int counter = 0;
             bool nameExists = true;
 
-            string newResourceName = "New" + baseResourceName;
+            AvailabilitySet availabilitySet = new AvailabilitySet("New" + baseResourceName, this.TargetSettings);
             while (nameExists)
             {
                 if (counter > 0)
-                    newResourceName = "New" + baseResourceName + counter.ToString();
+                    availabilitySet.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
 
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(newResourceName, true);
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(availabilitySet.ToString(), true);
                 nameExists = matchingNodes.Count() > 0;
                 counter++;
             }
 
-            AvailabilitySet availabilitySet = new AvailabilitySet(newResourceName, this.TargetSettings);
             TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
 
             await this.RefreshExportArtifacts();

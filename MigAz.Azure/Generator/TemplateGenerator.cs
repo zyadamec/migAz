@@ -149,6 +149,13 @@ namespace MigAz.Azure.Generator
                     throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
                 }               LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
 
+                foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + targetStorageAccount.ToString());
+                    BuildStorageAccountObject(targetStorageAccount);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
+
                 foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _ExportArtifacts.NetworkSecurityGroups)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Network Security Group : " + targetNetworkSecurityGroup.ToString());
@@ -187,14 +194,6 @@ namespace MigAz.Azure.Generator
                     await BuildLoadBalancerObject(loadBalancer);
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Load Balancers");
-
-                //LogProvider.WriteLog("GenerateStreams", "Start processing selected Storage Accounts");
-                //foreach (MigrationTarget.StorageAccount storageAccount in __ExportArtifacts.StorageAccounts)
-                //{
-                //    StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + storageAccount.ToString());
-                //    BuildStorageAccountObject(storageAccount);
-                //}
-                //LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
                 LogProvider.WriteLog("GenerateStreams", "Start processing selected Availablity Sets");
                 foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in _ExportArtifacts.AvailablitySets)

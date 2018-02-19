@@ -39,7 +39,7 @@ namespace MigAz.Azure.UserControls
                 _StorageAccount = storageAccount;
                 txtTargetName.MaxLength = StorageAccount.MaximumTargetNameLength(targetTreeView.TargetSettings);
 
-                if (_StorageAccount.SourceAccount != null)
+                if (_StorageAccount.SourceAccount == null)
                 {
                     lblAccountType.Text = String.Empty;
                     lblSourceASMName.Text = String.Empty;
