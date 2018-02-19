@@ -3,19 +3,19 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MigAz.Azure.Forms
+namespace MigAz.AzureStack.Forms
 {
-    public partial class AzureLoginContextDialog : Form
+    public partial class AzureStackLoginContextDialog : Form
     {
-        public AzureLoginContextDialog()
+        public AzureStackLoginContextDialog()
         {
             InitializeComponent();
         }
 
-        public async Task InitializeDialog(AzureContext azureContext)
+        public async Task InitializeDialog(AzureStackContext azureStackContext)
         {
-            await this.azureArmLoginControl.BindContext(azureContext);
-            azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+            await this.azureStackArmLoginControl1.BindContext(azureStackContext);
+            azureStackContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }
 
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)

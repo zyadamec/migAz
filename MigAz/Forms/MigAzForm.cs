@@ -703,7 +703,38 @@ namespace MigAz.Forms
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
                 MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                azureStackSourceContext.Bind(_logProvider);
+                azureStackSourceContext.Bind(_logProvider, _statusProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+
+                switch (app.Default.AzureEnvironment)
+                {
+                    case "AzureCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureCloud;
+                        break;
+                    case "AzureGermanCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureGermanCloud;
+                        break;
+                    case "AzureChinaCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureChinaCloud;
+                        break;
+                    case "AzureUSGovernment":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureUSGovernment;
+                        break;
+                }
+
+                azureStackSourceContext.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
+                azureStackSourceContext.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
+                azureStackSourceContext.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
+                azureStackSourceContext.AfterAzureSubscriptionChange += MigrationSourceControl_AfterAzureSubscriptionChange;
+                azureStackSourceContext.BeforeUserSignOut += MigrationSourceControl_BeforeUserSignOut;
+                azureStackSourceContext.AfterUserSignOut += MigrationSourceControl_AfterUserSignOut;
+                azureStackSourceContext.AfterAzureTenantChange += MigrationSourceControl_AfterAzureTenantChange;
+                azureStackSourceContext.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
+                azureStackSourceContext.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
+                azureStackSourceContext.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
+                azureStackSourceContext.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
+                azureStackSourceContext.ClearContext += MigrationSourceControl_ClearContext;
+                azureStackSourceContext.AfterContextChanged += AzureControl_AfterContextChanged;
+                azureStackSourceContext.AzureStackContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
 
             MigrationSourceSelectionControlVisible = false;
@@ -716,7 +747,7 @@ namespace MigAz.Forms
         }
 
 
-        private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
+        private void AzureControl_AfterContextChanged(UserControl sender)
         {
             this.MigrationTargetSelectionControl.MigrationSource = sender;
         }

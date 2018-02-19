@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.Interface;
+using MigAz.AzureStack.UserControls;
 
 namespace MigAz.UserControls
 {
@@ -70,7 +71,7 @@ namespace MigAz.UserControls
 
         private void btnAzureStack_Click(object sender, EventArgs e)
         {
-            AfterMigrationTargetSelected?.Invoke(null);
+            AfterMigrationTargetSelected?.Invoke(new MigrationAzureStackTargetContext());
         }
 
         private void MigAzMigrationTargetSelection_Resize(object sender, EventArgs e)

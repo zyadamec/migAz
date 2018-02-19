@@ -28,6 +28,7 @@ namespace MigAz.Azure.UserControls
         private bool _AutoSelectDependencies = true;
         private bool _IsAuthenticated = false;
         private ILogProvider _LogProvider;
+        private IStatusProvider _StatusProvider;
 
         #region Matching Events from AzureContext
 
@@ -71,7 +72,7 @@ namespace MigAz.Azure.UserControls
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
-        public delegate void AfterContextChangedHandler(MigrationAzureSourceContext sender);
+        public delegate void AfterContextChangedHandler(UserControl sender);
         public event AfterContextChangedHandler AfterContextChanged;
 
         #endregion
@@ -91,29 +92,7 @@ namespace MigAz.Azure.UserControls
 
         #endregion
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
-        {
-            _TargetSettings = targetSettings;
-            _LogProvider = logProvider;
-
-            _AzureContextSource = new AzureContext(logProvider, statusProvider);
-            _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
-            _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
-            _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
-            _AzureContextSource.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
-            _AzureContextSource.BeforeUserSignOut += _AzureContext_BeforeUserSignOut;
-            _AzureContextSource.AfterUserSignOut += _AzureContext_AfterUserSignOut;
-            _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
-            _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
-            azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
-            _AzureContextSource.LoginPromptBehavior = promptBehavior;
-
-            await azureLoginContextViewerSource.Bind(_AzureContextSource);
-
-            _ImageList = imageList;
-            treeAzureARM.ImageList = _ImageList;
-        }
-
+        #region Properties
 
         public ILogProvider LogProvider
         {
@@ -125,23 +104,49 @@ namespace MigAz.Azure.UserControls
             get { return _IsAuthenticated; }
             set { _IsAuthenticated = value; }
         }
-
-        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
-        {
-            AfterContextChanged?.Invoke(this);
-        }
-
         public AzureContext AzureContext
         {
             get { return _AzureContextSource; }
         }
 
-        private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
+        public ArmDiskType DefaultTargetDiskType
         {
-            BeforeAzureTenantChange?.Invoke(sender);
+            get { return _DefaultTargetDiskType; }
+            set { _DefaultTargetDiskType = value; }
         }
 
+        public bool AutoSelectDependencies
+        {
+            get { return _AutoSelectDependencies; }
+            set { _AutoSelectDependencies = value; }
+        }
+
+        #endregion
+
         #region Methods
+
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
+        {
+            _TargetSettings = targetSettings;
+            _LogProvider = logProvider;
+            _StatusProvider = statusProvider;
+            _ImageList = imageList;
+
+            _AzureContextSource = new AzureContext(logProvider, statusProvider, promptBehavior);
+            _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
+            _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
+            _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
+            _AzureContextSource.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
+            _AzureContextSource.BeforeUserSignOut += _AzureContext_BeforeUserSignOut;
+            _AzureContextSource.AfterUserSignOut += _AzureContext_AfterUserSignOut;
+            _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
+            _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
+            azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
+
+            await azureLoginContextViewerSource.Bind(_AzureContextSource);
+
+            treeAzureARM.ImageList = _ImageList;
+        }
 
         private void ResetForm()
         {
@@ -165,19 +170,18 @@ namespace MigAz.Azure.UserControls
 
         #endregion
 
-        public ArmDiskType DefaultTargetDiskType
-        {
-            get { return _DefaultTargetDiskType; }
-            set { _DefaultTargetDiskType = value; }
-        }
-
-        public bool AutoSelectDependencies
-        {
-            get { return _AutoSelectDependencies; }
-            set { _AutoSelectDependencies = value; }
-        }
-
         #region Event Handlers
+
+        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            AfterContextChanged?.Invoke(this);
+        }
+
+
+        private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
+        {
+            BeforeAzureTenantChange?.Invoke(sender);
+        }
 
         private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
         {

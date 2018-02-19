@@ -50,10 +50,11 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider)
+        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
         {
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
+            _LoginPromptBehavior = defaultPromptBehavior;
             _AzureServiceUrls = new AzureServiceUrls(this);
             _AzureRetriever = new AzureRetriever(this);
         }
@@ -145,10 +146,10 @@ namespace MigAz.Azure
 
         #region Methods
 
-        public async Task Login()
+        public async Task Login(string loginEndpoint)
         {
             if (this.TokenProvider == null)
-                this.TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), this.LogProvider);
+                this.TokenProvider = new AzureTokenProvider(loginEndpoint, this.LogProvider);
 
             await this.TokenProvider.Login(this.AzureServiceUrls.GetASMServiceManagementUrl(), this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
