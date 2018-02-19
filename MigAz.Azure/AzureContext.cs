@@ -146,12 +146,12 @@ namespace MigAz.Azure
 
         #region Methods
 
-        public async Task Login(string loginEndpoint)
+        public async Task Login(string loginEndpoint, string resourceUrl)
         {
             if (this.TokenProvider == null)
                 this.TokenProvider = new AzureTokenProvider(loginEndpoint, this.LogProvider);
 
-            await this.TokenProvider.Login(this.AzureServiceUrls.GetASMServiceManagementUrl(), this.LoginPromptBehavior);
+            await this.TokenProvider.Login(resourceUrl, this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
         }
 

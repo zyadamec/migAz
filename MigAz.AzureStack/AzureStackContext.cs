@@ -20,10 +20,10 @@ namespace MigAz.AzureStack
         {
         }
 
-         public async Task Login()
+        public async Task Login()
         {
-            // AzureStack via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
-            await base.Login(_AzureStackEndpoints.LoginEndpoint);
+            // AzureStack Login via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
+            await base.Login(_AzureStackEndpoints.LoginEndpoint, _AzureStackEndpoints.Audiences);
 
             List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
             List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(tenants[0]);
