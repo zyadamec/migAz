@@ -14,7 +14,8 @@ namespace MigAz.Azure.UserControls
     public partial class PublicIpProperties : UserControl
     {
         PublicIp _PublicIp;
-        private TargetTreeView _TargetTreeView;
+        TargetTreeView _TargetTreeView;
+        bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -26,11 +27,19 @@ namespace MigAz.Azure.UserControls
 
         internal void Bind(PublicIp publicIp, TargetTreeView targetTreeView)
         {
-            _PublicIp = publicIp;
-            _TargetTreeView = targetTreeView;
+            try
+            {
+                _IsBinding = true;
+                _PublicIp = publicIp;
+                _TargetTreeView = targetTreeView;
 
-            txtTargetName.Text = _PublicIp.TargetName;
-            txtDomainNameLabel.Text = _PublicIp.DomainNameLabel;
+                txtTargetName.Text = _PublicIp.TargetName;
+                txtDomainNameLabel.Text = _PublicIp.DomainNameLabel;
+            }
+            finally
+            {
+                _IsBinding = false;
+            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -39,7 +48,8 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtDomainNameLabel_TextChanged(object sender, EventArgs e)
@@ -48,7 +58,8 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.DomainNameLabel = txtSender.Text;
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
     }
 }

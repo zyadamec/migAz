@@ -27,6 +27,8 @@ namespace MigAz.Azure.UserControls
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
         private bool _AutoSelectDependencies = true;
         private bool _IsAuthenticated = false;
+        private ILogProvider _LogProvider;
+        private IStatusProvider _StatusProvider;
 
         #region Matching Events from AzureContext
 
@@ -58,16 +60,19 @@ namespace MigAz.Azure.UserControls
 
         #region New Events from MigrationSourceAzure
 
-        public delegate Task AfterNodeCheckedHandler(IMigrationTarget sender);
+        public delegate Task AfterNodeCheckedHandler(Core.MigrationTarget sender);
         public event AfterNodeCheckedHandler AfterNodeChecked;
 
-        public delegate Task AfterNodeUncheckedHandler(IMigrationTarget sender);
+        public delegate Task AfterNodeUncheckedHandler(Core.MigrationTarget sender);
         public event AfterNodeUncheckedHandler AfterNodeUnchecked;
+
+        public delegate Task AfterNodeChangedHandler(Core.MigrationTarget sender);
+        public event AfterNodeChangedHandler AfterNodeChanged;
 
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
-        public delegate void AfterContextChangedHandler(MigrationAzureSourceContext sender);
+        public delegate void AfterContextChangedHandler(UserControl sender);
         public event AfterContextChangedHandler AfterContextChanged;
 
         #endregion
@@ -87,11 +92,47 @@ namespace MigAz.Azure.UserControls
 
         #endregion
 
+        #region Properties
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+        }
+
+        public bool IsSourceContextAuthenticated
+        {
+            get { return _IsAuthenticated; }
+            set { _IsAuthenticated = value; }
+        }
+        public AzureContext AzureContext
+        {
+            get { return _AzureContextSource; }
+        }
+
+        public ArmDiskType DefaultTargetDiskType
+        {
+            get { return _DefaultTargetDiskType; }
+            set { _DefaultTargetDiskType = value; }
+        }
+
+        public bool AutoSelectDependencies
+        {
+            get { return _AutoSelectDependencies; }
+            set { _AutoSelectDependencies = value; }
+        }
+
+        #endregion
+
+        #region Methods
+
         public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
         {
             _TargetSettings = targetSettings;
+            _LogProvider = logProvider;
+            _StatusProvider = statusProvider;
+            _ImageList = imageList;
 
-            _AzureContextSource = new AzureContext(logProvider, statusProvider);
+            _AzureContextSource = new AzureContext(logProvider, statusProvider, promptBehavior);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -101,37 +142,11 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
-            _AzureContextSource.LoginPromptBehavior = promptBehavior;
 
             await azureLoginContextViewerSource.Bind(_AzureContextSource);
 
-            _ImageList = imageList;
             treeAzureARM.ImageList = _ImageList;
         }
-
-
-        public bool IsSourceContextAuthenticated
-        {
-            get { return _IsAuthenticated; }
-            set { _IsAuthenticated = value; }
-        }
-
-        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
-        {
-            AfterContextChanged?.Invoke(this);
-        }
-
-        public AzureContext AzureContext
-        {
-            get { return _AzureContextSource; }
-        }
-
-        private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
-        {
-            BeforeAzureTenantChange?.Invoke(sender);
-        }
-
-        #region Methods
 
         private void ResetForm()
         {
@@ -155,19 +170,18 @@ namespace MigAz.Azure.UserControls
 
         #endregion
 
-        public ArmDiskType DefaultTargetDiskType
-        {
-            get { return _DefaultTargetDiskType; }
-            set { _DefaultTargetDiskType = value; }
-        }
-
-        public bool AutoSelectDependencies
-        {
-            get { return _AutoSelectDependencies; }
-            set { _AutoSelectDependencies = value; }
-        }
-
         #region Event Handlers
+
+        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            AfterContextChanged?.Invoke(this);
+        }
+
+
+        private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
+        {
+            BeforeAzureTenantChange?.Invoke(sender);
+        }
 
         private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
         {
@@ -422,8 +436,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
                             tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
                             tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                            tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
-                            tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
+                            tnNetworkSecurityGroup.ImageKey = targetNetworkSecurityGroup.ImageKey;
+                            tnNetworkSecurityGroup.SelectedImageKey = targetNetworkSecurityGroup.ImageKey;
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
@@ -434,8 +448,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnPublicIP = new TreeNode(targetPublicIP.SourceName);
                             tnPublicIP.Name = targetPublicIP.SourceName;
                             tnPublicIP.Tag = targetPublicIP;
-                            tnPublicIP.ImageKey = "PublicIp";
-                            tnPublicIP.SelectedImageKey = "PublicIp";
+                            tnPublicIP.ImageKey = targetPublicIP.ImageKey;
+                            tnPublicIP.SelectedImageKey = targetPublicIP.ImageKey;
                             publicIpParentNode.Nodes.Add(tnPublicIP);
                         }
 
@@ -446,8 +460,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnRouteTable = new TreeNode(targetRouteTable.SourceName);
                             tnRouteTable.Name = targetRouteTable.SourceName;
                             tnRouteTable.Tag = targetRouteTable;
-                            tnRouteTable.ImageKey = "RouteTable";
-                            tnRouteTable.SelectedImageKey = "RouteTable";
+                            tnRouteTable.ImageKey = targetRouteTable.ImageKey;
+                            tnRouteTable.SelectedImageKey = targetRouteTable.ImageKey;
                             routeTableParentNode.Nodes.Add(tnRouteTable);
                         }
 
@@ -458,8 +472,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
                             tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
                             tnVirtualNetwork.Tag = targetVirtualNetwork;
-                            tnVirtualNetwork.ImageKey = "VirtualNetwork";
-                            tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
+                            tnVirtualNetwork.ImageKey = targetVirtualNetwork.ImageKey;
+                            tnVirtualNetwork.SelectedImageKey = targetVirtualNetwork.ImageKey;
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                         }
 
@@ -470,8 +484,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
                             tnStorageAccount.Name = targetStorageAccount.SourceName;
                             tnStorageAccount.Tag = targetStorageAccount;
-                            tnStorageAccount.ImageKey = "StorageAccount";
-                            tnStorageAccount.SelectedImageKey = "StorageAccount";
+                            tnStorageAccount.ImageKey = targetStorageAccount.ImageKey;
+                            tnStorageAccount.SelectedImageKey = targetStorageAccount.ImageKey;
                             storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         }
 
@@ -483,8 +497,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnDisk = new TreeNode(targetManagedDisk.SourceName);
                             tnDisk.Name = targetManagedDisk.SourceName;
                             tnDisk.Tag = targetManagedDisk;
-                            tnDisk.ImageKey = "Disk";
-                            tnDisk.SelectedImageKey = "Disk";
+                            tnDisk.ImageKey = targetManagedDisk.ImageKey;
+                            tnDisk.SelectedImageKey = targetManagedDisk.ImageKey;
                             managedDiskParentNode.Nodes.Add(tnDisk);
                         }
 
@@ -495,8 +509,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.SourceName);
                             tnAvailabilitySet.Name = targetAvailabilitySet.SourceName;
                             tnAvailabilitySet.Tag = targetAvailabilitySet;
-                            tnAvailabilitySet.ImageKey = "AvailabilitySet";
-                            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+                            tnAvailabilitySet.ImageKey = targetAvailabilitySet.ImageKey;
+                            tnAvailabilitySet.SelectedImageKey = targetAvailabilitySet.ImageKey;
                             availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
                         }
 
@@ -507,8 +521,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode txNetworkInterface = new TreeNode(targetNetworkInterface.SourceName);
                             txNetworkInterface.Name = targetNetworkInterface.SourceName;
                             txNetworkInterface.Tag = targetNetworkInterface;
-                            txNetworkInterface.ImageKey = "NetworkInterface";
-                            txNetworkInterface.SelectedImageKey = "NetworkInterface";
+                            txNetworkInterface.ImageKey = targetNetworkInterface.ImageKey;
+                            txNetworkInterface.SelectedImageKey = targetNetworkInterface.ImageKey;
                             tnResourceGroup.Nodes.Add(txNetworkInterface);
                         }
 
@@ -519,8 +533,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                             tnVirtualMachine.Name = targetVirtualMachine.SourceName;
                             tnVirtualMachine.Tag = targetVirtualMachine;
-                            tnVirtualMachine.ImageKey = "VirtualMachine";
-                            tnVirtualMachine.SelectedImageKey = "VirtualMachine";
+                            tnVirtualMachine.ImageKey = targetVirtualMachine.ImageKey;
+                            tnVirtualMachine.SelectedImageKey = targetVirtualMachine.ImageKey;
                             tnResourceGroup.Nodes.Add(tnVirtualMachine);
                         }
 
@@ -531,8 +545,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
                             tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
                             tnNetworkSecurityGroup.Tag = targetLoadBalancer;
-                            tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
-                            tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                            tnNetworkSecurityGroup.ImageKey = targetLoadBalancer.ImageKey;
+                            tnNetworkSecurityGroup.SelectedImageKey = targetLoadBalancer.ImageKey;
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
@@ -942,32 +956,19 @@ namespace MigAz.Azure.UserControls
 
             TreeNode resultUpdateARMTree = null;
 
-            if (e.Node.Tag != null)
+            Core.MigrationTarget migrationTarget = null;
+            if (e.Node.Tag != null && e.Node.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
             {
-                Type tagType = e.Node.Tag.GetType();
-                if ((tagType == typeof(Azure.MigrationTarget.VirtualNetwork)) ||
-                    (tagType == typeof(Azure.MigrationTarget.StorageAccount)) ||
-                    (tagType == typeof(Azure.MigrationTarget.AvailabilitySet)) ||
-                    (tagType == typeof(Azure.MigrationTarget.VirtualMachine)) ||
-                    //(tagType == typeof(Azure.MigrationTarget.VirtualMachineImage)) ||
-                    (tagType == typeof(Azure.MigrationTarget.LoadBalancer)) ||
-                    (tagType == typeof(Azure.MigrationTarget.NetworkInterface)) ||
-                    (tagType == typeof(Azure.MigrationTarget.PublicIp)) ||
-                    (tagType == typeof(Azure.MigrationTarget.RouteTable)) ||
-                    (tagType == typeof(Azure.MigrationTarget.Disk)) ||
-                    (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup)))
-                {
-                    IMigrationTarget migrationTarget = (IMigrationTarget)e.Node.Tag;
+                migrationTarget = (Core.MigrationTarget)e.Node.Tag;
 
-                    if (e.Node.Checked)
-                    {
-                        resultUpdateARMTree = e.Node;
-                        AfterNodeChecked?.Invoke(migrationTarget);
-                    }
-                    else
-                    {
-                        AfterNodeUnchecked?.Invoke(migrationTarget);
-                    }
+                if (e.Node.Checked)
+                {
+                    resultUpdateARMTree = e.Node;
+                    AfterNodeChecked?.Invoke(migrationTarget);
+                }
+                else
+                {
+                    AfterNodeUnchecked?.Invoke(migrationTarget);
                 }
             }
 
@@ -987,12 +988,9 @@ namespace MigAz.Azure.UserControls
 
                 _SelectedNodes = this.GetSelectedNodes(treeAzureARM);
 
-                //await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
-
                 _SourceAsmNode = null;
 
-                //if (resultUpdateARMTree != null)
-                //    treeTargetARM.SelectedNode = resultUpdateARMTree;
+                AfterNodeChanged?.Invoke(migrationTarget);
             }
         }
 
@@ -1185,6 +1183,36 @@ namespace MigAz.Azure.UserControls
             treeAzureASM.Height = this.Height - 135;
             treeAzureASM.Width = this.Width;
             azureLoginContextViewerSource.Width = this.Width;
+        }
+
+        public async Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)
+        {
+            LogProvider.WriteLog("UncheckMigrationTarget", "Start");
+
+            TreeNode sourceMigrationNode = null;
+            
+            if (treeAzureARM.Enabled)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode in treeAzureARM");
+                sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureARM.Nodes, migrationTarget);
+            }
+            else if (treeAzureASM.Enabled)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode in treeAzureASM");
+                sourceMigrationNode = TargetTreeView.SeekMigrationTargetTreeNode(treeAzureASM.Nodes, migrationTarget);
+            }
+
+            if (sourceMigrationNode == null)
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Originating MigrationTarget TreeNode not found.");
+            }
+            else
+            {
+                LogProvider.WriteLog("UncheckMigrationTarget", "Seeking Originating MigrationTarget TreeNode");
+                sourceMigrationNode.Checked = false;
+            }
+
+            LogProvider.WriteLog("UncheckMigrationTarget", "End");
         }
     }
 }

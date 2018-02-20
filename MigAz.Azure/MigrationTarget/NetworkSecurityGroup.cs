@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkSecurityGroup : IMigrationTarget
+    public class NetworkSecurityGroup : Core.MigrationTarget
     {
         private INetworkSecurityGroup _SourceNetworkSecurityGroup;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
         private NetworkSecurityGroup() { }
@@ -74,25 +72,15 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
+        public override string ImageKey { get { return "NetworkSecurityGroup"; } }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
+        public override string FriendlyObjectName { get { return "Network Security Group"; } }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.NetworkSecurityGroupSuffix;
-        }
 
-        public override string ToString()
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.NetworkSecurityGroupSuffix;
         }
     }
 }

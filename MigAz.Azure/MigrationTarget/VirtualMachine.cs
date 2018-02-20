@@ -11,11 +11,9 @@ using MigAz.Core;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class VirtualMachine : IMigrationTarget
+    public class VirtualMachine : Core.MigrationTarget
     {
         private AvailabilitySet _TargetAvailabilitySet = null;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private Arm.VMSize _TargetSize;
         private List<NetworkInterface> _NetworkInterfaces = new List<NetworkInterface>();
         private List<Disk> _DataDisks = new List<Disk>();
@@ -266,16 +264,20 @@ namespace MigAz.Azure.MigrationTarget
             get { return _TargetAvailabilitySet; }
             set
             {
-                if (_TargetAvailabilitySet != null)
+                if (value != _TargetAvailabilitySet)
                 {
-                    _TargetAvailabilitySet.TargetVirtualMachines.Remove(this);
-                }
+                    if (_TargetAvailabilitySet != null)
+                    {
+                        _TargetAvailabilitySet.TargetVirtualMachines.Remove(this);
+                    }
 
-                _TargetAvailabilitySet = value;
+                    _TargetAvailabilitySet = value;
 
-                if (_TargetAvailabilitySet != null)
-                {
-                    _TargetAvailabilitySet.TargetVirtualMachines.Add(this);
+                    if (_TargetAvailabilitySet != null)
+                    {
+                        if (!_TargetAvailabilitySet.TargetVirtualMachines.Contains(this))
+                            _TargetAvailabilitySet.TargetVirtualMachines.Add(this);
+                    }
                 }
             }
         }
@@ -314,25 +316,15 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
+        public override string ImageKey { get { return "VirtualMachine"; } }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
+        public override string FriendlyObjectName { get { return "Virtual Machine"; } }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.VirtualMachineSuffix;
-        }
 
-        public override string ToString()
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.VirtualMachineSuffix;
         }
     }
 }

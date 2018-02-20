@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class ResourceGroup : IMigrationTarget
+    public class ResourceGroup : Core.MigrationTarget
     {
-        private String _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private Arm.Location _TargetLocation;
 
         public ResourceGroup(TargetSettings targetSettings)
@@ -32,25 +30,16 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetLocation = value; }
         }
 
-        public string TargetName
+        public override string ImageKey { get { return "ResourceGroup"; } }
+
+        public override string FriendlyObjectName { get { return "Resource Group"; } }
+
+
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            get { return _TargetName; }
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.AvailabilitySetSuffix;
         }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.AvailabilitySetSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

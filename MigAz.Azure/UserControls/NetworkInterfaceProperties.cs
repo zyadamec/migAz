@@ -16,6 +16,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
+        private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -27,52 +28,61 @@ namespace MigAz.Azure.UserControls
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-            PropertyChanged(); // bubble event
+            if (!_IsBinding)
+                PropertyChanged?.Invoke(); // bubble event
         }
 
         internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
-            _AzureContext = azureContext;
-            _TargetTreeView = targetTreeView;
-            _TargetNetworkInterface = targetNetworkInterface;
-            networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
-
-            if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+            try
             {
-                await networkSelectionControl1.Bind(azureContext, targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
-                networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
+                _IsBinding = true;
+                _AzureContext = azureContext;
+                _TargetTreeView = targetTreeView;
+                _TargetNetworkInterface = targetNetworkInterface;
+                networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+
+                if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                {
+                    await networkSelectionControl1.Bind(azureContext, targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
+                    networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
+                }
+
+                lblSourceName.Text = _TargetNetworkInterface.SourceName;
+                txtTargetName.Text = _TargetNetworkInterface.TargetName;
+
+                if (_TargetNetworkInterface.EnableIPForwarding)
+                    rbIPForwardingEnabled.Checked = true;
+                else
+                    rbIPForwardingDisabled.Checked = true;
+
+                if (_TargetNetworkInterface.SourceNetworkInterface != null)
+                {
+                    if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
+                    {
+                        Azure.Asm.NetworkInterface asmNetworkInterface = (Azure.Asm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
+
+                        lblVirtualNetworkName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
+                        lblSubnetName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
+                        lblStaticIpAddress.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
+                    }
+                    else if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterface))
+                    {
+                        Azure.Arm.NetworkInterface armNetworkInterface = (Azure.Arm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
+
+                        lblVirtualNetworkName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
+                        lblSubnetName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
+                        lblStaticIpAddress.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
+                    }
+                }
+
+                virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
+                networkSecurityGroup.Bind(_TargetNetworkInterface.NetworkSecurityGroup, _TargetTreeView);
             }
-
-            lblSourceName.Text = _TargetNetworkInterface.SourceName;
-            txtTargetName.Text = _TargetNetworkInterface.TargetName;
-
-            if (_TargetNetworkInterface.EnableIPForwarding)
-                rbIPForwardingEnabled.Checked = true;
-            else
-                rbIPForwardingDisabled.Checked = true;
-
-            if (_TargetNetworkInterface.SourceNetworkInterface != null)
+            finally
             {
-                if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
-                {
-                    Azure.Asm.NetworkInterface asmNetworkInterface = (Azure.Asm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
-
-                    lblVirtualNetworkName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
-                    lblSubnetName.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
-                    lblStaticIpAddress.Text = asmNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
-                }
-                else if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterface))
-                {
-                    Azure.Arm.NetworkInterface armNetworkInterface = (Azure.Arm.NetworkInterface)_TargetNetworkInterface.SourceNetworkInterface;
-
-                    lblVirtualNetworkName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].VirtualNetworkName;
-                    lblSubnetName.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].SubnetName;
-                    lblStaticIpAddress.Text = armNetworkInterface.NetworkInterfaceIpConfigurations[0].PrivateIpAddress;
-                }
+                _IsBinding = false;
             }
-
-            virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
-            networkSecurityGroup.Bind(_TargetNetworkInterface.NetworkSecurityGroup, _TargetTreeView);
         }
 
 
@@ -82,7 +92,8 @@ namespace MigAz.Azure.UserControls
 
             _TargetNetworkInterface.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -96,13 +107,17 @@ namespace MigAz.Azure.UserControls
         private void rbIPForwardingEnabled_CheckedChanged(object sender, EventArgs e)
         {
             _TargetNetworkInterface.EnableIPForwarding = true;
-            PropertyChanged();
+
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void rbIPForwardingDisabled_CheckedChanged(object sender, EventArgs e)
         {
             _TargetNetworkInterface.EnableIPForwarding = false;
-            PropertyChanged();
+
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
     }
 }

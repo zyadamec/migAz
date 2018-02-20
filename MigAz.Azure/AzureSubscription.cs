@@ -74,7 +74,7 @@ namespace MigAz.Azure
             _AzureEnvironment = azureEnvironment;
         }
 
-        internal AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
+        public AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
         {
             _AzureContext = azureContext;
             _SubscriptionJson = subscriptionJson;
@@ -465,7 +465,7 @@ namespace MigAz.Azure
 
                         if (asmCloudService.ResourceXml.SelectNodes("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").Count > 0)
                         {
-                            frontEndIpConfiguration.TargetPrivateIPAllocationMethod = "Static";
+                            frontEndIpConfiguration.TargetPrivateIPAllocationMethod = MigrationTarget.PrivateIPAllocationMethodEnum.Static;
                             frontEndIpConfiguration.TargetPrivateIpAddress = asmCloudService.ResourceXml.SelectSingleNode("//Deployments/Deployment/LoadBalancers/LoadBalancer/FrontendIpConfiguration/StaticVirtualNetworkIPAddress").InnerText;
                         }
 
@@ -1421,7 +1421,7 @@ namespace MigAz.Azure
             string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription ID : " + this.SubscriptionId + " Location : " + location);
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, methodType, useCached);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
 
@@ -1452,7 +1452,7 @@ namespace MigAz.Azure
 
             AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId);
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject virtualMachineResult = JObject.Parse(azureRestResponse.Response);
 
@@ -1949,7 +1949,7 @@ namespace MigAz.Azure
 
             AuthenticationResult asmToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), this.AzureAdTenantId);
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, asmToken.AccessToken);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, asmToken);
             azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
 
@@ -2072,7 +2072,7 @@ namespace MigAz.Azure
 
             AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId);
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken.AccessToken, methodType, useCached);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             return JObject.Parse(azureRestResponse.Response);
         }

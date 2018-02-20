@@ -13,6 +13,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class PropertyPanel : UserControl
     {
+        private AzureContext _AzureContext; // Future, should go away, bind to object(s) of smaller scale, ideally not entire context?
         private TargetTreeView _TargetTreeView;
         private TreeNode _BoundTreeNode;
 
@@ -68,6 +69,7 @@ namespace MigAz.Azure.UserControls
 
         public void Clear()
         {
+            this._AzureContext = null;
             this._BoundTreeNode = null;
             this.ResourceImage = null;
             this.ResourceText = String.Empty;
@@ -86,11 +88,17 @@ namespace MigAz.Azure.UserControls
             pnlProperties.Height = groupBox1.Height - 90;
         }
 
+        public async Task Rebind()
+        {
+            //this.PropertyDetailControl.Rebind();
+        }
+
         public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, TreeNode migrationTargetNode)
         {
             this.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
+            this._AzureContext = azureContext;
             this._TargetTreeView = targetTreeView;
             this._BoundTreeNode = migrationTargetNode;
 

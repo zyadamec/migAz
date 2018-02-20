@@ -37,6 +37,9 @@
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.1.3001, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -50,12 +53,37 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureStackContext.cs" />
+    <Compile Include="AzureStackEndpoints.cs" />
+    <Compile Include="Forms\AzureStackLoginContextDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AzureStackLoginContextDialog.Designer.cs">
+      <DependentUpon>AzureStackLoginContextDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\AzureStackArmLoginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\AzureStackArmLoginControl.Designer.cs">
+      <DependentUpon>AzureStackArmLoginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AzureStackLoginContextViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\AzureStackLoginContextViewer.Designer.cs">
+      <DependentUpon>AzureStackLoginContextViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MigrationAzureStackSourceContext.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\MigrationAzureStackSourceContext.Designer.cs">
       <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureStackTargetContext.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\MigrationAzureStackTargetContext.Designer.cs">
+      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -69,8 +97,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\AzureStackLoginContextDialog.resx">
+      <DependentUpon>AzureStackLoginContextDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\AzureStackArmLoginControl.resx">
+      <DependentUpon>AzureStackArmLoginControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\AzureStackLoginContextViewer.resx">
+      <DependentUpon>AzureStackLoginContextViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MigrationAzureStackSourceContext.resx">
       <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\MigrationAzureStackTargetContext.resx">
+      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

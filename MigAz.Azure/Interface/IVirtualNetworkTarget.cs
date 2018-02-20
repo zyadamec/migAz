@@ -1,4 +1,5 @@
-﻿using MigAz.Core.Interface;
+﻿using MigAz.Azure.MigrationTarget;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,43 +8,28 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Interface
 {
-    public class IVirtualNetworkTarget
+    public interface IVirtualNetworkTarget
     {
-        private String _TargetPrivateIPAllocationMethod = "Dynamic";
-        private String _TargetStaticIpAddress = String.Empty;
-
-        public IMigrationVirtualNetwork TargetVirtualNetwork
+        IMigrationVirtualNetwork TargetVirtualNetwork
         {
             get;
             set;
         }
-        public IMigrationSubnet TargetSubnet
+        IMigrationSubnet TargetSubnet
         {
             get;
             set;
         }
-        public String TargetPrivateIPAllocationMethod
+        PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod
         {
-            get { return _TargetPrivateIPAllocationMethod; }
-            set
-            {
-                if (value == "Static" || value == "Dynamic")
-                    _TargetPrivateIPAllocationMethod = value;
-                else
-                    throw new ArgumentException("Must be 'Static' or 'Dynamic'.");
-            }
+            get;
+            set;
         }
 
-        public String TargetPrivateIpAddress
+        String TargetPrivateIpAddress
         {
-            get { return _TargetStaticIpAddress; }
-            set
-            {
-                if (value == null)
-                    _TargetStaticIpAddress = String.Empty;
-                else
-                    _TargetStaticIpAddress = value.Trim();
-            }
+            get;
+            set;
         }
 
     }

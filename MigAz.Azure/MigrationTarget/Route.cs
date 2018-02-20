@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class Route : IMigrationTarget
+    public class Route : Core.MigrationTarget
     {
         private IRoute _Source;
-        private String _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private NextHopTypeEnum _NextHopType = NextHopTypeEnum.VnetLocal;
         private String _AddressPrefix = String.Empty;
         private String _NextHopIpAddress = String.Empty;
@@ -63,26 +61,16 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return String.Empty; }
         }
+        public override string ImageKey { get { return "Route"; } }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
+        public override string FriendlyObjectName { get { return "Route"; } }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName;
-        }
 
-        public override string ToString()
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
     }
 }

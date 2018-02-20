@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class VirtualNetwork : IMigrationTarget, IMigrationVirtualNetwork
+    public class VirtualNetwork : Core.MigrationTarget, IMigrationVirtualNetwork
     {
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private List<VirtualNetworkGateway> _TargetVirtualNetworkGateways = new List<VirtualNetworkGateway>();
         private List<Subnet> _TargetSubnets = new List<Subnet>();
         List<string> _AddressPrefixes = new List<string>();
@@ -143,25 +141,15 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
+        public override string ImageKey { get { return "VirtualNetwork"; } }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
+        public override string FriendlyObjectName { get { return "Virtual Network"; } }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.VirtualNetworkSuffix;
-        }
 
-        public override string ToString()
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.VirtualNetworkSuffix;
         }
     }
 }

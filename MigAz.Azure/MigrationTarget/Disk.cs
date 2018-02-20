@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class Disk : IMigrationTarget
+    public class Disk : Core.MigrationTarget
     {
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private Int32 _DiskSizeInGB = 0;
         private VirtualMachine _ParentVirtualMachine;
 
@@ -183,25 +181,16 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
+        public override string ImageKey { get { return "Disk"; } }
+
+        public override string FriendlyObjectName { get { return "Disk"; } }
+
+
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            get { return _TargetName; }
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

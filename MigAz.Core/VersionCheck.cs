@@ -47,43 +47,50 @@ namespace MigAz.Core
         {
             _LogProvider.WriteLog("IsVersionNewer", "Start");
 
-            // previous use of " in strings, removing if existing
-            currentVersion = currentVersion.Replace("\"", String.Empty);
-            availableversion = availableversion.Replace("\"", String.Empty);
-
-            string[] currentVersionArray = currentVersion.Split('.');
-            string[] availableversionArray = availableversion.Split('.');
-
-            if (currentVersionArray.Length != 4 || availableversionArray.Length != 4)
+            if (currentVersion != null && currentVersion.Length > 0 && availableversion != null && availableversion.Length > 0)
             {
-                _LogProvider.WriteLog("IsVersionNewer", "Unable to split version for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
-                return true;
-            }
+                // previous use of " in strings, removing if existing
+                currentVersion = currentVersion.Replace("\"", String.Empty);
+                availableversion = availableversion.Replace("\"", String.Empty);
 
-            for (int i = 0; i < currentVersionArray.Length; i++)
-            {
-                try
+                string[] currentVersionArray = currentVersion.Split('.');
+                string[] availableversionArray = availableversion.Split('.');
+
+                if (currentVersionArray.Length != 4 || availableversionArray.Length != 4)
                 {
-                    int current = Convert.ToInt32(currentVersionArray[i]);
-                    int available = Convert.ToInt32(availableversionArray[i]);
+                    _LogProvider.WriteLog("IsVersionNewer", "Unable to split version for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
+                    return true;
+                }
 
-                    if (current > available)
+                for (int i = 0; i < currentVersionArray.Length; i++)
+                {
+                    try
                     {
-                        _LogProvider.WriteLog("IsVersionNewer", "No newer version available (current " + currentVersion + " exceeds available " + availableversion + ").");
-                        return false;
+                        int current = Convert.ToInt32(currentVersionArray[i]);
+                        int available = Convert.ToInt32(availableversionArray[i]);
+
+                        if (current > available)
+                        {
+                            _LogProvider.WriteLog("IsVersionNewer", "No newer version available (current " + currentVersion + " exceeds available " + availableversion + ").");
+                            return false;
+                        }
+
+                        if (current < available)
+                        {
+                            _LogProvider.WriteLog("IsVersionNewer", "Newer version available (current " + currentVersion + " available " + availableversion + ").");
+                            return true;
+                        }
                     }
-
-                    if (current < available)
+                    catch
                     {
-                        _LogProvider.WriteLog("IsVersionNewer", "Newer version available (current " + currentVersion + " available " + availableversion + ").");
+                        _LogProvider.WriteLog("IsVersionNewer", "Unable to convert to int for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
                         return true;
                     }
                 }
-                catch
-                {
-                    _LogProvider.WriteLog("IsVersionNewer", "Unable to convert to int for comparison, returning true.  Current: " + currentVersion + " Availale: " + availableversion);
-                    return true;
-                }
+            }
+            else
+            {
+                _LogProvider.WriteLog("IsVersionNewer", "Current Version and/or Available Version is null or empty, not proceeding with version comparison.");
             }
 
             _LogProvider.WriteLog("IsVersionNewer", "No new version found (matched version " + currentVersion + ").");

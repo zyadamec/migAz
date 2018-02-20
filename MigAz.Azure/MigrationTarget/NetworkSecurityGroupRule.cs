@@ -4,11 +4,9 @@ using System;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkSecurityGroupRule : IMigrationTarget
+    public class NetworkSecurityGroupRule : Core.MigrationTarget
     {
         private AzureContext _AzureContext;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private bool _IsSystemRule = false;
 
         public NetworkSecurityGroupRule(Asm.NetworkSecurityGroupRule asmRule, TargetSettings targetSettings)
@@ -92,25 +90,15 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
+        public override string ImageKey { get { return "NetworkSecurityGroupRule"; } }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
+        public override string FriendlyObjectName { get { return "Network Security Group Rule"; } }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName;
-        }
 
-        public override string ToString()
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            return this.TargetNameResult;
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
     }
 }

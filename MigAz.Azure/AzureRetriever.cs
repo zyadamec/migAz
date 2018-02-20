@@ -23,7 +23,6 @@ namespace MigAz.Azure
         private AzureContext _AzureContext;
         private object _lockObject = new object();
         private AzureSubscription _AzureSubscription = null;
-        private List<AzureSubscription> _AzureSubscriptions;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
@@ -122,7 +121,7 @@ namespace MigAz.Azure
             String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult.AccessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -156,7 +155,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult.AccessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject domainsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -183,7 +182,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult.AccessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -239,7 +238,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken.AccessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -272,10 +271,14 @@ namespace MigAz.Azure
             }
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(azureRestRequest.Url);
-            string authorizationHeader = "Bearer " + azureRestRequest.AccessToken;
-            request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
-
             request.Method = azureRestRequest.Method;
+
+            if (azureRestRequest.AccessToken != String.Empty)
+            {
+                string authorizationHeader = "Bearer " + azureRestRequest.AccessToken;
+                request.Headers.Add(HttpRequestHeader.Authorization, authorizationHeader);
+                writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, authorizationHeader);
+            }
 
             if (request.Method == "POST")
                 request.ContentLength = 0;
@@ -344,7 +347,6 @@ namespace MigAz.Azure
 
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
-                writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, authorizationHeader);
                 writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, webRequesetResult);
                 _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
             }

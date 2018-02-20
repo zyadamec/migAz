@@ -8,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkInterface : IMigrationTarget
+    public class NetworkInterface : Core.MigrationTarget
     {
         private INetworkInterface _SourceNetworkInterface;
         private bool _EnableIPForwarding = false;
         private List<MigrationTarget.NetworkInterfaceIpConfiguration> _TargetNetworkInterfaceIpConfigurations = new List<MigrationTarget.NetworkInterfaceIpConfiguration>();
         private BackEndAddressPool _BackEndAddressPool = null;
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private VirtualMachine _ParentVirtualMachine;
 
         private NetworkInterface() { }
@@ -110,27 +108,18 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public override string ImageKey { get { return "NetworkInterface"; } }
+
+        public override string FriendlyObjectName { get { return "Network Interface"; } }
+
+
         public NetworkSecurityGroup TargetNetworkSecurityGroup { get; set; }
 
-        public string TargetName
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            get { return _TargetName; }
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName + targetSettings.NetworkInterfaceCardSuffix;
         }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName + targetSettings.NetworkInterfaceCardSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

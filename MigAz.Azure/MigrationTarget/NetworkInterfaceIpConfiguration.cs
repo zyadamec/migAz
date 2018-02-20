@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class NetworkInterfaceIpConfiguration : IVirtualNetworkTarget, IMigrationTarget
+    public class NetworkInterfaceIpConfiguration : Core.MigrationTarget, IVirtualNetworkTarget
     {
         private INetworkInterfaceIpConfiguration _SourceIpConfiguration;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
 
         private NetworkInterfaceIpConfiguration() { }
 
@@ -22,7 +20,11 @@ namespace MigAz.Azure.MigrationTarget
             _SourceIpConfiguration = ipConfiguration;
 
             this.SetTargetName(ipConfiguration.Name, targetSettings);
-            this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
+            if (ipConfiguration.PrivateIpAllocationMethod.Trim().ToLower() == "static")
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+            else
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
 
             #region Attempt to default Target Virtual Network and Target Subnet objects from source names
@@ -52,7 +54,11 @@ namespace MigAz.Azure.MigrationTarget
             #region Attempt to default Target Virtual Network and Target Subnet objects from source names
 
             this.SetTargetName(ipConfiguration.Name, targetSettings);
-            this.TargetPrivateIPAllocationMethod = ipConfiguration.PrivateIpAllocationMethod;
+            if (ipConfiguration.PrivateIpAllocationMethod.Trim().ToLower() == "static")
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+            else
+                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
             this.TargetVirtualNetwork = SeekVirtualNetwork(virtualNetworks, ipConfiguration.VirtualNetworkName);
             if (this.TargetVirtualNetwork != null && this.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)) // Should only be of this type, as we don't default to another existing ARM VNet (which would be of the base interface type also)
@@ -83,6 +89,19 @@ namespace MigAz.Azure.MigrationTarget
             return null;
         }
 
+        #region IVirtualNetworkTarget Interface Implementation
+        public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
+        public IMigrationSubnet TargetSubnet { get; set; }
+        public PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
+        public string TargetPrivateIpAddress { get; set; }
+
+        public override string ImageKey { get { return "NetworkInterfaceIpConfiguration"; } }
+
+        public override string FriendlyObjectName { get { return "Network Interface IP Configuration"; } }
+
+
+        #endregion
+
         public INetworkInterfaceIpConfiguration SourceIpConfiguration
         {
             get { return _SourceIpConfiguration; }
@@ -103,25 +122,11 @@ namespace MigAz.Azure.MigrationTarget
         public PublicIp TargetPublicIp { get; set; }
         public NetworkSecurityGroup TargetNetworkSecurityGroup { get; set; }
 
-        public string TargetName
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            get { return _TargetName; }
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
+            this.TargetNameResult = this.TargetName;
         }
 
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
-        {
-            _TargetName = targetName.Trim().Replace(" ", String.Empty);
-            _TargetNameResult = _TargetName;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
-        }
     }
 }

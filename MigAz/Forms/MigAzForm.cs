@@ -53,6 +53,9 @@ namespace MigAz.Forms
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
             if (targetTreeView != null)
             {
+                // Future thought, do away with the "Set"s and consolidate to a Bind?
+                targetTreeView.LogProvider = this.LogProvider;
+                targetTreeView.StatusProvider = this.StatusProvider;
                 targetTreeView.ImageList = this.imageList1;
                 targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
             }
@@ -64,7 +67,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.3.3.3";
+            string currentVersion = "2.3.4.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -94,20 +97,21 @@ namespace MigAz.Forms
             }
         }
 
-        private async Task MigrationSourceControl_AfterNodeChecked(IMigrationTarget sender)
+        private async Task MigrationSourceControl_AfterNodeChecked(MigrationTarget sender)
         {
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-
             TreeNode resultUpdateARMTree = await targetTreeView.AddMigrationTarget(sender);
-            await targetTreeView.RefreshExportArtifacts();
         }
 
-        private async Task MigrationSourceControl_AfterNodeUnchecked(IMigrationTarget sender)
+        private async Task MigrationSourceControl_AfterNodeUnchecked(MigrationTarget sender)
         {
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-
             await targetTreeView.RemoveMigrationTarget(sender);
-            await targetTreeView.RefreshExportArtifacts();
+        }
+
+        private async Task MigrationSourceControl_AfterNodeChanged(MigrationTarget sender)
+        {
+            await targetTreeView1.RefreshExportArtifacts();
         }
 
         private async Task MigrationSourceControl_BeforeAzureTenantChange(AzureContext sender)
@@ -176,6 +180,8 @@ namespace MigAz.Forms
                     migrationTargetAzure.ExistingContext = sender;
                 }
             }
+
+            this.targetTreeView1.Enabled = true;
         }
 
         private async Task MigrationSourceControl_AzureEnvironmentChanged(AzureContext sender)
@@ -689,6 +695,7 @@ namespace MigAz.Forms
                 azureControl.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
                 azureControl.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
                 azureControl.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
+                azureControl.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
                 azureControl.ClearContext += MigrationSourceControl_ClearContext;
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
                 azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
@@ -696,7 +703,38 @@ namespace MigAz.Forms
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
                 MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                azureStackSourceContext.Bind(_logProvider);
+                azureStackSourceContext.Bind(_logProvider, _statusProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+
+                switch (app.Default.AzureEnvironment)
+                {
+                    case "AzureCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureCloud;
+                        break;
+                    case "AzureGermanCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureGermanCloud;
+                        break;
+                    case "AzureChinaCloud":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureChinaCloud;
+                        break;
+                    case "AzureUSGovernment":
+                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureUSGovernment;
+                        break;
+                }
+
+                azureStackSourceContext.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
+                azureStackSourceContext.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
+                azureStackSourceContext.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
+                azureStackSourceContext.AfterAzureSubscriptionChange += MigrationSourceControl_AfterAzureSubscriptionChange;
+                azureStackSourceContext.BeforeUserSignOut += MigrationSourceControl_BeforeUserSignOut;
+                azureStackSourceContext.AfterUserSignOut += MigrationSourceControl_AfterUserSignOut;
+                azureStackSourceContext.AfterAzureTenantChange += MigrationSourceControl_AfterAzureTenantChange;
+                azureStackSourceContext.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
+                azureStackSourceContext.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
+                azureStackSourceContext.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
+                azureStackSourceContext.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
+                azureStackSourceContext.ClearContext += MigrationSourceControl_ClearContext;
+                azureStackSourceContext.AfterContextChanged += AzureControl_AfterContextChanged;
+                azureStackSourceContext.AzureStackContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
 
             MigrationSourceSelectionControlVisible = false;
@@ -708,7 +746,8 @@ namespace MigAz.Forms
             migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
 
-        private void AzureControl_AfterContextChanged(MigrationAzureSourceContext sender)
+
+        private void AzureControl_AfterContextChanged(UserControl sender)
         {
             this.MigrationTargetSelectionControl.MigrationSource = sender;
         }
@@ -766,6 +805,7 @@ namespace MigAz.Forms
                     MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
+                    targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
                 }
             }
 
@@ -776,6 +816,7 @@ namespace MigAz.Forms
 
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
+            targetTreeView1.TargetBlobStorageNamespace = sender.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
             await MigrationTargetTreeView.RefreshExportArtifacts();
         }
 
@@ -792,6 +833,14 @@ namespace MigAz.Forms
             return MigrationTargetTreeView.HasErrors;
         }
 
+        #region Target Tree View Events
+
+        private async Task targetTreeView1_AfterNewTargetResourceAdded(TargetTreeView sender, TreeNode selectedNode)
+        {
+            // Refresh Alerts from new item
+            await targetTreeView1_AfterExportArtifactRefresh(sender);
+        }
+
         private async Task targetTreeView1_AfterExportArtifactRefresh(TargetTreeView sender)
         {
             dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
@@ -799,6 +848,8 @@ namespace MigAz.Forms
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
+
+            await propertyPanel1.Rebind();
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
@@ -827,5 +878,23 @@ namespace MigAz.Forms
                 unhandledExceptionDialog.ShowDialog();
             }
         }
+
+        private async Task targetTreeView1_AfterSourceNodeRemoved(TargetTreeView sender, TreeNode removedNode)
+        {
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("targetTreeView1_AfterSourceNodeRemoved", "Start");
+
+            if (removedNode.Tag != null)
+            {
+                MigrationTarget migrationTarget = (MigrationTarget)removedNode.Tag;
+                await this.MigrationSourceControl.UncheckMigrationTarget(migrationTarget);
+            }
+
+            if (this.LogProvider != null)
+                LogProvider.WriteLog("targetTreeView1_AfterSourceNodeRemoved", "End");
+        }
+
+        #endregion
+
     }
 }

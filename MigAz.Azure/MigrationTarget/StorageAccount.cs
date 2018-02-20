@@ -8,23 +8,25 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class StorageAccount : IStorageTarget, IMigrationTarget
+    public class StorageAccount : Core.MigrationTarget, IStorageTarget
     {
         private IStorageAccount _Source;
-        private string _TargetName = String.Empty;
-        private string _TargetNameResult = String.Empty;
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
         public StorageAccount()
         {
-            _TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
-            _TargetNameResult = _TargetName;
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            this.TargetNameResult = this.TargetName;
         }
         public StorageAccount(StorageAccountType storageAccountType)
         {
-            _TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
-            _TargetNameResult = _TargetName;
+            this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
+            this.TargetNameResult = this.TargetName;
             this.StorageAccountType = storageAccountType;
+        }
+        public StorageAccount(string name, TargetSettings targetSettings)
+        {
+            this.SetTargetName(name, targetSettings);
         }
 
         public StorageAccount(IStorageAccount source, TargetSettings targetSettings)
@@ -36,20 +38,17 @@ namespace MigAz.Azure.MigrationTarget
 
         public string BlobStorageNamespace
         {
-            get
-            {
-                return "RussellTODONOW";
-                //if (_AzureContext == null)
-                //    return String.Empty;
-                //else
-                //    return _AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
-            }
+            get;set;
         }
 
         public IStorageAccount SourceAccount
         {
             get { return _Source; }
         }
+
+        public override string ImageKey { get { return "StorageAccount"; } }
+
+        public override string FriendlyObjectName { get { return "Storage Account"; } }
 
         public String SourceName
         {
@@ -79,35 +78,20 @@ namespace MigAz.Azure.MigrationTarget
             return StorageAccountType.Standard_LRS;
         }
 
-        public string TargetName
-        {
-            get { return _TargetName; }
-        }
-
-        public string TargetNameResult
-        {
-            get { return _TargetNameResult; }
-        }
-
         public static int MaximumTargetNameLength(TargetSettings targetSettings)
         {
             return 24 - targetSettings.StorageAccountSuffix.Length;
         }
 
-        public void SetTargetName(string targetName, TargetSettings targetSettings)
+        public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
 
             if (value.Length + targetSettings.StorageAccountSuffix.Length > 24)
                 value = value.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length);
 
-            _TargetName = value;
-            _TargetNameResult = _TargetName + targetSettings.StorageAccountSuffix;
-        }
-
-        public override string ToString()
-        {
-            return this.TargetNameResult;
+            this.TargetName = value;
+            this.TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
         }
     }
 }

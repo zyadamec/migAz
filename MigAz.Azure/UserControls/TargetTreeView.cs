@@ -24,8 +24,14 @@ namespace MigAz.Azure.UserControls
         public delegate Task AfterTargetSelectedHandler(TargetTreeView sender, TreeNode selectedNode);
         public event AfterTargetSelectedHandler AfterTargetSelected;
 
+        public delegate Task AfterNewTargetResourceAddedHandler(TargetTreeView sender, TreeNode selectedNode);
+        public event AfterNewTargetResourceAddedHandler AfterNewTargetResourceAdded;
+
         public delegate Task AfterExportArtifactRefreshHandler(TargetTreeView sender);
         public event AfterExportArtifactRefreshHandler AfterExportArtifactRefresh;
+
+        public delegate Task AfterSourceNodeRemovedHandler(TargetTreeView sender, TreeNode removedNode);
+        public event AfterSourceNodeRemovedHandler AfterSourceNodeRemoved;
 
         public TargetTreeView()
         {
@@ -45,13 +51,19 @@ namespace MigAz.Azure.UserControls
         public ImageList ImageList
         {
             get { return this.treeTargetARM.ImageList; }
-            set { this.treeTargetARM.ImageList = value; }
+            set
+            {
+                this.treeTargetARM.ImageList = value;
+                this.btnNewAvailabilitySet.ImageList = value;
+            }
         }
 
         public ResourceGroup TargetResourceGroup
         {
             get { return _TargetResourceGroup; }
         }
+
+        public string TargetBlobStorageNamespace { get; set; }
 
         public TreeNodeCollection Nodes
         {
@@ -72,6 +84,16 @@ namespace MigAz.Azure.UserControls
                     return this.Nodes[0];
                 else
                     return null;
+            }
+        }
+
+        public new bool Enabled
+        {
+            get { return treeTargetARM.Enabled; }
+            set
+            {
+                treeTargetARM.Enabled = value;
+                panel1.Enabled = value;
             }
         }
 
@@ -118,10 +140,10 @@ namespace MigAz.Azure.UserControls
                 {
                     exportArtifacts.VirtualNetworks.Add((Azure.MigrationTarget.VirtualNetwork)selectedNode.Tag);
                 }
-                //else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
-                //{
-                //    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
-                //}
+                else if (tagType == typeof(Azure.MigrationTarget.StorageAccount))
+                {
+                    exportArtifacts.StorageAccounts.Add((Azure.MigrationTarget.StorageAccount)selectedNode.Tag);
+                }
                 else if (tagType == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
                 {
                     exportArtifacts.NetworkSecurityGroups.Add((Azure.MigrationTarget.NetworkSecurityGroup)selectedNode.Tag);
@@ -178,6 +200,11 @@ namespace MigAz.Azure.UserControls
             foreach (TreeNode treeNode in treeTargetARM.Nodes)
             {
                 GetExportArtifactsRecursive(treeNode, ref _ExportArtifacts);
+            }
+
+            foreach (StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
+            {
+                targetStorageAccount.BlobStorageNamespace = this.TargetBlobStorageNamespace;
             }
 
             await _ExportArtifacts.ValidateAzureResources();
@@ -304,74 +331,12 @@ namespace MigAz.Azure.UserControls
             {
                 childNode = new TreeNode(text);
                 childNode.Name = name;
+                childNode.Text = name;
                 childNode.Tag = tag;
-                if (tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
-                {
-                    childNode.ImageKey = "ResourceGroup";
-                    childNode.SelectedImageKey = "ResourceGroup";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    childNode.ImageKey = "StorageAccount";
-                    childNode.SelectedImageKey = "StorageAccount";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                {
-                    childNode.ImageKey = "AvailabilitySet";
-                    childNode.SelectedImageKey = "AvailabilitySet";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                {
-                    childNode.ImageKey = "VirtualMachine";
-                    childNode.SelectedImageKey = "VirtualMachine";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                {
-                    childNode.ImageKey = "VirtualNetwork";
-                    childNode.SelectedImageKey = "VirtualNetwork";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                {
-                    childNode.ImageKey = "VirtualNetwork";
-                    childNode.SelectedImageKey = "VirtualNetwork";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                {
-                    childNode.ImageKey = "NetworkSecurityGroup";
-                    childNode.SelectedImageKey = "NetworkSecurityGroup";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.Disk))
-                {
-                    childNode.ImageKey = "Disk";
-                    childNode.SelectedImageKey = "Disk";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                {
-                    childNode.ImageKey = "NetworkInterface";
-                    childNode.SelectedImageKey = "NetworkInterface";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
-                {
-                    childNode.ImageKey = "LoadBalancer";
-                    childNode.SelectedImageKey = "LoadBalancer";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
-                {
-                    childNode.ImageKey = "PublicIp";
-                    childNode.SelectedImageKey = "PublicIp";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
-                {
-                    childNode.ImageKey = "RouteTable";
-                    childNode.SelectedImageKey = "RouteTable";
-                }
-                //else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-                //{
-                //    childNode.ImageKey = "VirtualMachineImage";
-                //    childNode.SelectedImageKey = "VirtualMachineImage";
-                //}
-                else
-                    throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
+
+                Core.MigrationTarget migrationTarget = (Core.MigrationTarget)tag;
+                childNode.ImageKey = migrationTarget.ImageKey;
+                childNode.SelectedImageKey = migrationTarget.ImageKey;
 
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
@@ -386,7 +351,7 @@ namespace MigAz.Azure.UserControls
             return targetResourceGroupNode;
         }
 
-        public async Task<TreeNode> AddMigrationTarget(IMigrationTarget parentNode)
+        public async Task<TreeNode> AddMigrationTarget(Core.MigrationTarget parentNode)
         {
             if (parentNode == null)
                 throw new ArgumentNullException("Migration Target cannot be null.");
@@ -410,7 +375,7 @@ namespace MigAz.Azure.UserControls
             {
                 Azure.MigrationTarget.StorageAccount targetStorageAccount = (Azure.MigrationTarget.StorageAccount)parentNode;
 
-                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.SourceName, targetStorageAccount.ToString(), targetStorageAccount, true);
+                TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.ToString(), targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
@@ -418,7 +383,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
             {
                 Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = (Azure.MigrationTarget.NetworkSecurityGroup)parentNode;
-                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.SourceName, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
+                TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
@@ -426,7 +391,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
             {
                 Azure.MigrationTarget.LoadBalancer targetLoadBalancer = (Azure.MigrationTarget.LoadBalancer)parentNode;
-                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.SourceName, targetLoadBalancer.ToString(), targetLoadBalancer, true);
+                TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.ToString(), targetLoadBalancer.ToString(), targetLoadBalancer, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetLoadBalancerNode;
@@ -434,7 +399,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.PublicIp))
             {
                 Azure.MigrationTarget.PublicIp targetPublicIp = (Azure.MigrationTarget.PublicIp)parentNode;
-                TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.SourceName, targetPublicIp.ToString(), targetPublicIp, true);
+                TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.ToString(), targetPublicIp.ToString(), targetPublicIp, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetPublicIpNode;
@@ -460,7 +425,7 @@ namespace MigAz.Azure.UserControls
                 Azure.MigrationTarget.VirtualMachine targetVirtualMachine = (Azure.MigrationTarget.VirtualMachine)parentNode;
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
-                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.SourceName, targetVirtualMachine.ToString(), targetVirtualMachine, true);
+                TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.ToString(), targetVirtualMachine.ToString(), targetVirtualMachine, true);
 
                 if (targetVirtualMachine.TargetAvailabilitySet != null)
                 {
@@ -511,7 +476,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.Disk))
             {
                 Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)parentNode;
-                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.SourceName, targetDisk.ToString(), targetDisk, true);
+                TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetDiskNode;
@@ -535,7 +500,7 @@ namespace MigAz.Azure.UserControls
             else if (parentNode.GetType() == typeof(Azure.MigrationTarget.RouteTable))
             {
                 Azure.MigrationTarget.RouteTable targetRouteTable = (Azure.MigrationTarget.RouteTable)parentNode;
-                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.SourceName, targetRouteTable.ToString(), targetRouteTable, true);
+                TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.ToString(), targetRouteTable.ToString(), targetRouteTable, true);
 
                 targetRouteTableNode.ExpandAll();
                 return targetRouteTableNode;
@@ -567,14 +532,49 @@ namespace MigAz.Azure.UserControls
             return tnAvailabilitySet;
         }
 
-        public async Task RemoveMigrationTarget(IMigrationTarget migrationTarget)
+        public TreeNode SeekMigrationTargetTreeNode(Core.MigrationTarget migrationTarget)
         {
+            return SeekMigrationTargetTreeNode(this.treeTargetARM.Nodes, migrationTarget);
+        }
 
-            TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
-            if (targetResourceGroupNode != null)
+        public static TreeNode SeekMigrationTargetTreeNode(TreeNodeCollection treeNodeCollection, Core.MigrationTarget migrationTarget)
+        {
+            foreach (TreeNode treeNode in treeNodeCollection)
             {
-                TreeNode[] matchingNodes = targetResourceGroupNode.Nodes.Find(migrationTarget.SourceName, true);
-                foreach (TreeNode matchingNode in matchingNodes)
+                TreeNode matchingNode = SeekMigrationTargetTreeNodeRecursive(treeNode, migrationTarget);
+                if (matchingNode != null)
+                    return matchingNode;
+            }
+
+            return null;
+        }
+
+        private static TreeNode SeekMigrationTargetTreeNodeRecursive(TreeNode treeNode, Core.MigrationTarget migrationTarget)
+        {
+            if (treeNode.Tag != null && treeNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
+            {
+                Core.MigrationTarget treeNodeMigrationTarget = (Core.MigrationTarget)treeNode.Tag;
+                if (treeNodeMigrationTarget == migrationTarget)
+                    return treeNode;
+            }
+
+            foreach (TreeNode treeNodeChild in treeNode.Nodes)
+            {
+                TreeNode treeNodeChildMatch = SeekMigrationTargetTreeNodeRecursive(treeNodeChild, migrationTarget);
+                if (treeNodeChildMatch != null)
+                    return treeNodeChildMatch;
+            }
+
+            return null;
+        }
+
+        public async Task RemoveMigrationTarget(Core.MigrationTarget migrationTarget)
+        {
+            TreeNode matchingNode = SeekMigrationTargetTreeNode(migrationTarget);
+            if (matchingNode != null)
+            {
+                Core.MigrationTarget matchingNodeMigrationTarget = (Core.MigrationTarget)matchingNode.Tag;
+                if (matchingNodeMigrationTarget == migrationTarget)
                 {
                     if (matchingNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
                     {
@@ -701,8 +701,10 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_Resize(object sender, EventArgs e)
         {
-            treeTargetARM.Width = this.Width - 10;
-            treeTargetARM.Height = this.Height - 10;
+            treeTargetARM.Width = this.Width - panel1.Width - 10 - 10;
+            treeTargetARM.Height = this.Height - 40;
+            panel1.Left = treeTargetARM.Left + treeTargetARM.Width + 10;
+            lblAddNew.Left = panel1.Left;
         }
 
         public List<Azure.MigrationTarget.VirtualNetwork> GetVirtualNetworksInMigration()
@@ -764,5 +766,213 @@ namespace MigAz.Azure.UserControls
                         _TargetResourceGroup = new ResourceGroup(value);
             }
         }
+
+        public static int GetChildNodeCount(TreeNode treeNode)
+        {
+            int childCount = 0;
+
+            foreach (TreeNode childNode in treeNode.Nodes)
+            {
+                childCount += GetChildNodeCountRecursive(childNode);
+            }
+
+            return childCount;
+        }
+
+        private static int GetChildNodeCountRecursive(TreeNode treeNode)
+        {
+            int childCount = 0;
+
+            childCount += 1; // Count this node
+            foreach (TreeNode childNode in treeNode.Nodes)
+            {
+                childCount += GetChildNodeCountRecursive(childNode);
+            }
+
+            return childCount;
+        }
+
+        private async void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (treeTargetARM.SelectedNode != null)
+                {
+                    Core.MigrationTarget migrationTarget = (Core.MigrationTarget)treeTargetARM.SelectedNode.Tag;
+
+                    int countChildNodes = GetChildNodeCount(treeTargetARM.SelectedNode);
+                    String strChildNodeCount = String.Empty;
+                    if (countChildNodes > 0)
+                        strChildNodeCount = " **AND** " + countChildNodes.ToString() + " child resource(s)";
+
+                    string deleteConfirmationText = String.Format("Are you sure you want to remove {0} '{1}'{2} as a target resource?", new string[] { migrationTarget.FriendlyObjectName, migrationTarget.ToString(), strChildNodeCount });
+                    if (MessageBox.Show(deleteConfirmationText, "Remove Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, treeTargetARM.SelectedNode);
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveNodeStartingWithLastChildrenBackUpTree(TreeView treeTargetARM, TreeNode selectedNode)
+        {
+            if (selectedNode != null)
+            {
+                foreach (TreeNode childNode in selectedNode.Nodes)
+                {
+                    await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, childNode);
+                }
+
+                treeTargetARM.Nodes.Remove(selectedNode);
+
+                AfterSourceNodeRemoved?.Invoke(this, selectedNode);
+            }
+        }
+
+        private async void treeTargetARM_DragDrop(object sender, DragEventArgs e)
+        {
+            string methodName = "treeTargetARM_DragDrop";
+            
+            this.LogProvider.WriteLog(methodName, "Start");
+
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+                TreeNode destinationNode = ((TreeView)sender).GetNodeAt(pt);
+                TreeNode sourceNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+                if (sourceNode != null && sourceNode.Tag != null && sourceNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget) && destinationNode != null && destinationNode.Tag != null && destinationNode.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
+                {
+                    bool isMigAzTargetDragDropHandled = false;
+                    Core.MigrationTarget sourceNodeTarget = (Core.MigrationTarget)sourceNode.Tag;
+                    Core.MigrationTarget destinationNodeTarget = (Core.MigrationTarget)destinationNode.Tag;
+                    this.LogProvider.WriteLog(methodName, "Source Node Tag - Name '" + sourceNodeTarget.ToString() + "' Type '" + sourceNodeTarget.GetType() + "'");
+                    this.LogProvider.WriteLog(methodName, "Target Node Tag - Name '" + destinationNodeTarget.ToString() + "' Type '" + destinationNodeTarget.GetType() + "'");
+
+                    if (sourceNodeTarget.GetType() == typeof(VirtualMachine))
+                    {
+                        VirtualMachine virtualMachine = (VirtualMachine)sourceNodeTarget;
+
+                        if (destinationNodeTarget.GetType() == typeof(AvailabilitySet))
+                        {
+                            AvailabilitySet availabilitySet = (AvailabilitySet)destinationNodeTarget;
+                            
+                            // Update Virtual Machine to reflect ownership in new target Availability Set
+                            virtualMachine.TargetAvailabilitySet = availabilitySet;
+
+                            isMigAzTargetDragDropHandled = true;
+                        }
+                    }
+
+                    if (!isMigAzTargetDragDropHandled)
+                        this.LogProvider.WriteLog(methodName, "Drag from " + sourceNodeTarget.GetType().ToString() + " to " + destinationNodeTarget.GetType().ToString() + " was not handled.  No DragDrop action taken.");
+                    else
+                    {
+                        await this.RefreshExportArtifacts();
+                    }
+                }
+                else
+                {
+                    if (sourceNode == null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode is null.  No DragDrop action taken.");
+                    else if (sourceNode.Tag == null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode exists, but Tag is null.  No DragDrop action taken.");
+                    else if (sourceNode.Tag != null)
+                        this.LogProvider.WriteLog(methodName, "SourceNode exists, Tag is not null, but not of type IMigrationTarget.  No DragDrop action taken.");
+
+                    if (destinationNode == null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode is null.  No DragDrop action taken.");
+                    else if (destinationNode.Tag == null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode exists, but Tag is null.  No DragDrop action taken.");
+                    else if (destinationNode.Tag != null)
+                        this.LogProvider.WriteLog(methodName, "DestinationNode exists, Tag is not null, but not of type IMigrationTarget.  No DragDrop action taken.");
+                }
+            }
+
+            this.LogProvider.WriteLog(methodName, "End");
+        }
+
+        private void treeTargetARM_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void treeTargetARM_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private async void btnNewPublicIp_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "PublicIp";
+            int counter = 0;
+            bool nameExists = true;
+
+            PublicIp publicIp = new PublicIp("New" + baseResourceName, this.TargetSettings);
+            while (nameExists)
+            {
+                if (counter > 0)
+                    publicIp.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(publicIp.ToString(), true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            TreeNode newNode = this.AddMigrationTarget(publicIp).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        private async void btnNewStorageAccount_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "storageaccount";
+            int counter = 0;
+            bool nameExists = true;
+
+            StorageAccount storageAccount = new StorageAccount("new" + baseResourceName, this.TargetSettings);
+            while (nameExists)
+            {
+                if (counter > 0)
+                    storageAccount.SetTargetName("new" + baseResourceName + counter.ToString(), this.TargetSettings);
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(storageAccount.ToString(), true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            TreeNode newNode = this.AddMigrationTarget(storageAccount).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        private async void btnNewAvailabilitySet_Click(object sender, EventArgs e)
+        {
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            string baseResourceName = "AvailabilitySet";
+            int counter = 0;
+            bool nameExists = true;
+
+            AvailabilitySet availabilitySet = new AvailabilitySet("New" + baseResourceName, this.TargetSettings);
+            while (nameExists)
+            {
+                if (counter > 0)
+                    availabilitySet.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(availabilitySet.ToString(), true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
     }
 }

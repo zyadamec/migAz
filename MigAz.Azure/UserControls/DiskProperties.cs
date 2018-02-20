@@ -155,7 +155,10 @@ namespace MigAz.Azure.UserControls
                     int comboBoxIndex = cmbTargetStorage.Items.IndexOf(_TargetDisk.TargetStorage.StorageAccountType.ToString());
                     if (comboBoxIndex >= 0)
                         cmbTargetStorage.SelectedIndex = comboBoxIndex;
+                }
 
+                if (!_IsBinding)
+                {
                     PropertyChanged?.Invoke();
                 }
             }
@@ -235,7 +238,11 @@ namespace MigAz.Azure.UserControls
                     }
 
                     _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
-                    PropertyChanged?.Invoke();
+
+                    if (!_IsBinding)
+                    {
+                        PropertyChanged?.Invoke();
+                    }
                 }
             }
         }
@@ -282,7 +289,11 @@ namespace MigAz.Azure.UserControls
                 }
 
                 _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
-                PropertyChanged?.Invoke();
+
+                if (!_IsBinding)
+                {
+                    PropertyChanged?.Invoke();
+                }
             }
 
             _AzureContext.StatusProvider.UpdateStatus("Ready");
@@ -326,7 +337,10 @@ namespace MigAz.Azure.UserControls
                         _TargetDisk.TargetStorage = null;
                 }
 
-                PropertyChanged?.Invoke();
+                if (!_IsBinding)
+                {
+                    PropertyChanged?.Invoke();
+                }
             }
         }
 
@@ -336,7 +350,10 @@ namespace MigAz.Azure.UserControls
 
             _TargetDisk.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            PropertyChanged?.Invoke();
+            if (!_IsBinding)
+            {
+                PropertyChanged?.Invoke();
+            }
         }
 
         private void txtBlobName_TextChanged(object sender, EventArgs e)
@@ -346,7 +363,10 @@ namespace MigAz.Azure.UserControls
             if (rbExistingARMStorageAccount.Checked || rbStorageAccountInMigration.Checked) // We don't want to call / save text change on a Managed Disk, specifically when set to String.Empty would loose text value
             {
                 _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
-                PropertyChanged?.Invoke();
+                if (!_IsBinding)
+                {
+                    PropertyChanged?.Invoke();
+                }
             }
         }
 
@@ -375,7 +395,10 @@ namespace MigAz.Azure.UserControls
                     _AzureContext.LogProvider.WriteLog("txtTargetSize_TextChanged", exc.Message);
                 }
 
-                PropertyChanged?.Invoke();
+                if (!_IsBinding)
+                {
+                    PropertyChanged?.Invoke();
+                }
             }
         }
 

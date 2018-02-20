@@ -245,6 +245,7 @@
             // 
             // targetTreeView1
             // 
+            this.targetTreeView1.Enabled = false;
             this.targetTreeView1.ImageList = null;
             this.targetTreeView1.Location = new System.Drawing.Point(2, 2);
             this.targetTreeView1.LogProvider = null;
@@ -252,12 +253,14 @@
             this.targetTreeView1.Name = "targetTreeView1";
             this.targetTreeView1.SelectedNode = null;
             this.targetTreeView1.SettingsProvider = null;
-            this.targetTreeView1.Size = new System.Drawing.Size(198, 189);
+            this.targetTreeView1.Size = new System.Drawing.Size(466, 205);
             this.targetTreeView1.StatusProvider = null;
             this.targetTreeView1.TabIndex = 0;
             this.targetTreeView1.TargetSettings = null;
             this.targetTreeView1.AfterTargetSelected += new MigAz.Azure.UserControls.TargetTreeView.AfterTargetSelectedHandler(this.targetTreeView1_AfterTargetSelected);
+            this.targetTreeView1.AfterNewTargetResourceAdded += new MigAz.Azure.UserControls.TargetTreeView.AfterNewTargetResourceAddedHandler(this.targetTreeView1_AfterNewTargetResourceAdded);
             this.targetTreeView1.AfterExportArtifactRefresh += new MigAz.Azure.UserControls.TargetTreeView.AfterExportArtifactRefreshHandler(this.targetTreeView1_AfterExportArtifactRefresh);
+            this.targetTreeView1.AfterSourceNodeRemoved += new MigAz.Azure.UserControls.TargetTreeView.AfterSourceNodeRemovedHandler(this.targetTreeView1_AfterSourceNodeRemoved);
             // 
             // tabMigAzMonitoring
             // 

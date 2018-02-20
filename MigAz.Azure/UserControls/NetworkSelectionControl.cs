@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -18,6 +19,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _AzureContext;
         private List<Azure.MigrationTarget.VirtualNetwork> _TargetVirualNetworksInMigration = new List<MigrationTarget.VirtualNetwork>();
         private Azure.UserControls.TargetTreeView _TargetTreeView = null;
+        private bool _IsBinding = false;
 
         public delegate void AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
@@ -36,6 +38,8 @@ namespace MigAz.Azure.UserControls
 
             try
             {
+                _IsBinding = true;
+
                 if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
                     rbExistingARMVNet.Text = "Existing VNet in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
@@ -53,6 +57,10 @@ namespace MigAz.Azure.UserControls
             {
                 _AzureContext.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
                 this.ExistingARMVNetEnabled = false;
+            }
+            finally
+            {
+                _IsBinding = false;
             }
         }
 
@@ -80,7 +88,7 @@ namespace MigAz.Azure.UserControls
 
                     if (_NetworkInterfaceTarget != null)
                     {
-                        cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod);
+                        cmbAllocationMethod.SelectedIndex = cmbAllocationMethod.FindString(_NetworkInterfaceTarget.TargetPrivateIPAllocationMethod.ToString());
                     }
                 }
             }
@@ -129,8 +137,8 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (PropertyChanged != null)
-                PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private async void rbVNetInMigration_CheckedChanged(object sender, EventArgs e)
@@ -184,8 +192,8 @@ namespace MigAz.Azure.UserControls
                 #endregion
             }
 
-            if (PropertyChanged != null)
-                PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private async void rbExistingARMVNet_CheckedChanged(object sender, EventArgs e)
@@ -247,8 +255,8 @@ namespace MigAz.Azure.UserControls
 
             }
 
-            if (PropertyChanged != null)
-                PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void cmbExistingArmSubnet_SelectedIndexChanged(object sender, EventArgs e)
@@ -275,24 +283,28 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (PropertyChanged != null)
-                PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void cmbAllocationMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_NetworkInterfaceTarget != null)
             {
-                _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = cmbAllocationMethod.SelectedItem.ToString();
-                txtStaticIp.Enabled = cmbAllocationMethod.SelectedItem.ToString() == "Static";
+                if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                else
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+
+                txtStaticIp.Enabled = _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod == PrivateIPAllocationMethodEnum.Static;
                 if (txtStaticIp.Enabled)
                     txtStaticIp.Text = _NetworkInterfaceTarget.TargetPrivateIpAddress;
                 else
                     txtStaticIp.Text = String.Empty;
             }
 
-            if (PropertyChanged != null)
-                PropertyChanged();
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
         }
 
         private void txtStaticIp_TextChanged(object sender)
@@ -302,8 +314,8 @@ namespace MigAz.Azure.UserControls
                 if (_NetworkInterfaceTarget != null)
                     _NetworkInterfaceTarget.TargetPrivateIpAddress = txtStaticIp.Text.Trim();
 
-                if (PropertyChanged != null)
-                    PropertyChanged();
+                if (!_IsBinding)
+                    PropertyChanged?.Invoke();
             }
         }
 

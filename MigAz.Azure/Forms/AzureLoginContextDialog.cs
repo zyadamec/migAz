@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MigAz.Azure;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
