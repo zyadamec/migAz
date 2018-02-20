@@ -127,9 +127,9 @@ namespace MigAz.Azure.MigrationTarget
             get { return this.TargetName == ArmConst.GatewaySubnetName; }
         }
 
-        public override string ImageKey { get { return "AvailabilitySet"; } }
+        public override string ImageKey { get { return "VirtualNetwork"; } }
 
-        public override string FriendlyObjectName { get { return "Availability Set"; } }
+        public override string FriendlyObjectName { get { return "Virtual Network"; } }
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
