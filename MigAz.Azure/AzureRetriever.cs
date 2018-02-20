@@ -23,7 +23,6 @@ namespace MigAz.Azure
         private AzureContext _AzureContext;
         private object _lockObject = new object();
         private AzureSubscription _AzureSubscription = null;
-        private List<AzureSubscription> _AzureSubscriptions;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;

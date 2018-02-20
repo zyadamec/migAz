@@ -29,6 +29,7 @@ namespace MigAz.AzureStack.UserControls
             {
                 lblAuthenticatedUser.Text = _AzureStackContext.TokenProvider.LastUserInfo.DisplayableId;
                 btnAuthenticate.Text = "Sign Out";
+                txtAzureStackEnvironment.Enabled = false;
             }
 
             cboTenant.Items.Clear();
@@ -147,6 +148,7 @@ namespace MigAz.AzureStack.UserControls
                 cboTenant.Enabled = false;
                 cmbSubscriptions.Items.Clear();
                 cmbSubscriptions.Enabled = false;
+                txtAzureStackEnvironment.Enabled = true;
             }
 
             _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
