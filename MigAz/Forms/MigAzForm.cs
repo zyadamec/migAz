@@ -67,7 +67,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.3.3.4";
+            string currentVersion = "2.3.4.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))

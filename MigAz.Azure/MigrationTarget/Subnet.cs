@@ -129,7 +129,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override string ImageKey { get { return "VirtualNetwork"; } }
 
-        public override string FriendlyObjectName { get { return "Virtual Network"; } }
+        public override string FriendlyObjectName { get { return "Subnet"; } }
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
