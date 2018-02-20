@@ -21,5 +21,8 @@ namespace MigAz.Core
         {
             return this.TargetNameResult;
         }
+
+        public abstract string ImageKey { get; }
+        public abstract string FriendlyObjectName { get; }
     }
 }

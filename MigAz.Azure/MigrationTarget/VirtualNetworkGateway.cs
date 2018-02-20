@@ -34,6 +34,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public override string ImageKey { get { return "VirtualNetworkGateway"; } }
+
+        public override string FriendlyObjectName { get { return "Virtual Network Gateway"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

@@ -333,73 +333,10 @@ namespace MigAz.Azure.UserControls
                 childNode.Name = name;
                 childNode.Text = name;
                 childNode.Tag = tag;
-                if (tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
-                {
-                    childNode.ImageKey = "ResourceGroup";
-                    childNode.SelectedImageKey = "ResourceGroup";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
-                {
-                    childNode.ImageKey = "StorageAccount";
-                    childNode.SelectedImageKey = "StorageAccount";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                {
-                    childNode.ImageKey = "AvailabilitySet";
-                    childNode.SelectedImageKey = "AvailabilitySet";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                {
-                    childNode.ImageKey = "VirtualMachine";
-                    childNode.SelectedImageKey = "VirtualMachine";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                {
-                    childNode.ImageKey = "VirtualNetwork";
-                    childNode.SelectedImageKey = "VirtualNetwork";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.Subnet))
-                {
-                    childNode.ImageKey = "VirtualNetwork";
-                    childNode.SelectedImageKey = "VirtualNetwork";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                {
-                    childNode.ImageKey = "NetworkSecurityGroup";
-                    childNode.SelectedImageKey = "NetworkSecurityGroup";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.Disk))
-                {
-                    childNode.ImageKey = "Disk";
-                    childNode.SelectedImageKey = "Disk";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                {
-                    childNode.ImageKey = "NetworkInterface";
-                    childNode.SelectedImageKey = "NetworkInterface";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
-                {
-                    childNode.ImageKey = "LoadBalancer";
-                    childNode.SelectedImageKey = "LoadBalancer";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.PublicIp))
-                {
-                    childNode.ImageKey = "PublicIp";
-                    childNode.SelectedImageKey = "PublicIp";
-                }
-                else if (tag.GetType() == typeof(Azure.MigrationTarget.RouteTable))
-                {
-                    childNode.ImageKey = "RouteTable";
-                    childNode.SelectedImageKey = "RouteTable";
-                }
-                //else if (tag.GetType() == typeof(Azure.MigrationTarget.VirtualMachineImage))
-                //{
-                //    childNode.ImageKey = "VirtualMachineImage";
-                //    childNode.SelectedImageKey = "VirtualMachineImage";
-                //}
-                else
-                    throw new ArgumentException("Unknown node tag type: " + tag.GetType().ToString());
+
+                Core.MigrationTarget migrationTarget = (Core.MigrationTarget)tag;
+                childNode.ImageKey = migrationTarget.ImageKey;
+                childNode.SelectedImageKey = migrationTarget.ImageKey;
 
                 nodeCollection.Add(childNode);
                 childNode.ExpandAll();
@@ -868,7 +805,7 @@ namespace MigAz.Azure.UserControls
                     if (countChildNodes > 0)
                         strChildNodeCount = " **AND** " + countChildNodes.ToString() + " child resource(s)";
 
-                    string deleteConfirmationText = String.Format("Are you sure you want to remove {0} '{1}'{2} as a target resource?", new string[] { migrationTarget.GetType().ToString(), migrationTarget.ToString(), strChildNodeCount });
+                    string deleteConfirmationText = String.Format("Are you sure you want to remove {0} '{1}'{2} as a target resource?", new string[] { migrationTarget.FriendlyObjectName, migrationTarget.ToString(), strChildNodeCount });
                     if (MessageBox.Show(deleteConfirmationText, "Remove Target Resource(s)", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, treeTargetARM.SelectedNode);

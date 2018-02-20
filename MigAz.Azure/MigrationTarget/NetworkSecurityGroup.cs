@@ -71,7 +71,12 @@ namespace MigAz.Azure.MigrationTarget
                     return this.SourceNetworkSecurityGroup.ToString();
             }
         }
-        
+
+        public override string ImageKey { get { return "NetworkSecurityGroup"; } }
+
+        public override string FriendlyObjectName { get { return "Network Security Group"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

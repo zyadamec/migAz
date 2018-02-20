@@ -181,6 +181,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public override string ImageKey { get { return "Disk"; } }
+
+        public override string FriendlyObjectName { get { return "Disk"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

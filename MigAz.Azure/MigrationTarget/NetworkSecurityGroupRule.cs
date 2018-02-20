@@ -90,6 +90,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public override string ImageKey { get { return "NetworkSecurityGroupRule"; } }
+
+        public override string FriendlyObjectName { get { return "Network Security Group Rule"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

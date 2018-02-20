@@ -30,6 +30,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _TargetLocation = value; }
         }
 
+        public override string ImageKey { get { return "ResourceGroup"; } }
+
+        public override string FriendlyObjectName { get { return "Resource Group"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

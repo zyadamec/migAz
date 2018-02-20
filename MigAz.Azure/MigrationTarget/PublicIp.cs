@@ -47,6 +47,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _SourceName = value; }
         }
 
+        public override string ImageKey { get { return "PublicIp"; } }
+
+        public override string FriendlyObjectName { get { return "Public IP"; } }
+
+
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {

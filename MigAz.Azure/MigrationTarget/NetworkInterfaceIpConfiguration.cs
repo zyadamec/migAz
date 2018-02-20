@@ -95,6 +95,11 @@ namespace MigAz.Azure.MigrationTarget
         public PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
         public string TargetPrivateIpAddress { get; set; }
 
+        public override string ImageKey { get { return "NetworkInterfaceIpConfiguration"; } }
+
+        public override string FriendlyObjectName { get { return "Network Interface IP Configuration"; } }
+
+
         #endregion
 
         public INetworkInterfaceIpConfiguration SourceIpConfiguration

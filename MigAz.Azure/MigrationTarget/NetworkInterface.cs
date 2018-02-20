@@ -108,6 +108,11 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        public override string ImageKey { get { return "NetworkInterface"; } }
+
+        public override string FriendlyObjectName { get { return "Network Interface"; } }
+
+
         public NetworkSecurityGroup TargetNetworkSecurityGroup { get; set; }
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)

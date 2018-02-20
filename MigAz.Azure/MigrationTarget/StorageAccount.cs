@@ -46,6 +46,10 @@ namespace MigAz.Azure.MigrationTarget
             get { return _Source; }
         }
 
+        public override string ImageKey { get { return "StorageAccount"; } }
+
+        public override string FriendlyObjectName { get { return "Storage Account"; } }
+
         public String SourceName
         {
             get

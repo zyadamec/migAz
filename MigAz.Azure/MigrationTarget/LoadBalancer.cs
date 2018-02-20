@@ -123,6 +123,11 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
+        public override string ImageKey { get { return "LoadBalancer"; } }
+
+        public override string FriendlyObjectName { get { return "Load Balancer"; } }
+
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             this.TargetName = targetName.Trim().Replace(" ", String.Empty);

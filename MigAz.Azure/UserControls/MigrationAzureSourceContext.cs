@@ -436,8 +436,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
                             tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
                             tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                            tnNetworkSecurityGroup.ImageKey = "NetworkSecurityGroup";
-                            tnNetworkSecurityGroup.SelectedImageKey = "NetworkSecurityGroup";
+                            tnNetworkSecurityGroup.ImageKey = targetNetworkSecurityGroup.ImageKey;
+                            tnNetworkSecurityGroup.SelectedImageKey = targetNetworkSecurityGroup.ImageKey;
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
@@ -448,8 +448,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnPublicIP = new TreeNode(targetPublicIP.SourceName);
                             tnPublicIP.Name = targetPublicIP.SourceName;
                             tnPublicIP.Tag = targetPublicIP;
-                            tnPublicIP.ImageKey = "PublicIp";
-                            tnPublicIP.SelectedImageKey = "PublicIp";
+                            tnPublicIP.ImageKey = targetPublicIP.ImageKey;
+                            tnPublicIP.SelectedImageKey = targetPublicIP.ImageKey;
                             publicIpParentNode.Nodes.Add(tnPublicIP);
                         }
 
@@ -460,8 +460,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnRouteTable = new TreeNode(targetRouteTable.SourceName);
                             tnRouteTable.Name = targetRouteTable.SourceName;
                             tnRouteTable.Tag = targetRouteTable;
-                            tnRouteTable.ImageKey = "RouteTable";
-                            tnRouteTable.SelectedImageKey = "RouteTable";
+                            tnRouteTable.ImageKey = targetRouteTable.ImageKey;
+                            tnRouteTable.SelectedImageKey = targetRouteTable.ImageKey;
                             routeTableParentNode.Nodes.Add(tnRouteTable);
                         }
 
@@ -472,8 +472,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
                             tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
                             tnVirtualNetwork.Tag = targetVirtualNetwork;
-                            tnVirtualNetwork.ImageKey = "VirtualNetwork";
-                            tnVirtualNetwork.SelectedImageKey = "VirtualNetwork";
+                            tnVirtualNetwork.ImageKey = targetVirtualNetwork.ImageKey;
+                            tnVirtualNetwork.SelectedImageKey = targetVirtualNetwork.ImageKey;
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                         }
 
@@ -484,8 +484,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
                             tnStorageAccount.Name = targetStorageAccount.SourceName;
                             tnStorageAccount.Tag = targetStorageAccount;
-                            tnStorageAccount.ImageKey = "StorageAccount";
-                            tnStorageAccount.SelectedImageKey = "StorageAccount";
+                            tnStorageAccount.ImageKey = targetStorageAccount.ImageKey;
+                            tnStorageAccount.SelectedImageKey = targetStorageAccount.ImageKey;
                             storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         }
 
@@ -497,8 +497,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnDisk = new TreeNode(targetManagedDisk.SourceName);
                             tnDisk.Name = targetManagedDisk.SourceName;
                             tnDisk.Tag = targetManagedDisk;
-                            tnDisk.ImageKey = "Disk";
-                            tnDisk.SelectedImageKey = "Disk";
+                            tnDisk.ImageKey = targetManagedDisk.ImageKey;
+                            tnDisk.SelectedImageKey = targetManagedDisk.ImageKey;
                             managedDiskParentNode.Nodes.Add(tnDisk);
                         }
 
@@ -509,8 +509,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.SourceName);
                             tnAvailabilitySet.Name = targetAvailabilitySet.SourceName;
                             tnAvailabilitySet.Tag = targetAvailabilitySet;
-                            tnAvailabilitySet.ImageKey = "AvailabilitySet";
-                            tnAvailabilitySet.SelectedImageKey = "AvailabilitySet";
+                            tnAvailabilitySet.ImageKey = targetAvailabilitySet.ImageKey;
+                            tnAvailabilitySet.SelectedImageKey = targetAvailabilitySet.ImageKey;
                             availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
                         }
 
@@ -521,8 +521,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode txNetworkInterface = new TreeNode(targetNetworkInterface.SourceName);
                             txNetworkInterface.Name = targetNetworkInterface.SourceName;
                             txNetworkInterface.Tag = targetNetworkInterface;
-                            txNetworkInterface.ImageKey = "NetworkInterface";
-                            txNetworkInterface.SelectedImageKey = "NetworkInterface";
+                            txNetworkInterface.ImageKey = targetNetworkInterface.ImageKey;
+                            txNetworkInterface.SelectedImageKey = targetNetworkInterface.ImageKey;
                             tnResourceGroup.Nodes.Add(txNetworkInterface);
                         }
 
@@ -533,8 +533,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
                             tnVirtualMachine.Name = targetVirtualMachine.SourceName;
                             tnVirtualMachine.Tag = targetVirtualMachine;
-                            tnVirtualMachine.ImageKey = "VirtualMachine";
-                            tnVirtualMachine.SelectedImageKey = "VirtualMachine";
+                            tnVirtualMachine.ImageKey = targetVirtualMachine.ImageKey;
+                            tnVirtualMachine.SelectedImageKey = targetVirtualMachine.ImageKey;
                             tnResourceGroup.Nodes.Add(tnVirtualMachine);
                         }
 
@@ -545,8 +545,8 @@ namespace MigAz.Azure.UserControls
                             TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
                             tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
                             tnNetworkSecurityGroup.Tag = targetLoadBalancer;
-                            tnNetworkSecurityGroup.ImageKey = "LoadBalancer";
-                            tnNetworkSecurityGroup.SelectedImageKey = "LoadBalancer";
+                            tnNetworkSecurityGroup.ImageKey = targetLoadBalancer.ImageKey;
+                            tnNetworkSecurityGroup.SelectedImageKey = targetLoadBalancer.ImageKey;
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 

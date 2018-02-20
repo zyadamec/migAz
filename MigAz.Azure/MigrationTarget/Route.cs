@@ -61,6 +61,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return String.Empty; }
         }
+        public override string ImageKey { get { return "Route"; } }
+
+        public override string FriendlyObjectName { get { return "Route"; } }
+
+
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {

@@ -54,6 +54,11 @@ namespace MigAz.Azure.MigrationTarget
             get { return _Routes; }
         }
 
+        public override string ImageKey { get { return "RouteTable"; } }
+
+        public override string FriendlyObjectName { get { return "Route Table"; } }
+
+
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
