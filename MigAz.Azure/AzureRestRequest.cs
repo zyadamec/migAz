@@ -12,6 +12,7 @@ namespace MigAz.Azure
         private Guid _RequestGUID = Guid.NewGuid();
         private String _Url;
         private bool _UseCached = true;
+        private AuthenticationResult _AuthenticationResult = null;
         private String _AccessToken = String.Empty;
         private String _Method = "GET";
         private Dictionary<String, String> _Headers = new Dictionary<string, string>();
@@ -23,10 +24,13 @@ namespace MigAz.Azure
             this._Url = url;
         }
 
-        public AzureRestRequest(String url, String accessToken)
+        public AzureRestRequest(String url, AuthenticationResult authenticationResult)
         {
             this._Url = url;
-            this._AccessToken = accessToken;
+
+            this._AuthenticationResult = authenticationResult;
+            if (authenticationResult != null)
+                this._AccessToken = authenticationResult.AccessToken;
         }
 
         public AzureRestRequest(String url, String accessToken, bool useCached = true)
@@ -36,6 +40,17 @@ namespace MigAz.Azure
             this._UseCached = useCached;
         }
 
+        public AzureRestRequest(String url, AuthenticationResult authenticationResult, string method, bool useCached = true)
+        {
+            this._Url = url;
+            this._Method = method;
+            this._UseCached = useCached;
+
+            this._AuthenticationResult = authenticationResult;
+            if (authenticationResult != null)
+                this._AccessToken = authenticationResult.AccessToken;
+        }
+
         public AzureRestRequest(String url, String accessToken, string method, bool useCached = true)
         {
             this._Url = url;
@@ -43,6 +58,7 @@ namespace MigAz.Azure
             this._Method = method;
             this._UseCached = useCached;
         }
+
 
         public Guid RequestGuid
         {

@@ -122,7 +122,7 @@ namespace MigAz.Azure
             String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult.AccessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -156,7 +156,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult.AccessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject domainsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -183,7 +183,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult.AccessToken, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", false);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -239,7 +239,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken.AccessToken, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken, "GET", true);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
