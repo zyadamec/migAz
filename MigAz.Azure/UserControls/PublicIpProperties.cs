@@ -35,6 +35,12 @@ namespace MigAz.Azure.UserControls
 
                 txtTargetName.Text = _PublicIp.TargetName;
                 txtDomainNameLabel.Text = _PublicIp.DomainNameLabel;
+
+                int allocationMethodIndex = cmbPublicIpAllocation.FindString(_PublicIp.IPAllocationMethod.ToString());
+                if (allocationMethodIndex >= 0)
+                    cmbPublicIpAllocation.SelectedIndex = allocationMethodIndex;
+                else
+                    cmbPublicIpAllocation.SelectedIndex = 0;
             }
             finally
             {
@@ -57,6 +63,17 @@ namespace MigAz.Azure.UserControls
             TextBox txtSender = (TextBox)sender;
 
             _PublicIp.DomainNameLabel = txtSender.Text;
+
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
+        }
+
+        private void cmbPublicIpAllocation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPublicIpAllocation.SelectedItem.ToString() == "Static")
+                _PublicIp.IPAllocationMethod = IPAllocationMethodEnum.Static;
+            else
+                _PublicIp.IPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
             if (!_IsBinding)
                 PropertyChanged?.Invoke();

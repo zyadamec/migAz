@@ -346,6 +346,8 @@ namespace MigAz.Azure.Generator
             PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
             publicipaddress.properties = publicipaddress_properties;
 
+            publicipaddress_properties.publicIPAllocationMethod = publicIp.IPAllocationMethod.ToString();
+
             if (publicIp.DomainNameLabel != String.Empty)
             {
                 Hashtable dnssettings = new Hashtable();
@@ -885,7 +887,7 @@ namespace MigAz.Azure.Generator
                 }
 
                 ipconfiguration_properties.privateIPAllocationMethod = ipConfiguration.TargetPrivateIPAllocationMethod.ToString();
-                if (ipConfiguration.TargetPrivateIPAllocationMethod == MigrationTarget.PrivateIPAllocationMethodEnum.Static)
+                if (ipConfiguration.TargetPrivateIPAllocationMethod == MigrationTarget.IPAllocationMethodEnum.Static)
                     ipconfiguration_properties.privateIPAddress = ipConfiguration.TargetPrivateIpAddress;
 
                 if (ipConfiguration.TargetVirtualNetwork != null)

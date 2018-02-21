@@ -77,12 +77,17 @@ namespace MigAz.Azure.UserControls
                 _LoadBalancer.LoadBalancerType = MigrationTarget.LoadBalancerType.Public;
                 this.networkSelectionControl1.Enabled = false;
                 this.networkSelectionControl1.Visible = false;
+                this.pnblPublicProperties.Visible = true;
+
+                if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
+                    resourceSummaryPublicIp.Bind(_LoadBalancer.FrontEndIpConfigurations[0].PublicIp, _TargetTreeView);
             }
             else
             {
                 _LoadBalancer.LoadBalancerType = MigrationTarget.LoadBalancerType.Internal;
                 this.networkSelectionControl1.Enabled = true;
                 this.networkSelectionControl1.Visible = true;
+                this.pnblPublicProperties.Visible = false;
 
                 if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
                 {

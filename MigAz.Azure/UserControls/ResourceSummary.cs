@@ -34,19 +34,7 @@ namespace MigAz.Azure.UserControls
 
             if (_MigrationTarget != null && _TargetTreeView != null)
             {
-                if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.Disk))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["Disk"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkInterface"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["VirtualMachine"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["AvailabilitySet"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkSecurityGroup"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.RouteTable))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["RouteTable"];
-
+                pictureBox1.Image = _TargetTreeView.ImageList.Images[_MigrationTarget.ImageKey];
                 label1.Text = _MigrationTarget.ToString();
             }
             else

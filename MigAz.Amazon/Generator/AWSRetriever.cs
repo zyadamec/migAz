@@ -191,7 +191,7 @@ namespace MigAz.AWS.Generator
                                 }
                             }
 
-                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
                             try
                             {
                                 IPHostEntry host = Dns.GetHostEntry(loadBalancerDescription.DNSName);
@@ -199,7 +199,7 @@ namespace MigAz.AWS.Generator
                             }
                             catch
                             {
-                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
                             }
                         }
                         else // if external (public) load balancer

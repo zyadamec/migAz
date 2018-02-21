@@ -20,7 +20,7 @@ namespace MigAz.Azure.Interface
             get;
             set;
         }
-        PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod
+        IPAllocationMethodEnum TargetPrivateIPAllocationMethod
         {
             get;
             set;

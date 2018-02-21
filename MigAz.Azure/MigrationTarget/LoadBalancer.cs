@@ -25,6 +25,12 @@ namespace MigAz.Azure.MigrationTarget
         private List<Probe> _Probes = new List<Probe>();
         private LoadBalancerType _LoadBalancerType = LoadBalancerType.Internal;
 
+
+        public LoadBalancer(string targetName, TargetSettings targetSettings)
+        {
+            this.SetTargetName(targetName, targetSettings);
+        }
+
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings)
         {
             this.Source = sourceLoadBalancer;

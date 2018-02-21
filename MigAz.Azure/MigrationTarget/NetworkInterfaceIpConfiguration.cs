@@ -21,9 +21,9 @@ namespace MigAz.Azure.MigrationTarget
 
             this.SetTargetName(ipConfiguration.Name, targetSettings);
             if (ipConfiguration.PrivateIpAllocationMethod.Trim().ToLower() == "static")
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
             else
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
 
@@ -55,9 +55,9 @@ namespace MigAz.Azure.MigrationTarget
 
             this.SetTargetName(ipConfiguration.Name, targetSettings);
             if (ipConfiguration.PrivateIpAllocationMethod.Trim().ToLower() == "static")
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
             else
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
             this.TargetPrivateIpAddress = ipConfiguration.PrivateIpAddress;
             this.TargetVirtualNetwork = SeekVirtualNetwork(virtualNetworks, ipConfiguration.VirtualNetworkName);
@@ -92,7 +92,7 @@ namespace MigAz.Azure.MigrationTarget
         #region IVirtualNetworkTarget Interface Implementation
         public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
         public IMigrationSubnet TargetSubnet { get; set; }
-        public PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
+        public IPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
         public string TargetPrivateIpAddress { get; set; }
 
         public override string ImageKey { get { return "NetworkInterfaceIpConfiguration"; } }

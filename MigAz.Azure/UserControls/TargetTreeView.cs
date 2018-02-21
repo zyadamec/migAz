@@ -856,9 +856,48 @@ namespace MigAz.Azure.UserControls
                         if (destinationNodeTarget.GetType() == typeof(AvailabilitySet))
                         {
                             AvailabilitySet availabilitySet = (AvailabilitySet)destinationNodeTarget;
-                            
+
                             // Update Virtual Machine to reflect ownership in new target Availability Set
                             virtualMachine.TargetAvailabilitySet = availabilitySet;
+
+                            isMigAzTargetDragDropHandled = true;
+                        }
+                    }
+                    else if (sourceNodeTarget.GetType() == typeof(PublicIp))
+                    {
+                        PublicIp publicIp = (PublicIp)sourceNodeTarget;
+
+                        if (destinationNodeTarget.GetType() == typeof(NetworkInterface))
+                        {
+                            NetworkInterface networkInterface = (NetworkInterface)destinationNodeTarget;
+
+                            // Update IP Configuration to reflect use of Public IP Address
+                            if (networkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                                networkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp = publicIp;
+
+                            isMigAzTargetDragDropHandled = true;
+                        }
+                        else if (destinationNodeTarget.GetType() == typeof(LoadBalancer))
+                        {
+                            LoadBalancer loadBalancer = (LoadBalancer)destinationNodeTarget;
+
+                            if (loadBalancer.LoadBalancerType == LoadBalancerType.Internal)
+                            {
+                                if (MessageBox.Show(String.Format("Load Balancer is currently an Internal Load Balancer and must be changed to a Public Load Balancer to utilize Public IP '{0}'.  ", publicIp.ToString()), "Convert to Public Load Balancer", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                                {
+                                    loadBalancer.LoadBalancerType = LoadBalancerType.Public;
+
+                                    if (loadBalancer.FrontEndIpConfigurations.Count == 0)
+                                        loadBalancer.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(loadBalancer));
+                                }
+                            }
+
+                            // Update IP Configuration to reflect use of Public IP Address
+                            if (loadBalancer.LoadBalancerType == LoadBalancerType.Public)
+                            {
+                                if (loadBalancer.FrontEndIpConfigurations.Count > 0)
+                                    loadBalancer.FrontEndIpConfigurations[0].PublicIp = publicIp;
+                            }
 
                             isMigAzTargetDragDropHandled = true;
                         }
@@ -867,9 +906,8 @@ namespace MigAz.Azure.UserControls
                     if (!isMigAzTargetDragDropHandled)
                         this.LogProvider.WriteLog(methodName, "Drag from " + sourceNodeTarget.GetType().ToString() + " to " + destinationNodeTarget.GetType().ToString() + " was not handled.  No DragDrop action taken.");
                     else
-                    {
                         await this.RefreshExportArtifacts();
-                    }
+
                 }
                 else
                 {
@@ -904,75 +942,48 @@ namespace MigAz.Azure.UserControls
 
         private async void btnNewPublicIp_Click(object sender, EventArgs e)
         {
-            // Code has been slightly strucutured with anticipate of need for reuse across different object types
-            string baseResourceName = "PublicIp";
-            int counter = 0;
-            bool nameExists = true;
-
-            PublicIp publicIp = new PublicIp("New" + baseResourceName, this.TargetSettings);
-            while (nameExists)
-            {
-                if (counter > 0)
-                    publicIp.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
-
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(publicIp.ToString(), true);
-                nameExists = matchingNodes.Count() > 0;
-                counter++;
-            }
-
-            TreeNode newNode = this.AddMigrationTarget(publicIp).Result;
-
-            await this.RefreshExportArtifacts();
-            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+            await AddNewMigrationTargetResource(new PublicIp());
         }
 
         private async void btnNewStorageAccount_Click(object sender, EventArgs e)
         {
-            // Code has been slightly strucutured with anticipate of need for reuse across different object types
-            string baseResourceName = "storageaccount";
-            int counter = 0;
-            bool nameExists = true;
-
-            StorageAccount storageAccount = new StorageAccount("new" + baseResourceName, this.TargetSettings);
-            while (nameExists)
-            {
-                if (counter > 0)
-                    storageAccount.SetTargetName("new" + baseResourceName + counter.ToString(), this.TargetSettings);
-
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(storageAccount.ToString(), true);
-                nameExists = matchingNodes.Count() > 0;
-                counter++;
-            }
-
-            TreeNode newNode = this.AddMigrationTarget(storageAccount).Result;
-
-            await this.RefreshExportArtifacts();
-            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+            StorageAccount storageAccount = new StorageAccount();
+            storageAccount.BlobStorageNamespace = this.TargetBlobStorageNamespace;
+            await AddNewMigrationTargetResource(storageAccount);
         }
 
         private async void btnNewAvailabilitySet_Click(object sender, EventArgs e)
         {
+            await AddNewMigrationTargetResource(new AvailabilitySet());
+        }
+
+        private async void btnNewLoadBalancer_Click(object sender, EventArgs e)
+        {
+            await AddNewMigrationTargetResource(new LoadBalancer());
+        }
+
+        private async Task AddNewMigrationTargetResource(Core.MigrationTarget migrationTarget)
+        {
+            migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", ""), this.TargetSettings);
+
             // Code has been slightly strucutured with anticipate of need for reuse across different object types
-            string baseResourceName = "AvailabilitySet";
             int counter = 0;
             bool nameExists = true;
 
-            AvailabilitySet availabilitySet = new AvailabilitySet("New" + baseResourceName, this.TargetSettings);
             while (nameExists)
             {
                 if (counter > 0)
-                    availabilitySet.SetTargetName("New" + baseResourceName + counter.ToString(), this.TargetSettings);
+                    migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", "") + counter.ToString(), this.TargetSettings);
 
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(availabilitySet.ToString(), true);
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(migrationTarget.ToString(), true);
                 nameExists = matchingNodes.Count() > 0;
                 counter++;
             }
 
-            TreeNode newNode = this.AddMigrationTarget(availabilitySet).Result;
+            TreeNode newNode = this.AddMigrationTarget(migrationTarget).Result;
 
             await this.RefreshExportArtifacts();
             AfterNewTargetResourceAdded?.Invoke(this, newNode);
         }
-
     }
 }

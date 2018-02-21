@@ -174,7 +174,7 @@ namespace MigAz.Azure
                         }
                         else
                         {
-                            if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == PrivateIPAllocationMethodEnum.Static)
+                            if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static)
                             {
                                 if (!IPv4CIDR.IsIpAddressInAddressPrefix(targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix, targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
                                 {
@@ -345,7 +345,7 @@ namespace MigAz.Azure
                             }
                             else
                             {
-                                if (ipConfiguration.TargetPrivateIPAllocationMethod == PrivateIPAllocationMethodEnum.Static)
+                                if (ipConfiguration.TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static)
                                 {
                                     if (!IPv4CIDR.IsIpAddressInAddressPrefix(ipConfiguration.TargetSubnet.AddressPrefix, ipConfiguration.TargetPrivateIpAddress))
                                     {

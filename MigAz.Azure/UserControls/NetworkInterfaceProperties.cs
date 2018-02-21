@@ -78,6 +78,9 @@ namespace MigAz.Azure.UserControls
 
                 virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
                 networkSecurityGroup.Bind(_TargetNetworkInterface.NetworkSecurityGroup, _TargetTreeView);
+
+                if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() > 0)
+                    resourceSummaryPublicIp.Bind(_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp, _TargetTreeView);
             }
             finally
             {

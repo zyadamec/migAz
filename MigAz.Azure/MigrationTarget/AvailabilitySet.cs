@@ -15,7 +15,7 @@ namespace MigAz.Azure.MigrationTarget
         private Int32 _PlatformUpdateDomainCount = 5;
         private Int32 _PlatformFaultDomainCount = 3;
 
-        private AvailabilitySet() { }
+        public AvailabilitySet() { }
 
         public AvailabilitySet(String targetName, TargetSettings targetSettings)
         {

@@ -12,6 +12,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private String _SourceName = String.Empty;
         private String _DomainNameLabel = String.Empty;
+        private IPAllocationMethodEnum _IPAllocationMethod = IPAllocationMethodEnum.Dynamic;
         private Arm.PublicIP _Source;
 
         public PublicIp() { }
@@ -28,12 +29,21 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(armPublicIP.Name, targetSettings);
 
             this.DomainNameLabel = armPublicIP.DomainNameLabel;
+
+            if (String.Compare(armPublicIP.PublicIPAllocationMethod, "Static", true) == 0)
+                _IPAllocationMethod = IPAllocationMethodEnum.Static;
         }
 
         public String DomainNameLabel
         {
             get { return _DomainNameLabel; }
             set { _DomainNameLabel = value.ToLower(); }
+        }
+
+        public IPAllocationMethodEnum IPAllocationMethod
+        {
+            get { return _IPAllocationMethod; }
+            set { _IPAllocationMethod = value; }
         }
 
         public Arm.PublicIP Source

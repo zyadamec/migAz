@@ -292,11 +292,11 @@ namespace MigAz.Azure.UserControls
             if (_NetworkInterfaceTarget != null)
             {
                 if (cmbAllocationMethod.SelectedItem.ToString() == "Static")
-                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
                 else
-                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                    _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
-                txtStaticIp.Enabled = _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod == PrivateIPAllocationMethodEnum.Static;
+                txtStaticIp.Enabled = _NetworkInterfaceTarget.TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static;
                 if (txtStaticIp.Enabled)
                     txtStaticIp.Text = _NetworkInterfaceTarget.TargetPrivateIpAddress;
                 else
