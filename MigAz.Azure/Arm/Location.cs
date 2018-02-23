@@ -9,6 +9,7 @@ namespace MigAz.Azure.Arm
     public class Location : ILocation
     {
         private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private JToken _LocationToken;
         private List<VMSize> _VMSizes;
 
@@ -16,9 +17,10 @@ namespace MigAz.Azure.Arm
 
         private Location() { }
 
-        public Location(AzureContext _AzureContext, JToken locationToken)
+        public Location(AzureContext azureContext, AzureSubscription azureSubscription, JToken locationToken)
         {
-            this._AzureContext = _AzureContext;
+            this._AzureContext = azureContext;
+            this._AzureSubscription = azureSubscription;
             this._LocationToken = locationToken;
         }
 
@@ -54,6 +56,12 @@ namespace MigAz.Azure.Arm
         public string Name
         {
             get { return (string)_LocationToken["name"]; }
+        }
+
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
         }
 
         public List<VMSize> VMSizes

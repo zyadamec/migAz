@@ -169,6 +169,16 @@ namespace MigAz.Azure
                 await AfterAzureTenantChange?.Invoke(this);
         }
 
+        public virtual string GetARMTokenResourceUrl()
+        {
+            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+        }
+
+        public virtual string GetARMServiceManagementUrl()
+        {
+            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+        }
+
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             if (azureSubscription != _AzureSubscription)

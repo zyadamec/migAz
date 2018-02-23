@@ -20,6 +20,25 @@ namespace MigAz.AzureStack
         {
         }
 
+        public AzureStackEndpoints AzureStackEndpoints
+        {
+            get { return _AzureStackEndpoints; }
+        }
+
+        public override string GetARMTokenResourceUrl()
+        {
+            if (this.AzureStackEndpoints == null)
+                return String.Empty;
+            else
+                return this.AzureStackEndpoints.Audiences;
+        }
+
+        public override string GetARMServiceManagementUrl()
+        {
+            return _AzureStackEndpoints.ManagementEndpoint;
+            //return _AzureStackEndpoints.PortalEndpoint;  // is this for user subscriptions?
+        }
+
         public async Task Login()
         {
             // AzureStack Login via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
@@ -36,8 +55,8 @@ namespace MigAz.AzureStack
         {
             //_AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
-            String subscriptionsUrl = "https://adminmanagement.local.azurestack.external/" + "subscriptions?api-version=2015-01-01";
-            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken("https://adminmanagement.azstackcspmulti1.onmicrosoft.com/3f59c3a8-6c85-479f-a7a7-51ec04e1d05a", azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);// _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
+            String subscriptionsUrl = this.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
+            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken(this.GetARMTokenResourceUrl(), azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);// _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
 
             //_AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
@@ -61,16 +80,16 @@ namespace MigAz.AzureStack
 
         internal async Task LoadMetadataEndpoints(string azureStackEnvironment)
         {
-            string metadataEndpointsUrl = azureStackEnvironment;
+            string metadataEndpointsUrlBase = azureStackEnvironment;
 
-            if (!metadataEndpointsUrl.EndsWith("/"))
-                metadataEndpointsUrl += "/";
+            if (!metadataEndpointsUrlBase.EndsWith("/"))
+                metadataEndpointsUrlBase += "/";
 
-            metadataEndpointsUrl += "metadata/endpoints?api-version=2015-01-01";
+            String metadataEndpointsUrl = metadataEndpointsUrlBase + "metadata/endpoints?api-version=2015-01-01";
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(metadataEndpointsUrl);
             AzureRestResponse azureRestResponse = await AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            _AzureStackEndpoints = new AzureStackEndpoints(azureRestResponse);
+            _AzureStackEndpoints = new AzureStackEndpoints(metadataEndpointsUrlBase, azureRestResponse);
         }
     }
 }

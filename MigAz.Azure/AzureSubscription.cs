@@ -64,7 +64,9 @@ namespace MigAz.Azure
         private List<CloudService> _CloudServices;
         private List<ReservedIP> _AsmReservedIPs;
 
-
+        private string _ApiUrl = String.Empty;
+        private string _TokenResourceUrl = String.Empty;
+        
         private AzureSubscription() { }
 
         internal AzureSubscription(AzureContext azureContext, XmlNode xmlNode, AzureEnvironment azureEnvironment)
@@ -72,6 +74,8 @@ namespace MigAz.Azure
             _AzureContext = azureContext;
             _XmlNode = xmlNode;
             _AzureEnvironment = azureEnvironment;
+            _ApiUrl = azureContext.GetARMServiceManagementUrl();
+            _TokenResourceUrl = azureContext.GetARMTokenResourceUrl();
         }
 
         public AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
@@ -80,6 +84,8 @@ namespace MigAz.Azure
             _SubscriptionJson = subscriptionJson;
             _ParentTenant = parentAzureTenant;
             _AzureEnvironment = azureEnvironment;
+            _ApiUrl = azureContext.GetARMServiceManagementUrl();
+            _TokenResourceUrl = azureContext.GetARMTokenResourceUrl();
         }
 
         public string Name
@@ -93,6 +99,15 @@ namespace MigAz.Azure
                 else
                     return String.Empty;
             }
+        }
+
+        public string TokenResourceUrl
+        {
+            get { return _TokenResourceUrl; }
+        }
+        public string ApiUrl
+        {
+            get { return _ApiUrl; }
         }
 
         public AzureTenant Parent
@@ -692,7 +707,7 @@ namespace MigAz.Azure
                 {
                     foreach (var location in locations)
                     {
-                        Arm.Location armLocation = new Arm.Location(_AzureContext, location);
+                        Arm.Location armLocation = new Arm.Location(_AzureContext, this, location);
                         _ArmLocations.Add(armLocation);
 
                         _AzureContext.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
@@ -707,12 +722,12 @@ namespace MigAz.Azure
                 // Add Preview Location for France Central (centered on Eiffel Tower)
                 var franceCentralJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francecentral\", \"name\": \"francecentral\",  \"displayName\": \"France Central\",  \"longitude\": \"2.294\",  \"latitude\": \"48.858\"}";
                 var lfc = JToken.Parse(franceCentralJson);
-                _ArmLocations.Add(new Arm.Location(_AzureContext, lfc));
+                _ArmLocations.Add(new Arm.Location(_AzureContext, this, lfc));
 
                 // Add Preview Location for France South (centered on If Castle)
                 var franceSouthJson = "{ \"id\": \"/subscriptions/" + _AzureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francesouth\", \"name\": \"francesouth\",  \"displayName\": \"France South\",  \"longitude\": \"5.325126\",  \"latitude\": \"43.279841\"}";
                 var lfs = JToken.Parse(franceSouthJson);
-                _ArmLocations.Add(new Arm.Location(_AzureContext, lfs));
+                _ArmLocations.Add(new Arm.Location(_AzureContext, this, lfs));
 
             }
              
@@ -1415,10 +1430,10 @@ namespace MigAz.Azure
             if (_AzureContext.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(location.AzureSubscription.TokenResourceUrl, this.AzureAdTenantId);
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-            string url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
+            string url = location.AzureSubscription.ApiUrl + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription ID : " + this.SubscriptionId + " Location : " + location);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
@@ -1991,86 +2006,86 @@ namespace MigAz.Azure
             {
                 case "ResourceGroups":
                     // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups#ResourceGroups_List
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourcegroups?api-version=2016-09-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourcegroups?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Resource Groups...");
                     break;
                 case "Locations":
                     // https://docs.microsoft.com/en-us/rest/api/resources/subscriptions#Subscriptions_ListLocations
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + ArmConst.Locations + "?api-version=2016-06-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + ArmConst.Locations + "?api-version=2016-06-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Locations for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 case "AvailabilitySets":
                     // https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/availabilitysets-list-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderAvailabilitySets + "?api-version=2017-03-30";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderAvailabilitySets + "?api-version=2017-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Availability Sets for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
                     // https://docs.microsoft.com/en-us/rest/api/network/list-virtual-networks-within-a-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetwork + "?api-version=2016-12-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworkGateways":
                     // https://docs.microsoft.com/en-us/rest/api/network/virtualnetworkgateways#VirtualNetworkGateways_List
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=2016-12-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=2016-12-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkSecurityGroups":
                     // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=2017-03-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=2017-03-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Security Groups for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkInterfaces":
                     // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccounts":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_List
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + "?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Accounts for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccountKeys":
                     // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts#StorageAccounts_ListKeys
                     methodType = "POST";
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderStorageAccounts + info["StorageAccountName"] + "/listKeys?api-version=2016-01-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Storage Account Key for Subscription ID : " + this.SubscriptionId + " / Storage Account: " + info["StorageAccountName"] + " ...");
                     break;
                 case "VirtualMachines":
                     // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=2016-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualMachineImages":
                     // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/images/images-list-by-resource-group
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=2016-04-30-preview";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=2016-04-30-preview";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machine Images for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2017-03-30";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=2017-03-30";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "LoadBalancers":
                     // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "PublicIPs":
                     // https://docs.microsoft.com/en-us/rest/api/network/virtualnetwork/list-public-ip-addresses-within-a-resource-group
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=2016-09-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=2016-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Public IPs for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "RouteTables":
                     // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/routetables/list
-                    url = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderRouteTables + "?api-version=2017-09-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderRouteTables + "?api-version=2017-09-01";
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Route Tables for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.AzureAdTenantId);
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(this.TokenResourceUrl, this.AzureAdTenantId);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);

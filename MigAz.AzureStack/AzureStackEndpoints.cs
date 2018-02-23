@@ -12,13 +12,15 @@ namespace MigAz.AzureStack
     {
         AzureRestResponse _AzureRestResponse;
         JObject _MetadataEndpoints;
+        String _ManagementEndpoint = String.Empty;
 
         #region Constructors
 
         private AzureStackEndpoints() { }
 
-        internal AzureStackEndpoints(AzureRestResponse azureStackMetadataEndpoints)
+        internal AzureStackEndpoints(string managementEndpoint, AzureRestResponse azureStackMetadataEndpoints)
         {
+            _ManagementEndpoint = managementEndpoint;
             _AzureRestResponse = azureStackMetadataEndpoints;
             _MetadataEndpoints = JObject.Parse(_AzureRestResponse.Response);
         }
@@ -27,6 +29,11 @@ namespace MigAz.AzureStack
 
         #region Properties
 
+
+        public string ManagementEndpoint
+        {
+            get { return _ManagementEndpoint; }
+        }
         public string GalleryEndpoint
         {
             get { return _MetadataEndpoints["galleryEndpoint"].ToString(); }
