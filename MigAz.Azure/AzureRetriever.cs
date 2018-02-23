@@ -27,9 +27,7 @@ namespace MigAz.Azure
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
 
-        // ARM Object Cache (Subscription Context Specific)
         private List<AzureTenant> _ArmTenants;
-        private List<AzureSubscription> _ArmSubscriptions;
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
         private Dictionary<AzureSubscription, AzureSubscriptionResourceCache> _AzureSubscriptionResourceCaches = new Dictionary<AzureSubscription, AzureSubscriptionResourceCache>();
@@ -50,7 +48,6 @@ namespace MigAz.Azure
         {
             _RestApiCache = new Dictionary<string, AzureRestResponse>();
             _ArmTenants = null;
-            _ArmSubscriptions = null;
         }
 
         public void LoadRestCache(string filepath)
@@ -104,7 +101,7 @@ namespace MigAz.Azure
         }
 
 
-        public async Task<List<AzureTenant>> GetAzureARMTenants()
+        public async Task<List<AzureTenant>> GetAzureARMTenants(bool allowRestCacheUse = false)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMTenants", "Start");
 
@@ -121,7 +118,7 @@ namespace MigAz.Azure
             String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", true);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -133,14 +130,14 @@ namespace MigAz.Azure
             foreach (JObject tenantJson in tenants)
             {
                 AzureTenant azureTenant = new AzureTenant(tenantJson, _AzureContext);
-                await azureTenant.InitializeChildren();
+                await azureTenant.InitializeChildren(allowRestCacheUse);
                 _ArmTenants.Add(azureTenant);
             }
 
             return _ArmTenants;
         }
 
-        public async Task<List<AzureDomain>> GetAzureARMDomains(AzureTenant azureTenant)
+        public async Task<List<AzureDomain>> GetAzureARMDomains(AzureTenant azureTenant, bool allowRestCacheUse = false)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
 
@@ -155,7 +152,7 @@ namespace MigAz.Azure
 
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject domainsJson = JObject.Parse(azureRestResponse.Response);
 
@@ -173,31 +170,45 @@ namespace MigAz.Azure
             return armTenantDomains;
         }
 
-        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureTenant azureTenant)
+        /// <summary>
+        /// Get Azure Subscriptions within the provided Azure Tenant
+        /// </summary>
+        /// <param name="azureTenant">Azure Tenant for which Azure Subscriptions should be retrieved</param>
+        /// <param name="allowRestCacheUse">False in production use so that Azure Token Content is Tenant specific.  True in Unit Tests to allow offline (no actual URL querying).</param>
+        /// <returns></returns>
+        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureTenant azureTenant, bool allowRestCacheUse = false)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
+
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Auth Token to Query Subscriptions");
 
             String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
             AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
 
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Querying Subscriptions");
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", false);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", allowRestCacheUse);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
 
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
 
-            List<AzureSubscription> tenantSubscriptions = new List<AzureSubscription>();
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Instantiating Subscriptions");
+
+            List<AzureSubscription> azureSubscriptions = new List<AzureSubscription>();
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
                 AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, azureSubscriptionJson, azureTenant, _AzureContext.AzureEnvironment);
-                tenantSubscriptions.Add(azureSubscription);
+                azureSubscriptions.Add(azureSubscription);
+
+                _AzureContext.StatusProvider.UpdateStatus("BUSY: Loaded Subscription " + azureSubscription.ToString());
             }
 
-            return tenantSubscriptions;
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions Completed");
+
+            return azureSubscriptions;
         }
 
         //public async Task<List<AzureSubscription>> GetSubscriptions()
@@ -224,39 +235,6 @@ namespace MigAz.Azure
 
         //    return _AzureSubscriptions;
         //}
-
-        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(Guid tenantGuid)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start");
-
-            if (_ArmSubscriptions != null)
-                return _ArmSubscriptions;
-
-            String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), tenantGuid);
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, armToken, "GET", true);
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
-
-            var subscriptions = from subscription in subscriptionsJson["value"]
-                                select subscription;
-
-            _ArmSubscriptions = new List<AzureSubscription>();
-
-            foreach (JObject azureSubscriptionJson in subscriptions)
-            {
-                AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, azureSubscriptionJson, null, _AzureContext.AzureEnvironment);
-                _ArmSubscriptions.Add(azureSubscription);
-            }
-
-            return _ArmSubscriptions;
-        }
-
-
 
         public async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
         {

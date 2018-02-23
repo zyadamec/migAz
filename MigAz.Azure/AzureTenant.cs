@@ -63,10 +63,10 @@ namespace MigAz.Azure
             get { return _Subscriptions; }
         }
 
-        public async Task InitializeChildren()
+        public async Task InitializeChildren(bool allowRestCacheUse = false)
         {
-            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(this);
-            _Subscriptions = await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(this);
+            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(this, allowRestCacheUse);
+            _Subscriptions = await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(this, allowRestCacheUse);
         }
 
         public static bool operator ==(AzureTenant lhs, AzureTenant rhs)

@@ -40,8 +40,10 @@ namespace MigAz.Tests
             azureContext.TokenProvider = new FakeTokenProvider();
             azureContext.AzureRetriever = new TestRetriever(azureContext);
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
+            List<AzureTenant> tenants = await azureContext.AzureRetriever.GetAzureARMTenants(true);
 
-            List<AzureSubscription> subscriptions = await azureContext.AzureRetriever.GetAzureARMSubscriptions(Guid.Empty);
+
+            List<AzureSubscription> subscriptions = tenants[0].Subscriptions;
             await azureContext.SetSubscriptionContext(subscriptions[0]);
             await azureContext.AzureRetriever.SetSubscriptionContext(subscriptions[0]);
 

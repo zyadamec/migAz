@@ -29,6 +29,7 @@ namespace MigAz.Azure.MigrationTarget
         public LoadBalancer(string targetName, TargetSettings targetSettings)
         {
             this.SetTargetName(targetName, targetSettings);
+            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
         }
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings)
