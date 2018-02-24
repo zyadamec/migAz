@@ -94,6 +94,8 @@
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
     <Compile Include="Arm\Probe.cs" />
+    <Compile Include="Arm\Provider.cs" />
+    <Compile Include="Arm\ProviderResourceType.cs" />
     <Compile Include="Arm\PublicIP.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
     <Compile Include="Arm\Route.cs" />

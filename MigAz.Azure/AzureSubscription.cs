@@ -27,6 +27,7 @@ namespace MigAz.Azure
         private bool _IsAsmLoaded = false;
         private bool _IsArmLoaded = false;
         private List<Arm.Location> _ArmLocations;
+        private List<Arm.Provider> _ArmProviders;
         private List<Arm.ResourceGroup> _ArmResourceGroups = new List<Arm.ResourceGroup>();
         private Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>> _ArmAvailabilitySets = new Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>> _ArmVirtualMachines = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>>();
@@ -1434,13 +1435,13 @@ namespace MigAz.Azure
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
             string url = location.AzureSubscription.ApiUrl + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription ID : " + this.SubscriptionId + " Location : " + location);
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription: " + this.ToString() + " Location : " + location);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
 
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Subscription ID : " + this.SubscriptionId + " Location : " + location);
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Subscription: " + this.ToString() + " Location : " + location);
 
             var VMSizes = from VMSize in locationsVMSizesJson["value"]
                           select VMSize;
@@ -1455,6 +1456,43 @@ namespace MigAz.Azure
             location.VMSizes = vmSizes.OrderBy(a => a.Name).ToList();
 
             return;
+        }
+
+        internal async Task<List<Provider>> GetResourceManagerProviders()
+        {
+            _AzureContext.LogProvider.WriteLog("GetResourceManagerProviders", "Start - Subscription : " + this.ToString());
+
+            if (_ArmProviders != null)
+                return _ArmProviders;
+
+            if (_AzureContext == null)
+                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
+            if (_AzureContext.TokenProvider == null)
+                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
+
+            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(this.TokenResourceUrl, this.AzureAdTenantId);
+
+            // https://docs.microsoft.com/en-us/rest/api/resources/providers/list
+            string url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/providers?$expand=metadata&api-version=2017-05-10";
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Providers for Subscription: " + this.ToString());
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject providersJson = JObject.Parse(azureRestResponse.Response);
+
+            _AzureContext.StatusProvider.UpdateStatus("BUSY: Instantiating ARM Providers for Subscription: " + this.ToString());
+
+            var providers = from provider in providersJson["value"]
+                          select provider;
+
+            _ArmProviders = new List<Provider>();
+            foreach (var provider in providers)
+            {
+                Provider armProvider = new Provider(provider, this);
+                _ArmProviders.Add(armProvider);
+            }
+
+            return _ArmProviders;
         }
 
         internal async Task<JToken> GetAzureArmVirtualMachineDetail(Arm.VirtualMachine virtualMachine)
