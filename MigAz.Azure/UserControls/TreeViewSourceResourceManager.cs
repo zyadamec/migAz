@@ -19,7 +19,7 @@ namespace MigAz.Azure.UserControls
 {
     public partial class TreeViewSourceResourceManager : UserControl, IMigrationSourceUserControl
     {
-        private AzureContext _AzureContextSource;
+        //private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();
         private TreeNode _SourceAsmNode;
         private TargetSettings _TargetSettings;
@@ -29,34 +29,6 @@ namespace MigAz.Azure.UserControls
         private bool _IsAuthenticated = false;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
-
-        #region Matching Events from AzureContext
-
-        public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
-        public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
-
-        public delegate Task AfterAzureTenantChangedHandler(AzureContext sender);
-        public event AfterAzureTenantChangedHandler AfterAzureTenantChange;
-
-        public delegate Task BeforeAzureSubscriptionChangedHandler(AzureContext sender);
-        public event BeforeAzureSubscriptionChangedHandler BeforeAzureSubscriptionChange;
-
-        public delegate Task AfterAzureSubscriptionChangedHandler(AzureContext sender);
-        public event AfterAzureSubscriptionChangedHandler AfterAzureSubscriptionChange;
-
-        public delegate Task AzureEnvironmentChangedHandler(AzureContext sender);
-        public event AzureEnvironmentChangedHandler AzureEnvironmentChanged;
-
-        public delegate Task UserAuthenticatedHandler(AzureContext sender);
-        public event UserAuthenticatedHandler UserAuthenticated;
-
-        public delegate Task BeforeUserSignOutHandler();
-        public event BeforeUserSignOutHandler BeforeUserSignOut;
-
-        public delegate Task AfterUserSignOutHandler();
-        public event AfterUserSignOutHandler AfterUserSignOut;
-
-        #endregion
 
         #region New Events from MigrationSourceAzure
 
@@ -98,10 +70,6 @@ namespace MigAz.Azure.UserControls
             get { return _IsAuthenticated; }
             set { _IsAuthenticated = value; }
         }
-        public AzureContext AzureContext
-        {
-            get { return _AzureContextSource; }
-        }
 
         public ArmDiskType DefaultTargetDiskType
         {
@@ -126,16 +94,6 @@ namespace MigAz.Azure.UserControls
             _StatusProvider = statusProvider;
             _ImageList = imageList;
 
-            _AzureContextSource = new AzureContext(logProvider, statusProvider, promptBehavior);
-            _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
-            _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
-            _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
-            _AzureContextSource.AfterAzureSubscriptionChange += _AzureContext_AfterAzureSubscriptionChange;
-            _AzureContextSource.BeforeUserSignOut += _AzureContext_BeforeUserSignOut;
-            _AzureContextSource.AfterUserSignOut += _AzureContext_AfterUserSignOut;
-            _AzureContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
-            _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
-
             treeAzureARM.ImageList = _ImageList;
         }
 
@@ -153,114 +111,26 @@ namespace MigAz.Azure.UserControls
         #endregion
 
         #region Event Handlers
-
-        private async Task AzureLoginContextViewerSource_AfterContextChanged(AzureLoginContextViewer sender)
-        {
-            AfterContextChanged?.Invoke(this);
-        }
-
-
-        private async Task _AzureContextSource_BeforeAzureTenantChange(AzureContext sender)
-        {
-            BeforeAzureTenantChange?.Invoke(sender);
-        }
-
-        private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
-        {
-            //await _AzureContextTargetARM.CopyContext(_AzureContextSource);
-
-            AfterAzureTenantChange?.Invoke(sender);
-        }
-
-        private async Task _AzureContext_BeforeAzureSubscriptionChange(AzureContext sender)
-        {
-            //await SaveSubscriptionSettings(sender.AzureSubscription);
-            //await _AzureContextTargetARM.SetSubscriptionContext(null);
-
-            BeforeAzureSubscriptionChange?.Invoke(sender);
-        }
-
-        private async Task _AzureContext_AzureEnvironmentChanged(AzureContext sender)
-        {
-            AzureEnvironmentChanged?.Invoke(sender);
-        }
-
-
-        private async Task _AzureContext_UserAuthenticated(AzureContext sender)
-        {
-            this.IsSourceContextAuthenticated = true;
-            UserAuthenticated?.Invoke(sender);
-        }
-
-        private async Task _AzureContext_BeforeUserSignOut()
-        {
-            //await SaveSubscriptionSettings(this._AzureContextSource.AzureSubscription);
-
-            BeforeUserSignOut?.Invoke();
-        }
-
-        private async Task _AzureContext_AfterUserSignOut()
-        {
-            ResetForm();
-            this.IsSourceContextAuthenticated = false;
-
-            //if (_AzureContextTargetARM != null)
-            //    await _AzureContextTargetARM.SetSubscriptionContext(null);
-
-            //if (_AzureContextTargetARM != null)
-            //    await _AzureContextTargetARM.Logout();
-
-            //azureLoginContextViewerARM.Enabled = false;
-            //azureLoginContextViewerARM.Refresh();
-
-            AfterUserSignOut?.Invoke();
-        }
-
-        private async Task _AzureContext_AfterAzureSubscriptionChange(AzureContext sender)
-        {
-            try
-            {
-                ResetForm();
-
-                if (sender.AzureSubscription != null)
-                {
-                    await sender.AzureSubscription.InitializeChildrenAsync(false);
-                    await BindArmResources(_TargetSettings);
-
-                    _AzureContextSource.AzureRetriever.SaveRestCache();
-                    //        await ReadSubscriptionSettings(sender.AzureSubscription);
-                }
-            }
-            catch (Exception exc)
-            {
-                UnhandledExceptionDialog unhandledException = new UnhandledExceptionDialog(_AzureContextSource.LogProvider, exc);
-                unhandledException.ShowDialog();
-            }
-
-            _AzureContextSource.StatusProvider.UpdateStatus("Ready");
-
-            AfterAzureSubscriptionChange?.Invoke(sender);
-        }
-
-        public async Task BindArmResources(TargetSettings targetSettings)
+        
+        public async Task BindArmResources(AzureSubscription azureSubscription, TargetSettings targetSettings)
         {
             treeAzureARM.Nodes.Clear();
 
             try
             {
-                if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
+                if (azureSubscription != null)
                 {
-                    await _AzureContextSource.AzureSubscription.BindArmResources(targetSettings);
+                    await azureSubscription.BindArmResources(targetSettings);
 
-                    if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
+                    if (azureSubscription != null)
                     {
-                        TreeNode subscriptionNodeARM = new TreeNode(_AzureContextSource.AzureSubscription.Name);
+                        TreeNode subscriptionNodeARM = new TreeNode(azureSubscription.Name);
                         subscriptionNodeARM.ImageKey = "Subscription";
                         subscriptionNodeARM.SelectedImageKey = "Subscription";
                         treeAzureARM.Nodes.Add(subscriptionNodeARM);
                         subscriptionNodeARM.Expand();
 
-                        foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _AzureContextSource.AzureSubscription.ArmTargetNetworkSecurityGroups)
+                        foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in azureSubscription.ArmTargetNetworkSecurityGroups)
                         {
                             TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup).ResourceGroup);
 
@@ -272,7 +142,7 @@ namespace MigAz.Azure.UserControls
                             networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
                         }
 
-                        foreach (MigrationTarget.PublicIp targetPublicIP in _AzureContextSource.AzureSubscription.ArmTargetPublicIPs)
+                        foreach (MigrationTarget.PublicIp targetPublicIP in azureSubscription.ArmTargetPublicIPs)
                         {
                             TreeNode publicIpParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.PublicIP)targetPublicIP.Source).ResourceGroup); ;
 
@@ -284,7 +154,7 @@ namespace MigAz.Azure.UserControls
                             publicIpParentNode.Nodes.Add(tnPublicIP);
                         }
 
-                        foreach (MigrationTarget.RouteTable targetRouteTable in _AzureContextSource.AzureSubscription.ArmTargetRouteTables)
+                        foreach (MigrationTarget.RouteTable targetRouteTable in azureSubscription.ArmTargetRouteTables)
                         {
                             TreeNode routeTableParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.RouteTable)targetRouteTable.Source).ResourceGroup);
 
@@ -296,7 +166,7 @@ namespace MigAz.Azure.UserControls
                             routeTableParentNode.Nodes.Add(tnRouteTable);
                         }
 
-                        foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in _AzureContextSource.AzureSubscription.ArmTargetVirtualNetworks)
+                        foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in azureSubscription.ArmTargetVirtualNetworks)
                         {
                             TreeNode virtualNetworkParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork).ResourceGroup);
 
@@ -308,7 +178,7 @@ namespace MigAz.Azure.UserControls
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                         }
 
-                        foreach (MigrationTarget.StorageAccount targetStorageAccount in _AzureContextSource.AzureSubscription.ArmTargetStorageAccounts)
+                        foreach (MigrationTarget.StorageAccount targetStorageAccount in azureSubscription.ArmTargetStorageAccounts)
                         {
                             TreeNode storageAccountParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.StorageAccount)targetStorageAccount.SourceAccount).ResourceGroup);
 
@@ -320,7 +190,7 @@ namespace MigAz.Azure.UserControls
                             storageAccountParentNode.Nodes.Add(tnStorageAccount);
                         }
 
-                        foreach (MigrationTarget.Disk targetManagedDisk in _AzureContextSource.AzureSubscription.ArmTargetManagedDisks)
+                        foreach (MigrationTarget.Disk targetManagedDisk in azureSubscription.ArmTargetManagedDisks)
                         {
                             Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
                             TreeNode managedDiskParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, armManagedDisk.ResourceGroup);
@@ -333,7 +203,7 @@ namespace MigAz.Azure.UserControls
                             managedDiskParentNode.Nodes.Add(tnDisk);
                         }
 
-                        foreach (MigrationTarget.AvailabilitySet targetAvailabilitySet in _AzureContextSource.AzureSubscription.ArmTargetAvailabilitySets)
+                        foreach (MigrationTarget.AvailabilitySet targetAvailabilitySet in azureSubscription.ArmTargetAvailabilitySets)
                         {
                             TreeNode availabilitySetParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet).ResourceGroup);
 
@@ -345,7 +215,7 @@ namespace MigAz.Azure.UserControls
                             availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
                         }
 
-                        foreach (MigrationTarget.NetworkInterface targetNetworkInterface in _AzureContextSource.AzureSubscription.ArmTargetNetworkInterfaces)
+                        foreach (MigrationTarget.NetworkInterface targetNetworkInterface in azureSubscription.ArmTargetNetworkInterfaces)
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkInterface)targetNetworkInterface.SourceNetworkInterface).ResourceGroup);
 
@@ -357,7 +227,7 @@ namespace MigAz.Azure.UserControls
                             tnResourceGroup.Nodes.Add(txNetworkInterface);
                         }
 
-                        foreach (MigrationTarget.VirtualMachine targetVirtualMachine in _AzureContextSource.AzureSubscription.ArmTargetVirtualMachines)
+                        foreach (MigrationTarget.VirtualMachine targetVirtualMachine in azureSubscription.ArmTargetVirtualMachines)
                         {
                             TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachine)targetVirtualMachine.Source).ResourceGroup);
 
@@ -369,7 +239,7 @@ namespace MigAz.Azure.UserControls
                             tnResourceGroup.Nodes.Add(tnVirtualMachine);
                         }
 
-                        foreach (MigrationTarget.LoadBalancer targetLoadBalancer in _AzureContextSource.AzureSubscription.ArmTargetLoadBalancers)
+                        foreach (MigrationTarget.LoadBalancer targetLoadBalancer in azureSubscription.ArmTargetLoadBalancers)
                         {
                             TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.LoadBalancer)targetLoadBalancer.Source).ResourceGroup);
 
@@ -401,11 +271,11 @@ namespace MigAz.Azure.UserControls
             }
             catch (Exception exc)
             {
-                UnhandledExceptionDialog exceptionDialog = new UnhandledExceptionDialog(_AzureContextSource.LogProvider, exc);
+                UnhandledExceptionDialog exceptionDialog = new UnhandledExceptionDialog(_LogProvider, exc);
                 exceptionDialog.ShowDialog();
             }
 
-            _AzureContextSource.StatusProvider.UpdateStatus("Ready");
+            _StatusProvider.UpdateStatus("Ready");
         }
 
         #endregion
@@ -771,7 +641,7 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                _AzureContextSource.StatusProvider.UpdateStatus("Ready");
+                _StatusProvider.UpdateStatus("Ready");
             }
         }
 
@@ -971,14 +841,6 @@ namespace MigAz.Azure.UserControls
 
             if (node.Parent != null)
                 await RecursiveCheckToggleUp(node.Parent, isChecked);
-        }
-
-
-        private void cmbAzureResourceTypeSource_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            treeAzureARM.Nodes.Clear();
-            BindArmResources(_TargetSettings);
-            ClearContext?.Invoke();
         }
 
         public async Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)

@@ -249,7 +249,9 @@ namespace MigAz.Azure.UserControls
                             await BindAsmResources(_TargetSettings);
                             break;
                         case "Azure Resource Manager (ARM)":
-                            await treeViewSourceResourceManager1.BindArmResources(_TargetSettings);
+                            treeViewSourceResourceManager1.Enabled = true;
+                            treeViewSourceResourceManager1.Visible = true;
+                            await treeViewSourceResourceManager1.BindArmResources(sender.AzureSubscription, _TargetSettings);
                             break;
                         default:
                             throw new ArgumentException("Unexpected Source Resource Tab: " + cmbAzureResourceTypeSource.SelectedValue);
@@ -976,7 +978,9 @@ namespace MigAz.Azure.UserControls
                     treeAzureASM.Visible = false;
                     treeViewSourceResourceManager1.Enabled = true;
                     treeViewSourceResourceManager1.Visible = true;
-                    await treeViewSourceResourceManager1.BindArmResources(_TargetSettings);
+
+                    if (_TargetSettings != null)
+                        await treeViewSourceResourceManager1.BindArmResources(_AzureContextSource.AzureSubscription, _TargetSettings);
 
                     break;
                 default:
