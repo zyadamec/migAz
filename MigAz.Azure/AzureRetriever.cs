@@ -201,6 +201,7 @@ namespace MigAz.Azure
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
                 AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, azureSubscriptionJson, azureTenant, _AzureContext.AzureEnvironment);
+                await azureSubscription.InitializeChildrenAsync();
                 azureSubscriptions.Add(azureSubscription);
 
                 _AzureContext.StatusProvider.UpdateStatus("BUSY: Loaded Subscription " + azureSubscription.ToString());

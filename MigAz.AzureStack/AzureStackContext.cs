@@ -72,6 +72,7 @@ namespace MigAz.AzureStack
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
                 AzureSubscription azureSubscription = new AzureSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment);
+                await azureSubscription.InitializeChildrenAsync();
                 tenantSubscriptions.Add(azureSubscription);
             }
 

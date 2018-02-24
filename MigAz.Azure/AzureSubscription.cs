@@ -18,6 +18,9 @@ namespace MigAz.Azure
 {
     public class AzureSubscription : ISubscription
     {
+
+        #region Variables
+
         private XmlNode _XmlNode;
         private JObject _SubscriptionJson;
         private AzureEnvironment _AzureEnvironment;
@@ -67,17 +70,21 @@ namespace MigAz.Azure
 
         private string _ApiUrl = String.Empty;
         private string _TokenResourceUrl = String.Empty;
-        
+
+        #endregion
+
+        #region Constructors
+
         private AzureSubscription() { }
 
-        internal AzureSubscription(AzureContext azureContext, XmlNode xmlNode, AzureEnvironment azureEnvironment)
-        {
-            _AzureContext = azureContext;
-            _XmlNode = xmlNode;
-            _AzureEnvironment = azureEnvironment;
-            _ApiUrl = azureContext.GetARMServiceManagementUrl();
-            _TokenResourceUrl = azureContext.GetARMTokenResourceUrl();
-        }
+        //internal AzureSubscription(AzureContext azureContext, XmlNode xmlNode, AzureEnvironment azureEnvironment)
+        //{
+        //    _AzureContext = azureContext;
+        //    _XmlNode = xmlNode;
+        //    _AzureEnvironment = azureEnvironment;
+        //    _ApiUrl = azureContext.GetARMServiceManagementUrl();
+        //    _TokenResourceUrl = azureContext.GetARMTokenResourceUrl();
+        //}
 
         public AzureSubscription(AzureContext azureContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment)
         {
@@ -88,6 +95,18 @@ namespace MigAz.Azure
             _ApiUrl = azureContext.GetARMServiceManagementUrl();
             _TokenResourceUrl = azureContext.GetARMTokenResourceUrl();
         }
+
+
+        public async Task InitializeChildrenAsync()
+        {
+            // russell here now
+            //await this.GetAzureARMLocations();
+            //await this.GetResourceManagerProviders();
+        }
+
+        #endregion
+
+        #region Properties
 
         public string Name
         {
@@ -243,15 +262,6 @@ namespace MigAz.Azure
             get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxReservedIPs").InnerText); }
         }
 
-        public void ResetArm()
-        {
-            _IsArmLoaded = false;
-        }
-
-        public void ResetAsm()
-        {
-            _IsAsmLoaded = false;
-        }
 
         public Int32 CurrentReservedIPs
         {
@@ -296,6 +306,18 @@ namespace MigAz.Azure
         public DateTime CreatedTime
         {
             get { return Convert.ToDateTime(_XmlNode.SelectSingleNode("CreatedTime").InnerText); }
+        }
+
+        #endregion
+
+        public void ResetArm()
+        {
+            _IsArmLoaded = false;
+        }
+
+        public void ResetAsm()
+        {
+            _IsAsmLoaded = false;
         }
 
 
@@ -2158,19 +2180,7 @@ namespace MigAz.Azure
                 this.ArmTargetAvailabilitySets.Add(targetAvailabilitySet);
             }
         }
-
-        //private async Task LoadARMVirtualMachineImages(ResourceGroup resourceGroup)
-        //{
-        //    if (resourceGroup == null)
-        //        throw new ArgumentException("ResourceGroup parameter must be provided");
-
-        //    foreach (Arm.VirtualMachineImage armVirtualMachineImage in await this.GetAzureArmVirtualMachineImages(resourceGroup))
-        //    {
-        //        Azure.MigrationTarget.VirtualMachineImage targetVirtualMachineImage = new Azure.MigrationTarget.VirtualMachineImage(this._AzureContext, armVirtualMachineImage);
-        //        this.ArmTargetVirtualMachineImages.Add(targetVirtualMachineImage);
-        //    }
-        //}
-
+      
         private async Task LoadARMVirtualMachines(ResourceGroup resourceGroup, TargetSettings targetSettings)
         {
             if (resourceGroup == null)

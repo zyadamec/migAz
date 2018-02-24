@@ -85,9 +85,14 @@ namespace MigAz.Azure.Arm
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
             AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureAdTenantId);
+            List<Provider> providers = await this.AzureSubscription.GetResourceManagerProviders();
+
+            Provider p = (await this.AzureSubscription.GetResourceManagerProviders()).Where(a => a.Namespace == "Microsoft.Compute").FirstOrDefault();
+            ProviderResourceType prt = p.ResourceTypes.Where(a => a.ResourceType == "locations/vmSizes").FirstOrDefault();
+
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-            string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=2017-03-30";
+            string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + prt.MaxApiVersion;
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription: " + this.ToString() + " Location : " + this.ToString());
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);

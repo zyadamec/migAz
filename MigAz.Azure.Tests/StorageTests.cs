@@ -151,7 +151,7 @@ namespace MigAz.Tests
             await artifacts.ValidateAzureResources();
             Assert.IsNotNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
-            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == "Standard_DS2_v2").FirstOrDefault();
+            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.SeekVmSize("Standard_DS2_v2").Result;
             await artifacts.ValidateAzureResources();
             Assert.IsNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
