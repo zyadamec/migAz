@@ -31,8 +31,8 @@
             this.treeAzureASM = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbAzureResourceTypeSource = new System.Windows.Forms.ComboBox();
-            this.treeAzureARM = new System.Windows.Forms.TreeView();
-            this.azureLoginContextViewerSource = new AzureLoginContextViewer();
+            this.azureLoginContextViewerSource = new MigAz.Azure.UserControls.AzureLoginContextViewer();
+            this.treeViewSourceResourceManager1 = new MigAz.Azure.UserControls.TreeViewSourceResourceManager();
             this.SuspendLayout();
             // 
             // treeAzureASM
@@ -68,36 +68,40 @@
             this.cmbAzureResourceTypeSource.TabIndex = 71;
             this.cmbAzureResourceTypeSource.SelectedIndexChanged += new System.EventHandler(this.cmbAzureResourceTypeSource_SelectedIndexChanged);
             // 
-            // treeAzureARM
-            // 
-            this.treeAzureARM.CheckBoxes = true;
-            this.treeAzureARM.Location = new System.Drawing.Point(345, 202);
-            this.treeAzureARM.Name = "treeAzureARM";
-            this.treeAzureARM.Size = new System.Drawing.Size(324, 435);
-            this.treeAzureARM.TabIndex = 72;
-            this.treeAzureARM.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeAzureResourcesSource_AfterCheck);
-            // 
             // azureLoginContextViewerSource
             // 
+            this.azureLoginContextViewerSource.AzureContextSelectedType = MigAz.Azure.UserControls.AzureContextSelectedType.ExistingContext;
             this.azureLoginContextViewerSource.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.NewContext;
+            this.azureLoginContextViewerSource.ExistingContext = null;
             this.azureLoginContextViewerSource.Location = new System.Drawing.Point(0, 2);
-            this.azureLoginContextViewerSource.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.azureLoginContextViewerSource.Margin = new System.Windows.Forms.Padding(2);
             this.azureLoginContextViewerSource.Name = "azureLoginContextViewerSource";
             this.azureLoginContextViewerSource.Size = new System.Drawing.Size(670, 169);
             this.azureLoginContextViewerSource.TabIndex = 67;
             this.azureLoginContextViewerSource.Title = "Azure Subscription";
             // 
-            // MigrationSourceAzure
+            // treeViewSourceResourceManager1
+            // 
+            this.treeViewSourceResourceManager1.AutoSelectDependencies = true;
+            this.treeViewSourceResourceManager1.DefaultTargetDiskType = MigAz.Core.Interface.ArmDiskType.ManagedDisk;
+            this.treeViewSourceResourceManager1.IsSourceContextAuthenticated = false;
+            this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(330, 202);
+            this.treeViewSourceResourceManager1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";
+            this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(290, 319);
+            this.treeViewSourceResourceManager1.TabIndex = 72;
+            // 
+            // MigrationAzureSourceContext
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.treeAzureARM);
+            this.Controls.Add(this.treeViewSourceResourceManager1);
             this.Controls.Add(this.cmbAzureResourceTypeSource);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.treeAzureASM);
             this.Controls.Add(this.azureLoginContextViewerSource);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "MigrationSourceAzure";
+            this.Name = "MigrationAzureSourceContext";
             this.Size = new System.Drawing.Size(680, 642);
             this.Resize += new System.EventHandler(this.MigrationSourceAzure_Resize);
             this.ResumeLayout(false);
@@ -110,6 +114,6 @@
         private System.Windows.Forms.TreeView treeAzureASM;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbAzureResourceTypeSource;
-        private System.Windows.Forms.TreeView treeAzureARM;
+        private TreeViewSourceResourceManager treeViewSourceResourceManager1;
     }
 }

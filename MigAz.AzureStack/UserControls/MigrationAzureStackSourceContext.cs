@@ -118,11 +118,10 @@ namespace MigAz.AzureStack.UserControls
 
         private void MigrationAzureStackSourceContext_Resize(object sender, EventArgs e)
         {
-            this.azureStackLoginContextViewer1.Width = this.Width;
-            this.treeAzureARM.Width = this.Width - 5;
-            this.treeAzureARM.Height = this.Height - 110;
+            azureStackLoginContextViewer1.Width = this.Width;
+            treeViewSourceResourceManager1.Width = this.Width - 5;
+            treeViewSourceResourceManager1.Height = this.Height - 110;
         }
-
 
         #region Event Handlers
 
@@ -173,7 +172,7 @@ namespace MigAz.AzureStack.UserControls
 
         private async Task _AzureContext_AfterUserSignOut()
         {
-            ResetForm();
+            treeViewSourceResourceManager1.ResetForm();
             this.IsSourceContextAuthenticated = false;
 
             //if (_AzureContextTargetARM != null)
@@ -192,12 +191,12 @@ namespace MigAz.AzureStack.UserControls
         {
             try
             {
-                ResetForm();
+                treeViewSourceResourceManager1.ResetForm();
 
                 if (sender.AzureSubscription != null)
                 {
                     await sender.AzureSubscription.InitializeChildrenAsync();
-                    await BindArmResources(_TargetSettings);
+                    await treeViewSourceResourceManager1.BindArmResources(_TargetSettings);
 
                     //_AzureStackContext.AzureRetriever.SaveRestCache();
                     //        await ReadSubscriptionSettings(sender.AzureSubscription);
@@ -214,208 +213,7 @@ namespace MigAz.AzureStack.UserControls
             AfterAzureSubscriptionChange?.Invoke(sender);
         }
 
-        private async Task BindArmResources(Core.TargetSettings targetSettings)
-        {
-            //treeAzureARM.Nodes.Clear();
-
-            try
-            {
-                if (_AzureStackContextSource != null && _AzureStackContextSource.AzureSubscription != null)
-                {
-                    await _AzureStackContextSource.AzureSubscription.BindArmResources(targetSettings);
-
-                    if (_AzureStackContextSource != null && _AzureStackContextSource.AzureSubscription != null)
-                    {
-                        TreeNode subscriptionNodeARM = new TreeNode(_AzureStackContextSource.AzureSubscription.Name);
-                        subscriptionNodeARM.ImageKey = "Subscription";
-                        subscriptionNodeARM.SelectedImageKey = "Subscription";
-                        //treeAzureARM.Nodes.Add(subscriptionNodeARM);
-                        subscriptionNodeARM.Expand();
-
-                        foreach (Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _AzureStackContextSource.AzureSubscription.ArmTargetNetworkSecurityGroups)
-                        {
-                            TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkSecurityGroup)targetNetworkSecurityGroup.SourceNetworkSecurityGroup).ResourceGroup);
-
-                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetNetworkSecurityGroup.SourceName);
-                            tnNetworkSecurityGroup.Name = targetNetworkSecurityGroup.SourceName;
-                            tnNetworkSecurityGroup.Tag = targetNetworkSecurityGroup;
-                            tnNetworkSecurityGroup.ImageKey = targetNetworkSecurityGroup.ImageKey;
-                            tnNetworkSecurityGroup.SelectedImageKey = targetNetworkSecurityGroup.ImageKey;
-                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        }
-
-                        foreach (Azure.MigrationTarget.PublicIp targetPublicIP in _AzureStackContextSource.AzureSubscription.ArmTargetPublicIPs)
-                        {
-                            TreeNode publicIpParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.PublicIP)targetPublicIP.Source).ResourceGroup); ;
-
-                            TreeNode tnPublicIP = new TreeNode(targetPublicIP.SourceName);
-                            tnPublicIP.Name = targetPublicIP.SourceName;
-                            tnPublicIP.Tag = targetPublicIP;
-                            tnPublicIP.ImageKey = targetPublicIP.ImageKey;
-                            tnPublicIP.SelectedImageKey = targetPublicIP.ImageKey;
-                            publicIpParentNode.Nodes.Add(tnPublicIP);
-                        }
-
-                        foreach (Azure.MigrationTarget.RouteTable targetRouteTable in _AzureStackContextSource.AzureSubscription.ArmTargetRouteTables)
-                        {
-                            TreeNode routeTableParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.RouteTable)targetRouteTable.Source).ResourceGroup);
-
-                            TreeNode tnRouteTable = new TreeNode(targetRouteTable.SourceName);
-                            tnRouteTable.Name = targetRouteTable.SourceName;
-                            tnRouteTable.Tag = targetRouteTable;
-                            tnRouteTable.ImageKey = targetRouteTable.ImageKey;
-                            tnRouteTable.SelectedImageKey = targetRouteTable.ImageKey;
-                            routeTableParentNode.Nodes.Add(tnRouteTable);
-                        }
-
-                        foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in _AzureStackContextSource.AzureSubscription.ArmTargetVirtualNetworks)
-                        {
-                            TreeNode virtualNetworkParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork).ResourceGroup);
-
-                            TreeNode tnVirtualNetwork = new TreeNode(targetVirtualNetwork.SourceName);
-                            tnVirtualNetwork.Name = targetVirtualNetwork.SourceName;
-                            tnVirtualNetwork.Tag = targetVirtualNetwork;
-                            tnVirtualNetwork.ImageKey = targetVirtualNetwork.ImageKey;
-                            tnVirtualNetwork.SelectedImageKey = targetVirtualNetwork.ImageKey;
-                            virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
-                        }
-
-                        foreach (Azure.MigrationTarget.StorageAccount targetStorageAccount in _AzureStackContextSource.AzureSubscription.ArmTargetStorageAccounts)
-                        {
-                            TreeNode storageAccountParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.StorageAccount)targetStorageAccount.SourceAccount).ResourceGroup);
-
-                            TreeNode tnStorageAccount = new TreeNode(targetStorageAccount.SourceName);
-                            tnStorageAccount.Name = targetStorageAccount.SourceName;
-                            tnStorageAccount.Tag = targetStorageAccount;
-                            tnStorageAccount.ImageKey = targetStorageAccount.ImageKey;
-                            tnStorageAccount.SelectedImageKey = targetStorageAccount.ImageKey;
-                            storageAccountParentNode.Nodes.Add(tnStorageAccount);
-                        }
-
-                        foreach (Azure.MigrationTarget.Disk targetManagedDisk in _AzureStackContextSource.AzureSubscription.ArmTargetManagedDisks)
-                        {
-                            Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)targetManagedDisk.SourceDisk;
-                            TreeNode managedDiskParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, armManagedDisk.ResourceGroup);
-
-                            TreeNode tnDisk = new TreeNode(targetManagedDisk.SourceName);
-                            tnDisk.Name = targetManagedDisk.SourceName;
-                            tnDisk.Tag = targetManagedDisk;
-                            tnDisk.ImageKey = targetManagedDisk.ImageKey;
-                            tnDisk.SelectedImageKey = targetManagedDisk.ImageKey;
-                            managedDiskParentNode.Nodes.Add(tnDisk);
-                        }
-
-                        foreach (Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet in _AzureStackContextSource.AzureSubscription.ArmTargetAvailabilitySets)
-                        {
-                            TreeNode availabilitySetParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.AvailabilitySet)targetAvailabilitySet.SourceAvailabilitySet).ResourceGroup);
-
-                            TreeNode tnAvailabilitySet = new TreeNode(targetAvailabilitySet.SourceName);
-                            tnAvailabilitySet.Name = targetAvailabilitySet.SourceName;
-                            tnAvailabilitySet.Tag = targetAvailabilitySet;
-                            tnAvailabilitySet.ImageKey = targetAvailabilitySet.ImageKey;
-                            tnAvailabilitySet.SelectedImageKey = targetAvailabilitySet.ImageKey;
-                            availabilitySetParentNode.Nodes.Add(tnAvailabilitySet);
-                        }
-
-                        foreach (Azure.MigrationTarget.NetworkInterface targetNetworkInterface in _AzureStackContextSource.AzureSubscription.ArmTargetNetworkInterfaces)
-                        {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.NetworkInterface)targetNetworkInterface.SourceNetworkInterface).ResourceGroup);
-
-                            TreeNode txNetworkInterface = new TreeNode(targetNetworkInterface.SourceName);
-                            txNetworkInterface.Name = targetNetworkInterface.SourceName;
-                            txNetworkInterface.Tag = targetNetworkInterface;
-                            txNetworkInterface.ImageKey = targetNetworkInterface.ImageKey;
-                            txNetworkInterface.SelectedImageKey = targetNetworkInterface.ImageKey;
-                            tnResourceGroup.Nodes.Add(txNetworkInterface);
-                        }
-
-                        foreach (Azure.MigrationTarget.VirtualMachine targetVirtualMachine in _AzureStackContextSource.AzureSubscription.ArmTargetVirtualMachines)
-                        {
-                            TreeNode tnResourceGroup = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachine)targetVirtualMachine.Source).ResourceGroup);
-
-                            TreeNode tnVirtualMachine = new TreeNode(targetVirtualMachine.SourceName);
-                            tnVirtualMachine.Name = targetVirtualMachine.SourceName;
-                            tnVirtualMachine.Tag = targetVirtualMachine;
-                            tnVirtualMachine.ImageKey = targetVirtualMachine.ImageKey;
-                            tnVirtualMachine.SelectedImageKey = targetVirtualMachine.ImageKey;
-                            tnResourceGroup.Nodes.Add(tnVirtualMachine);
-                        }
-
-                        foreach (Azure.MigrationTarget.LoadBalancer targetLoadBalancer in _AzureStackContextSource.AzureSubscription.ArmTargetLoadBalancers)
-                        {
-                            TreeNode networkSecurityGroupParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.LoadBalancer)targetLoadBalancer.Source).ResourceGroup);
-
-                            TreeNode tnNetworkSecurityGroup = new TreeNode(targetLoadBalancer.SourceName);
-                            tnNetworkSecurityGroup.Name = targetLoadBalancer.SourceName;
-                            tnNetworkSecurityGroup.Tag = targetLoadBalancer;
-                            tnNetworkSecurityGroup.ImageKey = targetLoadBalancer.ImageKey;
-                            tnNetworkSecurityGroup.SelectedImageKey = targetLoadBalancer.ImageKey;
-                            networkSecurityGroupParentNode.Nodes.Add(tnNetworkSecurityGroup);
-                        }
-
-                        //foreach (MigrationTarget.VirtualMachineImage targetVirtualMachineImage in _AzureStackContext.AzureSubscription.ArmTargetVirtualMachineImages)
-                        //{
-                        //    TreeNode virtualMachineImageParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualMachineImage)targetVirtualMachineImage.Source).ResourceGroup);
-
-                        //    TreeNode tnVirtualMachineImage = new TreeNode(targetVirtualMachineImage.SourceName);
-                        //    tnVirtualMachineImage.Name = targetVirtualMachineImage.SourceName;
-                        //    tnVirtualMachineImage.Tag = targetVirtualMachineImage;
-                        //    tnVirtualMachineImage.ImageKey = "VirtualMachineImage";
-                        //    tnVirtualMachineImage.SelectedImageKey = "VirtualMachineImage";
-                        //    virtualMachineImageParentNode.Nodes.Add(tnVirtualMachineImage);
-                        //}
-
-                        subscriptionNodeARM.Expand();
-                        //treeAzureARM.Sort();
-                        //treeAzureARM.Enabled = true;
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                UnhandledExceptionDialog exceptionDialog = new UnhandledExceptionDialog(_AzureStackContextSource.LogProvider, exc);
-                exceptionDialog.ShowDialog();
-            }
-
-            _AzureStackContextSource.StatusProvider.UpdateStatus("Ready");
-        }
-
         #endregion
-
-        private void ResetForm()
-        {
-            //if (treeAzureARM != null)
-            //{
-            //    treeAzureARM.Enabled = false;
-            //    treeAzureARM.Nodes.Clear();
-            //}
-
-            //if (_SelectedNodes != null)
-            //    _SelectedNodes.Clear();
-
-            ClearContext?.Invoke();
-        }
-
-        private TreeNode GetResourceGroupTreeNode(TreeNode subscriptionNode, Azure.Arm.ResourceGroup resourceGroup)
-        {
-            foreach (TreeNode treeNode in subscriptionNode.Nodes)
-            {
-                if (treeNode.Tag != null)
-                {
-                    if (treeNode.Tag.GetType() == resourceGroup.GetType() && treeNode.Text == resourceGroup.ToString())
-                        return treeNode;
-                }
-            }
-
-            TreeNode tnResourceGroup = new TreeNode(resourceGroup.ToString());
-            tnResourceGroup.Text = resourceGroup.ToString();
-            tnResourceGroup.Tag = resourceGroup;
-            tnResourceGroup.ImageKey = "ResourceGroup";
-            tnResourceGroup.SelectedImageKey = "ResourceGroup";
-
-            subscriptionNode.Nodes.Add(tnResourceGroup);
-            return tnResourceGroup;
-        }
 
     }
 }
