@@ -93,9 +93,8 @@ namespace MigAz.AzureStack.UserControls
             _AzureStackContextSource.BeforeAzureTenantChange += _AzureStackContext_BeforeAzureTenantChange;
             azureStackLoginContextViewer1.AfterContextChanged += AzureStackLoginContextViewerSource_AfterContextChanged;
 
-            treeAzureARM.ImageList = _ImageList;
-
             await this.azureStackLoginContextViewer1.Bind(_AzureStackContextSource);
+            await treeViewSourceResourceManager1.Bind(statusProvider, logProvider, targetSettings, imageList, promptBehavior);
         }
 
 
