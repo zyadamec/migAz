@@ -196,12 +196,11 @@ namespace MigAz.AzureStack.UserControls
 
                 if (sender.AzureSubscription != null)
                 {
+                    await sender.AzureSubscription.InitializeChildrenAsync();
                     await BindArmResources(_TargetSettings);
 
-                    //        _AzureStackContext.AzureRetriever.SaveRestCache();
+                    //_AzureStackContext.AzureRetriever.SaveRestCache();
                     //        await ReadSubscriptionSettings(sender.AzureSubscription);
-
-                    //        treeTargetARM.Enabled = true;
                 }
             }
             catch (Exception exc)
