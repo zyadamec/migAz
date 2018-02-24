@@ -1418,46 +1418,6 @@ namespace MigAz.Azure
             return matchedLocation;
         }
 
-
-        internal async Task GetAzureARMLocationVMSizes(Arm.Location location)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMLocationVMSizes", "Start - Location : " + location.Name);
-
-            string methodType = "GET";
-            bool useCached = true;
-
-            if (_AzureContext == null)
-                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
-            if (_AzureContext.TokenProvider == null)
-                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-
-            AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(location.AzureSubscription.TokenResourceUrl, this.AzureAdTenantId);
-
-            // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-            string url = location.AzureSubscription.ApiUrl + "subscriptions/" + this.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, location.Name) + "?api-version=2017-03-30";
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription: " + this.ToString() + " Location : " + location);
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, methodType, useCached);
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Subscription: " + this.ToString() + " Location : " + location);
-
-            var VMSizes = from VMSize in locationsVMSizesJson["value"]
-                          select VMSize;
-
-            List<VMSize> vmSizes = new List<VMSize>();
-            foreach (var VMSize in VMSizes)
-            {
-                Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                vmSizes.Add(armVMSize);
-            }
-
-            location.VMSizes = vmSizes.OrderBy(a => a.Name).ToList();
-
-            return;
-        }
-
         internal async Task<List<Provider>> GetResourceManagerProviders()
         {
             _AzureContext.LogProvider.WriteLog("GetResourceManagerProviders", "Start - Subscription : " + this.ToString());
@@ -1473,7 +1433,7 @@ namespace MigAz.Azure
             AuthenticationResult armToken = await _AzureContext.TokenProvider.GetToken(this.TokenResourceUrl, this.AzureAdTenantId);
 
             // https://docs.microsoft.com/en-us/rest/api/resources/providers/list
-            string url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/providers?$expand=metadata&api-version=2017-05-10";
+            string url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/providers?&api-version=2017-05-10";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Providers for Subscription: " + this.ToString());
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);

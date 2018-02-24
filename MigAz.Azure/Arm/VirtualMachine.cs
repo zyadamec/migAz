@@ -133,9 +133,10 @@ namespace MigAz.Azure.Arm
             }
 
             // Seek the VmSize object that corresponds to the VmSize String obtained from the VM Json
-            if (this.ResourceGroup != null && this.ResourceGroup.Location != null && this.ResourceGroup.Location.VMSizes != null)
+            if (this.ResourceGroup != null && this.ResourceGroup.Location != null)
             {
-                this.VmSize = this.ResourceGroup.Location.VMSizes.Where(a => a.Name == this.VmSizeString).FirstOrDefault();
+                List<VMSize> vmSizes = await this.ResourceGroup.Location.GetAzureARMVMSizes();
+                this.VmSize = vmSizes.Where(a => a.Name == this.VmSizeString).FirstOrDefault();
             }
 
             return;

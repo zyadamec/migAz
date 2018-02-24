@@ -53,33 +53,29 @@ namespace MigAz.Azure.MigrationTarget
             Arm.Location armLocation = azureSubscription.GetAzureARMLocation(virtualMachine.Location).Result;
             if (armLocation != null)
             {
-                // First, try to seek matching ARM VM Size by name
-                if (armLocation.VMSizes != null)
+                this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name).Result;
+
+                if (this.TargetSize == null)
                 {
-                    this.TargetSize = armLocation.VMSizes.Where(a => a.Name == virtualMachine.RoleSize.Name).FirstOrDefault();
+                    // if not found, defer to alternate matching options
 
-                    if (this.TargetSize == null)
+                    Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
+                    VMSizeTable.Add("ExtraSmall", "Standard_A0");
+                    VMSizeTable.Add("Small", "Standard_A1");
+                    VMSizeTable.Add("Medium", "Standard_A2");
+                    VMSizeTable.Add("Large", "Standard_A3");
+                    VMSizeTable.Add("ExtraLarge", "Standard_A4");
+                    VMSizeTable.Add("A5", "Standard_A5");
+                    VMSizeTable.Add("A6", "Standard_A6");
+                    VMSizeTable.Add("A7", "Standard_A7");
+                    VMSizeTable.Add("A8", "Standard_A8");
+                    VMSizeTable.Add("A9", "Standard_A9");
+                    VMSizeTable.Add("A10", "Standard_A10");
+                    VMSizeTable.Add("A11", "Standard_A11");
+
+                    if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
                     {
-                        // if not found, defer to alternate matching options
-
-                        Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
-                        VMSizeTable.Add("ExtraSmall", "Standard_A0");
-                        VMSizeTable.Add("Small", "Standard_A1");
-                        VMSizeTable.Add("Medium", "Standard_A2");
-                        VMSizeTable.Add("Large", "Standard_A3");
-                        VMSizeTable.Add("ExtraLarge", "Standard_A4");
-                        VMSizeTable.Add("A5", "Standard_A5");
-                        VMSizeTable.Add("A6", "Standard_A6");
-                        VMSizeTable.Add("A7", "Standard_A7");
-                        VMSizeTable.Add("A8", "Standard_A8");
-                        VMSizeTable.Add("A9", "Standard_A9");
-                        VMSizeTable.Add("A10", "Standard_A10");
-                        VMSizeTable.Add("A11", "Standard_A11");
-
-                        if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
-                        {
-                            this.TargetSize = armLocation.VMSizes.Where(a => a.Name == VMSizeTable[virtualMachine.RoleSize.Name]).FirstOrDefault();
-                        }
+                        this.TargetSize = armLocation.SeekVmSize(VMSizeTable[virtualMachine.RoleSize.Name]).Result;
                     }
                 }
             }

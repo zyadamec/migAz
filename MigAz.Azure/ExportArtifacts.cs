@@ -264,14 +264,15 @@ namespace MigAz.Azure
                     // Ensure that the selected target size is available in the target Azure Location
                     if (this.ResourceGroup != null && this.ResourceGroup.TargetLocation != null)
                     {
-                        if (this.ResourceGroup.TargetLocation.VMSizes == null || this.ResourceGroup.TargetLocation.VMSizes.Count == 0)
+                        List<Arm.VMSize> vmSizes = await this.ResourceGroup.TargetLocation.GetAzureARMVMSizes();
+                        if (vmSizes == null || vmSizes.Count == 0)
                         {
                             this.AddAlert(AlertType.Error, "No ARM VM Sizes are available for Azure Location '" + this.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
                         }
                         else
                         {
                             // Ensure selected target VM Size is available in the Target Azure Location
-                            Arm.VMSize matchedVmSize = this.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == virtualMachine.TargetSize.Name).FirstOrDefault();
+                            Arm.VMSize matchedVmSize = vmSizes.Where(a => a.Name == virtualMachine.TargetSize.Name).FirstOrDefault();
                             if (matchedVmSize == null)
                                 this.AddAlert(AlertType.Error, "Specified VM Size '" + virtualMachine.TargetSize.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' is invalid as it is not available in Azure Location '" + this.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
                         }
