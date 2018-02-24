@@ -661,14 +661,17 @@ namespace MigAz.Azure
                 }
                 await Task.WhenAll(armStorageAccountTasks.ToArray());
 
-                List<Task> armManagedDiskTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                if (this.ExistsProviderResourceType("Microsoft.Compute", "disks"))
                 {
-                    Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup, targetSettings);
-                    armManagedDiskTasks.Add(armManagedDiskTask);
+                    List<Task> armManagedDiskTasks = new List<Task>();
+                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                    {
+                        Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup, targetSettings);
+                        armManagedDiskTasks.Add(armManagedDiskTask);
+                    }
+                    await Task.WhenAll(armManagedDiskTasks.ToArray());
                 }
-                await Task.WhenAll(armManagedDiskTasks.ToArray());
-
+                
                 List<Task> armAvailabilitySetTasks = new List<Task>();
                 foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                 {
@@ -1495,6 +1498,23 @@ namespace MigAz.Azure
             return prt.MaxApiVersion;
         }
 
+        public bool ExistsProviderResourceType(string providerNamespace, string resourceType)
+        {
+            if (_ArmProviders == null)
+                throw new Exception("You must first call InitializeChildrenAsync on the Azure Subscription before querying providers.");
+
+            Provider provider = _ArmProviders.Where(a => String.Compare(a.Namespace, providerNamespace, true) == 0).FirstOrDefault();
+            if (provider == null)
+                return false;
+
+            ProviderResourceType prt = provider.ResourceTypes.Where(a => String.Compare(a.ResourceType, resourceType, true) == 0).FirstOrDefault();
+            if (prt == null)
+                return false;
+
+            return true;
+        }
+
+
         internal async Task<JToken> GetAzureArmVirtualMachineDetail(Arm.VirtualMachine virtualMachine)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureArmVirtualMachine", "Start - '" + virtualMachine.ResourceGroup.ToString() + "' Resource Group / '" + virtualMachine.ToString() + "' Virtual Machine");
@@ -2075,7 +2095,7 @@ namespace MigAz.Azure
                     break;
                 case "NetworkInterfaces":
                     // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=2017-03-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "networkInterfaces"); ;
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccounts":
@@ -2096,7 +2116,7 @@ namespace MigAz.Azure
                     break;
                 case "VirtualMachineImages":
                     // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/images/images-list-by-resource-group
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=2016-04-30-preview";
+                    //url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "disks");
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machine Images for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "ManagedDisks":
@@ -2106,7 +2126,7 @@ namespace MigAz.Azure
                     break;
                 case "LoadBalancers":
                     // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=2016-09-01";
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "loadBalancers");
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "PublicIPs":
