@@ -1039,5 +1039,20 @@ namespace MigAz.Azure.UserControls
         {
             await AfterNodeUnchecked?.Invoke(sender);
         }
+
+        private async Task treeViewSourceResourceManager1_AfterNodeChanged(Core.MigrationTarget sender)
+        {
+            await AfterNodeChanged?.Invoke(sender);
+        }
+
+        private void treeViewSourceResourceManager1_ClearContext()
+        {
+            ClearContext?.Invoke();
+        }
+
+        private void treeViewSourceResourceManager1_AfterContextChanged(UserControl sender)
+        {
+            AfterContextChanged?.Invoke(sender);
+        }
     }
 }
