@@ -38,9 +38,9 @@
             this.azureStackLoginContextViewer1.ChangeType = MigAz.AzureStack.UserControls.AzureLoginChangeType.NewContext;
             this.azureStackLoginContextViewer1.ExistingContext = null;
             this.azureStackLoginContextViewer1.Location = new System.Drawing.Point(0, 0);
-            this.azureStackLoginContextViewer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.azureStackLoginContextViewer1.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
             this.azureStackLoginContextViewer1.Name = "azureStackLoginContextViewer1";
-            this.azureStackLoginContextViewer1.Size = new System.Drawing.Size(670, 169);
+            this.azureStackLoginContextViewer1.Size = new System.Drawing.Size(447, 110);
             this.azureStackLoginContextViewer1.TabIndex = 2;
             this.azureStackLoginContextViewer1.Title = "Azure Stack Subscription";
             // 
@@ -49,20 +49,25 @@
             this.treeViewSourceResourceManager1.AutoSelectDependencies = true;
             this.treeViewSourceResourceManager1.DefaultTargetDiskType = MigAz.Core.Interface.ArmDiskType.ManagedDisk;
             this.treeViewSourceResourceManager1.IsSourceContextAuthenticated = false;
-            this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(4, 164);
-            this.treeViewSourceResourceManager1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(3, 107);
             this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";
-            this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(380, 315);
+            this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(253, 205);
             this.treeViewSourceResourceManager1.TabIndex = 3;
+            this.treeViewSourceResourceManager1.AfterNodeChecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeCheckedHandler(this.treeViewSourceResourceManager1_AfterNodeChecked);
+            this.treeViewSourceResourceManager1.AfterNodeUnchecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeUncheckedHandler(this.treeViewSourceResourceManager1_AfterNodeUnchecked);
+            this.treeViewSourceResourceManager1.AfterNodeChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeChangedHandler(this.treeViewSourceResourceManager1_AfterNodeChanged);
+            this.treeViewSourceResourceManager1.ClearContext += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.ClearContextHandler(this.treeViewSourceResourceManager1_ClearContext);
+            this.treeViewSourceResourceManager1.AfterContextChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterContextChangedHandler(this.treeViewSourceResourceManager1_AfterContextChanged);
             // 
             // MigrationAzureStackSourceContext
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeViewSourceResourceManager1);
             this.Controls.Add(this.azureStackLoginContextViewer1);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MigrationAzureStackSourceContext";
-            this.Size = new System.Drawing.Size(672, 1015);
+            this.Size = new System.Drawing.Size(448, 660);
             this.Resize += new System.EventHandler(this.MigrationAzureStackSourceContext_Resize);
             this.ResumeLayout(false);
 

@@ -65,7 +65,7 @@ namespace MigAz.AzureStack.UserControls
         public delegate void ClearContextHandler();
         public event ClearContextHandler ClearContext;
 
-        public delegate void AfterContextChangedHandler(MigrationAzureStackSourceContext sender);
+        public delegate void AfterContextChangedHandler(UserControl sender);
         public event AfterContextChangedHandler AfterContextChanged;
 
         #endregion
@@ -217,5 +217,29 @@ namespace MigAz.AzureStack.UserControls
 
         #endregion
 
+        private async Task treeViewSourceResourceManager1_AfterNodeChecked(Core.MigrationTarget sender)
+        {
+            await AfterNodeChecked?.Invoke(sender);
+        }
+
+        private async Task treeViewSourceResourceManager1_AfterNodeUnchecked(Core.MigrationTarget sender)
+        {
+            await AfterNodeUnchecked?.Invoke(sender);
+        }
+
+        private void treeViewSourceResourceManager1_AfterContextChanged(UserControl sender)
+        {
+            AfterContextChanged?.Invoke(sender);
+        }
+
+        private async Task treeViewSourceResourceManager1_AfterNodeChanged(Core.MigrationTarget sender)
+        {
+            await AfterNodeChanged?.Invoke(sender);
+        }
+
+        private void treeViewSourceResourceManager1_ClearContext()
+        {
+            ClearContext?.Invoke();
+        }
     }
 }
