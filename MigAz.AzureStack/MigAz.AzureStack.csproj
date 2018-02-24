@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminSubscription.cs" />
     <Compile Include="AzureStackContext.cs" />
     <Compile Include="AzureStackEndpoints.cs" />
     <Compile Include="Forms\AzureStackLoginContextDialog.cs">

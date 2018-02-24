@@ -132,7 +132,7 @@ namespace MigAz.Azure
             get { return _ApiUrl; }
         }
 
-        public AzureTenant Parent
+        public AzureTenant AzureTenant
         {
             get { return _ParentTenant; }
         }
@@ -146,8 +146,8 @@ namespace MigAz.Azure
         {
             get
             {
-                if (this.Parent != null)
-                    return this.Parent.TenantId;
+                if (this.AzureTenant != null)
+                    return this.AzureTenant.TenantId;
                 else if (_XmlNode != null)
                     return new Guid(_XmlNode.SelectSingleNode("AADTenantID").InnerText);
                 else

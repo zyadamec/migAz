@@ -45,13 +45,19 @@ namespace MigAz.AzureStack
             await base.Login(_AzureStackEndpoints.LoginEndpoint, _AzureStackEndpoints.Audiences);
 
             List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
-            List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(tenants[0]);
-            List<AzureSubscription> subscriptions = await GetAzureStackARMSubscriptions(tenants[0]);
-            //UserAuthenticated?.Invoke(this);
+            foreach (AzureTenant azureTenant in tenants)
+            {
+                List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(azureTenant);
+                foreach (AzureDomain domain in domains)
+                {
+                }
+
+                List<AdminSubscription> subscriptions = await GetAzureStackARMSubscriptions(azureTenant);
+            }
         }
 
 
-        public async Task<List<AzureSubscription>> GetAzureStackARMSubscriptions(AzureTenant azureTenant)
+        public async Task<List<AdminSubscription>> GetAzureStackARMSubscriptions(AzureTenant azureTenant)
         {
             //_AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
@@ -67,11 +73,12 @@ namespace MigAz.AzureStack
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
 
-            List<AzureSubscription> tenantSubscriptions = new List<AzureSubscription>();
+            List<AdminSubscription> tenantSubscriptions = new List<AdminSubscription>();
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
-                AzureSubscription azureSubscription = new AzureSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment);
+                AdminSubscription azureSubscription = new AdminSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment);
+                await azureSubscription.GetAzureStackUserSubscriptions();
                 tenantSubscriptions.Add(azureSubscription);
             }
 

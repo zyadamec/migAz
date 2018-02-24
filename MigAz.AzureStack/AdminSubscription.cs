@@ -1,0 +1,64 @@
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Azure;
+using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MigAz.AzureStack
+{
+    public class AdminSubscription : AzureSubscription
+    {
+        private AzureStackContext _AzureStackContext;
+
+        #region Constructors
+
+        private AdminSubscription() : base(null, null, null, new AzureEnvironment())
+        { }
+
+        public AdminSubscription(AzureStackContext azureStackContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment) : base(azureStackContext, subscriptionJson, parentAzureTenant, azureEnvironment)
+        {
+            _AzureStackContext = azureStackContext;
+        }
+
+        #endregion
+
+        public AzureStackContext AzureStackContext
+        {
+            get { return _AzureStackContext; }
+        }
+
+        public async Task<List<AzureSubscription>> GetAzureStackUserSubscriptions()
+        {
+            this.AzureStackContext.LogProvider.WriteLog("GetAzureStackUserSubscriptions", "Start Stack Subscription: " + this.ToString());
+
+            String subscriptionsUrl = this.AzureStackContext.GetARMServiceManagementUrl() + "/subscriptions/" + this.SubscriptionId.ToString() + "/providers/Microsoft.Subscriptions.Admin/subscriptions?$filter=&api-version=2015-11-01";
+            AuthenticationResult authenticationResult = await this.AzureStackContext.TokenProvider.GetToken(this.AzureStackContext.GetARMTokenResourceUrl(), this.AzureAdTenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);
+
+            this.AzureStackContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", false);
+            AzureRestResponse azureRestResponse = await this.AzureStackContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
+
+            var subscriptions = from subscription in subscriptionsJson["value"]
+                                select subscription;
+
+            List<AzureSubscription> userSubscriptions = new List<AzureSubscription>();
+
+            foreach (JObject azureSubscriptionJson in subscriptions)
+            {
+                AzureSubscription azureSubscription = new AzureSubscription(this.AzureStackContext, azureSubscriptionJson, this.AzureTenant, this.AzureEnvironment);
+                userSubscriptions.Add(azureSubscription);
+            }
+
+            return userSubscriptions;
+        }
+
+        //        
+
+    }
+}

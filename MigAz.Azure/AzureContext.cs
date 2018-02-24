@@ -187,8 +187,8 @@ namespace MigAz.Azure
                     await BeforeAzureSubscriptionChange?.Invoke(this);
 
                 if (azureSubscription != null)
-                    if (azureSubscription.Parent != this.AzureTenant)
-                        await SetTenantContext(azureSubscription.Parent);
+                    if (azureSubscription.AzureTenant != this.AzureTenant)
+                        await SetTenantContext(azureSubscription.AzureTenant);
 
                 _AzureSubscription = azureSubscription;
 
