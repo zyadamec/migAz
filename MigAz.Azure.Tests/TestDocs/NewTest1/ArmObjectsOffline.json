@@ -437,33 +437,33 @@
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
-  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/routeTables/?api-version=2017-09-01": {
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/routeTables/?api-version=2018-01-01": {
     "RequestGuid": "4cbceb83-d7a0-4920-b2a7-23cac9a235dd",
-    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/routeTables/?api-version=2017-09-01",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/routeTables/?api-version=2018-01-01",
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
-  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ManagedDisk/providers/Microsoft.Network/routeTables/?api-version=2017-09-01": {
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ManagedDisk/providers/Microsoft.Network/routeTables/?api-version=2018-01-01": {
     "RequestGuid": "43cecd5f-4f31-4a66-a5ed-2fddd158ca6c",
-    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ManagedDisk/providers/Microsoft.Network/routeTables/?api-version=2017-09-01",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ManagedDisk/providers/Microsoft.Network/routeTables/?api-version=2018-01-01",
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
-  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/test/providers/Microsoft.Network/routeTables/?api-version=2017-09-01": {
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/test/providers/Microsoft.Network/routeTables/?api-version=2018-01-01": {
     "RequestGuid": "c1ddeecd-5185-413d-bfc3-b102ddc490f6",
-    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2017-09-01",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2018-01-01",
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
-  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/test/providers/Microsoft.Network/routeTables/?api-version=2017-09-01": {
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/test/providers/Microsoft.Network/routeTables/?api-version=2018-01-01": {
     "RequestGuid": "c1ddeecd-5185-413d-bfc3-b102ddc490f6",
-    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2017-09-01",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2018-01-01",
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
-  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2017-09-01": {
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2018-01-01": {
     "RequestGuid": "43cecd5f-4f31-4a66-a5ed-2fddd158ca6c",
-    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2017-09-01",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-1234567890ab/resourceGroups/ASMTest/providers/Microsoft.Network/routeTables/?api-version=2018-01-01",
     "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
