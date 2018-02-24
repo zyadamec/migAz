@@ -1029,5 +1029,15 @@ namespace MigAz.Azure.UserControls
 
             LogProvider.WriteLog("UncheckMigrationTarget", "End");
         }
+
+        private async Task treeViewSourceResourceManager1_AfterNodeChecked(Core.MigrationTarget sender)
+        {
+            await AfterNodeChecked?.Invoke(sender);
+        }
+
+        private async Task treeViewSourceResourceManager1_AfterNodeUnchecked(Core.MigrationTarget sender)
+        {
+            await AfterNodeUnchecked?.Invoke(sender);
+        }
     }
 }

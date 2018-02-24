@@ -90,6 +90,8 @@
             this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";
             this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(290, 319);
             this.treeViewSourceResourceManager1.TabIndex = 72;
+            this.treeViewSourceResourceManager1.AfterNodeChecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeCheckedHandler(this.treeViewSourceResourceManager1_AfterNodeChecked);
+            this.treeViewSourceResourceManager1.AfterNodeUnchecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeUncheckedHandler(this.treeViewSourceResourceManager1_AfterNodeUnchecked);
             // 
             // MigrationAzureSourceContext
             // 
