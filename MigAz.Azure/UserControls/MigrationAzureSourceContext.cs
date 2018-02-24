@@ -240,34 +240,24 @@ namespace MigAz.Azure.UserControls
             {
                 ResetForm();
 
-                    if (sender.AzureSubscription != null)
+                if (sender.AzureSubscription != null)
+                {
+                    await sender.AzureSubscription.InitializeChildrenAsync(false);
+
+                    switch (cmbAzureResourceTypeSource.SelectedItem.ToString())
                     {
-                //        if (_AzureContextTargetARM.AzureSubscription == null)
-                //        {
-                //            await _AzureContextTargetARM.SetSubscriptionContext(_AzureContextSource.AzureSubscription);
-                //        }
-
-                //        azureLoginContextViewerARM.Enabled = true;
-
-                //        this.TemplateGenerator.SourceSubscription = _AzureContextSource.AzureSubscription;
-                //        this.TemplateGenerator.TargetSubscription = _AzureContextTargetARM.AzureSubscription;
-
-                        switch (cmbAzureResourceTypeSource.SelectedItem.ToString())
-                        {
-                            case "Azure Service Management (ASM / Classic)":
-                                await BindAsmResources(_TargetSettings);
-                                break;
-                            case "Azure Resource Manager (ARM)":
-                                await BindArmResources(_TargetSettings);
-                                break;
-                            default:
-                                throw new ArgumentException("Unexpected Source Resource Tab: " + cmbAzureResourceTypeSource.SelectedValue);
-                        }
+                        case "Azure Service Management (ASM / Classic)":
+                            await BindAsmResources(_TargetSettings);
+                            break;
+                        case "Azure Resource Manager (ARM)":
+                            await BindArmResources(_TargetSettings);
+                            break;
+                        default:
+                            throw new ArgumentException("Unexpected Source Resource Tab: " + cmbAzureResourceTypeSource.SelectedValue);
+                    }
 
                     _AzureContextSource.AzureRetriever.SaveRestCache();
                     //        await ReadSubscriptionSettings(sender.AzureSubscription);
-
-                    //        treeTargetARM.Enabled = true;
                 }
             }
             catch (Exception exc)
