@@ -47,7 +47,7 @@
             this.Controls.Add(this.treeAzureARM);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "TreeViewSourceResourceManager";
-            this.Size = new System.Drawing.Size(680, 642);
+            this.Size = new System.Drawing.Size(576, 537);
             this.Resize += new System.EventHandler(this.TreeViewSourceResourceManager_Resize);
             this.ResumeLayout(false);
 

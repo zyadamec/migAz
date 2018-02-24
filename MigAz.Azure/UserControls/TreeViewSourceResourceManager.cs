@@ -54,6 +54,9 @@ namespace MigAz.Azure.UserControls
         public TreeViewSourceResourceManager()
         {
             InitializeComponent();
+            treeAzureARM.Width = this.Width;
+            treeAzureARM.Height = this.Height;
+
         }
 
         #endregion
