@@ -50,6 +50,15 @@ namespace MigAz.Azure
             if (authenticationResult != null)
                 this._AccessToken = authenticationResult.AccessToken;
         }
+        public AzureRestRequest(String url, AuthenticationResult authenticationResult, bool useCached = true)
+        {
+            this._Url = url;
+            this._UseCached = useCached;
+
+            this._AuthenticationResult = authenticationResult;
+            if (authenticationResult != null)
+                this._AccessToken = authenticationResult.AccessToken;
+        }
 
         public AzureRestRequest(String url, String accessToken, string method, bool useCached = true)
         {

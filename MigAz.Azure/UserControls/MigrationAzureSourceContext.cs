@@ -264,11 +264,11 @@ namespace MigAz.Azure.UserControls
                                 throw new ArgumentException("Unexpected Source Resource Tab: " + cmbAzureResourceTypeSource.SelectedValue);
                         }
 
-                //        _AzureContextSource.AzureRetriever.SaveRestCache();
-                //        await ReadSubscriptionSettings(sender.AzureSubscription);
+                    _AzureContextSource.AzureRetriever.SaveRestCache();
+                    //        await ReadSubscriptionSettings(sender.AzureSubscription);
 
-                //        treeTargetARM.Enabled = true;
-                    }
+                    //        treeTargetARM.Enabled = true;
+                }
             }
             catch (Exception exc)
             {

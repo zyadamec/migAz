@@ -97,11 +97,13 @@ namespace MigAz.Azure
         }
 
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(bool useCache = false)
         {
             // russell here now
             //await this.GetAzureARMLocations();
             //await this.GetResourceManagerProviders();
+
+            _ArmProviders = await this.GetResourceManagerProviders(useCache);
         }
 
         #endregion
@@ -1440,7 +1442,7 @@ namespace MigAz.Azure
             return matchedLocation;
         }
 
-        internal async Task<List<Provider>> GetResourceManagerProviders()
+        internal async Task<List<Provider>> GetResourceManagerProviders(bool allowCache = false)
         {
             _AzureContext.LogProvider.WriteLog("GetResourceManagerProviders", "Start - Subscription : " + this.ToString());
 
@@ -1458,7 +1460,7 @@ namespace MigAz.Azure
             string url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/providers?&api-version=2017-05-10";
             _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Providers for Subscription: " + this.ToString());
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, allowCache);
             AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject providersJson = JObject.Parse(azureRestResponse.Response);
 
@@ -1475,6 +1477,22 @@ namespace MigAz.Azure
             }
 
             return _ArmProviders;
+        }
+        
+        public String GetProviderMaxApiVersion(string providerNamespace, string resourceType)
+        {
+            if (_ArmProviders == null)
+                throw new Exception("You must first call InitializeChildrenAsync on the Azure Subscription before querying providers.");
+
+            Provider provider = _ArmProviders.Where(a => a.Namespace == providerNamespace).FirstOrDefault();
+            if (provider == null)
+                throw new ArgumentException("Unable to locate Provider with namespace '" + providerNamespace + "'.");
+
+            ProviderResourceType prt = provider.ResourceTypes.Where(a => a.ResourceType == resourceType).FirstOrDefault();
+            if (prt == null)
+                throw new ArgumentException("Unable to locate Resource Type '" + resourceType + "' in Provider Namespace '" + providerNamespace + "'.");
+
+            return prt.MaxApiVersion;
         }
 
         internal async Task<JToken> GetAzureArmVirtualMachineDetail(Arm.VirtualMachine virtualMachine)
