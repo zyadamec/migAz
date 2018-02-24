@@ -115,7 +115,7 @@ namespace MigAz.AzureStack.UserControls
 
         public async Task UncheckMigrationTarget(Core.MigrationTarget migrationTarget)
         {
-            throw new Exception("Not Here");
+            await treeViewSourceResourceManager1.UncheckMigrationTarget(migrationTarget);
         }
 
         private void MigrationAzureStackSourceContext_Resize(object sender, EventArgs e)
