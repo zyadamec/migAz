@@ -2116,7 +2116,7 @@ namespace MigAz.Azure
                     break;
                 case "VirtualMachineImages":
                     // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/images/images-list-by-resource-group
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=2016-04-30-preview";
+                    //url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "disks");
                     _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machine Images for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "ManagedDisks":

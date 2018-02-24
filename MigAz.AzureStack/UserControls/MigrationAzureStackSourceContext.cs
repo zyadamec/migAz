@@ -80,6 +80,7 @@ namespace MigAz.AzureStack.UserControls
             _TargetSettings = targetSettings;
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
+            _ImageList = imageList;
 
             _AzureStackContextSource = new AzureStackContext(_LogProvider, _StatusProvider, promptBehavior);
             _AzureStackContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
@@ -91,6 +92,8 @@ namespace MigAz.AzureStack.UserControls
             _AzureStackContextSource.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureStackContextSource.BeforeAzureTenantChange += _AzureStackContext_BeforeAzureTenantChange;
             azureStackLoginContextViewer1.AfterContextChanged += AzureStackLoginContextViewerSource_AfterContextChanged;
+
+            treeAzureARM.ImageList = _ImageList;
 
             await this.azureStackLoginContextViewer1.Bind(_AzureStackContextSource);
         }
@@ -229,7 +232,7 @@ namespace MigAz.AzureStack.UserControls
                         TreeNode subscriptionNodeARM = new TreeNode(_AzureStackContextSource.AzureSubscription.Name);
                         subscriptionNodeARM.ImageKey = "Subscription";
                         subscriptionNodeARM.SelectedImageKey = "Subscription";
-                        //treeAzureARM.Nodes.Add(subscriptionNodeARM);
+                        treeAzureARM.Nodes.Add(subscriptionNodeARM);
                         subscriptionNodeARM.Expand();
 
                         foreach (Azure.MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in _AzureStackContextSource.AzureSubscription.ArmTargetNetworkSecurityGroups)
