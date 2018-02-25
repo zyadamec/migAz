@@ -14,7 +14,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class LoadBalancerProperties : UserControl
     {
-        private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private LoadBalancer _LoadBalancer;
         private bool _IsBinding = false;
@@ -33,13 +32,12 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke();
         }
 
-        internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView)
+        internal async Task Bind(TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
-                _AzureContext = azureContext;
                 _TargetTreeView = targetTreeView;
             }
             finally
@@ -91,7 +89,7 @@ namespace MigAz.Azure.UserControls
 
                 if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(_AzureContext, _TargetTreeView, _TargetTreeView.GetVirtualNetworksInMigration());
+                    await networkSelectionControl1.Bind(_TargetTreeView, _TargetTreeView.GetVirtualNetworksInMigration());
                     networkSelectionControl1.VirtualNetworkTarget = _LoadBalancer.FrontEndIpConfigurations[0];
                 }
             }

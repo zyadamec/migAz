@@ -790,12 +790,12 @@ namespace MigAz.Forms
             }
         }
 
-        private void migAzMigrationTargetSelection1_AfterMigrationTargetSelected(UserControl migrationTargetUserControl)
+        private async Task migAzMigrationTargetSelection1_AfterMigrationTargetSelected(UserControl migrationTargetUserControl)
         {
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
-                azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
+                await azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
                 azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
 
@@ -804,9 +804,12 @@ namespace MigAz.Forms
                 {
                     MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
-                    azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
+                    await azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                     targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
                 }
+
+                if (propertyPanel1.IsBound)
+                    await propertyPanel1.Rebind();
             }
 
             MigrationTargetSelectionControlVisible = false;
@@ -849,7 +852,8 @@ namespace MigAz.Forms
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
 
-            await propertyPanel1.Rebind();
+            if (propertyPanel1.IsBound)
+                await propertyPanel1.Rebind();
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
@@ -861,7 +865,6 @@ namespace MigAz.Forms
 
                 _EventSourceNode = selectedNode;
                 await this.propertyPanel1.Bind(
-                    MigrationTargetControl == null ? null : ((MigrationAzureTargetContext)MigrationTargetControl).AzureContext, 
                     targetTreeView, 
                     selectedNode);
                 _EventSourceNode = null;

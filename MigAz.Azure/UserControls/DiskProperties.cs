@@ -15,8 +15,7 @@ namespace MigAz.Azure.UserControls
     public partial class DiskProperties : UserControl
     {
         TargetTreeView _TargetTreeView;
-        private AzureContext _AzureContext;
-        private Azure.MigrationTarget.Disk _TargetDisk;
+        private Disk _TargetDisk;
         private TreeNode _TargetTreeNode;
         private bool _ShowSizeInGb = true;
         private bool _IsBinding = false;
@@ -54,14 +53,13 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, TreeNode targetDiskTreeNode, Azure.MigrationTarget.Disk targetDisk)
+        internal async Task Bind(TargetTreeView targetTreeView, TreeNode targetDiskTreeNode, Azure.MigrationTarget.Disk targetDisk)
         {
-            _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
             _TargetTreeNode = targetDiskTreeNode;
 
-            BindCommon();
+            await BindCommon();
         }
 
         private async Task BindCommon()

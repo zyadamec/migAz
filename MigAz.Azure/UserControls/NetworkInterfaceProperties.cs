@@ -13,7 +13,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class NetworkInterfaceProperties : UserControl
     {
-        private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
         private bool _IsBinding = false;
@@ -32,19 +31,18 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke(); // bubble event
         }
 
-        internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
+        internal async Task Bind(TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
         {
             try
             {
                 _IsBinding = true;
-                _AzureContext = azureContext;
                 _TargetTreeView = targetTreeView;
                 _TargetNetworkInterface = targetNetworkInterface;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
 
                 if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(azureContext, targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
+                    await networkSelectionControl1.Bind(targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
                     networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
                 }
 

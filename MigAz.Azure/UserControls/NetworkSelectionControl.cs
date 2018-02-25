@@ -16,7 +16,6 @@ namespace MigAz.Azure.UserControls
     public partial class NetworkSelectionControl : UserControl
     {
         private IVirtualNetworkTarget _NetworkInterfaceTarget;
-        private AzureContext _AzureContext;
         private List<Azure.MigrationTarget.VirtualNetwork> _TargetVirualNetworksInMigration = new List<MigrationTarget.VirtualNetwork>();
         private Azure.UserControls.TargetTreeView _TargetTreeView = null;
         private bool _IsBinding = false;
@@ -30,9 +29,8 @@ namespace MigAz.Azure.UserControls
             txtStaticIp.TextChanged += txtStaticIp_TextChanged;
         }
 
-        public async Task Bind(AzureContext azureContext, Azure.UserControls.TargetTreeView targetTreeView,  List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
+        public async Task Bind(Azure.UserControls.TargetTreeView targetTreeView,  List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
         {
-            _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
             _TargetVirualNetworksInMigration = virtualNetworks;
 

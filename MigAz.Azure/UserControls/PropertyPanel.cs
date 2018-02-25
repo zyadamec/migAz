@@ -13,7 +13,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class PropertyPanel : UserControl
     {
-        private AzureContext _AzureContext; // Future, should go away, bind to object(s) of smaller scale, ideally not entire context?
         private TargetTreeView _TargetTreeView;
         private TreeNode _BoundTreeNode;
 
@@ -69,7 +68,6 @@ namespace MigAz.Azure.UserControls
 
         public void Clear()
         {
-            this._AzureContext = null;
             this._BoundTreeNode = null;
             this.ResourceImage = null;
             this.ResourceText = String.Empty;
@@ -90,15 +88,20 @@ namespace MigAz.Azure.UserControls
 
         public async Task Rebind()
         {
-            //this.PropertyDetailControl.Rebind();
+            if (IsBound)
+                await this.Bind(_TargetTreeView, _BoundTreeNode);
         }
 
-        public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, TreeNode migrationTargetNode)
+        public bool IsBound
+        {
+            get { return _TargetTreeView != null && _BoundTreeNode != null; }
+        }
+
+        public async Task Bind(TargetTreeView targetTreeView, TreeNode migrationTargetNode)
         {
             this.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
-            this._AzureContext = azureContext;
             this._TargetTreeView = targetTreeView;
             this._BoundTreeNode = migrationTargetNode;
 
@@ -115,7 +118,7 @@ namespace MigAz.Azure.UserControls
 
                     VirtualMachineProperties properties = new VirtualMachineProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(azureContext, _TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
+                    await properties.Bind(_TargetTreeView, (Azure.MigrationTarget.VirtualMachine)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
@@ -151,7 +154,7 @@ namespace MigAz.Azure.UserControls
 
                     StorageAccountProperties properties = new StorageAccountProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(azureContext, (Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag, _TargetTreeView);
+                    properties.Bind((Azure.MigrationTarget.StorageAccount)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.Disk))
@@ -162,7 +165,7 @@ namespace MigAz.Azure.UserControls
 
                     DiskProperties properties = new DiskProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    properties.Bind(azureContext, _TargetTreeView, migrationTargetNode, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
+                    properties.Bind(_TargetTreeView, migrationTargetNode, (Azure.MigrationTarget.Disk)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
@@ -180,7 +183,7 @@ namespace MigAz.Azure.UserControls
 
                     NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(azureContext, _TargetTreeView, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
+                    await properties.Bind(_TargetTreeView, (Azure.MigrationTarget.NetworkInterface)migrationTargetNode.Tag);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
@@ -189,7 +192,7 @@ namespace MigAz.Azure.UserControls
 
                     ResourceGroupProperties properties = new ResourceGroupProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(azureContext, (Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag, _TargetTreeView);
+                    await properties.Bind((Azure.MigrationTarget.ResourceGroup)migrationTargetNode.Tag, _TargetTreeView);
                     this.PropertyDetailControl = properties;
                 }
                 else if (migrationTargetNode.Tag.GetType() == typeof(Azure.MigrationTarget.LoadBalancer))
@@ -198,7 +201,7 @@ namespace MigAz.Azure.UserControls
 
                     LoadBalancerProperties properties = new LoadBalancerProperties();
                     properties.PropertyChanged += Properties_PropertyChanged;
-                    await properties.Bind(azureContext, _TargetTreeView);
+                    await properties.Bind(_TargetTreeView);
                     properties.LoadBalancer = (Azure.MigrationTarget.LoadBalancer)migrationTargetNode.Tag;
                     this.PropertyDetailControl = properties;
                 }

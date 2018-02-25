@@ -11,7 +11,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
-        private AzureContext _AzureContext;
         private ResourceGroup _ResourceGroup;
         private TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
@@ -24,12 +23,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AzureContext azureContext, ResourceGroup resourceGroup, TargetTreeView targetTreeView)
+        internal async Task Bind(ResourceGroup resourceGroup, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
-                _AzureContext = azureContext;
                 _ResourceGroup = resourceGroup;
                 _TargetTreeView = targetTreeView;
 
