@@ -73,10 +73,9 @@ namespace MigAz.Azure.UserControls
                     lblTargetLocationRequired.Enabled = false;
                     lblTargetLocationRequired.Visible = false;
 
-                    List<Arm.VMSize> vmSizes = await targetTreeView.TargetResourceGroup.TargetLocation.GetAzureARMVMSizes();
-                    if (vmSizes != null)
+                    if (targetTreeView.TargetResourceGroup.TargetLocation.VMSizes != null)
                     {
-                        foreach (Arm.VMSize vmSize in vmSizes)
+                        foreach (Arm.VMSize vmSize in targetTreeView.TargetResourceGroup.TargetLocation.VMSizes)
                         {
                             if (vmSize.IsStorageTypeSupported(_VirtualMachine.OSVirtualHardDisk.StorageAccountType))
                             {

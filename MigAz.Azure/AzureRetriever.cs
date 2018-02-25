@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using MigAz.Core.Interface;
 using MigAz.Azure.Arm;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure
 {
@@ -26,8 +27,6 @@ namespace MigAz.Azure
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
-
-        private List<AzureTenant> _ArmTenants;
 
         private Dictionary<string, AzureRestResponse> _RestApiCache = new Dictionary<string, AzureRestResponse>();
         private Dictionary<AzureSubscription, AzureSubscriptionResourceCache> _AzureSubscriptionResourceCaches = new Dictionary<AzureSubscription, AzureSubscriptionResourceCache>();
@@ -47,7 +46,6 @@ namespace MigAz.Azure
         public void ClearCache()
         {
             _RestApiCache = new Dictionary<string, AzureRestResponse>();
-            _ArmTenants = null;
         }
 
         public void LoadRestCache(string filepath)
@@ -91,151 +89,8 @@ namespace MigAz.Azure
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             _AzureSubscription = azureSubscription;
-
-            if (_AzureContext.TokenProvider == null)
-                _AzureContext.TokenProvider = new AzureTokenProvider(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.LogProvider);
-            else
-            {
-            }
-            // russell await this._AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetASMServiceManagementUrl(), azureSubscription.AzureAdTenantId);
         }
-
-
-        public async Task<List<AzureTenant>> GetAzureARMTenants(bool allowRestCacheUse = false)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMTenants", "Start");
-
-            if (_ArmTenants != null)
-                return _ArmTenants;
-
-            if (_AzureContext == null)
-                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
-            if (_AzureContext.TokenProvider == null)
-                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty);
-
-            String tenantUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
-
-            var tenants = from tenant in tenantsJson["value"]
-                          select tenant;
-
-            _ArmTenants = new List<AzureTenant>();
-
-            foreach (JObject tenantJson in tenants)
-            {
-                AzureTenant azureTenant = new AzureTenant(tenantJson, _AzureContext);
-                await azureTenant.InitializeChildren(allowRestCacheUse);
-                _ArmTenants.Add(azureTenant);
-            }
-
-            return _ArmTenants;
-        }
-
-        public async Task<List<AzureDomain>> GetAzureARMDomains(AzureTenant azureTenant, bool allowRestCacheUse = false)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
-
-            if (_AzureContext == null)
-                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
-            if (_AzureContext.TokenProvider == null)
-                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-
-            String domainUrl = _AzureContext.AzureServiceUrls.GetGraphApiUrl() + "myorganization/domains?api-version=1.6";
-
-            AuthenticationResult tenantAuthenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetGraphApiUrl(), azureTenant.TenantId);
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject domainsJson = JObject.Parse(azureRestResponse.Response);
-
-            var domains = from domain in domainsJson["value"]
-                          select domain;
-
-            List<AzureDomain> armTenantDomains = new List<AzureDomain>();
-
-            foreach (JObject domainJson in domains)
-            {
-                AzureDomain azureDomain = new AzureDomain(domainJson, _AzureContext);
-                armTenantDomains.Add(azureDomain);
-            }
-
-            return armTenantDomains;
-        }
-
-        /// <summary>
-        /// Get Azure Subscriptions within the provided Azure Tenant
-        /// </summary>
-        /// <param name="azureTenant">Azure Tenant for which Azure Subscriptions should be retrieved</param>
-        /// <param name="allowRestCacheUse">False in production use so that Azure Token Content is Tenant specific.  True in Unit Tests to allow offline (no actual URL querying).</param>
-        /// <returns></returns>
-        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureTenant azureTenant, bool allowRestCacheUse = false)
-        {
-            _AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Auth Token to Query Subscriptions");
-
-            String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-            AuthenticationResult authenticationResult = await _AzureContext.TokenProvider.GetToken(_AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Querying Subscriptions");
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", allowRestCacheUse);
-            AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
-
-            var subscriptions = from subscription in subscriptionsJson["value"]
-                                select subscription;
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Instantiating Subscriptions");
-
-            List<AzureSubscription> azureSubscriptions = new List<AzureSubscription>();
-
-            foreach (JObject azureSubscriptionJson in subscriptions)
-            {
-                AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, azureSubscriptionJson, azureTenant, _AzureContext.AzureEnvironment);
-                azureSubscriptions.Add(azureSubscription);
-
-                _AzureContext.StatusProvider.UpdateStatus("BUSY: Loaded Subscription " + azureSubscription.ToString());
-            }
-
-            _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions Completed");
-
-            return azureSubscriptions;
-        }
-
-        //public async Task<List<AzureSubscription>> GetSubscriptions()
-        //{
-        //    if (_AzureSubscriptions != null)
-        //        return _AzureSubscriptions;
-
-
-        //    String subscriptionsUrl = _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl() + "subscriptions";
-        //    _AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
-
-        //    AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, _AzureContext.TokenProvider.AccessToken);
-        //    azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");
-        //    AzureRestResponse azureRestResponse = await _AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-
-        //    XmlDocument subscriptionsXml = AzureSubscription.RemoveXmlns(azureRestResponse.Response);
-
-        //    _AzureSubscriptions = new List<AzureSubscription>();
-        //    foreach (XmlNode subscriptionXml in subscriptionsXml.SelectNodes("//Subscription"))
-        //    {
-        //        AzureSubscription azureSubscription = new AzureSubscription(_AzureContext, subscriptionXml, this._AzureContext.AzureEnvironment);
-        //        _AzureSubscriptions.Add(azureSubscription);
-        //    }
-
-        //    return _AzureSubscriptions;
-        //}
-
+        
         public async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Url: " + azureRestRequest.Url);

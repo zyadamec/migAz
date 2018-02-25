@@ -44,14 +44,10 @@ namespace MigAz.AzureStack
             // AzureStack Login via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
             await base.Login(_AzureStackEndpoints.LoginEndpoint, _AzureStackEndpoints.Audiences);
 
-            List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
-            foreach (AzureTenant azureTenant in tenants)
+            List<AzureTenant> azureTenants = await this.GetAzureARMTenants();
+            foreach (AzureTenant azureTenant in azureTenants)
             {
-                List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(azureTenant);
-                foreach (AzureDomain domain in domains)
-                {
-                }
-
+                List<AzureDomain> domains = await azureTenant.GetAzureARMDomains(this);
                 List<AdminSubscription> subscriptions = await GetAzureStackARMSubscriptions(azureTenant);
             }
         }
@@ -62,7 +58,7 @@ namespace MigAz.AzureStack
             //_AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
             String subscriptionsUrl = this.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
-            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken(this.GetARMTokenResourceUrl(), azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);// _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
+            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken(this.GetARMTokenResourceUrl(), azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);
 
             //_AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
@@ -77,7 +73,7 @@ namespace MigAz.AzureStack
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
-                AdminSubscription azureSubscription = new AdminSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment);
+                AdminSubscription azureSubscription = new AdminSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment, this.GetARMServiceManagementUrl(), this.GetARMTokenResourceUrl());
                 await azureSubscription.GetAzureStackUserSubscriptions();
                 tenantSubscriptions.Add(azureSubscription);
             }

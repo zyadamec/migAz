@@ -45,7 +45,7 @@ namespace MigAz.Azure.UserControls
             cboTenant.Items.Clear();
             if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
-                foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                 {
                     if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                         cboTenant.Items.Add(azureTenant);
@@ -63,10 +63,12 @@ namespace MigAz.Azure.UserControls
 
                 if (cboTenant.SelectedItem != null)
                 {
+                    AzureTenant selectedTenant = (AzureTenant)cboTenant.SelectedItem;
+
                     cmbSubscriptions.Items.Clear();
                     if (_AzureContext.AzureRetriever != null)
                     {
-                        foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureContext.AzureTenant))
+                        foreach (AzureSubscription azureSubscription in await selectedTenant.GetAzureARMSubscriptions(_AzureContext, false))
                         {
                             cmbSubscriptions.Items.Add(azureSubscription);
                         }
@@ -127,7 +129,7 @@ namespace MigAz.Azure.UserControls
                         btnAuthenticate.Text = "Sign Out";
 
                         cboTenant.Items.Clear();
-                        foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                        foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                         {
                             if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
                                 cboTenant.Items.Add(azureTenant);

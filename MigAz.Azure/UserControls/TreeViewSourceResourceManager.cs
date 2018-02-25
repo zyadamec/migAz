@@ -115,7 +115,7 @@ namespace MigAz.Azure.UserControls
 
         #region Event Handlers
         
-        public async Task BindArmResources(AzureSubscription azureSubscription, TargetSettings targetSettings)
+        public async Task BindArmResources(AzureContext azureContext, AzureSubscription azureSubscription, TargetSettings targetSettings)
         {
             treeAzureARM.Nodes.Clear();
 
@@ -123,7 +123,7 @@ namespace MigAz.Azure.UserControls
             {
                 if (azureSubscription != null)
                 {
-                    await azureSubscription.BindArmResources(targetSettings);
+                    await azureSubscription.BindArmResources(azureContext, targetSettings);
 
                     if (azureSubscription != null)
                     {

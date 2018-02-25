@@ -40,7 +40,7 @@ namespace MigAz.Azure.UserControls
                     cboTargetLocation.Items.Clear();
                     if (azureContext != null && azureContext.AzureRetriever != null && azureContext.AzureRetriever.SubscriptionContext != null)
                     {
-                        List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
+                        List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations(_AzureContext);
 
                         foreach (Azure.Arm.Location armLocation in armLocations.OrderBy(a => a.DisplayName))
                         {
@@ -63,7 +63,7 @@ namespace MigAz.Azure.UserControls
 
                     if (azureContext.AzureRetriever.SubscriptionContext != null)
                     {
-                        foreach (Azure.Asm.Location asmLocation in await azureContext.AzureSubscription.GetAzureASMLocations())
+                        foreach (Azure.Asm.Location asmLocation in await azureContext.AzureSubscription.GetAzureASMLocations(_AzureContext))
                         {
                             cboTargetLocation.Items.Add(asmLocation);
                         }

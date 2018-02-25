@@ -25,7 +25,7 @@ namespace MigAz.Azure.Arm
         internal override async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (this.PublicIpId != String.Empty)
-                this.PublicIP = await azureContext.AzureSubscription.GetAzureARMPublicIP(this.PublicIpId);
+                this.PublicIP = await azureContext.AzureSubscription.GetAzureARMPublicIP(azureContext, this.PublicIpId);
         }
 
         public LoadBalancer LoadBalancer

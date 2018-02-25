@@ -16,10 +16,10 @@ namespace MigAz.AzureStack
 
         #region Constructors
 
-        private AdminSubscription() : base(null, null, null, new AzureEnvironment())
+        private AdminSubscription() : base(null, null, new AzureEnvironment(), String.Empty, String.Empty)
         { }
 
-        public AdminSubscription(AzureStackContext azureStackContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment) : base(azureStackContext, subscriptionJson, parentAzureTenant, azureEnvironment)
+        public AdminSubscription(AzureStackContext azureStackContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment, String apiUrl, String tokenResourceUrl) : base(subscriptionJson, parentAzureTenant, azureEnvironment, apiUrl, tokenResourceUrl)
         {
             _AzureStackContext = azureStackContext;
         }
@@ -51,7 +51,7 @@ namespace MigAz.AzureStack
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
-                AzureSubscription azureSubscription = new AzureSubscription(this.AzureStackContext, azureSubscriptionJson, this.AzureTenant, this.AzureEnvironment);
+                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, this.AzureTenant, this.AzureEnvironment, _AzureStackContext.GetARMServiceManagementUrl(), _AzureStackContext.GetARMTokenResourceUrl());
                 userSubscriptions.Add(azureSubscription);
             }
 

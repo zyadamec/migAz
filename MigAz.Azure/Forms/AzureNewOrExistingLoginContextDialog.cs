@@ -48,7 +48,7 @@ namespace MigAz.Azure.Forms
                 if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null)
                 {
                     azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
-                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.AzureRetriever.GetAzureARMTenants())
+                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.GetAzureARMTenants())
                     {
                         subscriptionCount += azureTenant.Subscriptions.Count;
 

@@ -23,7 +23,7 @@ namespace MigAz.Azure.Arm
 
         public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
+            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext, azureContext.AzureSubscription, StorageAccountName);
         }
 
         public Arm.VirtualMachine ParentVirtualMachine

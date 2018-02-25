@@ -30,8 +30,8 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\AsmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
-            await azureContextUSCommercial.AzureSubscription.BindAsmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindAsmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -64,8 +64,8 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\ArmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -100,8 +100,8 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
@@ -154,7 +154,7 @@ namespace MigAz.Tests
             await artifacts.ValidateAzureResources();
             Assert.IsNotNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
-            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.SeekVmSize("Standard_DS2_v2").Result;
+            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.SeekVmSize("Standard_DS2_v2");
             await artifacts.ValidateAzureResources();
             Assert.IsNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
@@ -179,8 +179,8 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 

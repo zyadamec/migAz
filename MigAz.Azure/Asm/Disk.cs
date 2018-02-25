@@ -18,9 +18,9 @@ namespace MigAz.Azure.Asm
             this._DataDiskNode = dataDiskNode;
         }
 
-        public async Task InitializeChildren()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(StorageAccountName);
+            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(azureContext, StorageAccountName);
         }
 
         #region Properties

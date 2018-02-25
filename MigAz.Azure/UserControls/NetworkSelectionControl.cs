@@ -43,7 +43,7 @@ namespace MigAz.Azure.UserControls
                 if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
                     rbExistingARMVNet.Text = "Existing VNet in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                    List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation);
+                    List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(azureContext, _TargetTreeView.TargetResourceGroup.TargetLocation);
                     this.ExistingARMVNetEnabled = a.Count() > 0;
                 }
                 else
@@ -210,7 +210,7 @@ namespace MigAz.Azure.UserControls
 
                 if (_AzureContext != null && _AzureContext.AzureRetriever != null && _TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation))
+                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(_AzureContext, _TargetTreeView.TargetResourceGroup.TargetLocation))
                     {
                         if (armVirtualNetwork.HasNonGatewaySubnet)
                             cmbExistingArmVNets.Items.Add(armVirtualNetwork);

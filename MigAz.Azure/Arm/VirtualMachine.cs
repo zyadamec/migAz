@@ -11,22 +11,22 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualMachine : ArmResource, IVirtualMachine
     {
-        private AzureContext _AzureContext;
         private List<IArmDisk> _DataDisks = new List<IArmDisk>();
         private IArmDisk _OSVirtualHardDisk;
         private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
         private VMSize _VMSize;
+        private AzureSubscription _AzureSubscription;
 
 
         private VirtualMachine() : base(null) { }
 
-        public VirtualMachine(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
+        public VirtualMachine(AzureSubscription azureSubscription, JToken resourceToken) : base(resourceToken)
         {
-            _AzureContext = azureContext;
+            _AzureSubscription = azureSubscription;
 
             if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
             {
-                _OSVirtualHardDisk = new ManagedDisk(_AzureContext, this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                _OSVirtualHardDisk = new ManagedDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
             }
             else
             {
@@ -37,7 +37,7 @@ namespace MigAz.Azure.Arm
             {
                 if (dataDiskToken["vhd"] == null)
                 {
-                    _DataDisks.Add(new ManagedDisk(_AzureContext, this, dataDiskToken));
+                    _DataDisks.Add(new ManagedDisk(this, dataDiskToken));
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace MigAz.Azure.Arm
             await base.InitializeChildrenAsync(azureContext);
 
             if (this.AvailabilitySetId != String.Empty)
-                this.AvailabilitySet = azureContext.AzureSubscription.GetAzureARMAvailabilitySet(azureContext.AzureSubscription, this.AvailabilitySetId);
+                this.AvailabilitySet = azureContext.AzureSubscription.GetAzureARMAvailabilitySet(azureContext, this.AvailabilitySetId);
 
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
@@ -127,7 +127,7 @@ namespace MigAz.Azure.Arm
 
             foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
             {
-                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
+                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(azureContext, (string)networkInterfaceToken["id"]);
                 networkInterface.VirtualMachine = this;
                 _NetworkInterfaceCards.Add(networkInterface);
             }
@@ -135,16 +135,15 @@ namespace MigAz.Azure.Arm
             // Seek the VmSize object that corresponds to the VmSize String obtained from the VM Json
             if (this.ResourceGroup != null && this.ResourceGroup.Location != null)
             {
-                List<VMSize> vmSizes = await this.ResourceGroup.Location.GetAzureARMVMSizes();
-                this.VmSize = vmSizes.Where(a => a.Name == this.VmSizeString).FirstOrDefault();
+                this.VmSize = this.ResourceGroup.Location.SeekVmSize(this.VmSizeString);
             }
 
             return;
         }
 
-        public async Task Refresh()
+        public async Task Refresh(AzureContext azureContext)
         {
-            base.SetResourceToken(await _AzureContext.AzureSubscription.GetAzureArmVirtualMachineDetail(this));
+            base.SetResourceToken(await _AzureSubscription.GetAzureArmVirtualMachineDetail(azureContext, this));
         }
 
         public override string ToString()

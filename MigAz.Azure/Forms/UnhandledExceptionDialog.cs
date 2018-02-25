@@ -35,11 +35,16 @@ namespace MigAz.Azure.Forms
                 if (e.GetType() == typeof(System.Net.WebException))
                 {
                     System.Net.WebException webException = (System.Net.WebException)e;
-                    Stream responseStream = webException.Response.GetResponseStream();
-                    responseStream.Position = 0;
-                    StreamReader sr = new StreamReader(responseStream);
-                    string responseBody = sr.ReadToEnd();
-                    textBox1.Text = responseBody + Environment.NewLine + Environment.NewLine + webException.Message + Environment.NewLine + Environment.NewLine + webException.StackTrace;
+                    if (webException != null && webException.Response != null)
+                    {
+                        Stream responseStream = webException.Response.GetResponseStream();
+                        responseStream.Position = 0;
+                        StreamReader sr = new StreamReader(responseStream);
+                        string responseBody = sr.ReadToEnd();
+                        textBox1.Text = responseBody + Environment.NewLine + Environment.NewLine + webException.Message + Environment.NewLine + Environment.NewLine + webException.StackTrace;
+                    }
+                    else
+                        textBox1.Text = e.Message + Environment.NewLine + e.StackTrace;
                 }
                 else
                     textBox1.Text = e.Message + Environment.NewLine + e.StackTrace;

@@ -26,6 +26,7 @@ namespace MigAz.Azure.Generator
         private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
         private string _OutputDirectory = String.Empty;
+        private AzureContext _SourceAzureContext;
         private ISubscription _SourceSubscription;
         private ISubscription _TargetSubscription;
         private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
@@ -38,8 +39,9 @@ namespace MigAz.Azure.Generator
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription)
+        public TemplateGenerator(AzureContext sourceAzureContext, ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription)
         {
+            _SourceAzureContext = sourceAzureContext;
             _logProvider = logProvider;
             _statusProvider = statusProvider;
             _SourceSubscription = sourceSubscription;
@@ -1287,7 +1289,7 @@ namespace MigAz.Azure.Generator
                 {
                     Arm.ManagedDisk armManagedDisk = (Arm.ManagedDisk)disk.SourceDisk;
 
-                    copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(_AccessSASTokenLifetime);
+                    copyblobdetail.SourceAbsoluteUri = await armManagedDisk.GetSASUrlAsync(_SourceAzureContext, _AccessSASTokenLifetime);
                     copyblobdetail.SourceExpiration = DateTime.UtcNow.AddSeconds(this.AccessSASTokenLifetimeSeconds);
                 }
             }

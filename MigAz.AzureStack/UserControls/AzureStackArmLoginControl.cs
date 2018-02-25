@@ -35,7 +35,7 @@ namespace MigAz.AzureStack.UserControls
             cboTenant.Items.Clear();
             if (_AzureStackContext.AzureRetriever != null && _AzureStackContext.TokenProvider != null)
             {
-                foreach (AzureTenant azureTenant in await _AzureStackContext.AzureRetriever.GetAzureARMTenants())
+                foreach (AzureTenant azureTenant in await _AzureStackContext.GetAzureARMTenants())
                 {
                     if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                         cboTenant.Items.Add(azureTenant);
@@ -53,10 +53,12 @@ namespace MigAz.AzureStack.UserControls
 
                 if (cboTenant.SelectedItem != null)
                 {
+                    AzureTenant selectedTenant = (AzureTenant)cboTenant.SelectedItem;
+
                     cmbSubscriptions.Items.Clear();
                     if (_AzureStackContext.AzureRetriever != null)
                     {
-                        foreach (AzureSubscription azureSubscription in await _AzureStackContext.AzureRetriever.GetAzureARMSubscriptions(_AzureStackContext.AzureTenant))
+                        foreach (AzureSubscription azureSubscription in await selectedTenant.GetAzureARMSubscriptions(_AzureStackContext))
                         {
                             cmbSubscriptions.Items.Add(azureSubscription);
                         }
@@ -100,7 +102,7 @@ namespace MigAz.AzureStack.UserControls
                         btnAuthenticate.Text = "Sign Out";
 
                         cboTenant.Items.Clear();
-                        foreach (AzureTenant azureTenant in await _AzureStackContext.AzureRetriever.GetAzureARMTenants())
+                        foreach (AzureTenant azureTenant in await _AzureStackContext.GetAzureARMTenants())
                         {
                             if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
                                 cboTenant.Items.Add(azureTenant);

@@ -21,7 +21,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(Asm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
+        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.RoleName, targetSettings);
@@ -50,10 +50,10 @@ namespace MigAz.Azure.MigrationTarget
             #region Seek ARM Target Size
 
             // Get ARM Based Location (that matches location of Source ASM VM
-            Arm.Location armLocation = azureSubscription.GetAzureARMLocation(virtualMachine.Location).Result;
+            Arm.Location armLocation = azureSubscription.GetAzureARMLocation(azureContext, virtualMachine.Location).Result;
             if (armLocation != null)
             {
-                this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name).Result;
+                this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name);
 
                 if (this.TargetSize == null)
                 {
@@ -75,7 +75,7 @@ namespace MigAz.Azure.MigrationTarget
 
                     if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
                     {
-                        this.TargetSize = armLocation.SeekVmSize(VMSizeTable[virtualMachine.RoleSize.Name]).Result;
+                        this.TargetSize = armLocation.SeekVmSize(VMSizeTable[virtualMachine.RoleSize.Name]);
                     }
                 }
             }
