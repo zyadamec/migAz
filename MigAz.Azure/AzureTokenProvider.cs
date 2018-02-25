@@ -60,11 +60,29 @@ namespace MigAz.Azure
             _LogProvider.WriteLog("GetToken", " - Resource Url: " + resourceUrl);
             _LogProvider.WriteLog("GetToken", " - Azure AD Tenant Guid: " + azureAdTenantGuid.ToString());
             _LogProvider.WriteLog("GetToken", " - Prompt Behavior: " + promptBehavior.ToString());
+            if (_LastUserInfo == null)
+            {
+                _LogProvider.WriteLog("GetToken", " - Required User: N/A");
+            }
+            else
+            {
+                _LogProvider.WriteLog("GetToken", " - Required User: " + _LastUserInfo.DisplayableId);
+            }
 
             AuthenticationContext tenantAuthenticationContext = GetTenantAuthenticationContext(azureAdTenantGuid);
-            
+
             PlatformParameters platformParams = new PlatformParameters(promptBehavior, null);
-            AuthenticationResult authenticationResult = await tenantAuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
+            AuthenticationResult authenticationResult;
+
+            if (_LastUserInfo == null)
+            {
+                authenticationResult = await tenantAuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams);
+            }
+            else
+            {
+                UserIdentifier userIdentifier = new UserIdentifier(_LastUserInfo.DisplayableId, UserIdentifierType.RequiredDisplayableId);
+                authenticationResult = await tenantAuthenticationContext.AcquireTokenAsync(resourceUrl, strClientId, new Uri(strReturnUrl), platformParams, userIdentifier);
+            }
 
             if (authenticationResult == null)
                 _LastUserInfo = null;
