@@ -37,11 +37,16 @@
             this.treeViewSourceResourceManager1.AutoSelectDependencies = true;
             this.treeViewSourceResourceManager1.DefaultTargetDiskType = MigAz.Core.Interface.ArmDiskType.ManagedDisk;
             this.treeViewSourceResourceManager1.IsSourceContextAuthenticated = false;
-            this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(4, 384);
+            this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(4, 162);
             this.treeViewSourceResourceManager1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";
             this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(576, 537);
             this.treeViewSourceResourceManager1.TabIndex = 0;
+            this.treeViewSourceResourceManager1.AfterNodeChecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeCheckedHandler(this.treeViewSourceResourceManager1_AfterNodeChecked);
+            this.treeViewSourceResourceManager1.AfterNodeUnchecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeUncheckedHandler(this.treeViewSourceResourceManager1_AfterNodeUnchecked);
+            this.treeViewSourceResourceManager1.AfterNodeChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeChangedHandler(this.treeViewSourceResourceManager1_AfterNodeChecked);
+            this.treeViewSourceResourceManager1.ClearContext += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.ClearContextHandler(this.treeViewSourceResourceManager1_ClearContext);
+            this.treeViewSourceResourceManager1.AfterContextChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterContextChangedHandler(this.treeViewSourceResourceManager1_AfterContextChanged);
             // 
             // azureStackLoginContextViewer1
             // 

@@ -74,7 +74,7 @@
             this.azureLoginContextViewerSource.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.NewContext;
             this.azureLoginContextViewerSource.ExistingContext = null;
             this.azureLoginContextViewerSource.Location = new System.Drawing.Point(0, 2);
-            this.azureLoginContextViewerSource.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.azureLoginContextViewerSource.Margin = new System.Windows.Forms.Padding(2);
             this.azureLoginContextViewerSource.Name = "azureLoginContextViewerSource";
             this.azureLoginContextViewerSource.Size = new System.Drawing.Size(670, 169);
             this.azureLoginContextViewerSource.TabIndex = 67;
@@ -90,6 +90,11 @@
             this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";
             this.treeViewSourceResourceManager1.Size = new System.Drawing.Size(298, 378);
             this.treeViewSourceResourceManager1.TabIndex = 72;
+            this.treeViewSourceResourceManager1.AfterNodeChecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeCheckedHandler(this.treeViewSourceResourceManager1_AfterNodeChecked);
+            this.treeViewSourceResourceManager1.AfterNodeUnchecked += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeUncheckedHandler(this.treeViewSourceResourceManager1_AfterNodeUnchecked);
+            this.treeViewSourceResourceManager1.AfterNodeChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterNodeChangedHandler(this.treeViewSourceResourceManager1_AfterNodeChanged);
+            this.treeViewSourceResourceManager1.ClearContext += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.ClearContextHandler(this.treeViewSourceResourceManager1_ClearContext);
+            this.treeViewSourceResourceManager1.AfterContextChanged += new MigAz.Azure.UserControls.TreeViewSourceResourceManager.AfterContextChangedHandler(this.treeViewSourceResourceManager1_AfterContextChanged);
             // 
             // MigrationAzureSourceContext
             // 
