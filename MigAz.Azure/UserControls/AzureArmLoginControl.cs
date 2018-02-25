@@ -85,6 +85,8 @@ namespace MigAz.Azure.UserControls
                     }
                 }
             }
+
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         internal void RemoveEnvironment(AzureEnvironment azureEnvironment)
@@ -182,6 +184,7 @@ namespace MigAz.Azure.UserControls
             }
 
             _AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)

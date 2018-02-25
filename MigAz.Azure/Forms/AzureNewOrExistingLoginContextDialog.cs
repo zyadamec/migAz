@@ -110,6 +110,8 @@ namespace MigAz.Azure.Forms
             {
                 cboTenant.SelectedIndex = 0;
             }
+
+            azureLoginContextViewer.ExistingContext.StatusProvider.UpdateStatus("Ready");
         }
 
 

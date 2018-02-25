@@ -75,6 +75,8 @@ namespace MigAz.AzureStack.UserControls
                     }
                 }
             }
+
+            azureStackContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private async void btnAuthenticate_Click(object sender, EventArgs e)
@@ -154,6 +156,7 @@ namespace MigAz.AzureStack.UserControls
             }
 
             _AzureStackContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
+            _AzureStackContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)

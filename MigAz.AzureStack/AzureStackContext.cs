@@ -50,6 +50,8 @@ namespace MigAz.AzureStack
                 List<AzureDomain> domains = await azureTenant.GetAzureARMDomains(this);
                 List<AdminSubscription> subscriptions = await GetAzureStackARMSubscriptions(azureTenant);
             }
+
+            this.StatusProvider.UpdateStatus("Ready");
         }
 
 

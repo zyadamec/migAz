@@ -157,6 +157,8 @@ namespace MigAz.Azure
 
             await this.TokenProvider.Login(resourceUrl, this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
+
+            this.StatusProvider.UpdateStatus("Ready");
         }
 
         public async Task SetTenantContext(AzureTenant azureTenant)

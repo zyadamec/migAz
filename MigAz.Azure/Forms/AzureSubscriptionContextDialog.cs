@@ -55,6 +55,7 @@ namespace MigAz.Azure.Forms
             }
 
             _AzureContext.LogProvider.WriteLog("InitializeDialog", "End AzureSubscriptionContextDialog InitializeDialog");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
