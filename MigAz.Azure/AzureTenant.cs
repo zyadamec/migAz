@@ -141,6 +141,7 @@ namespace MigAz.Azure
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
                 AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, this, azureContext.AzureEnvironment, azureContext.GetARMServiceManagementUrl(), azureContext.GetARMTokenResourceUrl());
+                await azureSubscription.InitializeChildrenAsync(azureContext);
                 azureSubscriptions.Add(azureSubscription);
 
                 azureContext.StatusProvider.UpdateStatus("BUSY: Loaded Subscription " + azureSubscription.ToString());
