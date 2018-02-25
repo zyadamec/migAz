@@ -86,10 +86,10 @@
             // 
             // btnAuthenticate
             // 
-            this.btnAuthenticate.Location = new System.Drawing.Point(181, 48);
+            this.btnAuthenticate.Location = new System.Drawing.Point(181, 52);
             this.btnAuthenticate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnAuthenticate.Name = "btnAuthenticate";
-            this.btnAuthenticate.Size = new System.Drawing.Size(152, 35);
+            this.btnAuthenticate.Size = new System.Drawing.Size(152, 37);
             this.btnAuthenticate.TabIndex = 1;
             this.btnAuthenticate.Text = "Sign In";
             this.btnAuthenticate.UseVisualStyleBackColor = true;
