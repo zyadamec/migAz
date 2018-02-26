@@ -33,7 +33,7 @@ namespace MigAz.Azure.UserControls
         public TargetTreeView TargetTreeView
         {
             get { return _TargetTreeView; }
-            private set { _TargetTreeView = value; }
+            set { _TargetTreeView = value; }
         }
 
         public Core.MigrationTarget MigrationTarget
@@ -101,10 +101,13 @@ namespace MigAz.Azure.UserControls
 
         public async Task Bind(Core.MigrationTarget migrationTarget)
         {
+            if (this.TargetTreeView == null)
+                throw new ArgumentException("MigrationTarget Property must be provided.");
+
             this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
-            this._MigrationTarget = migrationTarget ?? throw new ArgumentException("MigrationTarget Property must be provided.");
+            this._MigrationTarget = migrationTarget;
             this.ResourceText = migrationTarget.ToString();
             this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];
 

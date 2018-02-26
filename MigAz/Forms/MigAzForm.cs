@@ -48,17 +48,15 @@ namespace MigAz.Forms
 
             lblLastOutputRefresh.Text = String.Empty;
 
+            // Future thought, do away with the "Set"s and consolidate to a Bind?
+            this.targetTreeView1.LogProvider = this.LogProvider;
+            this.targetTreeView1.StatusProvider = this.StatusProvider;
+            this.targetTreeView1.ImageList = this.imageList1;
+            this.targetTreeView1.TargetSettings = _appSettingsProvider.GetTargetSettings();
+
+            this.propertyPanel1.TargetTreeView = targetTreeView1;
             this.propertyPanel1.PropertyChanged += PropertyPanel1_PropertyChanged;
 
-            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-            if (targetTreeView != null)
-            {
-                // Future thought, do away with the "Set"s and consolidate to a Bind?
-                targetTreeView.LogProvider = this.LogProvider;
-                targetTreeView.StatusProvider = this.StatusProvider;
-                targetTreeView.ImageList = this.imageList1;
-                targetTreeView.TargetSettings = _appSettingsProvider.GetTargetSettings();
-            }
 
             AlertIfNewVersionAvailable();
         }
@@ -84,8 +82,8 @@ namespace MigAz.Forms
 
         private void MigrationSourceControl_ClearContext()
         {
-            propertyPanel1.Clear();
-            MigrationTargetTreeView.Clear();
+            this.propertyPanel1.Clear();
+            this.targetTreeView1.Clear();
 
             dgvMigAzMessages.DataSource = null;
             btnRefreshOutput.Enabled = false;
@@ -99,14 +97,12 @@ namespace MigAz.Forms
 
         private async Task MigrationSourceControl_AfterNodeChecked(MigrationTarget sender)
         {
-            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-            TreeNode resultUpdateARMTree = await targetTreeView.AddMigrationTarget(sender);
+            TreeNode resultUpdateARMTree = await targetTreeView1.AddMigrationTarget(sender);
         }
 
         private async Task MigrationSourceControl_AfterNodeUnchecked(MigrationTarget sender)
         {
-            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
-            await targetTreeView.RemoveMigrationTarget(sender);
+            await targetTreeView1.RemoveMigrationTarget(sender);
         }
 
         private async Task MigrationSourceControl_AfterNodeChanged(MigrationTarget sender)
@@ -233,22 +229,6 @@ namespace MigAz.Forms
             }
         }
 
-        private TargetTreeView MigrationTargetTreeView
-        {
-            get
-            {
-                foreach (Control control in splitContainer4.Panel2.Controls)
-                {
-                    if (control.GetType() == typeof(TargetTreeView))
-                    {
-                        return (TargetTreeView)control;
-                    }
-                }
-
-                return null;
-            }
-        }
-
         #endregion
 
         private async Task PropertyPanel1_PropertyChanged(Core.MigrationTarget migrationTarget)
@@ -264,7 +244,7 @@ namespace MigAz.Forms
                     targetNode.Name = migrationTarget.ToString();
             }
 
-            await this.MigrationTargetTreeView.RefreshExportArtifacts();
+            await this.targetTreeView1.RefreshExportArtifacts();
         }
 
         private void _logProvider_OnMessage(string message)
@@ -378,7 +358,7 @@ namespace MigAz.Forms
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            TargetTreeView targetTreeView = this.MigrationTargetTreeView;
+            TargetTreeView targetTreeView = this.targetTreeView1;
 
             if (targetTreeView != null && e.RowIndex > -1)
             {
@@ -452,7 +432,7 @@ namespace MigAz.Forms
                     azureTargetContext.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext)migrationSourceControl).AzureContext.AzureSubscription;
                     azureTargetContext.TemplateGenerator.TargetSubscription = azureTargetContext.AzureContext.AzureSubscription;
                     azureTargetContext.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
-                    azureTargetContext.TemplateGenerator.ExportArtifacts = this.MigrationTargetTreeView.ExportArtifacts;
+                    azureTargetContext.TemplateGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
 
                     await azureTargetContext.TemplateGenerator.GenerateStreams();
 
@@ -813,9 +793,10 @@ namespace MigAz.Forms
                     MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
                     azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
                     await azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
-                    targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
                 }
 
+                targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.ExistingContext.AzureServiceUrls.GetBlobEndpointUrl();
+                targetTreeView1.TargetSubscription = azureTargetContext.ExistingContext.AzureSubscription;
                 await RebindPropertyPanel();
             }
 
@@ -827,20 +808,20 @@ namespace MigAz.Forms
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
             targetTreeView1.TargetBlobStorageNamespace = sender.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
-            await MigrationTargetTreeView.RefreshExportArtifacts();
+            await this.targetTreeView1.RefreshExportArtifacts();
         }
 
         #endregion
 
         public bool AssertHasTargetErrors()
         {
-            if (MigrationTargetTreeView.HasErrors)
+            if (this.targetTreeView1.HasErrors)
             {
                 tabMigAzMonitoring.SelectTab("tabMessages");
                 MessageBox.Show("There are still one or more error(s) with the template generation.  Please resolve all errors before exporting.");
             }
 
-            return MigrationTargetTreeView.HasErrors;
+            return this.targetTreeView1.HasErrors;
         }
 
         #region Target Tree View Events

@@ -98,11 +98,8 @@ namespace MigAz.Azure
 
         public async Task InitializeChildrenAsync(AzureContext azureContext, bool useCache = false)
         {
-            // russell here now
-            //await this.GetAzureARMLocations();
-            //await this.GetResourceManagerProviders();
-
             _ArmProviders = await this.GetResourceManagerProviders(azureContext, useCache);
+            _ArmLocations = await this.GetAzureARMLocations(azureContext);
         }
 
         #endregion
