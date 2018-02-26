@@ -441,6 +441,11 @@ namespace MigAz.Azure
         public List<Azure.MigrationTarget.PublicIp> ArmTargetPublicIPs { get { return _ArmTargetPublicIPs; } }
         public List<Azure.MigrationTarget.NetworkInterface> ArmTargetNetworkInterfaces { get { return _ArmTargetNetworkInterfaces; } }
 
+        public List<Arm.Location> Locations
+        {
+            get { return _ArmLocations; }
+        }
+
         #endregion
 
         public async Task BindAsmResources(AzureContext azureContext, TargetSettings targetSettings)
@@ -1239,6 +1244,23 @@ namespace MigAz.Azure
             return null;
         }
 
+
+        public List<Arm.VirtualNetwork> FilterArmVirtualNetworks(Arm.Location azureLocation)
+        {
+            List<Arm.VirtualNetwork> locationVirtualNetworks = new List<Arm.VirtualNetwork>();
+
+            foreach (List<Arm.VirtualNetwork> armVirtualNetworkList in this.ArmVirtualNetworks.Values)
+            {
+                foreach (Arm.VirtualNetwork armVirtualNetwork in armVirtualNetworkList)
+                {
+                    if (armVirtualNetwork.Location == azureLocation)
+                        locationVirtualNetworks.Add(armVirtualNetwork);
+                }
+            }
+
+            return locationVirtualNetworks;
+        }
+
         public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(AzureContext azureContext)
         {
             List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();
@@ -1248,22 +1270,6 @@ namespace MigAz.Azure
                 foreach (Arm.VirtualNetwork virtualNetwork in await this.GetAzureARMVirtualNetworks(azureContext, resourceGroup))
                 {
                     virtualNetworks.Add(virtualNetwork);
-                }
-            }
-
-            return virtualNetworks;
-        }
-
-        public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks(AzureContext azureContext, Arm.Location azureLocation)
-        {
-            List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();
-
-            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups(azureContext))
-            {
-                foreach (Arm.VirtualNetwork virtualNetwork in await this.GetAzureARMVirtualNetworks(azureContext, resourceGroup))
-                {
-                    if (virtualNetwork.Location.Name == azureLocation.Name)
-                        virtualNetworks.Add(virtualNetwork);
                 }
             }
 
@@ -1361,20 +1367,20 @@ namespace MigAz.Azure
             return storageAccounts;
         }
 
-        public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(AzureContext azureContext, Arm.Location azureLocation)
+        public List<Arm.StorageAccount> FilterArmStorageAccounts(Arm.Location azureLocation)
         {
-            List<Arm.StorageAccount> storageAccounts = new List<Arm.StorageAccount>();
+            List<Arm.StorageAccount> locationStorageAccounts = new List<Arm.StorageAccount>();
 
-            foreach (ResourceGroup resourceGroup in await this.GetAzureARMResourceGroups(azureContext))
+            foreach (List<Arm.StorageAccount> armStorageAccountList in this.ArmStorageAccounts.Values)
             {
-                foreach (Arm.StorageAccount storageAccount in await this.GetAzureARMStorageAccounts(azureContext, resourceGroup))
+                foreach (Arm.StorageAccount armStorageAccount in armStorageAccountList)
                 {
-                    if (storageAccount.Location.Name == azureLocation.Name)
-                        storageAccounts.Add(storageAccount);
+                    if (armStorageAccount.Location == azureLocation)
+                        locationStorageAccounts.Add(armStorageAccount);
                 }
             }
 
-            return storageAccounts;
+            return locationStorageAccounts;
         }
 
         public async virtual Task<List<Arm.StorageAccount>> GetAzureARMStorageAccounts(AzureContext azureContext, ResourceGroup resourceGroup)

@@ -17,7 +17,6 @@ namespace MigAz.Azure.UserControls
     {
         private LoadBalancer _LoadBalancer;
         private TargetTreeView _TargetTreeView;
-        private List<Arm.VirtualNetwork> _ExistingVirtualNetworksInTargetLocation;
         private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
@@ -40,7 +39,6 @@ namespace MigAz.Azure.UserControls
             {
                 _IsBinding = true;
                 _LoadBalancer = loadBalancer;
-                _ExistingVirtualNetworksInTargetLocation = existingVirtualNetworksInTargetLocation;
                 _TargetTreeView = targetTreeView;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
 
@@ -89,7 +87,7 @@ namespace MigAz.Azure.UserControls
 
                 if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(_TargetTreeView, _ExistingVirtualNetworksInTargetLocation);
+                    await networkSelectionControl1.Bind(_TargetTreeView);
                     networkSelectionControl1.VirtualNetworkTarget = _LoadBalancer.FrontEndIpConfigurations[0];
                 }
             }

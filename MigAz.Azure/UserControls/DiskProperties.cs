@@ -17,7 +17,6 @@ namespace MigAz.Azure.UserControls
         TargetTreeView _TargetTreeView;
         Disk _TargetDisk;
         bool _ShowSizeInGb = true;
-        List<Arm.StorageAccount> _ExistingStorageAccountInMigrationTarget;
         bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
@@ -57,7 +56,6 @@ namespace MigAz.Azure.UserControls
         internal async Task Bind(Disk targetDisk, TargetTreeView targetTreeView)
         {
             _TargetTreeView = targetTreeView;
-            _ExistingStorageAccountInMigrationTarget = existingStorageAccountInMigrationTarget;
             _TargetDisk = targetDisk;
 
             await BindCommon();
@@ -107,7 +105,7 @@ namespace MigAz.Azure.UserControls
             if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
             {
                 rbExistingARMStorageAccount.Text = "Existing Storage in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                rbExistingARMStorageAccount.Enabled = _ExistingStorageAccountInMigrationTarget.Count() > 0;
+                rbExistingARMStorageAccount.Enabled = _TargetTreeView.GetExistingArmStorageAccounts().Count > 0;
             }
             else
             {
@@ -259,7 +257,7 @@ namespace MigAz.Azure.UserControls
                 txtBlobName.Enabled = true;
                 txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
-                foreach (Arm.StorageAccount armStorageAccount in _ExistingStorageAccountInMigrationTarget)
+                foreach (Arm.StorageAccount armStorageAccount in _TargetTreeView.GetExistingArmStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }

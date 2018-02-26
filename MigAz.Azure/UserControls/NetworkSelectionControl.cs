@@ -16,7 +16,6 @@ namespace MigAz.Azure.UserControls
     public partial class NetworkSelectionControl : UserControl
     {
         private IVirtualNetworkTarget _NetworkInterfaceTarget;
-        private List<Arm.VirtualNetwork> _ExistingVirtualNetworksInTargetLocation;
         private Azure.UserControls.TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
 
@@ -29,10 +28,9 @@ namespace MigAz.Azure.UserControls
             txtStaticIp.TextChanged += txtStaticIp_TextChanged;
         }
 
-        public async Task Bind(TargetTreeView targetTreeView, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
+        public async Task Bind(TargetTreeView targetTreeView)
         {
             _TargetTreeView = targetTreeView;
-            _ExistingVirtualNetworksInTargetLocation = existingVirtualNetworksInTargetLocation;
 
             try
             {
@@ -205,7 +203,7 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in _ExistingVirtualNetworksInTargetLocation)
+                foreach (Arm.VirtualNetwork armVirtualNetwork in _TargetTreeView.GetExistingVirtualNetworksInTargetLocation())
                 {
                     if (armVirtualNetwork.HasNonGatewaySubnet)
                         cmbExistingArmVNets.Items.Add(armVirtualNetwork);
