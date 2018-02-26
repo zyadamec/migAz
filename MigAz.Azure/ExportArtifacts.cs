@@ -16,7 +16,7 @@ namespace MigAz.Azure
         public delegate Task AfterResourceValidationHandler();
         public event AfterResourceValidationHandler AfterResourceValidation;
 
-        public ExportArtifacts()
+        public ExportArtifacts(AzureSubscription targetSubscription)
         {
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             RouteTables = new List<RouteTable>();
@@ -29,6 +29,8 @@ namespace MigAz.Azure
             Disks = new List<Disk>();
             NetworkInterfaces = new List<NetworkInterface>();
             RouteTables = new List<RouteTable>();
+
+            this.TargetSubscription = targetSubscription;
         }
 
 
@@ -51,7 +53,8 @@ namespace MigAz.Azure
 
         public AzureSubscription TargetSubscription
         {
-            get;set;
+            get;
+            private set;
         }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)

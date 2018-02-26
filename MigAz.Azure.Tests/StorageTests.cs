@@ -35,7 +35,7 @@ namespace MigAz.Tests
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
             //foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.AsmTargetStorageAccounts)
             //{
@@ -69,7 +69,7 @@ namespace MigAz.Tests
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
             //foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.ArmTargetStorageAccounts)
@@ -105,7 +105,7 @@ namespace MigAz.Tests
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
 
@@ -184,7 +184,7 @@ namespace MigAz.Tests
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
             TargetTreeView targetTreeView = new TargetTreeView();
