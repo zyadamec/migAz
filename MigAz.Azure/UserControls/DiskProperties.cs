@@ -57,8 +57,8 @@ namespace MigAz.Azure.UserControls
         internal async Task Bind(Disk targetDisk, TargetTreeView targetTreeView)
         {
             _TargetTreeView = targetTreeView;
-            _TargetDisk = targetDisk;
             _ExistingStorageAccountInMigrationTarget = existingStorageAccountInMigrationTarget;
+            _TargetDisk = targetDisk;
 
             await BindCommon();
         }
