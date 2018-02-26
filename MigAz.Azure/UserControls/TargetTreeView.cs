@@ -193,6 +193,7 @@ namespace MigAz.Azure.UserControls
         public async Task RefreshExportArtifacts()
         {
             _ExportArtifacts = new ExportArtifacts();
+            _ExportArtifacts.TargetSubscription = this.TargetSubscription;
 
             if (this.Nodes.Count == 1 && this.Nodes[0].Tag != null)
                 _ExportArtifacts.ResourceGroup = (MigrationTarget.ResourceGroup)this.Nodes[0].Tag;

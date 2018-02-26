@@ -49,6 +49,11 @@ namespace MigAz.Azure
             get { return _Alerts; }
         }
 
+        public AzureSubscription TargetSubscription
+        {
+            get;set;
+        }
+
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
         {
             foreach (NetworkSecurityGroup networkSecurityGroup in NetworkSecurityGroups)
@@ -112,6 +117,18 @@ namespace MigAz.Azure
         {
             Alerts.Clear();
 
+            if (this.TargetSubscription == null)
+            {
+                this.AddAlert(AlertType.Error, "Target Azure Subscription must be provided for template generation.", this.ResourceGroup);
+            }
+            else
+            {
+                if (this.TargetSubscription.Locations == null || this.TargetSubscription.Locations.Count() == 0)
+                {
+                    this.AddAlert(AlertType.Error, "Target Azure Subscription must have one or more Locations instantiated.", this.ResourceGroup);
+                }
+            }
+
             if (this.ResourceGroup == null)
             {
                 this.AddAlert(AlertType.Error, "Target Resource Group must be provided for template generation.", this.ResourceGroup);
@@ -121,6 +138,19 @@ namespace MigAz.Azure
                 if (this.ResourceGroup.TargetLocation == null)
                 {
                     this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", this.ResourceGroup);
+                }
+                else
+                {
+                    // It is possible that the Target Location is no longer in the Target Subscription
+                    // Sample case, user first connected to Azure Commercial as source (and set as initial target)
+                    // but then logged into a different account for the target and target is now USGov.
+                    if (this.TargetSubscription != null && this.TargetSubscription.Locations != null)
+                    {
+                        if (!this.TargetSubscription.Locations.Contains(this.ResourceGroup.TargetLocation))
+                        {
+                            this.AddAlert(AlertType.Error, "Target Resource Group Location '" + this.ResourceGroup.TargetLocation.ToString() + "' is not available in Subscription '" + this.TargetSubscription.ToString() + "'.  Select a new Target Location.", this.ResourceGroup);
+                        }
+                    }
                 }
             }
 

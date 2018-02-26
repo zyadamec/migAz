@@ -785,6 +785,7 @@ namespace MigAz.Forms
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
                 await azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
+                azureTargetContext.AfterAzureSubscriptionChange += AzureTargetContext_AfterAzureSubscriptionChange;
                 azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
 
                 IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
@@ -805,9 +806,17 @@ namespace MigAz.Forms
             splitContainer4_Panel1_Resize(this, null);
         }
 
+        private async Task AzureTargetContext_AfterAzureSubscriptionChange(AzureContext sender)
+        {
+            targetTreeView1.TargetBlobStorageNamespace = sender.AzureServiceUrls.GetBlobEndpointUrl();
+            targetTreeView1.TargetSubscription = sender.AzureSubscription;
+            await this.targetTreeView1.RefreshExportArtifacts();
+        }
+
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
             targetTreeView1.TargetBlobStorageNamespace = sender.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            targetTreeView1.TargetSubscription = sender.AzureContext.AzureSubscription;
             await this.targetTreeView1.RefreshExportArtifacts();
         }
 
