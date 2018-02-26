@@ -225,9 +225,10 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void TransitionToManagedDisk(TreeNode targetTreeNode)
+        internal void TransitionToManagedDisk(Disk disk)
         {
-            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+            TreeNode targetTreeNode = this.SeekMigrationTargetTreeNode(disk);
+            if (targetTreeNode == null || targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
                 throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
 
             Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;
@@ -251,9 +252,10 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void TransitionToClassicDisk(TreeNode targetTreeNode)
+        internal void TransitionToClassicDisk(Disk disk)
         {
-            if (targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
+            TreeNode targetTreeNode = this.SeekMigrationTargetTreeNode(disk);
+            if (targetTreeNode == null || targetTreeNode.Tag == null || targetTreeNode.Tag.GetType() != typeof(Azure.MigrationTarget.Disk))
                 throw new ArgumentException("Invalid Treenode.  Treenode Tag must contain a Migration Disk object.");
 
             Azure.MigrationTarget.Disk targetDisk = (Azure.MigrationTarget.Disk)targetTreeNode.Tag;

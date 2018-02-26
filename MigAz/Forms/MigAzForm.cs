@@ -14,6 +14,7 @@ using MigAz.Azure.Forms;
 using MigAz.UserControls;
 using MigAz.Core;
 using MigAz.AzureStack.UserControls;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Forms
 {
@@ -47,7 +48,6 @@ namespace MigAz.Forms
 
             lblLastOutputRefresh.Text = String.Empty;
 
-            this.propertyPanel1.LogProvider = _logProvider;
             this.propertyPanel1.PropertyChanged += PropertyPanel1_PropertyChanged;
 
             TargetTreeView targetTreeView = this.MigrationTargetTreeView;
@@ -251,12 +251,20 @@ namespace MigAz.Forms
 
         #endregion
 
-        private async Task PropertyPanel1_PropertyChanged()
+        private async Task PropertyPanel1_PropertyChanged(Core.MigrationTarget migrationTarget)
         {
-            //if (_SourceAsmNode == null && treeTargetARM.EventSourceNode == null) // we are not going to update on every property bind during TreeView updates
-            //{
+            TreeNode targetNode = this.targetTreeView1.SeekMigrationTargetTreeNode(migrationTarget);
+
+            if (targetNode != null)
+            {
+                targetNode.Tag = migrationTarget;
+                targetNode.Text = migrationTarget.ToString();
+
+                if (migrationTarget.GetType() == typeof(Azure.MigrationTarget.ResourceGroup))
+                    targetNode.Name = migrationTarget.ToString();
+            }
+
             await this.MigrationTargetTreeView.RefreshExportArtifacts();
-            //}
         }
 
         private void _logProvider_OnMessage(string message)
@@ -808,8 +816,7 @@ namespace MigAz.Forms
                     targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
                 }
 
-                if (propertyPanel1.IsBound)
-                    await propertyPanel1.Rebind();
+                await RebindPropertyPanel();
             }
 
             MigrationTargetSelectionControlVisible = false;
@@ -852,8 +859,39 @@ namespace MigAz.Forms
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
 
-            if (propertyPanel1.IsBound)
-                await propertyPanel1.Rebind();
+            await RebindPropertyPanel();
+        }
+
+        private async Task RebindPropertyPanel()
+        {
+            if (this.targetTreeView1 != null && this.targetTreeView1.SelectedNode != null)
+                await BindPropertyPanel(this.targetTreeView1, this.targetTreeView1.SelectedNode);
+        }
+
+        private async Task BindPropertyPanel(TargetTreeView targetTreeView, TreeNode selectedNode)
+        {
+            MigrationTarget migrationTarget = (MigrationTarget) selectedNode.Tag;
+
+            if (migrationTarget.GetType() == typeof(ResourceGroup))
+            {
+                await propertyPanel1.Bind((ResourceGroup)migrationTarget, targetAzureSubscription.GetAzureARMLocations());
+            }
+            else if (migrationTarget.GetType() == typeof(NetworkInterface))
+            {
+                await propertyPanel1.Bind((NetworkInterface)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation));
+            }
+            else if (migrationTarget.GetType() == typeof(LoadBalancer))
+            {
+                await propertyPanel1.Bind((LoadBalancer)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation));
+            }
+            else if (migrationTarget.GetType() == typeof(Disk))
+            {
+                await propertyPanel1.Bind((Disk)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation));
+            }
+            else
+            {
+                await propertyPanel1.Bind(targetTreeView, (MigrationTarget)selectedNode.Tag);
+            }
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)
@@ -864,9 +902,7 @@ namespace MigAz.Forms
                     LogProvider.WriteLog("Control_AfterTargetSelected", "Start");
 
                 _EventSourceNode = selectedNode;
-                await this.propertyPanel1.Bind(
-                    targetTreeView, 
-                    selectedNode);
+                await BindPropertyPanel(targetTreeView, selectedNode);
                 _EventSourceNode = null;
 
                 if (this.LogProvider != null)

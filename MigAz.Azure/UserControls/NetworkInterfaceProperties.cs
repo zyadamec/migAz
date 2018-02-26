@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
@@ -31,7 +32,7 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke(); // bubble event
         }
 
-        internal async Task Bind(TargetTreeView targetTreeView, Azure.MigrationTarget.NetworkInterface targetNetworkInterface)
+        internal async Task Bind(TargetTreeView targetTreeView, NetworkInterface targetNetworkInterface, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace MigAz.Azure.UserControls
 
                 if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(targetTreeView, targetTreeView.GetVirtualNetworksInMigration());
+                    await networkSelectionControl1.Bind(targetTreeView, existingVirtualNetworksInTargetLocation);
                     networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
                 }
 
