@@ -21,7 +21,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(TargetTreeView targetTreeView, VirtualMachine virtualMachine)
+        public async Task Bind(VirtualMachine virtualMachine, TargetTreeView targetTreeView)
         {
             try
             {

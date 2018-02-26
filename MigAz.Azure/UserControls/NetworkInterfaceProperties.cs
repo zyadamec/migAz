@@ -32,7 +32,7 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke(); // bubble event
         }
 
-        internal async Task Bind(TargetTreeView targetTreeView, NetworkInterface targetNetworkInterface, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
+        internal async Task Bind(NetworkInterface targetNetworkInterface, TargetTreeView targetTreeView)
         {
             try
             {

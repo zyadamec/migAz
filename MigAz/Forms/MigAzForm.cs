@@ -870,28 +870,7 @@ namespace MigAz.Forms
 
         private async Task BindPropertyPanel(TargetTreeView targetTreeView, TreeNode selectedNode)
         {
-            MigrationTarget migrationTarget = (MigrationTarget) selectedNode.Tag;
-
-            if (migrationTarget.GetType() == typeof(ResourceGroup))
-            {
-                await propertyPanel1.Bind((ResourceGroup)migrationTarget, targetAzureSubscription.GetAzureARMLocations());
-            }
-            else if (migrationTarget.GetType() == typeof(NetworkInterface))
-            {
-                await propertyPanel1.Bind((NetworkInterface)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation));
-            }
-            else if (migrationTarget.GetType() == typeof(LoadBalancer))
-            {
-                await propertyPanel1.Bind((LoadBalancer)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation));
-            }
-            else if (migrationTarget.GetType() == typeof(Disk))
-            {
-                await propertyPanel1.Bind((Disk)migrationTarget, targetAzureSubscription.AzureSubscription.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation));
-            }
-            else
-            {
-                await propertyPanel1.Bind(targetTreeView, (MigrationTarget)selectedNode.Tag);
-            }
+            await propertyPanel1.Bind((MigrationTarget)selectedNode.Tag);
         }
 
         private async Task targetTreeView1_AfterTargetSelected(TargetTreeView targetTreeView, TreeNode selectedNode)

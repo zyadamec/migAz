@@ -23,7 +23,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(ResourceGroup resourceGroup, TargetTreeView targetTreeView, List<Arm.Location> azureLocations)
+        internal async Task Bind(ResourceGroup resourceGroup, TargetTreeView targetTreeView)
         {
             try
             {

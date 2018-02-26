@@ -99,76 +99,20 @@ namespace MigAz.Azure.UserControls
             get { return _TargetTreeView != null && _MigrationTarget != null; }
         }
 
-        public async Task Bind(ResourceGroup resourceGroup, List<Arm.Location> locations)
+        public async Task Bind(Core.MigrationTarget migrationTarget)
         {
-            this.BindCommon(resourceGroup);
-
-            ResourceGroupProperties properties = new ResourceGroupProperties();
-            properties.PropertyChanged += Properties_PropertyChanged;
-            await properties.Bind(resourceGroup, this.TargetTreeView, locations);
-            this.PropertyDetailControl = properties;
-        }
-
-        public async Task Bind(NetworkInterface networkInterface, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
-        {
-            this.BindCommon(networkInterface);
-
-            NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
-            properties.PropertyChanged += Properties_PropertyChanged;
-            await properties.Bind(_TargetTreeView, networkInterface, existingVirtualNetworksInTargetLocation);
-            this.PropertyDetailControl = properties;
-        }
-        public async Task Bind(LoadBalancer loadBalancer, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
-        {
-            this.BindCommon(loadBalancer);
-
-            LoadBalancerProperties properties = new LoadBalancerProperties();
-            properties.PropertyChanged += Properties_PropertyChanged;
-            await properties.Bind(loadBalancer, _TargetTreeView, existingVirtualNetworksInTargetLocation);
-            this.PropertyDetailControl = properties;
-        }
-
-        public async Task Bind(Disk disk, List<Arm.StorageAccount> existingStorageAccountsInTargetLocation)
-        {
-            this.BindCommon(disk);
-
-            DiskProperties properties = new DiskProperties();
-            properties.PropertyChanged += Properties_PropertyChanged;
-            await properties.Bind(disk, _TargetTreeView, existingStorageAccountsInTargetLocation);
-            this.PropertyDetailControl = properties;
-        }
-
-        public void BindCommon(Core.MigrationTarget migrationTarget)
-        {
-            this.Clear();
-            this.MigrationTarget = migrationTarget;
-            this.ResourceText = migrationTarget.ToString();
-            this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];
-        }
-
-        public async Task Bind(TargetTreeView targetTreeView, Core.MigrationTarget migrationTarget)
-        {
-            if (targetTreeView == null)
-                throw new ArgumentException("TargetTreeView Property must be provided.");
-
-            if (migrationTarget == null)
-                throw new ArgumentException("MigrationTarget Property must be provided.");
-
-            targetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "Start");
+            this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
-            this._TargetTreeView = targetTreeView;
-            this._MigrationTarget = migrationTarget;
-
+            this._MigrationTarget = migrationTarget ?? throw new ArgumentException("MigrationTarget Property must be provided.");
             this.ResourceText = migrationTarget.ToString();
             this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];
-
 
             if (migrationTarget.GetType() == typeof(VirtualMachine))
             {
                 VirtualMachineProperties properties = new VirtualMachineProperties();
                 properties.PropertyChanged += Properties_PropertyChanged;
-                await properties.Bind(_TargetTreeView, (VirtualMachine)migrationTarget);
+                await properties.Bind((VirtualMachine)migrationTarget, _TargetTreeView);
                 this.PropertyDetailControl = properties;
             }
             else if (migrationTarget.GetType() == typeof(NetworkSecurityGroup))
@@ -189,7 +133,7 @@ namespace MigAz.Azure.UserControls
             {
                 SubnetProperties properties = new SubnetProperties();
                 properties.PropertyChanged += Properties_PropertyChanged;
-                properties.Bind(_TargetTreeView, (Subnet)migrationTarget);
+                properties.Bind((Subnet)migrationTarget, _TargetTreeView);
                 this.PropertyDetailControl = properties;
             }
             else if (migrationTarget.GetType() == typeof(StorageAccount))
@@ -203,7 +147,7 @@ namespace MigAz.Azure.UserControls
             {
                 AvailabilitySetProperties properties = new AvailabilitySetProperties();
                 properties.PropertyChanged += Properties_PropertyChanged;
-                properties.Bind(_TargetTreeView, (AvailabilitySet)migrationTarget);
+                properties.Bind((AvailabilitySet)migrationTarget, _TargetTreeView);
                 this.PropertyDetailControl = properties;
             }
             else if (migrationTarget.GetType() == typeof(PublicIp))
@@ -217,7 +161,35 @@ namespace MigAz.Azure.UserControls
             {
                 RouteTableProperties properties = new RouteTableProperties();
                 properties.PropertyChanged += Properties_PropertyChanged;
-                properties.Bind(_TargetTreeView, (RouteTable)migrationTarget);
+                properties.Bind((RouteTable)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if (migrationTarget.GetType() == typeof(NetworkInterface))
+            {
+                NetworkInterfaceProperties properties = new NetworkInterfaceProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                await properties.Bind((NetworkInterface)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if (migrationTarget.GetType() == typeof(ResourceGroup))
+            {
+                ResourceGroupProperties properties = new ResourceGroupProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                await properties.Bind((ResourceGroup)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if (migrationTarget.GetType() == typeof(LoadBalancer))
+            {
+                LoadBalancerProperties properties = new LoadBalancerProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                await properties.Bind((LoadBalancer)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if (migrationTarget.GetType() == typeof(Disk))
+            {
+                DiskProperties properties = new DiskProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                await properties.Bind((Disk)migrationTarget, _TargetTreeView);
                 this.PropertyDetailControl = properties;
             }
             //else if (migrationTarget.GetType() == typeof(VirtualMachineImage))
@@ -228,7 +200,7 @@ namespace MigAz.Azure.UserControls
             //    this.PropertyDetailControl = properties;
             //}
 
-            targetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "End");
+            this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "End");
         }
 
         private async Task Properties_PropertyChanged()

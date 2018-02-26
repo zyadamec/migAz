@@ -25,14 +25,14 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, AvailabilitySet availabilitySetNode)
+        internal void Bind(AvailabilitySet availabilitySet, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
 
                 _TargetTreeView = targetTreeView;
-                _AvailabilitySet = availabilitySetNode;
+                _AvailabilitySet = availabilitySet;
 
                 txtTargetName.Text = _AvailabilitySet.TargetName;
                 upDownFaultDomains.Value = _AvailabilitySet.PlatformFaultDomainCount;

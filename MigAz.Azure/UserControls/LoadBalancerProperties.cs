@@ -34,7 +34,7 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke();
         }
 
-        internal async Task Bind(LoadBalancer loadBalancer, TargetTreeView targetTreeView, List<Arm.VirtualNetwork> existingVirtualNetworksInTargetLocation)
+        internal async Task Bind(LoadBalancer loadBalancer, TargetTreeView targetTreeView)
         {
             try
             {
