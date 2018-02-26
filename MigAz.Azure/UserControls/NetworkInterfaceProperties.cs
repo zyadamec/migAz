@@ -41,9 +41,10 @@ namespace MigAz.Azure.UserControls
                 _TargetNetworkInterface = targetNetworkInterface;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
 
+                await networkSelectionControl1.Bind(targetTreeView);
+
                 if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(targetTreeView);
                     networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
                 }
 

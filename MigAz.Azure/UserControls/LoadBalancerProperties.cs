@@ -42,6 +42,8 @@ namespace MigAz.Azure.UserControls
                 _TargetTreeView = targetTreeView;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
 
+                await networkSelectionControl1.Bind(_TargetTreeView);
+
                 cmbLoadBalancerType.SelectedIndex = cmbLoadBalancerType.FindString(loadBalancer.LoadBalancerType.ToString());
                 txtTargetName.Text = loadBalancer.TargetName;
             }
