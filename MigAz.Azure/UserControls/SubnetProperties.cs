@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Azure.UserControls
 {
@@ -26,7 +25,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, MigrationTarget.Subnet targetSubnet)
+        internal void Bind(Subnet targetSubnet, TargetTreeView targetTreeView)
         {
             try
             {
@@ -54,7 +53,7 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+                if (String.Compare(txtTargetName.Text, Core.ArmTemplate.ArmConst.GatewaySubnetName, true) == 0)
                 {
                     // if gateway subnet, the name can't be changed
                     txtTargetName.Enabled = false;

@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core;
 using MigAz.Azure.MigrationTarget;
+using MigAz.Core.Interface;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class LoadBalancerProperties : UserControl
     {
-        private AzureContext _AzureContext;
-        private TargetTreeView _TargetTreeView;
         private LoadBalancer _LoadBalancer;
+        private TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
@@ -33,14 +33,19 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke();
         }
 
-        internal async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView)
+        internal async Task Bind(LoadBalancer loadBalancer, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
-                networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
-                _AzureContext = azureContext;
+                _LoadBalancer = loadBalancer;
                 _TargetTreeView = targetTreeView;
+                networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+
+                await networkSelectionControl1.Bind(_TargetTreeView);
+
+                cmbLoadBalancerType.SelectedIndex = cmbLoadBalancerType.FindString(loadBalancer.LoadBalancerType.ToString());
+                txtTargetName.Text = loadBalancer.TargetName;
             }
             finally
             {
@@ -51,13 +56,6 @@ namespace MigAz.Azure.UserControls
         public MigrationTarget.LoadBalancer LoadBalancer
         {
             get { return _LoadBalancer; }
-            set
-            {
-                _LoadBalancer = value;
-
-                cmbLoadBalancerType.SelectedIndex = cmbLoadBalancerType.FindString(_LoadBalancer.LoadBalancerType.ToString());
-                txtTargetName.Text = _LoadBalancer.TargetName;
-            }
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -91,7 +89,7 @@ namespace MigAz.Azure.UserControls
 
                 if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
                 {
-                    await networkSelectionControl1.Bind(_AzureContext, _TargetTreeView, _TargetTreeView.GetVirtualNetworksInMigration());
+                    await networkSelectionControl1.Bind(_TargetTreeView);
                     networkSelectionControl1.VirtualNetworkTarget = _LoadBalancer.FrontEndIpConfigurations[0];
                 }
             }

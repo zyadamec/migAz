@@ -25,7 +25,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, RouteTable targetRouteTable)
+        internal void Bind(RouteTable targetRouteTable, TargetTreeView targetTreeView)
         {
             try
             {

@@ -94,6 +94,8 @@
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
     <Compile Include="Arm\Probe.cs" />
+    <Compile Include="Arm\Provider.cs" />
+    <Compile Include="Arm\ProviderResourceType.cs" />
     <Compile Include="Arm\PublicIP.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
     <Compile Include="Arm\Route.cs" />
@@ -246,6 +248,12 @@
     <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TreeViewSourceResourceManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\TreeViewSourceResourceManager.Designer.cs">
+      <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MigrationAzureTargetContext.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -387,6 +395,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\TreeViewSourceResourceManager.resx">
+      <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MigrationAzureTargetContext.resx">
       <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>

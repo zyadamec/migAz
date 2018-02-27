@@ -56,7 +56,7 @@ namespace MigAz.UserControls
             }
         }
 
-        public delegate void AfterMigrationTargetSelectedHandler(UserControl migrationTargetUserControl);
+        public delegate Task AfterMigrationTargetSelectedHandler(UserControl migrationTargetUserControl);
         public event AfterMigrationTargetSelectedHandler AfterMigrationTargetSelected;
 
         public MigAzMigrationTargetSelection()

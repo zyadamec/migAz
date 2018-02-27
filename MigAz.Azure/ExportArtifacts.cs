@@ -16,7 +16,7 @@ namespace MigAz.Azure
         public delegate Task AfterResourceValidationHandler();
         public event AfterResourceValidationHandler AfterResourceValidation;
 
-        public ExportArtifacts()
+        public ExportArtifacts(AzureSubscription targetSubscription)
         {
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             RouteTables = new List<RouteTable>();
@@ -29,6 +29,8 @@ namespace MigAz.Azure
             Disks = new List<Disk>();
             NetworkInterfaces = new List<NetworkInterface>();
             RouteTables = new List<RouteTable>();
+
+            this.TargetSubscription = targetSubscription;
         }
 
 
@@ -47,6 +49,12 @@ namespace MigAz.Azure
         public List<MigAzGeneratorAlert> Alerts
         {
             get { return _Alerts; }
+        }
+
+        public AzureSubscription TargetSubscription
+        {
+            get;
+            private set;
         }
 
         public NetworkSecurityGroup SeekNetworkSecurityGroup(string sourceName)
@@ -112,6 +120,18 @@ namespace MigAz.Azure
         {
             Alerts.Clear();
 
+            if (this.TargetSubscription == null)
+            {
+                this.AddAlert(AlertType.Error, "Target Azure Subscription must be provided for template generation.", this.ResourceGroup);
+            }
+            else
+            {
+                if (this.TargetSubscription.Locations == null || this.TargetSubscription.Locations.Count() == 0)
+                {
+                    this.AddAlert(AlertType.Error, "Target Azure Subscription must have one or more Locations instantiated.", this.ResourceGroup);
+                }
+            }
+
             if (this.ResourceGroup == null)
             {
                 this.AddAlert(AlertType.Error, "Target Resource Group must be provided for template generation.", this.ResourceGroup);
@@ -121,6 +141,19 @@ namespace MigAz.Azure
                 if (this.ResourceGroup.TargetLocation == null)
                 {
                     this.AddAlert(AlertType.Error, "Target Resource Group Location must be provided for template generation.", this.ResourceGroup);
+                }
+                else
+                {
+                    // It is possible that the Target Location is no longer in the Target Subscription
+                    // Sample case, user first connected to Azure Commercial as source (and set as initial target)
+                    // but then logged into a different account for the target and target is now USGov.
+                    if (this.TargetSubscription != null && this.TargetSubscription.Locations != null)
+                    {
+                        if (!this.TargetSubscription.Locations.Contains(this.ResourceGroup.TargetLocation))
+                        {
+                            this.AddAlert(AlertType.Error, "Target Resource Group Location '" + this.ResourceGroup.TargetLocation.ToString() + "' is not available in Subscription '" + this.TargetSubscription.ToString() + "'.  Select a new Target Location.", this.ResourceGroup);
+                        }
+                    }
                 }
             }
 
@@ -271,7 +304,7 @@ namespace MigAz.Azure
                         else
                         {
                             // Ensure selected target VM Size is available in the Target Azure Location
-                            Arm.VMSize matchedVmSize = this.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == virtualMachine.TargetSize.Name).FirstOrDefault();
+                            Arm.VMSize matchedVmSize = this.ResourceGroup.TargetLocation.SeekVmSize(virtualMachine.TargetSize.Name);
                             if (matchedVmSize == null)
                                 this.AddAlert(AlertType.Error, "Specified VM Size '" + virtualMachine.TargetSize.Name + "' for Virtual Machine '" + virtualMachine.ToString() + "' is invalid as it is not available in Azure Location '" + this.ResourceGroup.TargetLocation.DisplayName + "'.", virtualMachine);
                         }

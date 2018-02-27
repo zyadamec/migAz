@@ -7,15 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Azure.Asm;
-using MigAz.Azure.Arm;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
     public partial class AvailabilitySetProperties : UserControl
     {
         TargetTreeView _TargetTreeView;
-        TreeNode _armAvailabilitySetNode;
+        AvailabilitySet _AvailabilitySet;
         bool _IsBinding = false;
 
         public delegate Task AfterPropertyChanged();
@@ -26,21 +25,20 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, TreeNode availabilitySetNode)
+        internal void Bind(AvailabilitySet availabilitySet, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
 
                 _TargetTreeView = targetTreeView;
-                _armAvailabilitySetNode = availabilitySetNode;
+                _AvailabilitySet = availabilitySet;
 
-                Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
-                txtTargetName.Text = targetAvailabilitySet.TargetName;
-                upDownFaultDomains.Value = targetAvailabilitySet.PlatformFaultDomainCount;
-                upDownUpdateDomains.Value = targetAvailabilitySet.PlatformUpdateDomainCount;
+                txtTargetName.Text = _AvailabilitySet.TargetName;
+                upDownFaultDomains.Value = _AvailabilitySet.PlatformFaultDomainCount;
+                upDownUpdateDomains.Value = _AvailabilitySet.PlatformUpdateDomainCount;
 
-                foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in targetAvailabilitySet.TargetVirtualMachines)
+                foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in _AvailabilitySet.TargetVirtualMachines)
                 {
                     AddResourceSummary(new ResourceSummary(virtualMachine, _TargetTreeView));
                 }
@@ -65,10 +63,7 @@ namespace MigAz.Azure.UserControls
         {
             TextBox txtSender = (TextBox)sender;
 
-            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
-
-            targetAvailabilitySet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
-            _armAvailabilitySetNode.Text = targetAvailabilitySet.ToString();
+            _AvailabilitySet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
             if (!_IsBinding)
                 PropertyChanged();
@@ -76,8 +71,7 @@ namespace MigAz.Azure.UserControls
 
         private void upDownFaultDomains_ValueChanged(object sender, EventArgs e)
         {
-            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
-            targetAvailabilitySet.PlatformFaultDomainCount = Convert.ToInt32(upDownFaultDomains.Value);
+            _AvailabilitySet.PlatformFaultDomainCount = Convert.ToInt32(upDownFaultDomains.Value);
 
             if (!_IsBinding)
                 PropertyChanged();
@@ -85,8 +79,7 @@ namespace MigAz.Azure.UserControls
 
         private void upDownUpdateDomains_ValueChanged(object sender, EventArgs e)
         {
-            Azure.MigrationTarget.AvailabilitySet targetAvailabilitySet = (Azure.MigrationTarget.AvailabilitySet)_armAvailabilitySetNode.Tag;
-            targetAvailabilitySet.PlatformUpdateDomainCount = Convert.ToInt32(upDownUpdateDomains.Value);
+            _AvailabilitySet.PlatformUpdateDomainCount = Convert.ToInt32(upDownUpdateDomains.Value);
 
             if (!_IsBinding)
                 PropertyChanged();

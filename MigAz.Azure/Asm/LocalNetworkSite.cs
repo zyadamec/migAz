@@ -25,9 +25,9 @@ namespace MigAz.Azure.Asm
             this.TargetName = this.Name;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SharedKey = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(this.Parent.Name, this.Name);
+            _SharedKey = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(azureContext, this.Parent.Name, this.Name);
         }
 
         public String Name

@@ -16,9 +16,7 @@ namespace MigAz.Azure.UserControls
     public partial class NetworkSelectionControl : UserControl
     {
         private IVirtualNetworkTarget _NetworkInterfaceTarget;
-        private AzureContext _AzureContext;
-        private List<Azure.MigrationTarget.VirtualNetwork> _TargetVirualNetworksInMigration = new List<MigrationTarget.VirtualNetwork>();
-        private Azure.UserControls.TargetTreeView _TargetTreeView = null;
+        private Azure.UserControls.TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
 
         public delegate void AfterPropertyChanged();
@@ -30,11 +28,9 @@ namespace MigAz.Azure.UserControls
             txtStaticIp.TextChanged += txtStaticIp_TextChanged;
         }
 
-        public async Task Bind(AzureContext azureContext, Azure.UserControls.TargetTreeView targetTreeView,  List<Azure.MigrationTarget.VirtualNetwork> virtualNetworks)
+        public async Task Bind(TargetTreeView targetTreeView)
         {
-            _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
-            _TargetVirualNetworksInMigration = virtualNetworks;
 
             try
             {
@@ -43,8 +39,7 @@ namespace MigAz.Azure.UserControls
                 if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
                     rbExistingARMVNet.Text = "Existing VNet in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                    List<Azure.Arm.VirtualNetwork> a = await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation);
-                    this.ExistingARMVNetEnabled = a.Count() > 0;
+                    this.ExistingARMVNetEnabled = targetTreeView.GetExistingVirtualNetworksInTargetLocation().Count() > 0;
                 }
                 else
                 {
@@ -55,7 +50,7 @@ namespace MigAz.Azure.UserControls
             }
             catch (Exception exc)
             {
-                _AzureContext.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
+                targetTreeView.LogProvider.WriteLog("VirtualMachineProperties.Bind", exc.Message);
                 this.ExistingARMVNetEnabled = false;
             }
             finally
@@ -152,7 +147,7 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in _TargetVirualNetworksInMigration)
+                foreach (Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork in _TargetTreeView.GetVirtualNetworksInMigration())
                 {
                     cmbExistingArmVNets.Items.Add(targetVirtualNetwork);
                 }
@@ -208,13 +203,10 @@ namespace MigAz.Azure.UserControls
                 cmbExistingArmVNets.Items.Clear();
                 cmbExistingArmSubnet.Items.Clear();
 
-                if (_AzureContext != null && _AzureContext.AzureRetriever != null && _TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
+                foreach (Arm.VirtualNetwork armVirtualNetwork in _TargetTreeView.GetExistingVirtualNetworksInTargetLocation())
                 {
-                    foreach (Azure.Arm.VirtualNetwork armVirtualNetwork in await _AzureContext.AzureSubscription.GetAzureARMVirtualNetworks(_TargetTreeView.TargetResourceGroup.TargetLocation))
-                    {
-                        if (armVirtualNetwork.HasNonGatewaySubnet)
-                            cmbExistingArmVNets.Items.Add(armVirtualNetwork);
-                    }
+                    if (armVirtualNetwork.HasNonGatewaySubnet)
+                        cmbExistingArmVNets.Items.Add(armVirtualNetwork);
                 }
 
                 #endregion
@@ -223,36 +215,49 @@ namespace MigAz.Azure.UserControls
 
                 if (_NetworkInterfaceTarget != null)
                 {
-                    if (_NetworkInterfaceTarget.TargetVirtualNetwork != null)
+                    if (_NetworkInterfaceTarget.GetType() == typeof(MigrationTarget.NetworkInterfaceIpConfiguration))
                     {
-                        // Attempt to match target to list items
-                        for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
+                        NetworkInterfaceIpConfiguration targetNetworkInterface = (NetworkInterfaceIpConfiguration)_NetworkInterfaceTarget;
+                        if (targetNetworkInterface.SourceIpConfiguration != null)
                         {
-                            Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
-                            if (listVirtualNetwork.ToString() == _NetworkInterfaceTarget.TargetVirtualNetwork.ToString())
+                            if (targetNetworkInterface.SourceIpConfiguration.GetType() == typeof(Arm.NetworkInterfaceIpConfiguration))
                             {
-                                cmbExistingArmVNets.SelectedIndex = i;
-                                break;
+                                Arm.NetworkInterfaceIpConfiguration armSourceIpConfiguration = (Arm.NetworkInterfaceIpConfiguration)targetNetworkInterface.SourceIpConfiguration;
+
+                                // Attempt to match target to list items
+                                for (int i = 0; i < cmbExistingArmVNets.Items.Count; i++)
+                                {
+                                    Azure.Arm.VirtualNetwork listVirtualNetwork = (Azure.Arm.VirtualNetwork)cmbExistingArmVNets.Items[i];
+                                    if (listVirtualNetwork.ToString() == armSourceIpConfiguration.VirtualNetworkName)
+                                    {
+                                        cmbExistingArmVNets.SelectedIndex = i;
+                                        break;
+                                    }
+                                }
+
+
+                                    // Attempt to match target to list items
+                                for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
+                                {
+                                    Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
+                                    if (listSubnet.ToString() == armSourceIpConfiguration.SubnetName)
+                                    {
+                                        cmbExistingArmSubnet.SelectedIndex = i;
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    if (_NetworkInterfaceTarget.TargetSubnet != null)
-                    {
-                        // Attempt to match target to list items
-                        for (int i = 0; i < cmbExistingArmSubnet.Items.Count; i++)
-                        {
-                            Azure.Arm.Subnet listSubnet = (Azure.Arm.Subnet)cmbExistingArmSubnet.Items[i];
-                            if (listSubnet.ToString() == _NetworkInterfaceTarget.TargetSubnet.ToString())
-                            {
-                                cmbExistingArmSubnet.SelectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
                 }
                 #endregion
 
+                if (cmbExistingArmVNets.SelectedIndex < 0 && cmbExistingArmVNets.Items.Count > 0)
+                    cmbExistingArmVNets.SelectedIndex = 0;
+
+                if (cmbExistingArmSubnet.SelectedIndex < 0 && cmbExistingArmSubnet.Items.Count > 0)
+                    cmbExistingArmSubnet.SelectedIndex = 0;
             }
 
             if (!_IsBinding)

@@ -15,12 +15,18 @@ namespace MigAz.Azure.Forms
         public async Task InitializeDialog(AzureContext azureContext)
         {
             await this.azureArmLoginControl.BindContext(azureContext);
+            azureContext.BeforeAzureSubscriptionChange += AzureContext_BeforeAzureSubscriptionChange;
             azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
+        }
+
+        private async Task AzureContext_BeforeAzureSubscriptionChange(AzureContext sender)
+        {
+            this.Close();
         }
 
         private async Task AzureContextSourceASM_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            this.Close();
+            
         }
 
         private void btnCloseDialog_Click(object sender, EventArgs e)

@@ -9,7 +9,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class VirtualMachineProperties : UserControl
     {
-        private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private VirtualMachine _VirtualMachine;
         private bool _IsBinding = false;
@@ -22,12 +21,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(AzureContext azureContext, TargetTreeView targetTreeView, VirtualMachine virtualMachine)
+        public async Task Bind(VirtualMachine virtualMachine, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
-                _AzureContext = azureContext;
                 _TargetTreeView = targetTreeView;
                 _VirtualMachine = virtualMachine;
 

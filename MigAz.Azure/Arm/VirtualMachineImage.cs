@@ -10,13 +10,10 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualMachineImage : ArmResource, IVirtualMachineImage
     {
-        private AzureContext _AzureContext;
-
         private VirtualMachineImage() : base(null) { }
 
-        public VirtualMachineImage(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
+        public VirtualMachineImage(JToken resourceToken) : base(resourceToken)
         {
-            _AzureContext = azureContext;
         }
 
         public override string ToString()

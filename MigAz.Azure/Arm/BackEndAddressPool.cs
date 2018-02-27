@@ -23,7 +23,7 @@ namespace MigAz.Azure.Arm
         {
             foreach (string backEndIpConfigurationId in this.BackEndIPConfigurationIds)
             {
-                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(backEndIpConfigurationId);
+                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(azureContext, backEndIpConfigurationId);
                 if (networkInterface != null)
                 {
                     foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)

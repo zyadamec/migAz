@@ -34,29 +34,29 @@ namespace MigAz.Azure.Asm
             _XmlNode = xmlNode;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (_XmlNode.SelectSingleNode("AffinityGroup") != null)
-                _AsmAffinityGroup = await _AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
+                _AsmAffinityGroup = await _AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(azureContext, _XmlNode.SelectSingleNode("AffinityGroup").InnerText);
 
             foreach (XmlNode subnetNode in _XmlNode.SelectNodes("Subnets/Subnet"))
             {
                 Subnet asmSubnet = new Subnet(_AzureContext, this, subnetNode);
-                await asmSubnet.InitializeChildrenAsync();
+                await asmSubnet.InitializeChildrenAsync(azureContext);
                 _AsmSubnets.Add(asmSubnet);
             }
 
-            _AsmVirtualNetworkGateway = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkGateway(this);
+            _AsmVirtualNetworkGateway = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkGateway(azureContext, this);
 
             _AsmLocalNetworkSites = new List<LocalNetworkSite>();
             foreach (XmlNode localNetworkSiteXml in _XmlNode.SelectNodes("Gateway/Sites/LocalNetworkSite"))
             {
                 LocalNetworkSite asmLocalNetworkSite = new LocalNetworkSite(_AzureContext, this, localNetworkSiteXml);
-                await asmLocalNetworkSite.InitializeChildrenAsync();
+                await asmLocalNetworkSite.InitializeChildrenAsync(azureContext);
                 _AsmLocalNetworkSites.Add(asmLocalNetworkSite);
             }
 
-            _AsmClientRootCertificates = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificates(this);
+            _AsmClientRootCertificates = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificates(azureContext, this);
         }
 
         #endregion

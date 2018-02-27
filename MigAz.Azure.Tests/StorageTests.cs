@@ -30,11 +30,12 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\AsmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindAsmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindAsmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
             //foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.AsmTargetStorageAccounts)
             //{
@@ -63,11 +64,12 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\ArmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
             //foreach (Azure.MigrationTarget.StorageAccount s in azureContextUSCommercial.AzureRetriever.ArmTargetStorageAccounts)
@@ -98,11 +100,12 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
 
@@ -151,7 +154,7 @@ namespace MigAz.Tests
             await artifacts.ValidateAzureResources();
             Assert.IsNotNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
-            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.VMSizes.Where(a => a.Name == "Standard_DS2_v2").FirstOrDefault();
+            artifacts.VirtualMachines[0].TargetSize = artifacts.ResourceGroup.TargetLocation.SeekVmSize("Standard_DS2_v2");
             await artifacts.ValidateAzureResources();
             Assert.IsNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));
 
@@ -176,11 +179,12 @@ namespace MigAz.Tests
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
-            await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
+            await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(azureContextUSCommercial, true);
+            await azureContextUSCommercial.AzureSubscription.BindArmResources(azureContextUSCommercial, targetSettings);
 
             AzureGenerator templateGenerator = await TestHelper.SetupTemplateGenerator(azureContextUSCommercial);
 
-            var artifacts = new ExportArtifacts();
+            var artifacts = new ExportArtifacts(azureContextUSCommercial.AzureSubscription);
             artifacts.ResourceGroup = await TestHelper.GetTargetResourceGroup(azureContextUSCommercial);
 
             TargetTreeView targetTreeView = new TargetTreeView();

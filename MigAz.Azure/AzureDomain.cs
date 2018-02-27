@@ -10,13 +10,13 @@ namespace MigAz.Azure
     public class AzureDomain
     {
         private JObject _DomainJson;
-        private AzureContext _AzureContext;
         private List<AzureDomain> _Domains;
+        private AzureTenant _AzureTenant;
 
-        public AzureDomain(JObject domainJson, AzureContext azureContext)
+        public AzureDomain(AzureTenant azureTenant, JObject domainJson)
         {
             _DomainJson = domainJson;
-            _AzureContext = azureContext;
+            _AzureTenant = azureTenant;
         }
 
         public string Name

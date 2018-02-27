@@ -20,24 +20,47 @@ namespace MigAz.AzureStack
         {
         }
 
+        public AzureStackEndpoints AzureStackEndpoints
+        {
+            get { return _AzureStackEndpoints; }
+        }
+
+        public override string GetARMTokenResourceUrl()
+        {
+            if (this.AzureStackEndpoints == null)
+                return String.Empty;
+            else
+                return this.AzureStackEndpoints.Audiences;
+        }
+
+        public override string GetARMServiceManagementUrl()
+        {
+            return _AzureStackEndpoints.ManagementEndpoint;
+            //return _AzureStackEndpoints.PortalEndpoint;  // is this for user subscriptions?
+        }
+
         public async Task Login()
         {
             // AzureStack Login via PowerShell:  https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-powershell-configure-admin
             await base.Login(_AzureStackEndpoints.LoginEndpoint, _AzureStackEndpoints.Audiences);
 
-            List<AzureTenant> tenants = await this.AzureRetriever.GetAzureARMTenants();
-            List<AzureDomain> domains = await this.AzureRetriever.GetAzureARMDomains(tenants[0]);
-            List<AzureSubscription> subscriptions = await GetAzureStackARMSubscriptions(tenants[0]);
-            //UserAuthenticated?.Invoke(this);
+            List<AzureTenant> azureTenants = await this.GetAzureARMTenants();
+            foreach (AzureTenant azureTenant in azureTenants)
+            {
+                List<AzureDomain> domains = await azureTenant.GetAzureARMDomains(this);
+                List<AdminSubscription> subscriptions = await GetAzureStackARMSubscriptions(azureTenant);
+            }
+
+            this.StatusProvider.UpdateStatus("Ready");
         }
 
 
-        public async Task<List<AzureSubscription>> GetAzureStackARMSubscriptions(AzureTenant azureTenant)
+        public async Task<List<AdminSubscription>> GetAzureStackARMSubscriptions(AzureTenant azureTenant)
         {
             //_AzureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + azureTenant.ToString());
 
-            String subscriptionsUrl = "https://adminmanagement.local.azurestack.external/" + "subscriptions?api-version=2015-01-01";
-            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken("https://adminmanagement.azstackcspmulti1.onmicrosoft.com/3f59c3a8-6c85-479f-a7a7-51ec04e1d05a", azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);// _AzureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureTenant.TenantId);
+            String subscriptionsUrl = this.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
+            AuthenticationResult authenticationResult = await this.TokenProvider.GetToken(this.GetARMTokenResourceUrl(), azureTenant.TenantId, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.Auto);
 
             //_AzureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions...");
 
@@ -48,11 +71,12 @@ namespace MigAz.AzureStack
             var subscriptions = from subscription in subscriptionsJson["value"]
                                 select subscription;
 
-            List<AzureSubscription> tenantSubscriptions = new List<AzureSubscription>();
+            List<AdminSubscription> tenantSubscriptions = new List<AdminSubscription>();
 
             foreach (JObject azureSubscriptionJson in subscriptions)
             {
-                AzureSubscription azureSubscription = new AzureSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment);
+                AdminSubscription azureSubscription = new AdminSubscription(this, azureSubscriptionJson, azureTenant, this.AzureEnvironment, this.GetARMServiceManagementUrl(), this.GetARMTokenResourceUrl());
+                await azureSubscription.GetAzureStackUserSubscriptions();
                 tenantSubscriptions.Add(azureSubscription);
             }
 
@@ -61,16 +85,16 @@ namespace MigAz.AzureStack
 
         internal async Task LoadMetadataEndpoints(string azureStackEnvironment)
         {
-            string metadataEndpointsUrl = azureStackEnvironment;
+            string metadataEndpointsUrlBase = azureStackEnvironment;
 
-            if (!metadataEndpointsUrl.EndsWith("/"))
-                metadataEndpointsUrl += "/";
+            if (!metadataEndpointsUrlBase.EndsWith("/"))
+                metadataEndpointsUrlBase += "/";
 
-            metadataEndpointsUrl += "metadata/endpoints?api-version=2015-01-01";
+            String metadataEndpointsUrl = metadataEndpointsUrlBase + "metadata/endpoints?api-version=2015-01-01";
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(metadataEndpointsUrl);
             AzureRestResponse azureRestResponse = await AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            _AzureStackEndpoints = new AzureStackEndpoints(azureRestResponse);
+            _AzureStackEndpoints = new AzureStackEndpoints(metadataEndpointsUrlBase, azureRestResponse);
         }
     }
 }

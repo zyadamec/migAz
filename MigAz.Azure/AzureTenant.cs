@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Azure.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +12,13 @@ namespace MigAz.Azure
     public class AzureTenant
     {
         private JObject _TenantJson;
-        private AzureContext _AzureContext;
         private List<AzureDomain> _Domains;
         private List<AzureSubscription> _Subscriptions;
+        private ITokenProvider _TokenProvider;
 
-        internal AzureTenant(JObject tenantsJson, AzureContext azureContext)
+        internal AzureTenant(JObject tenantsJson)
         {
             _TenantJson = tenantsJson;
-            _AzureContext = azureContext;
         }
 
         public string Id
@@ -63,10 +64,91 @@ namespace MigAz.Azure
             get { return _Subscriptions; }
         }
 
-        public async Task InitializeChildren()
+        public ITokenProvider TokenProvider
         {
-            _Domains = await _AzureContext.AzureRetriever.GetAzureARMDomains(this);
-            _Subscriptions = await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(this);
+            get { return _TokenProvider; }
+            set { _TokenProvider = value; }
+        }
+
+        public async Task InitializeChildren(AzureContext azureContext, bool allowRestCacheUse = false)
+        {
+            _Domains = await this.GetAzureARMDomains(azureContext, allowRestCacheUse);
+            _Subscriptions = await this.GetAzureARMSubscriptions(azureContext, allowRestCacheUse);
+        }
+
+
+        public async Task<List<AzureDomain>> GetAzureARMDomains(AzureContext azureContext, bool allowRestCacheUse = false)
+        {
+            azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
+
+            if (this == null)
+                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
+            if (azureContext.TokenProvider == null)
+                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
+
+            String domainUrl = azureContext.AzureServiceUrls.GetGraphApiUrl() + "myorganization/domains?api-version=1.6";
+
+            AuthenticationResult tenantAuthenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureServiceUrls.GetGraphApiUrl(), this.TenantId, PromptBehavior.Never);
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
+            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject domainsJson = JObject.Parse(azureRestResponse.Response);
+
+            var domains = from domain in domainsJson["value"]
+                          select domain;
+
+            List<AzureDomain> armTenantDomains = new List<AzureDomain>();
+
+            foreach (JObject domainJson in domains)
+            {
+                AzureDomain azureDomain = new AzureDomain(this, domainJson);
+                armTenantDomains.Add(azureDomain);
+            }
+
+            return armTenantDomains;
+        }
+
+        /// <summary>
+        /// Get Azure Subscriptions within the provided Azure Tenant
+        /// </summary>
+        /// <param name="azureTenant">Azure Tenant for which Azure Subscriptions should be retrieved</param>
+        /// <param name="allowRestCacheUse">False in production use so that Azure Token Content is Tenant specific.  True in Unit Tests to allow offline (no actual URL querying).</param>
+        /// <returns></returns>
+        public async Task<List<AzureSubscription>> GetAzureARMSubscriptions(AzureContext azureContext, bool allowRestCacheUse = false)
+        {
+            azureContext.LogProvider.WriteLog("GetAzureARMSubscriptions", "Start - azureTenant: " + this.ToString());
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Getting Auth Token to Query Subscriptions");
+
+            String subscriptionsUrl = azureContext.AzureServiceUrls.GetARMServiceManagementUrl() + "subscriptions?api-version=2015-01-01";
+            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureServiceUrls.GetARMServiceManagementUrl(), this.TenantId);
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Querying Subscriptions");
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(subscriptionsUrl, authenticationResult, "GET", allowRestCacheUse);
+            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject subscriptionsJson = JObject.Parse(azureRestResponse.Response);
+
+            var subscriptions = from subscription in subscriptionsJson["value"]
+                                select subscription;
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Instantiating Subscriptions");
+
+            List<AzureSubscription> azureSubscriptions = new List<AzureSubscription>();
+
+            foreach (JObject azureSubscriptionJson in subscriptions)
+            {
+                AzureSubscription azureSubscription = new AzureSubscription(azureSubscriptionJson, this, azureContext.AzureEnvironment, azureContext.GetARMServiceManagementUrl(), azureContext.GetARMTokenResourceUrl());
+                azureSubscriptions.Add(azureSubscription);
+
+                azureContext.StatusProvider.UpdateStatus("BUSY: Loaded Subscription " + azureSubscription.ToString());
+            }
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Getting Subscriptions Completed");
+
+            return azureSubscriptions;
         }
 
         public static bool operator ==(AzureTenant lhs, AzureTenant rhs)

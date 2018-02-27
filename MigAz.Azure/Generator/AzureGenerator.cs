@@ -19,13 +19,14 @@ namespace MigAz.Azure.Generator.AsmToArm
     public class AzureGenerator : TemplateGenerator
     {
 
-        private AzureGenerator() : base(null, null, null, null) { } 
+        private AzureGenerator() : base(null, null, null, null, null) { } 
 
         public AzureGenerator(
+            AzureContext sourceAzureContext,
             ISubscription sourceSubscription, 
             ISubscription targetSubscription,
             ILogProvider logProvider, 
-            IStatusProvider statusProvider) : base(logProvider, statusProvider, sourceSubscription, targetSubscription)
+            IStatusProvider statusProvider) : base(sourceAzureContext, logProvider, statusProvider, sourceSubscription, targetSubscription)
         {
         }
     }
