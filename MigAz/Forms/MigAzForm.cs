@@ -804,6 +804,8 @@ namespace MigAz.Forms
             MigrationTargetSelectionControlVisible = false;
             splitContainer4.Panel1.Controls.Add(migrationTargetUserControl);
             splitContainer4_Panel1_Resize(this, null);
+
+            await this.targetTreeView1.RefreshExportArtifacts();
         }
 
         private async Task AzureTargetContext_AfterAzureSubscriptionChange(AzureContext sender)
@@ -815,8 +817,8 @@ namespace MigAz.Forms
 
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
-            targetTreeView1.TargetBlobStorageNamespace = sender.AzureContext.AzureServiceUrls.GetBlobEndpointUrl();
-            targetTreeView1.TargetSubscription = sender.AzureContext.AzureSubscription;
+            targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            targetTreeView1.TargetSubscription = sender.SelectedAzureContext.AzureSubscription;
             await this.targetTreeView1.RefreshExportArtifacts();
         }
 
