@@ -257,7 +257,7 @@ namespace MigAz.Azure
 
             foreach (JObject tenantJson in tenants)
             {
-                AzureTenant azureTenant = new AzureTenant(tenantJson);
+                AzureTenant azureTenant = new AzureTenant(this, tenantJson);
                 await azureTenant.InitializeChildren(this, allowRestCacheUse);
                 _ArmTenants.Add(azureTenant);
             }

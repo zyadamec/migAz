@@ -66,6 +66,11 @@ namespace MigAz.Azure.Arm
             set { _VMSize = value;  }
         }
 
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+        }
+
         public string OSVirtualHardDiskOS => (string)ResourceToken["properties"]["storageProfile"]["osDisk"]["osType"];
 
         internal string AvailabilitySetId

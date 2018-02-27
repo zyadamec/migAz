@@ -95,7 +95,7 @@ namespace MigAz.Azure.UserControls
             azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
             // Russell Now
-            this._AzureGenerator = new AzureGenerator(null,_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
+            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
         }
 
         private async Task AzureLoginContextViewerTarget_AfterContextChanged(AzureLoginContextViewer sender)

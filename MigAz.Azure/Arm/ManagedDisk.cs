@@ -18,16 +18,19 @@ namespace MigAz.Azure.Arm
 {
     public class ManagedDisk : ArmResource, IArmDisk
     {
+        private AzureSubscription _AzureSubscription;
         private VirtualMachine _VirtualMachine;
 
         private ManagedDisk() : base(null) { }
 
         public ManagedDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
         {
+            _AzureSubscription = virtualMachine.AzureSubscription;
             _VirtualMachine = virtualMachine;
         }
-        public ManagedDisk(JToken resourceToken) : base(resourceToken)
+        public ManagedDisk(AzureSubscription azureSubscription, JToken resourceToken) : base(resourceToken)
         {
+            _AzureSubscription = azureSubscription;
         }
 
         public new async Task InitializeChildrenAsync(AzureContext azureContext)
@@ -36,6 +39,11 @@ namespace MigAz.Azure.Arm
         }
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+        }
 
         public VirtualMachine ParentVirtualMachine
         {
@@ -158,19 +166,21 @@ namespace MigAz.Azure.Arm
             return this.Name;
         }
 
-        public async Task<string> GetSASUrlAsync(AzureContext azureContext, int tokenDurationSeconds)
+        public async Task<string> GetSASUrlAsync(int tokenDurationSeconds)
         {
+            if (this.AzureSubscription == null)
+                throw new ArgumentException("Managed Disk must have an Azure Subscription context to obtain SAS URL.");
+
+            AzureContext azureContext = this.AzureSubscription.AzureTenant.AzureContext;
+
             if (azureContext != null && azureContext.LogProvider != null)
                 azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Start Disk '" + this.Name + "'");
 
             if (azureContext != null && azureContext.StatusProvider != null)
                 azureContext.StatusProvider.UpdateStatus("Getting Access SAS for Managed Disk '" + this.Name + "'");
 
-            if (azureContext.AzureSubscription.SubscriptionId == Guid.Empty)
-                return String.Empty;
-
             // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/disks/disks-grant-access
-            string url = "/subscriptions/" + azureContext.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
+            string url = "/subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
 
             AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureContext.AzureSubscription.AzureAdTenantId);

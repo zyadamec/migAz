@@ -1343,7 +1343,7 @@ namespace MigAz.Azure
 
             foreach (var managedDisk in managedDisks)
             {
-                Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(managedDisk);
+                Arm.ManagedDisk armManagedDisk = new Arm.ManagedDisk(this, managedDisk);
                 await armManagedDisk.InitializeChildrenAsync(azureContext);
                 resourceGroupManagedDisks.Add(armManagedDisk);
             }

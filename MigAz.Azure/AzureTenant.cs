@@ -14,14 +14,21 @@ namespace MigAz.Azure
 {
     public class AzureTenant
     {
+        private AzureContext _AzureContext;
         private JObject _TenantJson;
         private List<AzureDomain> _Domains;
         private List<AzureSubscription> _Subscriptions;
         private ITokenProvider _TokenProvider;
 
-        internal AzureTenant(JObject tenantsJson)
+        internal AzureTenant(AzureContext azureContext, JObject tenantsJson)
         {
+            _AzureContext = azureContext;
             _TenantJson = tenantsJson;
+        }
+
+        public AzureContext AzureContext
+        {
+            get { return _AzureContext; }
         }
 
         public string Id
