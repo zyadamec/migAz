@@ -34,7 +34,7 @@ namespace MigAz.Azure.UserControls
                 txtTargetName.Text = resourceGroup.TargetName;
 
                 cboTargetLocation.Items.Clear();
-                if (targetTreeView.TargetSubscription != null && targetTreeView.TargetSubscription.Locations.Count() > 0)
+                if (targetTreeView.TargetSubscription != null && targetTreeView.TargetSubscription.Locations != null && targetTreeView.TargetSubscription.Locations.Count() > 0)
                 {
                     foreach (Arm.Location armLocation in targetTreeView.TargetSubscription.Locations.OrderBy(a => a.DisplayName))
                     {

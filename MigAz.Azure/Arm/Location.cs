@@ -92,13 +92,13 @@ namespace MigAz.Azure.Arm
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
             string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
-            azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes for Subscription: " + this.ToString() + " Location : " + this.ToString());
+            azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes Location : " + this.ToString());
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
             AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
             JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
 
-            azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Subscription: " + this.ToString() + " Location : " + this.ToString());
+            azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
 
             var VMSizes = from VMSize in locationsVMSizesJson["value"]
                           select VMSize;
@@ -111,6 +111,9 @@ namespace MigAz.Azure.Arm
             }
 
             _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
+
+            azureContext.StatusProvider.UpdateStatus("Ready");
+
             return _ArmVmSizes;
         }
 
