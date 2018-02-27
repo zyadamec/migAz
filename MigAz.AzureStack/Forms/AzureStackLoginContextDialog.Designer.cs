@@ -1,4 +1,7 @@
-﻿namespace MigAz.AzureStack.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.AzureStack.Forms
 {
     partial class AzureStackLoginContextDialog
     {
@@ -90,3 +93,4 @@
         private UserControls.AzureStackArmLoginControl azureStackArmLoginControl1;
     }
 }
+

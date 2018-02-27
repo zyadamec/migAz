@@ -1,4 +1,7 @@
-﻿using MigAz.Core;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 
@@ -102,3 +105,4 @@ namespace MigAz.Azure.MigrationTarget
         }
     }
 }
+

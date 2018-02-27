@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json.Linq;
 using MigAz.Azure.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -133,3 +136,4 @@ namespace MigAz.Azure.Arm
         #endregion
     }
 }
+

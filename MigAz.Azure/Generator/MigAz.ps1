@@ -1,4 +1,7 @@
-﻿# Parameters
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+# Parameters
 param (
     [Parameter(Mandatory = $true)] 
     $ResourceGroupName,

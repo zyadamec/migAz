@@ -1,4 +1,7 @@
-﻿using MIGAZ;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MIGAZ;
 using System;
 using System.Windows.Forms;
 
@@ -67,3 +70,4 @@ namespace MIGAZ.Forms
         }
     }
 }
+

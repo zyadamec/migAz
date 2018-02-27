@@ -1,4 +1,7 @@
-﻿namespace MigAz.AWS.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.AWS.UserControls
 {
     partial class MigrationAWSSourceContext
     {
@@ -132,3 +135,4 @@
         private System.Windows.Forms.Label label5;
     }
 }
+

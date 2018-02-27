@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System.Xml;
 
 namespace MigAz.Azure.Asm
@@ -49,3 +52,4 @@ namespace MigAz.Azure.Asm
         }
     }
 }
+

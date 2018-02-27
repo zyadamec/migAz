@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Arm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Arm;
 using MigAz.Azure.Interface;
 using MigAz.Core;
 using MigAz.Core.Interface;
@@ -331,3 +334,4 @@ namespace MigAz.Azure.Asm
         #endregion
     }
 }
+

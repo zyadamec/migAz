@@ -1,4 +1,7 @@
-﻿namespace MigAz.AWS.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.AWS.UserControls
 {
     partial class AmazonWebServiceLoginViewer
     {
@@ -85,3 +88,4 @@
         private System.Windows.Forms.Label lblSignInText;
     }
 }
+

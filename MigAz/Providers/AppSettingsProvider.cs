@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using MigAz.Azure.UserControls;
 using MigAz.Core;
 using MigAz.Core.Interface;
@@ -158,3 +161,4 @@ namespace MigAz.Providers
         }
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
@@ -93,3 +96,4 @@ namespace MigAz.Azure.UserControls
 
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using MigAz.AWS.Models;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.AWS.Models;
 using MigAz.Core.Interface;
 using Newtonsoft.Json;
 using System;
@@ -49,3 +52,4 @@ namespace MigAz.AWS.Providers
         }
     }
 }
+

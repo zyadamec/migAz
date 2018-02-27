@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Tests.Fakes;
@@ -228,3 +231,4 @@ namespace MigAz.Tests
         }
     }
 }
+

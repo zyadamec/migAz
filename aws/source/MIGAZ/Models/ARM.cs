@@ -1,4 +1,7 @@
-﻿using System.Collections;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections;
 using System.Collections.Generic;
 using System;
 
@@ -485,3 +488,4 @@ namespace MIGAZ.Models.ARM
         public List<Resource> resources;
     }
 }
+

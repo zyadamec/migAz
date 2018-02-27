@@ -1,4 +1,7 @@
-﻿namespace MigAz.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Forms
 {
     partial class ExportResultsDialog
     {
@@ -154,3 +157,4 @@
         private System.Windows.Forms.Button btnGenerateInstructions;
     }
 }
+

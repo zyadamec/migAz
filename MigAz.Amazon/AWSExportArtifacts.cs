@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System.Collections.Generic;
 
 namespace MigAz.AWS
@@ -17,3 +20,4 @@ namespace MigAz.AWS
         public List<Ec2Instance> Instances { get; private set; }
     }
 }
+

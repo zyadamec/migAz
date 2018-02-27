@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using MigAz.Core.Interface;
 using System;
 using System.Linq;
@@ -212,3 +215,4 @@ namespace MigAz.AzureStack.UserControls
         }
     }
 }
+

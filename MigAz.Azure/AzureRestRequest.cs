@@ -1,4 +1,7 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,3 +102,4 @@ namespace MigAz.Azure
         }
     }
 }
+

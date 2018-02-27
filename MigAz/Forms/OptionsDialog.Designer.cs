@@ -1,4 +1,7 @@
-﻿namespace MigAz.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Forms
 {
     partial class OptionsDialog
     {
@@ -657,3 +660,4 @@
         private System.Windows.Forms.Label label15;
     }
 }
+

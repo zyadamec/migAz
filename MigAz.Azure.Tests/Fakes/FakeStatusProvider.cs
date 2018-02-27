@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Generator.AsmToArm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using System;
@@ -17,3 +20,4 @@ namespace MigAz.Tests.Fakes
         }
     }
 }
+

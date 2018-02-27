@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using Amazon.EC2.Model;
 
 namespace MIGAZ.Models
@@ -17,3 +20,4 @@ namespace MIGAZ.Models
         public List<Ec2Instance> Instances { get; private set; }
     }
 }
+

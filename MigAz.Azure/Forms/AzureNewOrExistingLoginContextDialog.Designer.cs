@@ -1,4 +1,7 @@
-﻿namespace MigAz.Azure.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Azure.Forms
 {
     partial class AzureNewOrExistingLoginContextDialog
     {
@@ -333,3 +336,4 @@
         private System.Windows.Forms.RadioButton rbSameUserDifferentSubscription;
     }
 }
+

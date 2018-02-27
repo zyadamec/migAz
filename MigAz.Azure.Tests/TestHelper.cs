@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using MigAz.Tests.Fakes;
 using Newtonsoft.Json.Linq;
 using System;
@@ -74,3 +77,4 @@ namespace MigAz.Tests
         }
     }
 }
+

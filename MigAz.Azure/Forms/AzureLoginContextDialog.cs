@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -35,3 +38,4 @@ namespace MigAz.Azure.Forms
         }
     }
 }
+

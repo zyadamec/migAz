@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
@@ -152,3 +155,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+
