@@ -400,7 +400,7 @@ namespace MigAz.Azure.UserControls
 
                 foreach (Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
                 {
-                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, targetVirtualNetwork.ToString(), targetSubnet.ToString(), targetSubnet, true);
+                    TreeNode subnetNode = SeekARMChildTreeNode(virtualNetworkNode.Nodes, targetSubnet.ToString(), targetSubnet.ToString(), targetSubnet, true);
                 }
 
                 targetResourceGroupNode.ExpandAll();
