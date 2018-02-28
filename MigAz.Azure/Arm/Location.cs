@@ -97,24 +97,30 @@ namespace MigAz.Azure.Arm
             string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
             azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes Location : " + this.ToString());
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
-            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
-
-            azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
-
-            var VMSizes = from VMSize in locationsVMSizesJson["value"]
-                          select VMSize;
-
-            List<VMSize> vmSizes = new List<VMSize>();
-            foreach (var VMSize in VMSizes)
+            try
             {
-                Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                vmSizes.Add(armVMSize);
+                AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+                AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+                JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
+
+                azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
+
+                var VMSizes = from VMSize in locationsVMSizesJson["value"]
+                              select VMSize;
+
+                List<VMSize> vmSizes = new List<VMSize>();
+                foreach (var VMSize in VMSizes)
+                {
+                    Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
+                    vmSizes.Add(armVMSize);
+                }
+
+                _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
             }
-
-            _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
-
+            catch (Exception exc)
+            {
+                // this is a tempoary (not good coding) to handle error on France locations, until code is added tomorrow to check the provider availability at the location
+            }
             azureContext.StatusProvider.UpdateStatus("Ready");
 
             return _ArmVmSizes;
