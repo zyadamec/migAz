@@ -14,7 +14,6 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class Subnet : Core.MigrationTarget, IMigrationSubnet
     {
-        private AzureContext _AzureContext = null;
         private ISubnet _SourceSubnet;
         private MigrationTarget.VirtualNetwork _ParentVirtualNetwork;
 

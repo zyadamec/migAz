@@ -9,7 +9,6 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class NetworkSecurityGroupRule : Core.MigrationTarget
     {
-        private AzureContext _AzureContext;
         private bool _IsSystemRule = false;
 
         public NetworkSecurityGroupRule(Asm.NetworkSecurityGroupRule asmRule, TargetSettings targetSettings)
