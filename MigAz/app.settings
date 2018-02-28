@@ -69,7 +69,7 @@
       <Value Profile="(Default)">3600</Value>
     </Setting>
     <Setting Name="LoginPromptBehavior" Type="Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior" Scope="User">
-      <Value Profile="(Default)">Always</Value>
+      <Value Profile="(Default)">SelectAccount</Value>
     </Setting>
   </Settings>
 </SettingsFile>
