@@ -91,8 +91,17 @@ namespace MigAz.Azure
 
         public async Task InitializeChildrenAsync(bool useCache = false)
         {
-            _ArmProviders = await this.GetResourceManagerProviders(useCache);
             _ArmLocations = await this.InitializeARMLocations();
+            _ArmProviders = await this.GetResourceManagerProviders(useCache);
+
+            List<Task> armLocationChildTasks = new List<Task>();
+            foreach (Arm.Location armLocation in _ArmLocations)
+            {
+                Task armLocationChildTask = armLocation.InitializeChildrenAsync();
+                armLocationChildTasks.Add(armLocationChildTask);
+            }
+            await Task.WhenAll(armLocationChildTasks.ToArray());
+
         }
 
         #endregion
@@ -736,18 +745,10 @@ namespace MigAz.Azure
                         Arm.Location armLocation = new Arm.Location(this, location);
                         _ArmLocations.Add(armLocation);
 
-                        this.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
+                        this.LogProvider.WriteLog("GetAzureARMLocations", "Instantiated Arm Location " + armLocation.ToString());
                     }
                 }
             }
-
-            List<Task> armLocationChildTasks = new List<Task>();
-            foreach (Arm.Location armLocation in _ArmLocations)
-            {
-                Task armLocationChildTask = armLocation.InitializeChildrenAsync();
-                armLocationChildTasks.Add(armLocationChildTask);
-            }
-            await Task.WhenAll(armLocationChildTasks.ToArray());
 
             return _ArmLocations;
         }
@@ -1508,20 +1509,23 @@ namespace MigAz.Azure
             return prt.MaxApiVersion;
         }
 
-        public bool ExistsProviderResourceType(string providerNamespace, string resourceType)
+        public ProviderResourceType GetProviderResourceType(string providerNamespace, string resourceType)
         {
             if (_ArmProviders == null)
                 throw new Exception("You must first call InitializeChildrenAsync on the Azure Subscription before querying providers.");
 
             Provider provider = _ArmProviders.Where(a => String.Compare(a.Namespace, providerNamespace, true) == 0).FirstOrDefault();
             if (provider == null)
-                return false;
+                return null;
 
             ProviderResourceType prt = provider.ResourceTypes.Where(a => String.Compare(a.ResourceType, resourceType, true) == 0).FirstOrDefault();
-            if (prt == null)
-                return false;
 
-            return true;
+            return prt;
+        }
+
+        public bool ExistsProviderResourceType(string providerNamespace, string resourceType)
+        {
+            return GetProviderResourceType(providerNamespace, resourceType) != null;
         }
 
 

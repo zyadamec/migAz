@@ -28,7 +28,7 @@ namespace MigAz.Azure.Arm
 
             foreach (var resourceTypeJson in resourceTypesJson)
             {
-                ProviderResourceType armProviderResourcetype = new ProviderResourceType(resourceTypeJson, this);
+                ProviderResourceType armProviderResourcetype = new ProviderResourceType(this, resourceTypeJson);
                 _ResourceTypes.Add(armProviderResourcetype);
             }
         }
