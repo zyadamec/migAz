@@ -3,7 +3,7 @@
 
 namespace MigAz.Azure.UserControls
 {
-    partial class ResourceSummary
+    partial class ResourceSummary<T>
     {
         /// <summary> 
         /// Required designer variable.
@@ -42,7 +42,7 @@ namespace MigAz.Azure.UserControls
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(38, 38);
+            this.pictureBox1.Size = new System.Drawing.Size(25, 25);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.ResourceSummary_Click);
@@ -81,7 +81,7 @@ namespace MigAz.Azure.UserControls
             this.Controls.Add(this.pictureBox1);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "ResourceSummary";
-            this.Size = new System.Drawing.Size(338, 45);
+            this.Size = new System.Drawing.Size(338, 25);
             this.Click += new System.EventHandler(this.ResourceSummary_Click);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

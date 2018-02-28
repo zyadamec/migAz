@@ -38,10 +38,10 @@ namespace MigAz.Azure.UserControls
             this.label3 = new System.Windows.Forms.Label();
             this.lblAddressSpace = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary();
+            this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.NetworkSecurityGroup>();
             this.label7 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.routeTable = new MigAz.Azure.UserControls.ResourceSummary();
+            this.routeTable = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.RouteTable>();
             this.SuspendLayout();
             // 
             // label2
@@ -183,10 +183,10 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblAddressSpace;
         private System.Windows.Forms.Label label4;
-        private ResourceSummary networkSecurityGroup;
+        private ResourceSummary<MigrationTarget.NetworkSecurityGroup> networkSecurityGroup;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label5;
-        private ResourceSummary routeTable;
+        private ResourceSummary<MigrationTarget.RouteTable> routeTable;
     }
 }
 

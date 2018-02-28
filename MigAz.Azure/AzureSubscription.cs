@@ -734,40 +734,45 @@ namespace MigAz.Azure
         {
             AzureContext azureContext = this.AzureTenant.AzureContext;
 
-            this.LogProvider.WriteLog("GetAzureARMLocations", "Start");
-
-            if (_ArmLocations != null)
-                return _ArmLocations;
-
-            JObject locationsJson = await this.GetAzureARMResources("Locations", null, null);
-
-            _ArmLocations = new List<Arm.Location>();
-
-            if (locationsJson != null)
+            try
             {
-                var locations = from location in locationsJson["value"]
-                                select location;
+                this.LogProvider.WriteLog("GetAzureARMLocations", "Start");
 
-                if (locations != null)
+                if (_ArmLocations != null)
+                    return _ArmLocations;
+
+                JObject locationsJson = await this.GetAzureARMResources("Locations", null, null);
+
+                _ArmLocations = new List<Arm.Location>();
+
+                if (locationsJson != null)
                 {
-                    foreach (var location in locations)
-                    {
-                        Arm.Location armLocation = new Arm.Location(this, location);
-                        await armLocation.InitializeChildrenAsync();
-                        _ArmLocations.Add(armLocation);
+                    var locations = from location in locationsJson["value"]
+                                    select location;
 
-                        this.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
+                    if (locations != null)
+                    {
+                        foreach (var location in locations)
+                        {
+                            Arm.Location armLocation = new Arm.Location(this, location);
+                            await armLocation.InitializeChildrenAsync();
+                            _ArmLocations.Add(armLocation);
+
+                            this.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
+                        }
                     }
                 }
-            }
 
-            List<Task> armLocationChildTasks = new List<Task>();
-            foreach (Arm.Location armLocation in _ArmLocations)
-            {
-                Task armLocationChildTask = armLocation.InitializeChildrenAsync();
-                armLocationChildTasks.Add(armLocationChildTask);
+                List<Task> armLocationChildTasks = new List<Task>();
+                foreach (Arm.Location armLocation in _ArmLocations)
+                {
+                    Task armLocationChildTask = armLocation.InitializeChildrenAsync();
+                    armLocationChildTasks.Add(armLocationChildTask);
+                }
+                await Task.WhenAll(armLocationChildTasks.ToArray());
+
             }
-            await Task.WhenAll(armLocationChildTasks.ToArray());
+            catch (Exception exc) { }
 
             return _ArmLocations;
         }

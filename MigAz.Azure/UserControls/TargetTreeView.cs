@@ -221,10 +221,7 @@ namespace MigAz.Azure.UserControls
                 if (_ExportArtifacts == null)
                     return null;
 
-                if (_ExportArtifacts.HasErrors)
-                    return null;
-                else
-                    return _ExportArtifacts;
+                return _ExportArtifacts;
             }
         }
 
