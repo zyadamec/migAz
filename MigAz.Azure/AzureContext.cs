@@ -203,10 +203,6 @@ namespace MigAz.Azure
 
                 if (_AzureSubscription != null)
                 {
-                    // Russell Now
-                    //if (_AzureRetriever != null && _TokenProvider != null)
-                    //    await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
-
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }
 

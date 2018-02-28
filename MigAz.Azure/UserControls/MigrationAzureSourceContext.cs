@@ -224,15 +224,6 @@ namespace MigAz.Azure.UserControls
             ResetForm();
             this.IsSourceContextAuthenticated = false;
 
-            //if (_AzureContextTargetARM != null)
-            //    await _AzureContextTargetARM.SetSubscriptionContext(null);
-
-            //if (_AzureContextTargetARM != null)
-            //    await _AzureContextTargetARM.Logout();
-
-            //azureLoginContextViewerARM.Enabled = false;
-            //azureLoginContextViewerARM.Refresh();
-
             AfterUserSignOut?.Invoke();
         }
 
@@ -872,56 +863,7 @@ namespace MigAz.Azure.UserControls
 
             return containerNode;
         }
-        private TreeNode GetResourceGroupTreeNode(TreeNode subscriptionNode, ResourceGroup resourceGroup)
-        {
-            foreach (TreeNode treeNode in subscriptionNode.Nodes)
-            {
-                if (treeNode.Tag != null)
-                {
-                    if (treeNode.Tag.GetType() == resourceGroup.GetType() && treeNode.Text == resourceGroup.ToString())
-                        return treeNode;
-                }
-            }
-
-            TreeNode tnResourceGroup = new TreeNode(resourceGroup.ToString());
-            tnResourceGroup.Text = resourceGroup.ToString();
-            tnResourceGroup.Tag = resourceGroup;
-            tnResourceGroup.ImageKey = "ResourceGroup";
-            tnResourceGroup.SelectedImageKey = "ResourceGroup";
-
-            subscriptionNode.Nodes.Add(tnResourceGroup);
-            return tnResourceGroup;
-        }
-
-
-        private void FillUpIfFullDown(TreeNode node)
-        {
-            if (IsSelectedFullDown(node) && (node.Parent != null))
-            {
-                node = node.Parent;
-
-                while (node != null)
-                {
-                    if (AllChildrenChecked(node))
-                    {
-                        node.Checked = true;
-                        node = node.Parent;
-                    }
-                    else
-                        node = null;
-                }
-            }
-        }
-
-        private bool AllChildrenChecked(TreeNode node)
-        {
-            foreach (TreeNode childNode in node.Nodes)
-                if (!childNode.Checked)
-                    return false;
-
-            return true;
-        }
-
+        
         private bool IsSelectedFullDown(TreeNode node)
         {
             if (!node.Checked)

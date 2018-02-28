@@ -431,7 +431,6 @@ namespace MigAz.Forms
 
                 if (azureTargetContext.TemplateGenerator != null)
                 {
-                    // todo now russell, this needs to be improved to handle error of wrong type
                     azureTargetContext.TemplateGenerator.SourceSubscription = ((MigrationAzureSourceContext)migrationSourceControl).AzureContext.AzureSubscription;
                     azureTargetContext.TemplateGenerator.TargetSubscription = azureTargetContext.AzureContext.AzureSubscription;
                     azureTargetContext.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
