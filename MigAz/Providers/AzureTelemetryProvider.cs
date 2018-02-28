@@ -44,7 +44,7 @@ namespace MigAz.Providers
                 telemetryrecord.SourceEnvironment = templateGenerator.SourceSubscription.AzureEnvironment.ToString();
                 telemetryrecord.SourceSubscriptionGuid = templateGenerator.SourceSubscription.SubscriptionId;
                 telemetryrecord.SourceTenantGuid = templateGenerator.SourceSubscription.AzureAdTenantId;
-                telemetryrecord.OfferCategories = templateGenerator.SourceSubscription.offercategories;
+                telemetryrecord.OfferCategories = String.Empty; // templateGenerator.SourceSubscription.offercategories;
             }
 
             if (templateGenerator.TargetSubscription != null)

@@ -24,7 +24,6 @@ namespace MigAz.Azure
 
         #region Variables
 
-        private XmlNode _XmlNode;
         private JObject _SubscriptionJson;
         private AzureEnvironment _AzureEnvironment;
         private AzureTenant _ParentTenant;
@@ -80,15 +79,6 @@ namespace MigAz.Azure
 
         private AzureSubscription() { }
 
-        //internal AzureSubscription(XmlNode xmlNode, AzureEnvironment azureEnvironment, String apiUrl, String tokenResourceUrl)
-        //{
-        //    _AzureContext = azureContext;
-        //    _XmlNode = xmlNode;
-        //    _AzureEnvironment = azureEnvironment;
-        //    _ApiUrl = apiUrl;
-        //    _TokenResourceUrl = tokenResourceUrl;
-        //}
-
         public AzureSubscription(JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment, String apiUrl, String tokenResourceUrl)
         {
             _SubscriptionJson = subscriptionJson;
@@ -124,9 +114,7 @@ namespace MigAz.Azure
         {
             get
             {
-                if (_XmlNode != null)
-                    return _XmlNode.SelectSingleNode("SubscriptionName").InnerText;
-                else if (_SubscriptionJson != null)
+                if (_SubscriptionJson != null)
                     return (string)_SubscriptionJson["displayName"];
                 else
                     return String.Empty;
@@ -158,9 +146,7 @@ namespace MigAz.Azure
             {
                 if (this.AzureTenant != null)
                     return this.AzureTenant.TenantId;
-                else if (_XmlNode != null)
-                    return new Guid(_XmlNode.SelectSingleNode("AADTenantID").InnerText);
-                else
+                else 
                     return Guid.Empty;
             }
         }
@@ -169,9 +155,7 @@ namespace MigAz.Azure
         {
             get
             {
-                if (_XmlNode != null)
-                    return new Guid(_XmlNode.SelectSingleNode("SubscriptionID").InnerText);
-                else if (_SubscriptionJson != null)
+                if (_SubscriptionJson != null)
                     return new Guid((string)_SubscriptionJson["subscriptionId"]);
                 else
                     return Guid.Empty;
@@ -179,146 +163,146 @@ namespace MigAz.Azure
             }
         }
 
-        public string offercategories
-        {
-            get
-            {
-                if (_XmlNode != null && _XmlNode.SelectSingleNode("OfferCategories") != null)
-                    return _XmlNode.SelectSingleNode("OfferCategories").InnerText;
-                else return String.Empty;
-            }
-        }
+        //public string offercategories
+        //{
+        //    get
+        //    {
+        //        if (_XmlNode != null && _XmlNode.SelectSingleNode("OfferCategories") != null)
+        //            return _XmlNode.SelectSingleNode("OfferCategories").InnerText;
+        //        else return String.Empty;
+        //    }
+        //}
 
-        public string SubscriptionStatus
-        {
-            get
-            {
-                if (_XmlNode != null && _XmlNode.SelectSingleNode("SubscriptionStatus") != null)
-                    return _XmlNode.SelectSingleNode("SubscriptionStatus").InnerText;
-                else return String.Empty;
-            }
-        }
+        //public string SubscriptionStatus
+        //{
+        //    get
+        //    {
+        //        if (_XmlNode != null && _XmlNode.SelectSingleNode("SubscriptionStatus") != null)
+        //            return _XmlNode.SelectSingleNode("SubscriptionStatus").InnerText;
+        //        else return String.Empty;
+        //    }
+        //}
 
-        public string AccountAdminLiveEmailId
-        {
-            get { return _XmlNode.SelectSingleNode("AccountAdminLiveEmailId").InnerText; }
-        }
+        //public string AccountAdminLiveEmailId
+        //{
+        //    get { return _XmlNode.SelectSingleNode("AccountAdminLiveEmailId").InnerText; }
+        //}
 
-        public string ServiceAdminLiveEmailId
-        {
-            get { return _XmlNode.SelectSingleNode("ServiceAdminLiveEmailId").InnerText; }
-        }
+        //public string ServiceAdminLiveEmailId
+        //{
+        //    get { return _XmlNode.SelectSingleNode("ServiceAdminLiveEmailId").InnerText; }
+        //}
 
-        public Int32 MaxCoreCount
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxCoreCount").InnerText); }
-        }
+        //public Int32 MaxCoreCount
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxCoreCount").InnerText); }
+        //}
 
-        public Int32 MaxStorageAccounts
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxStorageAccounts").InnerText); }
-        }
+        //public Int32 MaxStorageAccounts
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxStorageAccounts").InnerText); }
+        //}
 
-        public Int32 MaxHostedServices
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxHostedServices").InnerText); }
-        }
+        //public Int32 MaxHostedServices
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxHostedServices").InnerText); }
+        //}
 
-        public Int32 CurrentCoreCount
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentCoreCount").InnerText); }
-        }
+        //public Int32 CurrentCoreCount
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentCoreCount").InnerText); }
+        //}
 
-        public Int32 CurrentHostedServices
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentHostedServices").InnerText); }
-        }
+        //public Int32 CurrentHostedServices
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentHostedServices").InnerText); }
+        //}
 
-        public Int32 CurrentStorageAccounts
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentStorageAccounts").InnerText); }
-        }
+        //public Int32 CurrentStorageAccounts
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentStorageAccounts").InnerText); }
+        //}
 
-        public Int32 MaxVirtualNetworkSites
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxVirtualNetworkSites").InnerText); }
-        }
+        //public Int32 MaxVirtualNetworkSites
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxVirtualNetworkSites").InnerText); }
+        //}
 
-        public Int32 CurrentVirtualNetworkSites
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentVirtualNetworkSites").InnerText); }
-        }
+        //public Int32 CurrentVirtualNetworkSites
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentVirtualNetworkSites").InnerText); }
+        //}
 
-        public Int32 MaxLocalNetworkSites
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxLocalNetworkSites").InnerText); }
-        }
+        //public Int32 MaxLocalNetworkSites
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxLocalNetworkSites").InnerText); }
+        //}
 
-        public Int32 MaxDnsServers
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxDnsServers").InnerText); }
-        }
+        //public Int32 MaxDnsServers
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxDnsServers").InnerText); }
+        //}
 
-        public Int32 CurrentDnsServers
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentDnsServers").InnerText); }
-        }
+        //public Int32 CurrentDnsServers
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentDnsServers").InnerText); }
+        //}
 
-        public Int32 MaxExtraVIPCount
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxExtraVIPCount").InnerText); }
-        }
+        //public Int32 MaxExtraVIPCount
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxExtraVIPCount").InnerText); }
+        //}
 
-        public Int32 MaxReservedIPs
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxReservedIPs").InnerText); }
-        }
+        //public Int32 MaxReservedIPs
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxReservedIPs").InnerText); }
+        //}
 
 
-        public Int32 CurrentReservedIPs
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentReservedIPs").InnerText); }
-        }
+        //public Int32 CurrentReservedIPs
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentReservedIPs").InnerText); }
+        //}
 
-        public Int32 MaxPublicIPCount
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxPublicIPCount").InnerText); }
-        }
+        //public Int32 MaxPublicIPCount
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxPublicIPCount").InnerText); }
+        //}
 
-        public Int32 CurrentNetworkSecurityGroups
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentNetworkSecurityGroups").InnerText); }
-        }
+        //public Int32 CurrentNetworkSecurityGroups
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("CurrentNetworkSecurityGroups").InnerText); }
+        //}
 
-        public Int32 MaxNetworkSecurityGroups
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxNetworkSecurityGroups").InnerText); }
-        }
+        //public Int32 MaxNetworkSecurityGroups
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxNetworkSecurityGroups").InnerText); }
+        //}
 
-        public Int32 MaxNetworkSecurityRulesPerGroup
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxNetworkSecurityRulesPerGroup").InnerText); }
-        }
+        //public Int32 MaxNetworkSecurityRulesPerGroup
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxNetworkSecurityRulesPerGroup").InnerText); }
+        //}
 
-        public Int32 MaxRouteTables
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRouteTables").InnerText); }
-        }
+        //public Int32 MaxRouteTables
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRouteTables").InnerText); }
+        //}
 
-        public Int32 MaxRoutesPerRouteTable
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRoutesPerRouteTable").InnerText); }
-        }
+        //public Int32 MaxRoutesPerRouteTable
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRoutesPerRouteTable").InnerText); }
+        //}
 
-        public Int32 MaxRoutesBackendPerRouteTable
-        {
-            get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRoutesBackendPerRouteTable").InnerText); }
-        }
+        //public Int32 MaxRoutesBackendPerRouteTable
+        //{
+        //    get { return Convert.ToInt32(_XmlNode.SelectSingleNode("MaxRoutesBackendPerRouteTable").InnerText); }
+        //}
 
-        public DateTime CreatedTime
-        {
-            get { return Convert.ToDateTime(_XmlNode.SelectSingleNode("CreatedTime").InnerText); }
-        }
+        //public DateTime CreatedTime
+        //{
+        //    get { return Convert.ToDateTime(_XmlNode.SelectSingleNode("CreatedTime").InnerText); }
+        //}
 
         #endregion
 
@@ -465,7 +449,6 @@ namespace MigAz.Azure
             {
                 _IsAsmLoaded = true;
 
-                await this.GetAzureARMLocations();
                 await this.GetAzureASMRoleSizes();
 
                 foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await this.GetAzureAsmNetworkSecurityGroups())
@@ -633,8 +616,6 @@ namespace MigAz.Azure
             {
                 _IsArmLoaded = true;
 
-                await this.GetAzureARMLocations();
-
                 List<Task> armNetworkSecurityGroupTasks = new List<Task>();
                 foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                 {
@@ -753,7 +734,6 @@ namespace MigAz.Azure
                     foreach (var location in locations)
                     {
                         Arm.Location armLocation = new Arm.Location(this, location);
-                        await armLocation.InitializeChildrenAsync();
                         _ArmLocations.Add(armLocation);
 
                         this.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());

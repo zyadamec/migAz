@@ -21,7 +21,7 @@ namespace MigAz.Core.Interface
     {
             Guid SubscriptionId { get; }
             Guid AzureAdTenantId { get; }
-            string offercategories { get; }
+            //string offercategories { get; }
             AzureEnvironment AzureEnvironment { get; }
     }
 }
