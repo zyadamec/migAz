@@ -15,9 +15,9 @@ namespace MigAz.Azure.Arm
     {
         private RouteTable _RouteTable;
 
-        private Route() : base(null) { }
+        private Route() : base(null, null) { }
 
-        public Route(RouteTable routeTable, JToken resourceToken) : base(resourceToken)
+        public Route(RouteTable routeTable, JToken resourceToken) : base(routeTable.AzureSubscription, resourceToken)
         {
             _RouteTable = routeTable;
         }

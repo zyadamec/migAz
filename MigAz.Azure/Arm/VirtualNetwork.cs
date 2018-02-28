@@ -18,9 +18,9 @@ namespace MigAz.Azure.Arm
         private List<string> _AddressPrefixes = new List<string>();
         private List<string> _DnsServers = new List<string>();
 
-        private VirtualNetwork() : base(null) { }
+        private VirtualNetwork() : base(null, null) { }
 
-        public VirtualNetwork(JToken resourceToken) : base(resourceToken)
+        public VirtualNetwork(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
             var subnets = from vnet in ResourceToken["properties"]["subnets"]
                           select vnet;
@@ -57,13 +57,13 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public new async Task InitializeChildrenAsync(AzureContext azureContext)
+        public new async Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
 
             foreach (Subnet subnet in this.Subnets)
             {
-                await subnet.InitializeChildrenAsync(azureContext);
+                await subnet.InitializeChildrenAsync();
             }
         }
 

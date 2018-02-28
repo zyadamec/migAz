@@ -17,16 +17,16 @@ namespace MigAz.Azure.Arm
         private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
 
 
-        public BackEndAddressPool(LoadBalancer loadBalancer, JToken backEndAddressPoolToken) : base(backEndAddressPoolToken)
+        public BackEndAddressPool(LoadBalancer loadBalancer, JToken backEndAddressPoolToken) : base(loadBalancer.AzureSubscription, backEndAddressPoolToken)
         {
             _ParentLoadBalancer = loadBalancer;
         }
 
-        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal override async Task InitializeChildrenAsync()
         {
             foreach (string backEndIpConfigurationId in this.BackEndIPConfigurationIds)
             {
-                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(azureContext, backEndIpConfigurationId);
+                NetworkInterface networkInterface = await this.AzureSubscription.GetAzureARMNetworkInterface(backEndIpConfigurationId);
                 if (networkInterface != null)
                 {
                     foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)

@@ -10,23 +10,28 @@ namespace MigAz.Azure.Asm
 {
     public class Disk : IDisk
     {
+        private AzureSubscription _AzureSubscription;
         private XmlNode _DataDiskNode;
-        private AzureContext _AzureContext;
         private StorageAccount _SourceStorageAccount;
         private String _TargetName = String.Empty;
 
-        public Disk(AzureContext azureContext, XmlNode dataDiskNode)
+        public Disk(AzureSubscription azureSubscription, XmlNode dataDiskNode)
         {
-            this._AzureContext = azureContext;
+            this._AzureSubscription = azureSubscription;
             this._DataDiskNode = dataDiskNode;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
-            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(azureContext, StorageAccountName);
+            _SourceStorageAccount = await this.AzureSubscription.GetAzureAsmStorageAccount(this.StorageAccountName);
         }
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+        }
 
         public string SourceImageName
         {

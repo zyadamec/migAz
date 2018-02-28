@@ -14,8 +14,7 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
-        private AzureContext _AzureContext = null;
-        private VirtualNetwork _Parent;
+        private VirtualNetwork _VirtualNetwork;
         private NetworkSecurityGroup _AsmNetworkSecurityGroup = null;
         private RouteTable _AsmRouteTable = null;
         private XmlNode _XmlNode = null;
@@ -26,16 +25,20 @@ namespace MigAz.Azure.Asm
 
         private Subnet() { }
 
-        internal Subnet(AzureContext azureContext, VirtualNetwork parent, XmlNode xmlNode)
+        internal Subnet(VirtualNetwork virtualNetwork, XmlNode xmlNode)
         {
-            _AzureContext = azureContext;
-            _Parent = parent;
+            _VirtualNetwork = virtualNetwork;
             _XmlNode = xmlNode;
         }
 
         #endregion
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _VirtualNetwork.AzureSubscription; }
+        }
 
         public string Name
         {
@@ -86,7 +89,7 @@ namespace MigAz.Azure.Asm
 
         public VirtualNetwork Parent
         {
-            get { return _Parent; }
+            get { return _VirtualNetwork; }
         }
 
         public bool IsGatewaySubnet
@@ -106,16 +109,16 @@ namespace MigAz.Azure.Asm
             return this.Name;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
             if (this.NetworkSecurityGroupName != String.Empty)
             {
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await this.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
             }
 
             if (this.RouteTableName != String.Empty)
             {
-                _AsmRouteTable = await _AzureContext.AzureSubscription.GetAzureAsmRouteTable(azureContext, this.RouteTableName);
+                _AsmRouteTable = await this.AzureSubscription.GetAzureAsmRouteTable(this.RouteTableName);
             }
         }
 

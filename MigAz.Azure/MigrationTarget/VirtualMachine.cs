@@ -24,7 +24,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
+        public VirtualMachine(Asm.VirtualMachine virtualMachine, TargetSettings targetSettings)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.RoleName, targetSettings);
@@ -32,7 +32,7 @@ namespace MigAz.Azure.MigrationTarget
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
 
             if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
-                this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(azureSubscription.AsmTargetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
+                this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.AsmTargetStorageAccounts, virtualMachine.OSVirtualHardDisk.StorageAccountName);
 
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
@@ -40,12 +40,12 @@ namespace MigAz.Azure.MigrationTarget
                 this.DataDisks.Add(targetDataDisk);
 
                 if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
-                    targetDataDisk.TargetStorage = SeekTargetStorageAccount(azureSubscription.AsmTargetStorageAccounts, asmDataDisk.StorageAccountName);
+                    targetDataDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.AsmTargetStorageAccounts, asmDataDisk.StorageAccountName);
             }
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                NetworkInterface migrationNetworkInterface = new NetworkInterface(virtualMachine, asmNetworkInterface, azureSubscription.AsmTargetVirtualNetworks, azureSubscription.AsmTargetNetworkSecurityGroups, targetSettings);
+                NetworkInterface migrationNetworkInterface = new NetworkInterface(virtualMachine, asmNetworkInterface, virtualMachine.AzureSubscription.AsmTargetVirtualNetworks, virtualMachine.AzureSubscription.AsmTargetNetworkSecurityGroups, targetSettings);
                 migrationNetworkInterface.ParentVirtualMachine = this;
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
@@ -53,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
             #region Seek ARM Target Size
 
             // Get ARM Based Location (that matches location of Source ASM VM
-            Arm.Location armLocation = azureSubscription.GetAzureARMLocation(azureContext, virtualMachine.Location).Result;
+            Arm.Location armLocation = virtualMachine.AzureSubscription.GetAzureARMLocation(virtualMachine.Location).Result;
             if (armLocation != null)
             {
                 this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name);
@@ -86,7 +86,7 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
         }
 
-        public VirtualMachine(Arm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
+        public VirtualMachine(Arm.VirtualMachine virtualMachine, TargetSettings targetSettings)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.Name, targetSettings);
@@ -97,7 +97,7 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)virtualMachine.OSVirtualHardDisk;
 
-                foreach (Disk targetDisk in azureSubscription.ArmTargetManagedDisks)
+                foreach (Disk targetDisk in virtualMachine.AzureSubscription.ArmTargetManagedDisks)
                 {
                     if ((targetDisk.SourceDisk != null) && (targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk)))
                     {
@@ -121,7 +121,7 @@ namespace MigAz.Azure.MigrationTarget
             {
                 Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
                 if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
-                    this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(azureSubscription.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                    this.OSVirtualHardDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.ArmTargetStorageAccounts, armDisk.StorageAccountName);
             }
 
             foreach (IArmDisk dataDisk in virtualMachine.DataDisks)
@@ -130,7 +130,7 @@ namespace MigAz.Azure.MigrationTarget
                 {
                     Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)dataDisk;
 
-                    foreach (Disk targetDisk in azureSubscription.ArmTargetManagedDisks)
+                    foreach (Disk targetDisk in virtualMachine.AzureSubscription.ArmTargetManagedDisks)
                     {
                         if ((targetDisk.SourceDisk != null) && (targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk)))
                         {
@@ -153,13 +153,13 @@ namespace MigAz.Azure.MigrationTarget
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
                     if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
-                        targetDataDisk.TargetStorage = SeekTargetStorageAccount(azureSubscription.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+                        targetDataDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.ArmTargetStorageAccounts, armDisk.StorageAccountName);
                 }
             }
 
             foreach (Arm.NetworkInterface armNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                foreach (NetworkInterface targetNetworkInterface in azureSubscription.ArmTargetNetworkInterfaces)
+                foreach (NetworkInterface targetNetworkInterface in virtualMachine.AzureSubscription.ArmTargetNetworkInterfaces)
                 {
                     if ((targetNetworkInterface.SourceNetworkInterface != null) && (targetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Arm.NetworkInterface)))
                     {

@@ -13,29 +13,34 @@ namespace MigAz.Azure.Asm
     public class LocalNetworkSite
     {
         private XmlNode _XmlNode;
-        private AzureContext _AzureContext;
-        private VirtualNetwork _Parent;
+        private AzureSubscription _AzureSubscription;
+        private VirtualNetwork _VirtualNetwork;
         private String _SharedKey = String.Empty;
         private String _TargetName;
         
         private LocalNetworkSite() { }
 
-        public LocalNetworkSite(AzureContext azureContext, VirtualNetwork parent, XmlNode xmlNode)
+        public LocalNetworkSite(VirtualNetwork virtualNetwork, XmlNode xmlNode)
         {
-            _AzureContext = azureContext;
-            _Parent = parent;
+            _AzureSubscription = virtualNetwork.AzureSubscription;
+            _VirtualNetwork = virtualNetwork;
             _XmlNode = xmlNode;
             this.TargetName = this.Name;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
-            _SharedKey = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(azureContext, this.Parent.Name, this.Name);
+            _SharedKey = await this.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(this.VirtualNetwork.Name, this.Name);
         }
 
         public String Name
         {
             get { return _XmlNode.SelectSingleNode("Name").InnerText; }
+        }
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
         }
 
         public String TargetName
@@ -74,9 +79,9 @@ namespace MigAz.Azure.Asm
             }
         }
 
-        public VirtualNetwork Parent
+        public VirtualNetwork VirtualNetwork
         {
-            get { return _Parent; }
+            get { return _VirtualNetwork; }
         }
     }
 }

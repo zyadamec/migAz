@@ -16,7 +16,7 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
-        private AzureContext _AzureContext = null;
+        private AzureSubscription _AzureSubscription;
         private XmlNode _XmlNode = null;
         private AffinityGroup _AsmAffinityGroup = null;
         private List<ISubnet> _AsmSubnets = new List<ISubnet>();
@@ -31,40 +31,45 @@ namespace MigAz.Azure.Asm
 
         private VirtualNetwork() { }
 
-        public VirtualNetwork(AzureContext azureContext, XmlNode xmlNode)
+        public VirtualNetwork(AzureSubscription azureSubscription, XmlNode xmlNode)
         {
-            _AzureContext = azureContext;
+            _AzureSubscription = azureSubscription;
             _XmlNode = xmlNode;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
             if (_XmlNode.SelectSingleNode("AffinityGroup") != null)
-                _AsmAffinityGroup = await _AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(azureContext, _XmlNode.SelectSingleNode("AffinityGroup").InnerText);
+                _AsmAffinityGroup = await this.AzureSubscription.GetAzureAsmAffinityGroup(_XmlNode.SelectSingleNode("AffinityGroup").InnerText);
 
             foreach (XmlNode subnetNode in _XmlNode.SelectNodes("Subnets/Subnet"))
             {
-                Subnet asmSubnet = new Subnet(_AzureContext, this, subnetNode);
-                await asmSubnet.InitializeChildrenAsync(azureContext);
+                Subnet asmSubnet = new Subnet(this, subnetNode);
+                await asmSubnet.InitializeChildrenAsync();
                 _AsmSubnets.Add(asmSubnet);
             }
 
-            _AsmVirtualNetworkGateway = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkGateway(azureContext, this);
+            _AsmVirtualNetworkGateway = await this.AzureSubscription.GetAzureAsmVirtualNetworkGateway(this);
 
             _AsmLocalNetworkSites = new List<LocalNetworkSite>();
             foreach (XmlNode localNetworkSiteXml in _XmlNode.SelectNodes("Gateway/Sites/LocalNetworkSite"))
             {
-                LocalNetworkSite asmLocalNetworkSite = new LocalNetworkSite(_AzureContext, this, localNetworkSiteXml);
-                await asmLocalNetworkSite.InitializeChildrenAsync(azureContext);
+                LocalNetworkSite asmLocalNetworkSite = new LocalNetworkSite( this, localNetworkSiteXml);
+                await asmLocalNetworkSite.InitializeChildrenAsync();
                 _AsmLocalNetworkSites.Add(asmLocalNetworkSite);
             }
 
-            _AsmClientRootCertificates = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificates(azureContext, this);
+            _AsmClientRootCertificates = await this.AzureSubscription.GetAzureAsmClientRootCertificates(this);
         }
 
         #endregion
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+        }
 
         public string Name
         {

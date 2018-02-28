@@ -17,28 +17,28 @@ namespace MigAz.Azure.Arm
         private VirtualMachine _VirtualMachine;
         private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
 
-        private NetworkInterface() : base(null) { }
+        private NetworkInterface() : base(null, null) { }
 
-        public NetworkInterface(JToken resourceToken) : base(resourceToken)
+        public NetworkInterface(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
             foreach (JToken networkInterfaceIpConfigurationToken in ResourceToken["properties"]["ipConfigurations"])
             {
-                NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(networkInterfaceIpConfigurationToken);
+                NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(azureSubscription, networkInterfaceIpConfigurationToken);
                 _NetworkInterfaceIpConfigurations.Add(networkInterfaceIpConfiguration);
             }
         }
 
-        internal async override Task InitializeChildrenAsync(AzureContext azureContext)
+        internal async override Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
 
             foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in this.NetworkInterfaceIpConfigurations)
             {
-                await networkInterfaceIpConfiguration.InitializeChildrenAsync(azureContext);
+                await networkInterfaceIpConfiguration.InitializeChildrenAsync();
             }
 
             if (this.NetworkSecurityGroupId != String.Empty)
-                this.NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupId);
+                this.NetworkSecurityGroup = await this.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
         }
 
         public bool EnableIPForwarding

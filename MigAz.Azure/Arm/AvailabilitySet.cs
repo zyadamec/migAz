@@ -15,7 +15,7 @@ namespace MigAz.Azure.Arm
     {
         private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();
 
-        public AvailabilitySet(JToken resourceToken) : base(resourceToken)
+        public AvailabilitySet(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
         }
 
@@ -32,9 +32,9 @@ namespace MigAz.Azure.Arm
         {
             return this.Name;
         }
-        internal new async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal new async Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
         }
 
 

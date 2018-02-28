@@ -13,7 +13,7 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private VirtualMachine _AsmVirtualMachine;
         private String _Name = "NetworkInterface1";
         private List<NetworkInterfaceIpConfiguration> _NetworkInterfaceIpConfigurations = new List<NetworkInterfaceIpConfiguration>();
@@ -24,9 +24,9 @@ namespace MigAz.Azure.Asm
 
         private NetworkInterface() { }
 
-        public NetworkInterface(AzureContext azureContext, VirtualMachine asmVirtualMachine)
+        public NetworkInterface(AzureSubscription azureSubscription, VirtualMachine asmVirtualMachine)
         {
-            _AzureContext = azureContext;
+            _AzureSubscription = azureSubscription;
             _AsmVirtualMachine = asmVirtualMachine;
 
             this.IsPrimary = false;

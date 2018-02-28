@@ -12,7 +12,7 @@ namespace MigAz.Azure.Interface
 {
     public interface IArmDisk : IDisk
     {
-        Task InitializeChildrenAsync(AzureContext azureContext);
+        Task InitializeChildrenAsync();
     }
 }
 

@@ -17,16 +17,16 @@ namespace MigAz.Azure.Arm
         private StorageAccount _SourceStorageAccount = null;
         private Arm.VirtualMachine _ParentVirtualMachine = null;
 
-        public ClassicDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
+        private ClassicDisk() : base(null, null) { }
+
+        public ClassicDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(virtualMachine.AzureSubscription, resourceToken)
         {
             _ParentVirtualMachine = virtualMachine;
         }
 
-        private ClassicDisk() : base(null) { }
-
-        public async new Task InitializeChildrenAsync(AzureContext azureContext)
+        public async new Task InitializeChildrenAsync()
         {
-            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext, azureContext.AzureSubscription, StorageAccountName);
+            _SourceStorageAccount = this.AzureSubscription.GetAzureARMStorageAccount(this.StorageAccountName);
         }
 
         public Arm.VirtualMachine ParentVirtualMachine

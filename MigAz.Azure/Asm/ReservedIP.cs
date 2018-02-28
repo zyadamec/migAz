@@ -9,12 +9,17 @@ namespace MigAz.Azure.Asm
     public class ReservedIP
     {
         private XmlNode _ReservedIPNode;
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
 
-        public ReservedIP(AzureContext azureContext, XmlNode reservedIPNode)
+        public ReservedIP(AzureSubscription azureSubscription, XmlNode reservedIPNode)
         {
-            this._AzureContext = azureContext;
+            this._AzureSubscription = azureSubscription;
             this._ReservedIPNode = reservedIPNode;
+        }
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
         }
 
         public string ServiceName

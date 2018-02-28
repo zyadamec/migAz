@@ -200,7 +200,7 @@ namespace MigAz.AzureStack.UserControls
 
                 if (sender.AzureSubscription != null)
                 {
-                    await sender.AzureSubscription.InitializeChildrenAsync(sender);
+                    await sender.AzureSubscription.InitializeChildrenAsync();
                     await treeViewSourceResourceManager1.BindArmResources(sender, sender.AzureSubscription, _TargetSettings);
 
                     //_AzureStackContext.AzureRetriever.SaveRestCache();

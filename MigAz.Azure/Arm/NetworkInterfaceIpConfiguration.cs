@@ -17,14 +17,15 @@ namespace MigAz.Azure.Arm
         private Subnet _Subnet;
         private PublicIP _PublicIP;
 
+        private NetworkInterfaceIpConfiguration() : base(null, null) { }
 
-        public NetworkInterfaceIpConfiguration(JToken networkInterfaceIpConfiguration) : base(networkInterfaceIpConfiguration)
+        public NetworkInterfaceIpConfiguration(AzureSubscription azureSubscription, JToken networkInterfaceIpConfiguration) : base(azureSubscription, networkInterfaceIpConfiguration)
         {
         }
 
-        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal override async Task InitializeChildrenAsync()
         {
-            _VirtualNetwork = azureContext.AzureSubscription.GetAzureARMVirtualNetwork(azureContext, azureContext.AzureSubscription, this.SubnetId);
+            _VirtualNetwork = this.AzureSubscription.GetAzureARMVirtualNetwork(this.SubnetId);
 
             if (_VirtualNetwork != null)
             {
@@ -40,7 +41,7 @@ namespace MigAz.Azure.Arm
 
             if (this.PublicIpAddressId != String.Empty)
             {
-                _PublicIP = await azureContext.AzureSubscription.GetAzureARMPublicIP(azureContext, this.PublicIpAddressId);
+                _PublicIP = await this.AzureSubscription.GetAzureARMPublicIP(this.PublicIpAddressId);
             }
         }
 

@@ -13,10 +13,11 @@ namespace MigAz.Azure.Arm
         private List<StorageAccountKey> ResourceTokenKeys = new List<StorageAccountKey>();
         private String _BlobStorageNamespace;
 
-        private StorageAccount() : base(null) { }
+        private StorageAccount() : base(null, null) { }
 
-        public StorageAccount(JToken resourceToken, String blobStorageNamespace) : base(resourceToken)
+        public StorageAccount(AzureSubscription azureSubscription, JToken resourceToken, String blobStorageNamespace) : base(azureSubscription, resourceToken)
         {
+            
             _BlobStorageNamespace = blobStorageNamespace;
         }
 

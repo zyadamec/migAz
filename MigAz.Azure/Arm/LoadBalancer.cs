@@ -18,7 +18,7 @@ namespace MigAz.Azure.Arm
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
         private List<Probe> _Probes = new List<Probe>();
 
-        public LoadBalancer(JToken resourceToken) : base(resourceToken)
+        public LoadBalancer(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
             // Create objects
             foreach (JToken frontEndIpConfigurationToken in ResourceToken["properties"]["frontendIPConfigurations"])
@@ -92,18 +92,18 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal override async Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
 
             foreach (FrontEndIpConfiguration frontEndIpConfiguration in this.FrontEndIpConfigurations)
             {
-                await frontEndIpConfiguration.InitializeChildrenAsync(azureContext);
+                await frontEndIpConfiguration.InitializeChildrenAsync();
             }
 
             foreach (BackEndAddressPool backEndAddressPool in this.BackEndAddressPools)
             {
-                await backEndAddressPool.InitializeChildrenAsync(azureContext);
+                await backEndAddressPool.InitializeChildrenAsync();
             }
         }
 

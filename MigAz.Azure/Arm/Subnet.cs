@@ -8,41 +8,31 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class Subnet : ISubnet, IMigrationSubnet
+    public class Subnet : ArmResource, ISubnet, IMigrationSubnet
     {
         private JToken _Subnet;
-        private VirtualNetwork _Parent;
+        private VirtualNetwork _VirtualNetwork;
         private NetworkSecurityGroup _NetworkSecurityGroup;
         private RouteTable _RouteTable;
 
-        private Subnet() { }
+        private Subnet() : base(null, null) { }
 
-        public Subnet(VirtualNetwork parent, JToken subnet)
+        public Subnet(VirtualNetwork virtualNetwork, JToken subnet) : base(virtualNetwork.AzureSubscription, subnet)
         {
-            _Parent = parent;
+            _VirtualNetwork = virtualNetwork;
             _Subnet = subnet;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public new async Task InitializeChildrenAsync()
         {
             if (this.NetworkSecurityGroupId != string.Empty)
             {
-                _NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupId);
+                _NetworkSecurityGroup = await this.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
             }
             if (this.RouteTableId != string.Empty)
             {
-                _RouteTable = await azureContext.AzureSubscription.GetAzureARMRouteTable(azureContext, this.RouteTableId);
+                _RouteTable = await this.AzureSubscription.GetAzureARMRouteTable(this.RouteTableId);
             }
-        }
-
-        public string Name
-        {
-            get { return (string)_Subnet["name"]; }
-        }
-
-        public string Id
-        {
-            get { return (string)_Subnet["id"]; }
         }
 
         public string TargetId
@@ -76,9 +66,9 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public VirtualNetwork Parent
+        public VirtualNetwork VirtualNetwork
         {
-            get { return _Parent; }
+            get { return _VirtualNetwork; }
         }
 
         public NetworkSecurityGroup NetworkSecurityGroup

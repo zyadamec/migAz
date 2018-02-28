@@ -13,20 +13,22 @@ namespace MigAz.Azure.Arm
     public class ArmResource
     {
         private JToken _ResourceToken;
+        private AzureSubscription _AzureSubscription;
         private Location _Location;
 
         private ArmResource() { }
 
-        internal ArmResource(JToken resourceToken)
+        internal ArmResource(AzureSubscription azureSubscription, JToken resourceToken)
         {
+            _AzureSubscription = azureSubscription;
             _ResourceToken = resourceToken;
         }
-        internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal virtual async Task InitializeChildrenAsync()
         {
-            this.ResourceGroup = await azureContext.AzureSubscription.GetAzureARMResourceGroup(azureContext, this.Id);
+            this.ResourceGroup = await this.AzureSubscription.GetAzureARMResourceGroup(this.Id);
 
             if (this.LocationString != null && this.LocationString.Length > 0)
-                this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(azureContext, this.LocationString);
+                this.Location = await this.AzureSubscription.GetAzureARMLocation(this.LocationString);
 
             return;
         }
@@ -34,6 +36,11 @@ namespace MigAz.Azure.Arm
         internal void SetResourceToken(JToken resourceToken)
         {
             _ResourceToken = resourceToken;
+        }
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
         }
 
         public JToken ResourceToken => _ResourceToken;

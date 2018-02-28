@@ -16,9 +16,9 @@ namespace MigAz.Azure.Arm
         private List<Route> _Routes = new List<Route>();
 
 
-        private RouteTable() : base(null) { }
+        private RouteTable() : base(null, null) { }
 
-        public RouteTable(JToken resourceToken) : base(resourceToken)
+        public RouteTable(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
             var routes = from route in ResourceToken["properties"]["routes"]
                           select route;

@@ -14,7 +14,7 @@ namespace MigAz.Azure.Asm
 {
     public class CloudService : IAvailabilitySetSource
     {
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private XmlNode _XmlNode;
         private AffinityGroup _AsmAffinityGroup;
         private List<VirtualMachine> _VirtualMachines = new List<VirtualMachine>();
@@ -24,10 +24,15 @@ namespace MigAz.Azure.Asm
 
         private CloudService() { }
 
-        public CloudService(AzureContext azureContext, XmlNode cloudServiceXml)
+        public CloudService(AzureSubscription azureSubscription, XmlNode cloudServiceXml)
         {
-            this._AzureContext = azureContext;
+            this._AzureSubscription = azureSubscription;
             this._XmlNode = cloudServiceXml;
+        }
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
         }
 
         public XmlNode ResourceXml
@@ -136,15 +141,15 @@ namespace MigAz.Azure.Asm
             return null;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
             if (this.VirtualNetworkName != String.Empty)
-                _AsmVirtualNetwork = await this._AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(azureContext, this.VirtualNetworkName);
+                _AsmVirtualNetwork = await this.AzureSubscription.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
 
             if (this.AffinityGroupName == String.Empty)
                 _AsmAffinityGroup = null;
             else
-                _AsmAffinityGroup = await this._AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(azureContext, this.AffinityGroupName);
+                _AsmAffinityGroup = await this.AzureSubscription.GetAzureAsmAffinityGroup(this.AffinityGroupName);
 
             _VirtualMachines = new List<VirtualMachine>();
             if (_XmlNode.SelectNodes("//Deployments/Deployment").Count > 0)
@@ -161,7 +166,7 @@ namespace MigAz.Azure.Asm
                             {
                                 string virtualmachinename = role.SelectSingleNode("RoleName").InnerText;
 
-                                VirtualMachine asmVirtualMachine = await _AzureContext.AzureSubscription.GetAzureAsmVirtualMachine(azureContext, this, virtualmachinename);
+                                VirtualMachine asmVirtualMachine = await this.AzureSubscription.GetAzureAsmVirtualMachine(this, virtualmachinename);
                                 _VirtualMachines.Add(asmVirtualMachine);
                             }
                         }
@@ -169,7 +174,7 @@ namespace MigAz.Azure.Asm
                 }
             }
 
-            List<ReservedIP> asmReservedIPs = await _AzureContext.AzureSubscription.GetAzureAsmReservedIPs(azureContext);
+            List<ReservedIP> asmReservedIPs = await this.AzureSubscription.GetAzureAsmReservedIPs();
             if (asmReservedIPs != null)
             {
                 foreach (ReservedIP asmReservedIP in asmReservedIPs)
@@ -187,7 +192,7 @@ namespace MigAz.Azure.Asm
             {
                 foreach (XmlNode loadBalancerXml in loadBalancersXml)
                 {
-                    LoadBalancer asmLoadBalancer = new LoadBalancer(_AzureContext, _AsmVirtualNetwork, loadBalancerXml);
+                    LoadBalancer asmLoadBalancer = new LoadBalancer(this.AzureSubscription, _AsmVirtualNetwork, loadBalancerXml);
                     _LoadBalancers.Add(asmLoadBalancer);
                 }
             }

@@ -12,7 +12,7 @@ namespace MigAz.Azure.Arm
 {
     public class PublicIP : ArmResource
     {
-        public PublicIP(JToken resourceToken) : base(resourceToken)
+        public PublicIP(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
         }
 

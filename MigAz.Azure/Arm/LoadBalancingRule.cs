@@ -17,7 +17,7 @@ namespace MigAz.Azure.Arm
         private Probe _Probe = null;
         private BackEndAddressPool _BackEndAddressPool = null;
 
-        public LoadBalancingRule(LoadBalancer loadBalancer, JToken loadBalancingRuleToken) : base(loadBalancingRuleToken)
+        public LoadBalancingRule(LoadBalancer loadBalancer, JToken loadBalancingRuleToken) : base(loadBalancer.AzureSubscription, loadBalancingRuleToken)
         {
             _ParentLoadBalancer = loadBalancer;
         }

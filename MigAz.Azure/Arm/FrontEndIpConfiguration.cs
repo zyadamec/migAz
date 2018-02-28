@@ -20,15 +20,15 @@ namespace MigAz.Azure.Arm
 
         private LoadBalancer _ParentLoadBalancer = null;
 
-        public FrontEndIpConfiguration(LoadBalancer loadBalancer, JToken frontEndIpConfigurationToken) : base(frontEndIpConfigurationToken)
+        public FrontEndIpConfiguration(LoadBalancer loadBalancer, JToken frontEndIpConfigurationToken) : base(loadBalancer.AzureSubscription, frontEndIpConfigurationToken)
         {
             _ParentLoadBalancer = loadBalancer;
         }
 
-        internal override async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal override async Task InitializeChildrenAsync()
         {
             if (this.PublicIpId != String.Empty)
-                this.PublicIP = await azureContext.AzureSubscription.GetAzureARMPublicIP(azureContext, this.PublicIpId);
+                this.PublicIP = await this.AzureSubscription.GetAzureARMPublicIP(this.PublicIpId);
         }
 
         public LoadBalancer LoadBalancer
