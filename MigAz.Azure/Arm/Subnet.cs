@@ -1,4 +1,7 @@
-﻿using MigAz.Core.ArmTemplate;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
@@ -24,11 +27,11 @@ namespace MigAz.Azure.Arm
         {
             if (this.NetworkSecurityGroupId != string.Empty)
             {
-                _NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+                _NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupId);
             }
             if (this.RouteTableId != string.Empty)
             {
-                _RouteTable = await azureContext.AzureSubscription.GetAzureARMRouteTable(this.RouteTableId);
+                _RouteTable = await azureContext.AzureSubscription.GetAzureARMRouteTable(azureContext, this.RouteTableId);
             }
         }
 
@@ -120,3 +123,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

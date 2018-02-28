@@ -1,4 +1,7 @@
-﻿namespace MigAz.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.UserControls
 {
     partial class MigAzMigrationSourceSelection
     {
@@ -98,3 +101,4 @@
         private System.Windows.Forms.Button btnAmazonWebServices;
     }
 }
+

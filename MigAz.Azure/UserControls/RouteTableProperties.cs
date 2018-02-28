@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -25,7 +28,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, RouteTable targetRouteTable)
+        internal void Bind(RouteTable targetRouteTable, TargetTreeView targetTreeView)
         {
             try
             {
@@ -61,3 +64,4 @@ namespace MigAz.Azure.UserControls
         }
     }
 }
+

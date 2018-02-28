@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Windows.Forms;
 
 namespace MIGAZ.Generator
@@ -9,3 +12,4 @@ namespace MIGAZ.Generator
         void Read(string AWSRegion, ref ListView lvwVirtualNetworks, ref ListView lvwVirtualMachines);
     }
 }
+

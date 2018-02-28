@@ -37,8 +37,8 @@
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.1.3001, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -94,6 +94,8 @@
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
     <Compile Include="Arm\NetworkSecurityGroupRule.cs" />
     <Compile Include="Arm\Probe.cs" />
+    <Compile Include="Arm\Provider.cs" />
+    <Compile Include="Arm\ProviderResourceType.cs" />
     <Compile Include="Arm\PublicIP.cs" />
     <Compile Include="Arm\ResourceGroup.cs" />
     <Compile Include="Arm\Route.cs" />
@@ -246,6 +248,12 @@
     <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TreeViewSourceResourceManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\TreeViewSourceResourceManager.Designer.cs">
+      <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MigrationAzureTargetContext.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -387,6 +395,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\TreeViewSourceResourceManager.resx">
+      <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MigrationAzureTargetContext.resx">
       <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>

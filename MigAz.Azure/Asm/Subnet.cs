@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Arm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Arm;
 using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
@@ -103,16 +106,16 @@ namespace MigAz.Azure.Asm
             return this.Name;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (this.NetworkSecurityGroupName != String.Empty)
             {
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupName);
             }
 
             if (this.RouteTableName != String.Empty)
             {
-                _AsmRouteTable = await _AzureContext.AzureSubscription.GetAzureAsmRouteTable(this.RouteTableName);
+                _AsmRouteTable = await _AzureContext.AzureSubscription.GetAzureAsmRouteTable(azureContext, this.RouteTableName);
             }
         }
 
@@ -136,3 +139,4 @@ namespace MigAz.Azure.Asm
 
     }
 }
+

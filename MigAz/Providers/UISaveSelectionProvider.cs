@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json;
 using System.Windows.Forms;
 using MigAz.Azure.Models;
 using System.Collections.Generic;
@@ -274,3 +277,4 @@ namespace MigAz.Providers
         }
     }
 }
+

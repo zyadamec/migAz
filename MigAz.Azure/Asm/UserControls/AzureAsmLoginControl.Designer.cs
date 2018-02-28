@@ -1,4 +1,7 @@
-﻿namespace MigAz.Azure.Asm.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Azure.Asm.UserControls
 {
     partial class AzureAsmLoginControl
     {
@@ -147,3 +150,4 @@
         private System.Windows.Forms.Label label1;
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -15,11 +18,10 @@ namespace MigAz.Azure.UserControls
     public partial class DiskProperties : UserControl
     {
         TargetTreeView _TargetTreeView;
-        private AzureContext _AzureContext;
-        private Azure.MigrationTarget.Disk _TargetDisk;
-        private TreeNode _TargetTreeNode;
-        private bool _ShowSizeInGb = true;
-        private bool _IsBinding = false;
+        Disk _TargetDisk;
+        bool _ShowSizeInGb = true;
+        bool _IsBinding = false;
+
         public delegate Task AfterPropertyChanged();
         public event AfterPropertyChanged PropertyChanged;
 
@@ -54,14 +56,12 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        internal void Bind(AzureContext azureContext, TargetTreeView targetTreeView, TreeNode targetDiskTreeNode, Azure.MigrationTarget.Disk targetDisk)
+        internal async Task Bind(Disk targetDisk, TargetTreeView targetTreeView)
         {
-            _AzureContext = azureContext;
             _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
-            _TargetTreeNode = targetDiskTreeNode;
 
-            BindCommon();
+            await BindCommon();
         }
 
         private async Task BindCommon()
@@ -108,8 +108,7 @@ namespace MigAz.Azure.UserControls
             if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
             {
                 rbExistingARMStorageAccount.Text = "Existing Storage in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                List<Azure.Arm.StorageAccount> a = await _AzureContext.AzureSubscription.GetAzureARMStorageAccounts(_TargetTreeView.TargetResourceGroup.TargetLocation);
-                rbExistingARMStorageAccount.Enabled = a.Count() > 0;
+                rbExistingARMStorageAccount.Enabled = _TargetTreeView.GetExistingArmStorageAccounts().Count > 0;
             }
             else
             {
@@ -150,7 +149,7 @@ namespace MigAz.Azure.UserControls
                 else
                 {
                     _TargetDisk.TargetStorage = new ManagedDiskStorage(_TargetDisk.SourceDisk);
-                    _TargetTreeView.TransitionToManagedDisk(_TargetTreeNode);
+                    _TargetTreeView.TransitionToManagedDisk(_TargetDisk);
 
                     int comboBoxIndex = cmbTargetStorage.Items.IndexOf(_TargetDisk.TargetStorage.StorageAccountType.ToString());
                     if (comboBoxIndex >= 0)
@@ -237,7 +236,7 @@ namespace MigAz.Azure.UserControls
                             cmbTargetStorage.SelectedIndex = 0;
                     }
 
-                    _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
+                    _TargetTreeView.TransitionToClassicDisk(_TargetDisk);
 
                     if (!_IsBinding)
                     {
@@ -253,7 +252,7 @@ namespace MigAz.Azure.UserControls
 
             if (rbSender.Checked)
             {
-                if (_TargetDisk.TargetStorage != null && _TargetDisk.TargetStorage.GetType() != typeof(Azure.Arm.StorageAccount))
+                if (_TargetDisk.TargetStorage != null && _TargetDisk.TargetStorage.GetType() != typeof(Arm.StorageAccount))
                     _TargetDisk.TargetStorage = null;
 
                 cmbTargetStorage.Items.Clear();
@@ -261,7 +260,7 @@ namespace MigAz.Azure.UserControls
                 txtBlobName.Enabled = true;
                 txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
-                foreach (Azure.Arm.StorageAccount armStorageAccount in await _AzureContext.AzureSubscription.GetAzureARMStorageAccounts())
+                foreach (Arm.StorageAccount armStorageAccount in _TargetTreeView.GetExistingArmStorageAccounts())
                 {
                     cmbTargetStorage.Items.Add(armStorageAccount);
                 }
@@ -288,15 +287,13 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                _TargetTreeView.TransitionToClassicDisk(_TargetTreeNode);
+                _TargetTreeView.TransitionToClassicDisk(_TargetDisk);
 
                 if (!_IsBinding)
                 {
                     PropertyChanged?.Invoke();
                 }
             }
-
-            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private void cmbTargetStorage_SelectedIndexChanged(object sender, EventArgs e)
@@ -392,7 +389,6 @@ namespace MigAz.Azure.UserControls
                 catch (Exception exc)
                 {
                     _TargetDisk.DiskSizeInGB = 0;
-                    _AzureContext.LogProvider.WriteLog("txtTargetSize_TextChanged", exc.Message);
                 }
 
                 if (!_IsBinding)
@@ -424,3 +420,4 @@ namespace MigAz.Azure.UserControls
 
     }
 }
+

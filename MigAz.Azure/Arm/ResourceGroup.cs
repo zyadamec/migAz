@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
@@ -22,7 +25,7 @@ namespace MigAz.Azure.Arm
 
         public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(this.LocationString);
+            this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(azureContext, this.LocationString);
         }
 
         private ResourceGroup() { }
@@ -48,3 +51,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

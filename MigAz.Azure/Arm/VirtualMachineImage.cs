@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,13 +13,10 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualMachineImage : ArmResource, IVirtualMachineImage
     {
-        private AzureContext _AzureContext;
-
         private VirtualMachineImage() : base(null) { }
 
-        public VirtualMachineImage(AzureContext azureContext, JToken resourceToken) : base(resourceToken)
+        public VirtualMachineImage(JToken resourceToken) : base(resourceToken)
         {
-            _AzureContext = azureContext;
         }
 
         public override string ToString()
@@ -25,3 +25,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

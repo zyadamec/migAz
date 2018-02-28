@@ -1,4 +1,7 @@
-﻿namespace MigAz.AzureStack.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.AzureStack.UserControls
 {
     partial class AzureStackArmLoginControl
     {
@@ -172,3 +175,4 @@
         private System.Windows.Forms.Label label1;
     }
 }
+

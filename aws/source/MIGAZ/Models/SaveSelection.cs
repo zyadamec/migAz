@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 
 namespace MIGAZ.Models
@@ -16,3 +19,4 @@ namespace MIGAZ.Models
         public string InstanceName;
     }
 }
+

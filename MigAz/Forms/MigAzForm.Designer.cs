@@ -1,4 +1,7 @@
-﻿namespace MigAz.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Forms
 {
     partial class MigAzForm
     {
@@ -385,7 +388,6 @@
             // propertyPanel1
             // 
             this.propertyPanel1.Location = new System.Drawing.Point(12, 6);
-            this.propertyPanel1.LogProvider = null;
             this.propertyPanel1.Name = "propertyPanel1";
             this.propertyPanel1.Size = new System.Drawing.Size(450, 471);
             this.propertyPanel1.StatusProvider = null;
@@ -618,4 +620,5 @@
         private UserControls.MigAzMigrationTargetSelection migAzMigrationTargetSelection1;
     }
 }
+
 

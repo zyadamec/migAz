@@ -1,4 +1,7 @@
-﻿using MIGAZ.Models;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MIGAZ.Models;
 using MIGAZ.Models.ARM;
 using Newtonsoft.Json;
 using System;
@@ -1400,3 +1403,4 @@ namespace MIGAZ.Generator
         }
     }
 }
+

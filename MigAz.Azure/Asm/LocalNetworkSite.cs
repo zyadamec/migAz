@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,9 +28,9 @@ namespace MigAz.Azure.Asm
             this.TargetName = this.Name;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SharedKey = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(this.Parent.Name, this.Name);
+            _SharedKey = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetworkSharedKey(azureContext, this.Parent.Name, this.Name);
         }
 
         public String Name
@@ -77,3 +80,4 @@ namespace MigAz.Azure.Asm
         }
     }
 }
+

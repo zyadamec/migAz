@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +23,10 @@ namespace MigAz.Azure.Arm
         }
         internal virtual async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            this.ResourceGroup = await azureContext.AzureSubscription.GetAzureARMResourceGroup(this.Id);
+            this.ResourceGroup = await azureContext.AzureSubscription.GetAzureARMResourceGroup(azureContext, this.Id);
 
             if (this.LocationString != null && this.LocationString.Length > 0)
-                this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(this.LocationString);
+                this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(azureContext, this.LocationString);
 
             return;
         }
@@ -53,3 +56,4 @@ namespace MigAz.Azure.Arm
         public ResourceGroup ResourceGroup { get; internal set; }
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -91,7 +94,6 @@ namespace MigAz.Azure.UserControls
             _AzureContextTarget.AfterAzureTenantChange += _AzureContextTarget_AfterAzureTenantChange;
             azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget);
-            
             this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
         }
 
@@ -152,3 +154,4 @@ namespace MigAz.Azure.UserControls
         }
     }
 }
+

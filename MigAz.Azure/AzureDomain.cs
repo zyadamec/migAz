@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +13,13 @@ namespace MigAz.Azure
     public class AzureDomain
     {
         private JObject _DomainJson;
-        private AzureContext _AzureContext;
         private List<AzureDomain> _Domains;
+        private AzureTenant _AzureTenant;
 
-        public AzureDomain(JObject domainJson, AzureContext azureContext)
+        public AzureDomain(AzureTenant azureTenant, JObject domainJson)
         {
             _DomainJson = domainJson;
-            _AzureContext = azureContext;
+            _AzureTenant = azureTenant;
         }
 
         public string Name
@@ -57,3 +60,4 @@ namespace MigAz.Azure
           //"state": null
     }
 }
+

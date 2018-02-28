@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
@@ -21,7 +24,7 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualMachine() { }
 
-        public VirtualMachine(Asm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
+        public VirtualMachine(AzureContext azureContext, Asm.VirtualMachine virtualMachine, AzureSubscription azureSubscription, TargetSettings targetSettings)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.RoleName, targetSettings);
@@ -50,36 +53,32 @@ namespace MigAz.Azure.MigrationTarget
             #region Seek ARM Target Size
 
             // Get ARM Based Location (that matches location of Source ASM VM
-            Arm.Location armLocation = azureSubscription.GetAzureARMLocation(virtualMachine.Location).Result;
+            Arm.Location armLocation = azureSubscription.GetAzureARMLocation(azureContext, virtualMachine.Location).Result;
             if (armLocation != null)
             {
-                // First, try to seek matching ARM VM Size by name
-                if (armLocation.VMSizes != null)
+                this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name);
+
+                if (this.TargetSize == null)
                 {
-                    this.TargetSize = armLocation.VMSizes.Where(a => a.Name == virtualMachine.RoleSize.Name).FirstOrDefault();
+                    // if not found, defer to alternate matching options
 
-                    if (this.TargetSize == null)
+                    Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
+                    VMSizeTable.Add("ExtraSmall", "Standard_A0");
+                    VMSizeTable.Add("Small", "Standard_A1");
+                    VMSizeTable.Add("Medium", "Standard_A2");
+                    VMSizeTable.Add("Large", "Standard_A3");
+                    VMSizeTable.Add("ExtraLarge", "Standard_A4");
+                    VMSizeTable.Add("A5", "Standard_A5");
+                    VMSizeTable.Add("A6", "Standard_A6");
+                    VMSizeTable.Add("A7", "Standard_A7");
+                    VMSizeTable.Add("A8", "Standard_A8");
+                    VMSizeTable.Add("A9", "Standard_A9");
+                    VMSizeTable.Add("A10", "Standard_A10");
+                    VMSizeTable.Add("A11", "Standard_A11");
+
+                    if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
                     {
-                        // if not found, defer to alternate matching options
-
-                        Dictionary<string, string> VMSizeTable = new Dictionary<string, string>();
-                        VMSizeTable.Add("ExtraSmall", "Standard_A0");
-                        VMSizeTable.Add("Small", "Standard_A1");
-                        VMSizeTable.Add("Medium", "Standard_A2");
-                        VMSizeTable.Add("Large", "Standard_A3");
-                        VMSizeTable.Add("ExtraLarge", "Standard_A4");
-                        VMSizeTable.Add("A5", "Standard_A5");
-                        VMSizeTable.Add("A6", "Standard_A6");
-                        VMSizeTable.Add("A7", "Standard_A7");
-                        VMSizeTable.Add("A8", "Standard_A8");
-                        VMSizeTable.Add("A9", "Standard_A9");
-                        VMSizeTable.Add("A10", "Standard_A10");
-                        VMSizeTable.Add("A11", "Standard_A11");
-
-                        if (VMSizeTable.ContainsKey(virtualMachine.RoleSize.Name))
-                        {
-                            this.TargetSize = armLocation.VMSizes.Where(a => a.Name == VMSizeTable[virtualMachine.RoleSize.Name]).FirstOrDefault();
-                        }
+                        this.TargetSize = armLocation.SeekVmSize(VMSizeTable[virtualMachine.RoleSize.Name]);
                     }
                 }
             }
@@ -328,3 +327,4 @@ namespace MigAz.Azure.MigrationTarget
         }
     }
 }
+

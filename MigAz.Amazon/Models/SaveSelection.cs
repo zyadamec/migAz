@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 
 namespace MigAz.AWS.Models
@@ -16,3 +19,4 @@ namespace MigAz.AWS.Models
         public string InstanceName;
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,3 +22,4 @@ namespace MigAz.Azure.Rest
         }
     }
 }
+

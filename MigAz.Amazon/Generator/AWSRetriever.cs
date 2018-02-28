@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -191,7 +194,7 @@ namespace MigAz.AWS.Generator
                                 }
                             }
 
-                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                            targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
                             try
                             {
                                 IPHostEntry host = Dns.GetHostEntry(loadBalancerDescription.DNSName);
@@ -199,7 +202,7 @@ namespace MigAz.AWS.Generator
                             }
                             catch
                             {
-                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                                targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
                             }
                         }
                         else // if external (public) load balancer
@@ -302,3 +305,4 @@ namespace MigAz.AWS.Generator
         }
     }
 }
+

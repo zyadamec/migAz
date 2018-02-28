@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
@@ -11,7 +14,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class ResourceGroupProperties : UserControl
     {
-        private AzureContext _AzureContext;
         private ResourceGroup _ResourceGroup;
         private TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
@@ -24,51 +26,30 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal async Task Bind(AzureContext azureContext, ResourceGroup resourceGroup, TargetTreeView targetTreeView)
+        internal async Task Bind(ResourceGroup resourceGroup, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
-                _AzureContext = azureContext;
                 _ResourceGroup = resourceGroup;
                 _TargetTreeView = targetTreeView;
 
                 txtTargetName.Text = resourceGroup.TargetName;
 
-                try
+                cboTargetLocation.Items.Clear();
+                if (targetTreeView.TargetSubscription != null && targetTreeView.TargetSubscription.Locations != null && targetTreeView.TargetSubscription.Locations.Count() > 0)
                 {
-                    cboTargetLocation.Items.Clear();
-                    if (azureContext != null && azureContext.AzureRetriever != null && azureContext.AzureRetriever.SubscriptionContext != null)
+                    foreach (Arm.Location armLocation in targetTreeView.TargetSubscription.Locations.OrderBy(a => a.DisplayName))
                     {
-                        List<Arm.Location> armLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
-
-                        foreach (Azure.Arm.Location armLocation in armLocations.OrderBy(a => a.DisplayName))
-                        {
-                            cboTargetLocation.Items.Add(armLocation);
-                        }
-                    }
-                    else
-                    {
-                        cboTargetLocation.Visible = false;
-                        lblTargetContext.Visible = true;
+                        cboTargetLocation.Items.Add(armLocation);
                     }
                 }
-                catch (WebException)
+                else
                 {
-                    // We are trying to load the ARM defined subscription locations above first; however, this as of Feb 24 2017, this ARM query
-                    // does not succeed (503 Forbidden) across all Azure Environments.  For example, it works in Azure Commercial, but Azure US Gov
-                    // is not yet update to support this call.  In the event the ARM location query fails, we will default to using ASM Location query.
-
-                    cboTargetLocation.Items.Clear();
-
-                    if (azureContext.AzureRetriever.SubscriptionContext != null)
-                    {
-                        foreach (Azure.Asm.Location asmLocation in await azureContext.AzureSubscription.GetAzureASMLocations())
-                        {
-                            cboTargetLocation.Items.Add(asmLocation);
-                        }
-                    }
+                    cboTargetLocation.Visible = false;
+                    lblTargetContext.Visible = true;
                 }
+
 
                 if (resourceGroup.TargetLocation != null)
                 {
@@ -115,3 +96,4 @@ namespace MigAz.Azure.UserControls
 
     }
 }
+

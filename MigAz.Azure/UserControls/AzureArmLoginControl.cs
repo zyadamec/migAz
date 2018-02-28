@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,7 +48,7 @@ namespace MigAz.Azure.UserControls
             cboTenant.Items.Clear();
             if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
-                foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                 {
                     if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                         cboTenant.Items.Add(azureTenant);
@@ -63,10 +66,12 @@ namespace MigAz.Azure.UserControls
 
                 if (cboTenant.SelectedItem != null)
                 {
+                    AzureTenant selectedTenant = (AzureTenant)cboTenant.SelectedItem;
+
                     cmbSubscriptions.Items.Clear();
                     if (_AzureContext.AzureRetriever != null)
                     {
-                        foreach (AzureSubscription azureSubscription in await _AzureContext.AzureRetriever.GetAzureARMSubscriptions(_AzureContext.AzureTenant))
+                        foreach (AzureSubscription azureSubscription in await selectedTenant.GetAzureARMSubscriptions(_AzureContext, false))
                         {
                             cmbSubscriptions.Items.Add(azureSubscription);
                         }
@@ -83,6 +88,8 @@ namespace MigAz.Azure.UserControls
                     }
                 }
             }
+
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         internal void RemoveEnvironment(AzureEnvironment azureEnvironment)
@@ -127,7 +134,7 @@ namespace MigAz.Azure.UserControls
                         btnAuthenticate.Text = "Sign Out";
 
                         cboTenant.Items.Clear();
-                        foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                        foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                         {
                             if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
                                 cboTenant.Items.Add(azureTenant);
@@ -180,6 +187,7 @@ namespace MigAz.Azure.UserControls
             }
 
             _AzureContext.LogProvider.WriteLog("btnAuthenticate_Click", "End");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private async void cmbSubscriptions_SelectedIndexChanged(object sender, EventArgs e)
@@ -191,6 +199,9 @@ namespace MigAz.Azure.UserControls
             if (cmbSender.SelectedItem != null)
             {
                 AzureSubscription selectedSubscription = (AzureSubscription)cmbSender.SelectedItem;
+
+                await selectedSubscription.InitializeChildrenAsync(_AzureContext);
+
                 if (_AzureContext.AzureSubscription != selectedSubscription)
                 {
                     await _AzureContext.SetSubscriptionContext((AzureSubscription)cmbSender.SelectedItem);
@@ -240,3 +251,4 @@ namespace MigAz.Azure.UserControls
         }
     }
 }
+

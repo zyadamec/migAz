@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -12,13 +15,15 @@ namespace MigAz.AzureStack
     {
         AzureRestResponse _AzureRestResponse;
         JObject _MetadataEndpoints;
+        String _ManagementEndpoint = String.Empty;
 
         #region Constructors
 
         private AzureStackEndpoints() { }
 
-        internal AzureStackEndpoints(AzureRestResponse azureStackMetadataEndpoints)
+        internal AzureStackEndpoints(string managementEndpoint, AzureRestResponse azureStackMetadataEndpoints)
         {
+            _ManagementEndpoint = managementEndpoint;
             _AzureRestResponse = azureStackMetadataEndpoints;
             _MetadataEndpoints = JObject.Parse(_AzureRestResponse.Response);
         }
@@ -27,6 +32,11 @@ namespace MigAz.AzureStack
 
         #region Properties
 
+
+        public string ManagementEndpoint
+        {
+            get { return _ManagementEndpoint; }
+        }
         public string GalleryEndpoint
         {
             get { return _MetadataEndpoints["galleryEndpoint"].ToString(); }
@@ -53,3 +63,4 @@ namespace MigAz.AzureStack
         #endregion
     }
 }
+

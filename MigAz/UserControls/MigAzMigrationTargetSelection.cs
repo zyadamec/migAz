@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -56,7 +59,7 @@ namespace MigAz.UserControls
             }
         }
 
-        public delegate void AfterMigrationTargetSelectedHandler(UserControl migrationTargetUserControl);
+        public delegate Task AfterMigrationTargetSelectedHandler(UserControl migrationTargetUserControl);
         public event AfterMigrationTargetSelectedHandler AfterMigrationTargetSelected;
 
         public MigAzMigrationTargetSelection()
@@ -80,3 +83,4 @@ namespace MigAz.UserControls
         }
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +26,7 @@ namespace MigAz.Azure.Arm
 
         public async new Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext.AzureSubscription, StorageAccountName);
+            _SourceStorageAccount = azureContext.AzureSubscription.GetAzureARMStorageAccount(azureContext, azureContext.AzureSubscription, StorageAccountName);
         }
 
         public Arm.VirtualMachine ParentVirtualMachine
@@ -226,3 +229,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

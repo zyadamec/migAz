@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Arm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Arm;
 using MigAz.Azure.Interface;
 using MigAz.Core;
 using MigAz.Core.Interface;
@@ -125,11 +128,11 @@ namespace MigAz.Azure.Asm
 
         #endregion
 
-        public async Task InitializeChildren()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (this.VirtualNetworkName != String.Empty)
             {
-                _SourceVirtualNetwork = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
+                _SourceVirtualNetwork = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(azureContext, this.VirtualNetworkName);
 
                 if (_SourceVirtualNetwork != null)
                 {
@@ -144,16 +147,16 @@ namespace MigAz.Azure.Asm
                 }
             }
 
-            await _OSVirtualHardDisk.InitializeChildren();
+            await _OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
             foreach (Disk asmDisk in this.DataDisks)
             {
-                await asmDisk.InitializeChildren();
+                await asmDisk.InitializeChildrenAsync(azureContext);
             }
 
             if (this.NetworkSecurityGroupName != String.Empty)
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupName);
 
-            this.RoleSize = await _AzureContext.AzureSubscription.GetAzureASMRoleSize(this.RoleSizeString);
+            this.RoleSize = await _AzureContext.AzureSubscription.GetAzureASMRoleSize(azureContext, this.RoleSizeString);
         }
 
         #region Properties
@@ -331,3 +334,4 @@ namespace MigAz.Azure.Asm
         #endregion
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -35,7 +38,7 @@ namespace MigAz.Azure.Arm
             }
 
             if (this.NetworkSecurityGroupId != String.Empty)
-                this.NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(this.NetworkSecurityGroupId);
+                this.NetworkSecurityGroup = await azureContext.AzureSubscription.GetAzureARMNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupId);
         }
 
         public bool EnableIPForwarding
@@ -104,3 +107,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

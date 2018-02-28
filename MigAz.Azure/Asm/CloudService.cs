@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -133,15 +136,15 @@ namespace MigAz.Azure.Asm
             return null;
         }
 
-        public async Task LoadChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
             if (this.VirtualNetworkName != String.Empty)
-                _AsmVirtualNetwork = await this._AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
+                _AsmVirtualNetwork = await this._AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(azureContext, this.VirtualNetworkName);
 
             if (this.AffinityGroupName == String.Empty)
                 _AsmAffinityGroup = null;
             else
-                _AsmAffinityGroup = await this._AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(this.AffinityGroupName);
+                _AsmAffinityGroup = await this._AzureContext.AzureSubscription.GetAzureAsmAffinityGroup(azureContext, this.AffinityGroupName);
 
             _VirtualMachines = new List<VirtualMachine>();
             if (_XmlNode.SelectNodes("//Deployments/Deployment").Count > 0)
@@ -158,7 +161,7 @@ namespace MigAz.Azure.Asm
                             {
                                 string virtualmachinename = role.SelectSingleNode("RoleName").InnerText;
 
-                                VirtualMachine asmVirtualMachine = await _AzureContext.AzureSubscription.GetAzureAsmVirtualMachine(this, virtualmachinename);
+                                VirtualMachine asmVirtualMachine = await _AzureContext.AzureSubscription.GetAzureAsmVirtualMachine(azureContext, this, virtualmachinename);
                                 _VirtualMachines.Add(asmVirtualMachine);
                             }
                         }
@@ -166,7 +169,7 @@ namespace MigAz.Azure.Asm
                 }
             }
 
-            List<ReservedIP> asmReservedIPs = await _AzureContext.AzureSubscription.GetAzureAsmReservedIPs();
+            List<ReservedIP> asmReservedIPs = await _AzureContext.AzureSubscription.GetAzureAsmReservedIPs(azureContext);
             if (asmReservedIPs != null)
             {
                 foreach (ReservedIP asmReservedIP in asmReservedIPs)
@@ -192,3 +195,4 @@ namespace MigAz.Azure.Asm
 
     }
 }
+

@@ -1,8 +1,14 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
 using MigAz.Core;
 using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MigAz.Azure
@@ -18,9 +24,10 @@ namespace MigAz.Azure
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
-        private ITokenProvider _TokenProvider;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
+        private ITokenProvider _TokenProvider;
+        private List<AzureTenant> _ArmTenants;
 
         public delegate Task BeforeAzureTenantChangedHandler(AzureContext sender);
         public event BeforeAzureTenantChangedHandler BeforeAzureTenantChange;
@@ -68,6 +75,12 @@ namespace MigAz.Azure
             get { return _AzureServiceUrls; }
         }
 
+        public ITokenProvider TokenProvider
+        {
+            get { return _TokenProvider; }
+            set { _TokenProvider = value; }
+        }
+
         public AzureEnvironment AzureEnvironment
         {
             get { return _AzureEnvironment; }
@@ -76,7 +89,7 @@ namespace MigAz.Azure
                 if (_AzureEnvironment != value)
                 {
                     _AzureEnvironment = value;
-                    _TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), _LogProvider);
+                    this.TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), _LogProvider);
 
                     AzureEnvironmentChanged?.Invoke(this);
                 }
@@ -102,12 +115,6 @@ namespace MigAz.Azure
         {
             get { return _AzureRetriever; }
             set { _AzureRetriever = value; }
-        }
-
-        public ITokenProvider TokenProvider
-        {
-            get { return _TokenProvider; }
-            set { _TokenProvider = value; }
         }
 
         public ILogProvider LogProvider
@@ -153,6 +160,8 @@ namespace MigAz.Azure
 
             await this.TokenProvider.Login(resourceUrl, this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
+
+            this.StatusProvider.UpdateStatus("Ready");
         }
 
         public async Task SetTenantContext(AzureTenant azureTenant)
@@ -169,6 +178,16 @@ namespace MigAz.Azure
                 await AfterAzureTenantChange?.Invoke(this);
         }
 
+        public virtual string GetARMTokenResourceUrl()
+        {
+            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+        }
+
+        public virtual string GetARMServiceManagementUrl()
+        {
+            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+        }
+
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
         {
             if (azureSubscription != _AzureSubscription)
@@ -177,16 +196,13 @@ namespace MigAz.Azure
                     await BeforeAzureSubscriptionChange?.Invoke(this);
 
                 if (azureSubscription != null)
-                    if (azureSubscription.Parent != this.AzureTenant)
-                        await SetTenantContext(azureSubscription.Parent);
+                    if (azureSubscription.AzureTenant != this.AzureTenant)
+                        await SetTenantContext(azureSubscription.AzureTenant);
 
                 _AzureSubscription = azureSubscription;
 
                 if (_AzureSubscription != null)
                 {
-                    if (_TokenProvider != null)
-                        await _TokenProvider.GetToken(this._AzureServiceUrls.GetASMServiceManagementUrl(), _AzureSubscription.AzureAdTenantId);
-
                     await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
                 }
 
@@ -202,13 +218,49 @@ namespace MigAz.Azure
 
             await this.SetTenantContext(null);
 
+            _ArmTenants = null;
             _AzureRetriever.ClearCache();
-            _TokenProvider = null;
+            this.TokenProvider = null;
 
             if (AfterUserSignOut != null)
                 await AfterUserSignOut?.Invoke();
         }
 
+
+        public async Task<List<AzureTenant>> GetAzureARMTenants(bool allowRestCacheUse = false)
+        {
+            this.LogProvider.WriteLog("GetAzureARMTenants", "Start");
+
+            if (_ArmTenants != null)
+                return _ArmTenants;
+
+            if (this.TokenProvider == null)
+                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
+
+            AuthenticationResult tenantAuthenticationResult = await this.TokenProvider.GetToken(this.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty);
+
+            String tenantUrl = this.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
+            this.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
+            AzureRestResponse azureRestResponse = await this.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject tenantsJson = JObject.Parse(azureRestResponse.Response);
+
+            var tenants = from tenant in tenantsJson["value"]
+                          select tenant;
+
+            _ArmTenants = new List<AzureTenant>();
+
+            foreach (JObject tenantJson in tenants)
+            {
+                AzureTenant azureTenant = new AzureTenant(this, tenantJson);
+                await azureTenant.InitializeChildren(this, allowRestCacheUse);
+                _ArmTenants.Add(azureTenant);
+            }
+
+            return _ArmTenants;
+        }
         #endregion
     }
 }
+

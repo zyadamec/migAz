@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,9 +25,9 @@ namespace MigAz.Azure.Asm
             this._ClientRootCertificateXml = clientRootCertificateXml;
         }
 
-        public async Task InitializeChildrenAsync()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _AsmClientRootCertificateDataXml = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificateData(_AsmVirtualNetwork, this.Thumbprint);
+            _AsmClientRootCertificateDataXml = await _AzureContext.AzureSubscription.GetAzureAsmClientRootCertificateData(azureContext, _AsmVirtualNetwork, this.Thumbprint);
         }
 
         public string Thumbprint
@@ -80,3 +83,4 @@ namespace MigAz.Azure.Asm
         }
     }
 }
+

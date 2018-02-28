@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -17,7 +20,6 @@ namespace MigAz.Azure.UserControls
     public partial class StorageAccountProperties : UserControl
     {
         private StorageAccount _StorageAccount;
-        private AzureContext _AzureContext;
         private TargetTreeView _TargetTreeView;
         private bool _IsBinding = false;
 
@@ -29,12 +31,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public void Bind(AzureContext azureContext, StorageAccount storageAccount, TargetTreeView targetTreeView)
+        public void Bind(StorageAccount storageAccount, TargetTreeView targetTreeView)
         {
             try
             {
                 _IsBinding = true;
-                _AzureContext = azureContext;
                 _TargetTreeView = targetTreeView;
                 _StorageAccount = storageAccount;
                 txtTargetName.MaxLength = StorageAccount.MaximumTargetNameLength(targetTreeView.TargetSettings);
@@ -95,3 +96,4 @@ namespace MigAz.Azure.UserControls
         }
     }
 }
+

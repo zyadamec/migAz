@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MigAz.Core;
 using System;
 using System.Collections.Generic;
@@ -44,3 +47,4 @@ namespace MIGAZ.Tests
         }
     }
 }
+

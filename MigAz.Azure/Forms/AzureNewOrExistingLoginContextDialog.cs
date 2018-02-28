@@ -1,4 +1,7 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.UserControls;
 using System;
 using System.Collections.Generic;
@@ -48,7 +51,7 @@ namespace MigAz.Azure.Forms
                 if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null)
                 {
                     azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
-                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.AzureRetriever.GetAzureARMTenants())
+                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.GetAzureARMTenants())
                     {
                         subscriptionCount += azureTenant.Subscriptions.Count;
 
@@ -110,6 +113,8 @@ namespace MigAz.Azure.Forms
             {
                 cboTenant.SelectedIndex = 0;
             }
+
+            azureLoginContextViewer.ExistingContext.StatusProvider.UpdateStatus("Ready");
         }
 
 
@@ -219,3 +224,4 @@ namespace MigAz.Azure.Forms
         }
     }
 }
+

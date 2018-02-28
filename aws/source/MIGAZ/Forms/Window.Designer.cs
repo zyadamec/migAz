@@ -1,4 +1,7 @@
-﻿namespace MIGAZ
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MIGAZ
 {
     partial class Window
     {
@@ -300,4 +303,5 @@
         private System.Windows.Forms.ColumnHeader colVpcName;
     }
 }
+
 

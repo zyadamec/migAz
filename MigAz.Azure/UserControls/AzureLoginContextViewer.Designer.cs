@@ -1,4 +1,7 @@
-﻿namespace MigAz.Azure.UserControls
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MigAz.Azure.UserControls
 {
     partial class AzureLoginContextViewer
     {
@@ -208,3 +211,4 @@
         private System.Windows.Forms.Label label6;
     }
 }
+

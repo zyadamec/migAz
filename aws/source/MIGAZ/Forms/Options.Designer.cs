@@ -1,4 +1,7 @@
-﻿namespace MIGAZ.Forms
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace MIGAZ.Forms
 {
     partial class formOptions
     {
@@ -173,3 +176,4 @@
         private System.Windows.Forms.CheckBox chkSaveSelection;
     }
 }
+

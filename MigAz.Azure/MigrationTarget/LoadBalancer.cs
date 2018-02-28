@@ -1,4 +1,7 @@
-﻿using MigAz.Core;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -24,6 +27,13 @@ namespace MigAz.Azure.MigrationTarget
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private List<Probe> _Probes = new List<Probe>();
         private LoadBalancerType _LoadBalancerType = LoadBalancerType.Internal;
+
+
+        public LoadBalancer(string targetName, TargetSettings targetSettings)
+        {
+            this.SetTargetName(targetName, targetSettings);
+            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
+        }
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings)
         {
@@ -136,3 +146,4 @@ namespace MigAz.Azure.MigrationTarget
 
     }
 }
+

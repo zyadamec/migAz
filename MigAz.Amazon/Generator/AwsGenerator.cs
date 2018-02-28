@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using MigAz.Core.Generator;
 using System.Windows.Forms;
 using System;
@@ -1167,3 +1170,4 @@ namespace MigAz.AWS.Generator
 
 //    LogProvider.WriteLog("BuildStorageAccountObject", "End");
 //}
+

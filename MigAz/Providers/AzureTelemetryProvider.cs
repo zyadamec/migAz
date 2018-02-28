@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Generator.AsmToArm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
 using MigAz.Core.ArmTemplate;
 using Newtonsoft.Json;
@@ -81,3 +84,4 @@ namespace MigAz.Providers
         }
     }
 }
+

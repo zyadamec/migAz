@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -27,33 +30,33 @@ namespace MigAz.Azure.UserControls
             Bind(migrationTarget, targetTreeView);
         }
 
-        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView)
+        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView, bool allowSelection = true, bool allowNone = true)
         {
             _MigrationTarget = migrationTarget;
             _TargetTreeView = targetTreeView;
 
             if (_MigrationTarget != null && _TargetTreeView != null)
             {
-                if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.Disk))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["Disk"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkInterface))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkInterface"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.VirtualMachine))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["VirtualMachine"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["AvailabilitySet"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.NetworkSecurityGroup))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["NetworkSecurityGroup"];
-                else if (_MigrationTarget.GetType() == typeof(Azure.MigrationTarget.RouteTable))
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images["RouteTable"];
-
-                label1.Text = _MigrationTarget.ToString();
+                pictureBox1.Image = _TargetTreeView.ImageList.Images[_MigrationTarget.ImageKey];
             }
             else
             {
                 pictureBox1.Visible = false;
-                label1.Visible = false;
             }
+
+            cmbResources.Items.Clear();
+            if (allowNone)
+                cmbResources.Items.Add("(None)");
+
+            if (migrationTarget == null)
+                cmbResources.SelectedIndex = 0;
+            else
+            {
+                int itemIndex = cmbResources.Items.Add(migrationTarget);
+                cmbResources.SelectedIndex = itemIndex;
+            }
+
+            cmbResources.Enabled = allowSelection;
         }
 
         private void ResourceSummary_Click(object sender, EventArgs e)
@@ -61,5 +64,17 @@ namespace MigAz.Azure.UserControls
             if (_TargetTreeView != null && _MigrationTarget != null)
                 _TargetTreeView.SeekAlertSource(_MigrationTarget);
         }
+
+        private void cmbResources_Click(object sender, EventArgs e)
+        {
+            if (!cmbResources.Enabled)
+                ResourceSummary_Click(this, e);
+        }
+
+        private void cmbResources_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
+

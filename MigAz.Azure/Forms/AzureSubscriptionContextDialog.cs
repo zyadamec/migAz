@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,7 +33,7 @@ namespace MigAz.Azure.Forms
             if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
             {
                 _AzureContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
-                foreach (AzureTenant azureTenant in await _AzureContext.AzureRetriever.GetAzureARMTenants())
+                foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                 {
                     if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                     {
@@ -55,6 +58,7 @@ namespace MigAz.Azure.Forms
             }
 
             _AzureContext.LogProvider.WriteLog("InitializeDialog", "End AzureSubscriptionContextDialog InitializeDialog");
+            _AzureContext.StatusProvider.UpdateStatus("Ready");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -110,3 +114,4 @@ namespace MigAz.Azure.Forms
         }
     }
 }
+

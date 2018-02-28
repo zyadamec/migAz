@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,3 +14,4 @@ namespace MIGAZ.Generator
         void PostTelemetryRecord(string AccessKey, Dictionary<string, string> processedItems, string Region);
     }
 }
+

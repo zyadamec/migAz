@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -8,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Azure.UserControls
 {
@@ -26,7 +28,7 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        internal void Bind(TargetTreeView targetTreeView, MigrationTarget.Subnet targetSubnet)
+        internal void Bind(Subnet targetSubnet, TargetTreeView targetTreeView)
         {
             try
             {
@@ -54,7 +56,7 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                if (String.Compare(txtTargetName.Text, ArmConst.GatewaySubnetName, true) == 0)
+                if (String.Compare(txtTargetName.Text, Core.ArmTemplate.ArmConst.GatewaySubnetName, true) == 0)
                 {
                     // if gateway subnet, the name can't be changed
                     txtTargetName.Enabled = false;
@@ -88,3 +90,4 @@ namespace MigAz.Azure.UserControls
         }
     }
 }
+

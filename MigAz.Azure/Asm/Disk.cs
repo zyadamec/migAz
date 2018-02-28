@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System;
 using System.Threading.Tasks;
 using System.Xml;
@@ -18,9 +21,9 @@ namespace MigAz.Azure.Asm
             this._DataDiskNode = dataDiskNode;
         }
 
-        public async Task InitializeChildren()
+        public async Task InitializeChildrenAsync(AzureContext azureContext)
         {
-            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(StorageAccountName);
+            _SourceStorageAccount = await _AzureContext.AzureSubscription.GetAzureAsmStorageAccount(azureContext, StorageAccountName);
         }
 
         #region Properties
@@ -131,3 +134,4 @@ namespace MigAz.Azure.Asm
         }
     }
 }
+

@@ -1,4 +1,7 @@
-﻿using MigAz.Core.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Core.Interface;
 using System;
 using System.Threading.Tasks;
 using System.Xml;
@@ -93,9 +96,9 @@ namespace MigAz.Azure.Asm
 
         #region Methods
 
-        internal async Task LoadStorageAccountKeysAsynch()
+        internal async Task LoadStorageAccountKeysAsync(AzureContext azureContext)
         {
-            _AsmStorageAccountKeys = await this._AzureContext.AzureSubscription.GetAzureAsmStorageAccountKeys(this.Name);
+            _AsmStorageAccountKeys = await this._AzureContext.AzureSubscription.GetAzureAsmStorageAccountKeys(azureContext, this.Name);
         }
 
         public override string ToString()
@@ -106,3 +109,4 @@ namespace MigAz.Azure.Asm
         #endregion
     }
 }
+

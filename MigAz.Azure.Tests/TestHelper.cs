@@ -1,4 +1,7 @@
-﻿using MigAz.Azure;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure;
 using MigAz.Tests.Fakes;
 using Newtonsoft.Json.Linq;
 using System;
@@ -40,8 +43,10 @@ namespace MigAz.Tests
             azureContext.TokenProvider = new FakeTokenProvider();
             azureContext.AzureRetriever = new TestRetriever(azureContext);
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
+            List<AzureTenant> tenants = await azureContext.GetAzureARMTenants(true);
 
-            List<AzureSubscription> subscriptions = await azureContext.AzureRetriever.GetAzureARMSubscriptions(Guid.Empty);
+
+            List<AzureSubscription> subscriptions = tenants[0].Subscriptions;
             await azureContext.SetSubscriptionContext(subscriptions[0]);
             await azureContext.AzureRetriever.SetSubscriptionContext(subscriptions[0]);
 
@@ -64,7 +69,7 @@ namespace MigAz.Tests
 
         internal static async Task<Azure.MigrationTarget.ResourceGroup> GetTargetResourceGroup(AzureContext azureContext)
         {
-            List<Azure.Arm.Location> azureLocations = await azureContext.AzureSubscription.GetAzureARMLocations();
+            List<Azure.Arm.Location> azureLocations = await azureContext.AzureSubscription.GetAzureARMLocations(azureContext);
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             Azure.MigrationTarget.ResourceGroup targetResourceGroup = new Azure.MigrationTarget.ResourceGroup(targetSettings);
             targetResourceGroup.TargetLocation = azureLocations[0];
@@ -72,3 +77,4 @@ namespace MigAz.Tests
         }
     }
 }
+

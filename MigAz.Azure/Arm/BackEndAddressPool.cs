@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +26,7 @@ namespace MigAz.Azure.Arm
         {
             foreach (string backEndIpConfigurationId in this.BackEndIPConfigurationIds)
             {
-                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(backEndIpConfigurationId);
+                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(azureContext, backEndIpConfigurationId);
                 if (networkInterface != null)
                 {
                     foreach (NetworkInterfaceIpConfiguration networkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
@@ -91,3 +94,4 @@ namespace MigAz.Azure.Arm
         }
     }
 }
+

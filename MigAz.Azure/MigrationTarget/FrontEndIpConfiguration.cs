@@ -1,4 +1,7 @@
-﻿using MigAz.Azure.Interface;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -8,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public enum PrivateIPAllocationMethodEnum
+    public enum IPAllocationMethodEnum
     {
         Dynamic,
         Static
@@ -17,7 +20,7 @@ namespace MigAz.Azure.MigrationTarget
     public class FrontEndIpConfiguration : IVirtualNetworkTarget
     {
         private String _Name = "default";
-        private PrivateIPAllocationMethodEnum _TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+        private IPAllocationMethodEnum _TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
         private String _TargetStaticIpAddress = String.Empty;
         private PublicIp _PublicIp = null;
 
@@ -39,9 +42,9 @@ namespace MigAz.Azure.MigrationTarget
 
             this.Name = armFrontEndIpConfiguration.Name;
             if (armFrontEndIpConfiguration.PrivateIPAllocationMethod.Trim().ToLower() == "static")
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Static;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Static;
             else
-                this.TargetPrivateIPAllocationMethod = PrivateIPAllocationMethodEnum.Dynamic;
+                this.TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
             this.TargetPrivateIpAddress = armFrontEndIpConfiguration.PrivateIPAddress;
             this.TargetVirtualNetwork = armFrontEndIpConfiguration.VirtualNetwork;
             this.TargetSubnet = armFrontEndIpConfiguration.Subnet;
@@ -50,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
         #region IVirtualNetworkTarget Interface Implementation
         public IMigrationVirtualNetwork TargetVirtualNetwork { get; set; }
         public IMigrationSubnet TargetSubnet { get; set; }
-        public PrivateIPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
+        public IPAllocationMethodEnum TargetPrivateIPAllocationMethod { get; set; }
         public string TargetPrivateIpAddress { get; set; }
 
         #endregion
@@ -84,3 +87,4 @@ namespace MigAz.Azure.MigrationTarget
         }
     }
 }
+
