@@ -34,6 +34,9 @@ In case of any issues during the deployment of the export.JSON you need to troub
 
 
 ## Release Notes
+### v2.4.0.0 (and beyond)
+As of v2.4.0.0, all release notes and compiled versions will be made available via GitHub Releases.  Please visit the [MigAz GitHub Release](https://github.com/Azure/migAz/releases) page for all releases and compiled versions.
+
 ### v2.3.2.0
  - Code Restructure, to facilitate future splitting of different Source and Target technologies
  - New dialog for changing Target Subscription Context, should aid in migration across different Azure Environments (i.e. Commercial to Government)

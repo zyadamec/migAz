@@ -53,7 +53,7 @@ namespace MigAz.Tests
             return azureContext;
         }
        
-        public static async Task<AzureGenerator> SetupTemplateGenerator()
+        public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
         {
             ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
             return new AzureGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), azureContext.LogProvider, azureContext.StatusProvider);

@@ -171,6 +171,9 @@ namespace MigAz.Azure.Arm
             if (this.AzureSubscription == null)
                 throw new ArgumentException("Managed Disk must have an Azure Subscription context to obtain SAS URL.");
 
+            if (this.AzureSubscription.SubscriptionId == Guid.Empty)
+                return String.Empty;
+
             AzureContext azureContext = this.AzureSubscription.AzureTenant.AzureContext;
 
             if (azureContext != null && azureContext.LogProvider != null)

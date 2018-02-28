@@ -49,6 +49,7 @@ namespace MigAz.Azure.UserControls
             // cmbResources
             // 
             this.cmbResources.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbResources.Enabled = false;
             this.cmbResources.FormattingEnabled = true;
             this.cmbResources.Location = new System.Drawing.Point(45, 0);
             this.cmbResources.Name = "cmbResources";
