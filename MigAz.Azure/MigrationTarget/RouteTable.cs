@@ -13,7 +13,6 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class RouteTable : Core.MigrationTarget
     {
-        private AzureContext _AzureContext;
         private IRouteTable _SourceRouteTable;
         private List<Route> _Routes = new List<Route>();
 

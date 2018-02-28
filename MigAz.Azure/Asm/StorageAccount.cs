@@ -98,7 +98,7 @@ namespace MigAz.Azure.Asm
 
         internal async Task LoadStorageAccountKeysAsync(AzureContext azureContext)
         {
-            _AsmStorageAccountKeys = await this._AzureContext.AzureSubscription.GetAzureAsmStorageAccountKeys(azureContext, this.Name);
+            _AsmStorageAccountKeys = await this._AzureContext.AzureSubscription.GetAzureAsmStorageAccountKeys(this.Name);
         }
 
         public override string ToString()

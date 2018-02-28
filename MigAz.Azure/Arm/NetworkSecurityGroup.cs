@@ -15,9 +15,9 @@ namespace MigAz.Azure.Arm
     {
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
-        private NetworkSecurityGroup() : base(null) { }
+        private NetworkSecurityGroup() : base(null, null) { }
 
-        public NetworkSecurityGroup(JToken resourceToken) : base(resourceToken)
+        public NetworkSecurityGroup(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
             foreach (JToken securityRulesToken in ResourceToken["properties"]["securityRules"])
             {

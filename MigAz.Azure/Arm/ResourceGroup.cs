@@ -23,9 +23,9 @@ namespace MigAz.Azure.Arm
             _AzureSubscription = azureSubscription;
         }
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
-            this.Location = await azureContext.AzureSubscription.GetAzureARMLocation(azureContext, this.LocationString);
+            this.Location = await this.AzureSubscription.GetAzureARMLocation(this.LocationString);
         }
 
         private ResourceGroup() { }

@@ -8,15 +8,15 @@ namespace MigAz.Azure.Asm
 {
     public class LoadBalancer
     {
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private VirtualNetwork _AsmVirtualNetwork;
         private Subnet _AsmSubnet;
         private XmlNode _XmlNode;
         private string _TargetName = String.Empty;
         
-        public LoadBalancer(AzureContext azureContext, VirtualNetwork asmVirtualNetwork, XmlNode loadBalancerXml)
+        public LoadBalancer(AzureSubscription azureSubscription, VirtualNetwork asmVirtualNetwork, XmlNode loadBalancerXml)
         {
-            this._AzureContext = azureContext;
+            this._AzureSubscription = azureSubscription;
             this._AsmVirtualNetwork = asmVirtualNetwork;
             this._XmlNode = loadBalancerXml;
 
@@ -38,7 +38,7 @@ namespace MigAz.Azure.Asm
             get { return _AsmSubnet; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.SubnetName;
         }

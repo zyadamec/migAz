@@ -18,15 +18,12 @@ namespace MigAz.Azure.Arm
         private IArmDisk _OSVirtualHardDisk;
         private List<NetworkInterface> _NetworkInterfaceCards = new List<NetworkInterface>();
         private VMSize _VMSize;
-        private AzureSubscription _AzureSubscription;
 
 
-        private VirtualMachine() : base(null) { }
+        private VirtualMachine() : base(null, null) { }
 
-        public VirtualMachine(AzureSubscription azureSubscription, JToken resourceToken) : base(resourceToken)
+        public VirtualMachine(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
-            _AzureSubscription = azureSubscription;
-
             if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
             {
                 _OSVirtualHardDisk = new ManagedDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
@@ -64,11 +61,6 @@ namespace MigAz.Azure.Arm
         {
             get { return _VMSize; }
             set { _VMSize = value;  }
-        }
-
-        public AzureSubscription AzureSubscription
-        {
-            get { return _AzureSubscription; }
         }
 
         public string OSVirtualHardDiskOS => (string)ResourceToken["properties"]["storageProfile"]["osDisk"]["osType"];
@@ -111,31 +103,31 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        internal new async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal new async Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
 
             if (this.AvailabilitySetId != String.Empty)
-                this.AvailabilitySet = azureContext.AzureSubscription.GetAzureARMAvailabilitySet(azureContext, this.AvailabilitySetId);
+                this.AvailabilitySet = this.AzureSubscription.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
 
             if (this.AvailabilitySet != null)
                 this.AvailabilitySet.VirtualMachines.Add(this);
 
 
-            await this.OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
+            await this.OSVirtualHardDisk.InitializeChildrenAsync();
 
             foreach (IArmDisk dataDisk in this.DataDisks)
             {
                 if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
                 {
                     ClassicDisk classicDisk = (Arm.ClassicDisk)dataDisk;
-                    await classicDisk.InitializeChildrenAsync(azureContext);
+                    await classicDisk.InitializeChildrenAsync();
                 }
             }
 
             foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
             {
-                NetworkInterface networkInterface = await azureContext.AzureSubscription.GetAzureARMNetworkInterface(azureContext, (string)networkInterfaceToken["id"]);
+                NetworkInterface networkInterface = await this.AzureSubscription.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
                 networkInterface.VirtualMachine = this;
                 _NetworkInterfaceCards.Add(networkInterface);
             }
@@ -149,9 +141,9 @@ namespace MigAz.Azure.Arm
             return;
         }
 
-        public async Task Refresh(AzureContext azureContext)
+        public async Task Refresh()
         {
-            base.SetResourceToken(await _AzureSubscription.GetAzureArmVirtualMachineDetail(azureContext, this));
+            base.SetResourceToken(await this.AzureSubscription.GetAzureArmVirtualMachineDetail(this));
         }
 
         public override string ToString()

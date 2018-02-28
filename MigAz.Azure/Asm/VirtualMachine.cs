@@ -17,8 +17,8 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
+        private AzureSubscription _AzureSubscription;
         private CloudService _AsmCloudService;
-        private AzureContext _AzureContext;
         private XmlNode _XmlNode;
         private Hashtable _VmDetails;
         Disk _OSVirtualHardDisk;
@@ -37,36 +37,36 @@ namespace MigAz.Azure.Asm
 
         private VirtualMachine() { }
 
-        public VirtualMachine(AzureContext azureContext, CloudService asmCloudService, XmlNode virtualMachineXml, Hashtable vmDetails)
+        public VirtualMachine(AzureSubscription azureSubscription, CloudService asmCloudService, XmlNode virtualMachineXml, Hashtable vmDetails)
         {
+            this._AzureSubscription = azureSubscription;
             this._AsmCloudService = asmCloudService;
-            this._AzureContext = azureContext;
             this._XmlNode = virtualMachineXml;
             this._VmDetails = vmDetails;
 
-            _OSVirtualHardDisk = new Disk(azureContext, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
+            _OSVirtualHardDisk = new Disk(azureSubscription, _XmlNode.SelectSingleNode("//OSVirtualHardDisk"));
 
             _DataDisks = new List<Disk>();
             foreach (XmlNode dataDiskNode in _XmlNode.SelectNodes("//DataVirtualHardDisks/DataVirtualHardDisk"))
             {
-                Disk asmDisk = new Disk(azureContext, dataDiskNode);
+                Disk asmDisk = new Disk(azureSubscription, dataDiskNode);
                 _DataDisks.Add(asmDisk);
             }
 
             foreach (XmlNode loadBalancerRuleNode in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/InputEndpoints/InputEndpoint"))
             {
-                _LoadBalancerRules.Add(new LoadBalancerRule(_AzureContext, loadBalancerRuleNode));
+                _LoadBalancerRules.Add(new LoadBalancerRule(azureSubscription, loadBalancerRuleNode));
             }
 
             #region Primary Network Interface
 
-            NetworkInterface primaryNetworkInterface = new NetworkInterface(_AzureContext, this);
+            NetworkInterface primaryNetworkInterface = new NetworkInterface(this.AzureSubscription, this);
             this.NetworkInterfaces.Add(primaryNetworkInterface);
 
             primaryNetworkInterface.IsPrimary = true;
             primaryNetworkInterface.Name = this.RoleName + "-NIC1";
 
-            NetworkInterfaceIpConfiguration primaryNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+            NetworkInterfaceIpConfiguration primaryNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(this.AzureSubscription);
             primaryNetworkInterface.NetworkInterfaceIpConfigurations.Add(primaryNetworkInterfaceIpConfiguration);
 
             primaryNetworkInterfaceIpConfiguration.VirtualNetworkName = vmDetails["virtualnetworkname"].ToString();
@@ -95,7 +95,7 @@ namespace MigAz.Azure.Asm
 
             foreach (XmlNode additionalNetworkInterfaceXml in _XmlNode.SelectNodes("//ConfigurationSets/ConfigurationSet/NetworkInterfaces/NetworkInterface"))
             {
-                NetworkInterface additionalNetworkInterface = new NetworkInterface(_AzureContext, this);
+                NetworkInterface additionalNetworkInterface = new NetworkInterface(this.AzureSubscription, this);
                 this.NetworkInterfaces.Add(additionalNetworkInterface);
 
                 additionalNetworkInterface.Name = this.RoleName + "-" + additionalNetworkInterfaceXml.SelectSingleNode("Name").InnerText;
@@ -105,7 +105,7 @@ namespace MigAz.Azure.Asm
                     additionalNetworkInterface.EnableIpForwarding = true;
                 }
 
-                NetworkInterfaceIpConfiguration ipConfiguration = new NetworkInterfaceIpConfiguration(_AzureContext);
+                NetworkInterfaceIpConfiguration ipConfiguration = new NetworkInterfaceIpConfiguration(this.AzureSubscription);
                 additionalNetworkInterface.NetworkInterfaceIpConfigurations.Add(ipConfiguration);
 
                 ipConfiguration.Name = "ipconfig1";
@@ -128,11 +128,11 @@ namespace MigAz.Azure.Asm
 
         #endregion
 
-        public async Task InitializeChildrenAsync(AzureContext azureContext)
+        public async Task InitializeChildrenAsync()
         {
             if (this.VirtualNetworkName != String.Empty)
             {
-                _SourceVirtualNetwork = await _AzureContext.AzureSubscription.GetAzureAsmVirtualNetwork(azureContext, this.VirtualNetworkName);
+                _SourceVirtualNetwork = await this.AzureSubscription.GetAzureAsmVirtualNetwork(this.VirtualNetworkName);
 
                 if (_SourceVirtualNetwork != null)
                 {
@@ -147,19 +147,24 @@ namespace MigAz.Azure.Asm
                 }
             }
 
-            await _OSVirtualHardDisk.InitializeChildrenAsync(azureContext);
+            await _OSVirtualHardDisk.InitializeChildrenAsync();
             foreach (Disk asmDisk in this.DataDisks)
             {
-                await asmDisk.InitializeChildrenAsync(azureContext);
+                await asmDisk.InitializeChildrenAsync();
             }
 
             if (this.NetworkSecurityGroupName != String.Empty)
-                _AsmNetworkSecurityGroup = await _AzureContext.AzureSubscription.GetAzureAsmNetworkSecurityGroup(azureContext, this.NetworkSecurityGroupName);
+                _AsmNetworkSecurityGroup = await this.AzureSubscription.GetAzureAsmNetworkSecurityGroup(this.NetworkSecurityGroupName);
 
-            this.RoleSize = await _AzureContext.AzureSubscription.GetAzureASMRoleSize(azureContext, this.RoleSizeString);
+            this.RoleSize = await this.AzureSubscription.GetAzureASMRoleSize(this.RoleSizeString);
         }
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+        }
 
         public XmlNode ResourceXml
         {

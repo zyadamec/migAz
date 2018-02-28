@@ -12,20 +12,15 @@ namespace MigAz.Azure.Asm
 {
     public class NetworkInterfaceIpConfiguration : INetworkInterfaceIpConfiguration
     {
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private String _Name = "ipconfig1";
         private String _PrivateIpAllocationMethod = "Dynamic";
         private String _VirtualNetworkName = String.Empty;
         private String _SubnetName = String.Empty;
 
-        public NetworkInterfaceIpConfiguration(AzureContext azureContext)
+        public NetworkInterfaceIpConfiguration(AzureSubscription azureSubscription)
         {
-            _AzureContext = azureContext;
-        }
-
-        public async Task InitializeChildrenAsync()
-        {
- 
+            _AzureSubscription = azureSubscription;
         }
 
         public string Name

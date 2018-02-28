@@ -13,9 +13,9 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualNetworkGateway : ArmResource, IVirtualNetworkGateway
     {
-        private VirtualNetworkGateway() : base(null) { }
+        private VirtualNetworkGateway() : base(null, null) { }
 
-        public VirtualNetworkGateway(JToken resourceToken) : base(resourceToken)
+        public VirtualNetworkGateway(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
         }
 

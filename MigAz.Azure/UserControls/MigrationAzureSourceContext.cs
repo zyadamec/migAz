@@ -235,7 +235,7 @@ namespace MigAz.Azure.UserControls
 
                 if (sender.AzureSubscription != null)
                 {
-                    await sender.AzureSubscription.InitializeChildrenAsync(sender, false);
+                    await sender.AzureSubscription.InitializeChildrenAsync(false);
 
                     switch (cmbAzureResourceTypeSource.SelectedItem.ToString())
                     {
@@ -276,7 +276,7 @@ namespace MigAz.Azure.UserControls
                 if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                 {
 
-                    await _AzureContextSource.AzureSubscription.BindAsmResources(azureContext, targetSettings);
+                    await _AzureContextSource.AzureSubscription.BindAsmResources(targetSettings);
 
                     if (_AzureContextSource != null && _AzureContextSource.AzureSubscription != null)
                     {

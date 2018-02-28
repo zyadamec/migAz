@@ -18,32 +18,24 @@ namespace MigAz.Azure.Arm
 {
     public class ManagedDisk : ArmResource, IArmDisk
     {
-        private AzureSubscription _AzureSubscription;
         private VirtualMachine _VirtualMachine;
 
-        private ManagedDisk() : base(null) { }
+        private ManagedDisk() : base(null, null) { }
 
-        public ManagedDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(resourceToken)
+        public ManagedDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(virtualMachine.AzureSubscription, resourceToken)
         {
-            _AzureSubscription = virtualMachine.AzureSubscription;
             _VirtualMachine = virtualMachine;
         }
-        public ManagedDisk(AzureSubscription azureSubscription, JToken resourceToken) : base(resourceToken)
+        public ManagedDisk(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
-            _AzureSubscription = azureSubscription;
         }
 
-        public new async Task InitializeChildrenAsync(AzureContext azureContext)
+        public new async Task InitializeChildrenAsync()
         {
-            await base.InitializeChildrenAsync(azureContext);
+            await base.InitializeChildrenAsync();
         }
 
         #region Properties
-
-        public AzureSubscription AzureSubscription
-        {
-            get { return _AzureSubscription; }
-        }
 
         public VirtualMachine ParentVirtualMachine
         {

@@ -29,9 +29,9 @@ namespace MigAz.Azure.Arm
             this._LocationToken = locationToken;
         }
 
-        internal async Task InitializeChildrenAsync(AzureContext azureContext)
+        internal async Task InitializeChildrenAsync()
         {
-            await this.LoadAzureARMVMSizes(azureContext);
+            await this.LoadAzureARMVMSizes();
         }
 
         #endregion
@@ -78,8 +78,10 @@ namespace MigAz.Azure.Arm
 
         #region Methods
 
-        private async Task<List<VMSize>> LoadAzureARMVMSizes(AzureContext azureContext)
+        private async Task<List<VMSize>> LoadAzureARMVMSizes()
         {
+            AzureContext azureContext = this.AzureSubscription.AzureTenant.AzureContext;
+
             azureContext.LogProvider.WriteLog("GetAzureARMLocationVMSizes", "Start - Location : " + this.Name);
 
             if (_ArmVmSizes != null)
@@ -97,30 +99,24 @@ namespace MigAz.Azure.Arm
             string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
             azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes Location : " + this.ToString());
 
-            try
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
+
+            azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
+
+            var VMSizes = from VMSize in locationsVMSizesJson["value"]
+                            select VMSize;
+
+            List<VMSize> vmSizes = new List<VMSize>();
+            foreach (var VMSize in VMSizes)
             {
-                AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
-                AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-                JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
-
-                azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
-
-                var VMSizes = from VMSize in locationsVMSizesJson["value"]
-                              select VMSize;
-
-                List<VMSize> vmSizes = new List<VMSize>();
-                foreach (var VMSize in VMSizes)
-                {
-                    Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                    vmSizes.Add(armVMSize);
-                }
-
-                _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
+                Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
+                vmSizes.Add(armVMSize);
             }
-            catch (Exception exc)
-            {
-                // this is a tempoary (not good coding) to handle error on France locations, until code is added tomorrow to check the provider availability at the location
-            }
+
+            _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
+
             azureContext.StatusProvider.UpdateStatus("Ready");
 
             return _ArmVmSizes;

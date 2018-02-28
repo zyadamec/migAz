@@ -10,7 +10,7 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
-        private AzureContext _AzureContext;
+        private AzureSubscription _AzureSubscription;
         private XmlNode _XmlNode;
 
         #endregion
@@ -19,9 +19,9 @@ namespace MigAz.Azure.Asm
 
         private LoadBalancerRule() { }
 
-        public LoadBalancerRule(AzureContext azureContext, XmlNode xmlNode)
+        public LoadBalancerRule(AzureSubscription azureSubscription, XmlNode xmlNode)
         {
-            _AzureContext = azureContext;
+            _AzureSubscription = azureSubscription;
             _XmlNode = xmlNode;
         }
 

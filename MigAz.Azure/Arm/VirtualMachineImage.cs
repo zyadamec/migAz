@@ -13,9 +13,9 @@ namespace MigAz.Azure.Arm
 {
     public class VirtualMachineImage : ArmResource, IVirtualMachineImage
     {
-        private VirtualMachineImage() : base(null) { }
+        private VirtualMachineImage() : base(null, null) { }
 
-        public VirtualMachineImage(JToken resourceToken) : base(resourceToken)
+        public VirtualMachineImage(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
         }
 

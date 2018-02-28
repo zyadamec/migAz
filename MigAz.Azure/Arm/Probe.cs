@@ -15,7 +15,7 @@ namespace MigAz.Azure.Arm
         private LoadBalancer _LoadBalancer;
         private List<LoadBalancingRule> _LoadBalancingRules = new List<LoadBalancingRule>();
 
-        public Probe(LoadBalancer loadBalancer, JToken probeToken) : base(probeToken)
+        public Probe(LoadBalancer loadBalancer, JToken probeToken) : base(loadBalancer.AzureSubscription, probeToken)
         {
             _LoadBalancer = loadBalancer;
         }

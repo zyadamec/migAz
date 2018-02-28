@@ -126,7 +126,7 @@ namespace MigAz.Azure.UserControls
             {
                 if (azureSubscription != null)
                 {
-                    await azureSubscription.BindArmResources(azureContext, targetSettings);
+                    await azureSubscription.BindArmResources(targetSettings);
 
                     if (azureSubscription != null)
                     {
