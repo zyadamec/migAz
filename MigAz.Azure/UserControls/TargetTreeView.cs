@@ -396,7 +396,7 @@ namespace MigAz.Azure.UserControls
             if (parentNode.GetType() == typeof(VirtualNetwork))
             {
                 VirtualNetwork targetVirtualNetwork = (VirtualNetwork)parentNode;
-                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.SourceName, targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
+                TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.ToString(), targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
 
                 foreach (Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
                 {
@@ -1024,6 +1024,11 @@ namespace MigAz.Azure.UserControls
             await AddNewMigrationTargetResource(new LoadBalancer());
         }
 
+        private async void btnNewVirtualNetwork_Click(object sender, EventArgs e)
+        {
+            await AddNewMigrationTargetResource(new VirtualNetwork());
+        }
+
         private async Task AddNewMigrationTargetResource(Core.MigrationTarget migrationTarget)
         {
             migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", ""), this.TargetSettings);
@@ -1047,6 +1052,8 @@ namespace MigAz.Azure.UserControls
             await this.RefreshExportArtifacts();
             AfterNewTargetResourceAdded?.Invoke(this, newNode);
         }
+
+
     }
 }
 

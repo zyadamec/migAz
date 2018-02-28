@@ -33,6 +33,7 @@ namespace MigAz.Azure.UserControls
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.cmbResources = new System.Windows.Forms.ComboBox();
+            this.lblResourceText = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,11 +59,24 @@ namespace MigAz.Azure.UserControls
             this.cmbResources.SelectedIndexChanged += new System.EventHandler(this.cmbResources_SelectedIndexChanged);
             this.cmbResources.Click += new System.EventHandler(this.cmbResources_Click);
             // 
+            // lblResourceText
+            // 
+            this.lblResourceText.AutoSize = true;
+            this.lblResourceText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblResourceText.Location = new System.Drawing.Point(45, 3);
+            this.lblResourceText.Name = "lblResourceText";
+            this.lblResourceText.Size = new System.Drawing.Size(138, 20);
+            this.lblResourceText.TabIndex = 3;
+            this.lblResourceText.Text = "lblResourceText";
+            this.lblResourceText.Visible = false;
+            this.lblResourceText.Click += new System.EventHandler(this.ResourceSummary_Click);
+            // 
             // ResourceSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
+            this.Controls.Add(this.lblResourceText);
             this.Controls.Add(this.cmbResources);
             this.Controls.Add(this.pictureBox1);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -71,12 +85,14 @@ namespace MigAz.Azure.UserControls
             this.Click += new System.EventHandler(this.ResourceSummary_Click);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ComboBox cmbResources;
+        private System.Windows.Forms.Label lblResourceText;
     }
 }
 

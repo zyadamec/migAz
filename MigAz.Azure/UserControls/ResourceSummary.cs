@@ -30,7 +30,7 @@ namespace MigAz.Azure.UserControls
             Bind(migrationTarget, targetTreeView);
         }
 
-        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView, bool allowSelection = true, bool allowNone = true)
+        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false)
         {
             _MigrationTarget = migrationTarget;
             _TargetTreeView = targetTreeView;
@@ -38,25 +38,38 @@ namespace MigAz.Azure.UserControls
             if (_MigrationTarget != null && _TargetTreeView != null)
             {
                 pictureBox1.Image = _TargetTreeView.ImageList.Images[_MigrationTarget.ImageKey];
+
+                lblResourceText.Text = migrationTarget.ToString();
+
+                cmbResources.Items.Clear();
+                if (allowNone)
+                    cmbResources.Items.Add("(None)");
+
+                if (migrationTarget == null)
+                {
+                    if (cmbResources.Items.Count > 0)
+                        cmbResources.SelectedIndex = 0;
+                }
+                else
+                {
+                    int itemIndex = cmbResources.Items.Add(migrationTarget);
+                    cmbResources.SelectedIndex = itemIndex;
+                }
+
+                cmbResources.Enabled = allowSelection;
+                cmbResources.Visible = allowSelection;
+                lblResourceText.Enabled = !cmbResources.Enabled;
+                lblResourceText.Visible = !cmbResources.Visible;
             }
             else
             {
                 pictureBox1.Visible = false;
+                lblResourceText.Visible = false;
+                cmbResources.Visible = false;
             }
 
-            cmbResources.Items.Clear();
-            if (allowNone)
-                cmbResources.Items.Add("(None)");
 
-            if (migrationTarget == null)
-                cmbResources.SelectedIndex = 0;
-            else
-            {
-                int itemIndex = cmbResources.Items.Add(migrationTarget);
-                cmbResources.SelectedIndex = itemIndex;
-            }
-
-            cmbResources.Enabled = allowSelection;
+            
         }
 
         private void ResourceSummary_Click(object sender, EventArgs e)

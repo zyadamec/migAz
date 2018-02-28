@@ -36,12 +36,13 @@ namespace MigAz.Azure.UserControls
             this.treeTargetARM = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnNewStorageAccount = new System.Windows.Forms.Button();
+            this.btnNewLoadBalancer = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.btnNewStorageAccount = new System.Windows.Forms.Button();
             this.btnNewPublicIp = new System.Windows.Forms.Button();
             this.btnNewAvailabilitySet = new System.Windows.Forms.Button();
             this.lblAddNew = new System.Windows.Forms.Label();
-            this.btnNewLoadBalancer = new System.Windows.Forms.Button();
+            this.btnNewVirtualNetwork = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -70,6 +71,7 @@ namespace MigAz.Azure.UserControls
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnNewVirtualNetwork);
             this.panel1.Controls.Add(this.btnNewLoadBalancer);
             this.panel1.Controls.Add(this.btnNewStorageAccount);
             this.panel1.Controls.Add(this.btnNewPublicIp);
@@ -77,23 +79,23 @@ namespace MigAz.Azure.UserControls
             this.panel1.Enabled = false;
             this.panel1.Location = new System.Drawing.Point(138, 77);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(181, 211);
+            this.panel1.Size = new System.Drawing.Size(181, 251);
             this.panel1.TabIndex = 60;
             // 
-            // btnNewStorageAccount
+            // btnNewLoadBalancer
             // 
-            this.btnNewStorageAccount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewStorageAccount.ImageKey = "StorageAccount";
-            this.btnNewStorageAccount.ImageList = this.imageList1;
-            this.btnNewStorageAccount.Location = new System.Drawing.Point(1, 135);
-            this.btnNewStorageAccount.Name = "btnNewStorageAccount";
-            this.btnNewStorageAccount.Size = new System.Drawing.Size(178, 39);
-            this.btnNewStorageAccount.TabIndex = 2;
-            this.btnNewStorageAccount.Text = "Storage Account";
-            this.btnNewStorageAccount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewStorageAccount.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewStorageAccount.UseVisualStyleBackColor = true;
-            this.btnNewStorageAccount.Click += new System.EventHandler(this.btnNewStorageAccount_Click);
+            this.btnNewLoadBalancer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewLoadBalancer.ImageKey = "LoadBalancer";
+            this.btnNewLoadBalancer.ImageList = this.imageList1;
+            this.btnNewLoadBalancer.Location = new System.Drawing.Point(1, 45);
+            this.btnNewLoadBalancer.Name = "btnNewLoadBalancer";
+            this.btnNewLoadBalancer.Size = new System.Drawing.Size(178, 39);
+            this.btnNewLoadBalancer.TabIndex = 3;
+            this.btnNewLoadBalancer.Text = "Load Balancer";
+            this.btnNewLoadBalancer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewLoadBalancer.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNewLoadBalancer.UseVisualStyleBackColor = true;
+            this.btnNewLoadBalancer.Click += new System.EventHandler(this.btnNewLoadBalancer_Click);
             // 
             // imageList1
             // 
@@ -111,6 +113,21 @@ namespace MigAz.Azure.UserControls
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
             this.imageList1.Images.SetKeyName(10, "RouteTable");
             this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
+            // 
+            // btnNewStorageAccount
+            // 
+            this.btnNewStorageAccount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewStorageAccount.ImageKey = "StorageAccount";
+            this.btnNewStorageAccount.ImageList = this.imageList1;
+            this.btnNewStorageAccount.Location = new System.Drawing.Point(1, 135);
+            this.btnNewStorageAccount.Name = "btnNewStorageAccount";
+            this.btnNewStorageAccount.Size = new System.Drawing.Size(178, 39);
+            this.btnNewStorageAccount.TabIndex = 2;
+            this.btnNewStorageAccount.Text = "Storage Account";
+            this.btnNewStorageAccount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewStorageAccount.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNewStorageAccount.UseVisualStyleBackColor = true;
+            this.btnNewStorageAccount.Click += new System.EventHandler(this.btnNewStorageAccount_Click);
             // 
             // btnNewPublicIp
             // 
@@ -151,20 +168,20 @@ namespace MigAz.Azure.UserControls
             this.lblAddNew.TabIndex = 61;
             this.lblAddNew.Text = "Add New:";
             // 
-            // btnNewLoadBalancer
+            // btnNewVirtualNetwork
             // 
-            this.btnNewLoadBalancer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewLoadBalancer.ImageKey = "LoadBalancer";
-            this.btnNewLoadBalancer.ImageList = this.imageList1;
-            this.btnNewLoadBalancer.Location = new System.Drawing.Point(1, 45);
-            this.btnNewLoadBalancer.Name = "btnNewLoadBalancer";
-            this.btnNewLoadBalancer.Size = new System.Drawing.Size(178, 39);
-            this.btnNewLoadBalancer.TabIndex = 3;
-            this.btnNewLoadBalancer.Text = "Load Balancer";
-            this.btnNewLoadBalancer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewLoadBalancer.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewLoadBalancer.UseVisualStyleBackColor = true;
-            this.btnNewLoadBalancer.Click += new System.EventHandler(this.btnNewLoadBalancer_Click);
+            this.btnNewVirtualNetwork.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewVirtualNetwork.ImageKey = "VirtualNetwork";
+            this.btnNewVirtualNetwork.ImageList = this.imageList1;
+            this.btnNewVirtualNetwork.Location = new System.Drawing.Point(0, 180);
+            this.btnNewVirtualNetwork.Name = "btnNewVirtualNetwork";
+            this.btnNewVirtualNetwork.Size = new System.Drawing.Size(178, 39);
+            this.btnNewVirtualNetwork.TabIndex = 4;
+            this.btnNewVirtualNetwork.Text = "Virutal Network";
+            this.btnNewVirtualNetwork.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewVirtualNetwork.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNewVirtualNetwork.UseVisualStyleBackColor = true;
+            this.btnNewVirtualNetwork.Click += new System.EventHandler(this.btnNewVirtualNetwork_Click);
             // 
             // TargetTreeView
             // 
@@ -195,6 +212,7 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Button btnNewStorageAccount;
         private System.Windows.Forms.Button btnNewPublicIp;
         private System.Windows.Forms.Button btnNewLoadBalancer;
+        private System.Windows.Forms.Button btnNewVirtualNetwork;
     }
 }
 

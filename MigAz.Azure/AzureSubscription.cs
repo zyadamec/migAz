@@ -740,7 +740,7 @@ namespace MigAz.Azure
                     foreach (var location in locations)
                     {
                         Arm.Location armLocation = new Arm.Location(this, location);
-                        armLocation.InitializeChildrenAsync(azureContext);
+                        await armLocation.InitializeChildrenAsync(azureContext);
                         _ArmLocations.Add(armLocation);
 
                         azureContext.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());
@@ -748,22 +748,6 @@ namespace MigAz.Azure
                 }
             }
 
-            if (azureContext.IncludePreviewRegions)
-            {
-                azureContext.LogProvider.WriteLog("GetAzureARMLocations", "France preview regions added by code");
-
-                // Add Preview Location for France Central (centered on Eiffel Tower)
-                var franceCentralJson = "{ \"id\": \"/subscriptions/" + azureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francecentral\", \"name\": \"francecentral\",  \"displayName\": \"France Central\",  \"longitude\": \"2.294\",  \"latitude\": \"48.858\"}";
-                var lfc = JToken.Parse(franceCentralJson);
-                _ArmLocations.Add(new Arm.Location(this, lfc));
-
-                // Add Preview Location for France South (centered on If Castle)
-                var franceSouthJson = "{ \"id\": \"/subscriptions/" + azureContext.AzureSubscription.SubscriptionId.ToString("D") + "/locations/francesouth\", \"name\": \"francesouth\",  \"displayName\": \"France South\",  \"longitude\": \"5.325126\",  \"latitude\": \"43.279841\"}";
-                var lfs = JToken.Parse(franceSouthJson);
-                _ArmLocations.Add(new Arm.Location(this, lfs));
-
-            }
-             
             List<Task> armLocationChildTasks = new List<Task>();
             foreach (Arm.Location armLocation in _ArmLocations)
             {

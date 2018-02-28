@@ -70,6 +70,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public LoadBalancer()
         {
+            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
         }
 
         public LoadBalancerType LoadBalancerType

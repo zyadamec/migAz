@@ -36,8 +36,8 @@ namespace MigAz.Azure.UserControls
             this.label2 = new System.Windows.Forms.Label();
             this.rbExistingARMVNet = new System.Windows.Forms.RadioButton();
             this.rbVNetInMigration = new System.Windows.Forms.RadioButton();
-            this.cmbExistingArmSubnet = new System.Windows.Forms.ComboBox();
-            this.cmbExistingArmVNets = new System.Windows.Forms.ComboBox();
+            this.cmbSubnet = new System.Windows.Forms.ComboBox();
+            this.cmbVirtualNetwork = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbAllocationMethod = new System.Windows.Forms.ComboBox();
@@ -47,30 +47,27 @@ namespace MigAz.Azure.UserControls
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(2, 82);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Location = new System.Drawing.Point(3, 126);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.Size = new System.Drawing.Size(115, 20);
             this.label8.TabIndex = 36;
             this.label8.Text = "Target Subnet:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(2, 54);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Location = new System.Drawing.Point(3, 83);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(68, 13);
+            this.label7.Size = new System.Drawing.Size(99, 20);
             this.label7.TabIndex = 35;
             this.label7.Text = "Target VNet:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(2, 2);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(3, 3);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(61, 13);
+            this.label2.Size = new System.Drawing.Size(88, 20);
             this.label2.TabIndex = 34;
             this.label2.Text = "Migrate To:";
             // 
@@ -78,10 +75,9 @@ namespace MigAz.Azure.UserControls
             // 
             this.rbExistingARMVNet.AutoSize = true;
             this.rbExistingARMVNet.Enabled = false;
-            this.rbExistingARMVNet.Location = new System.Drawing.Point(87, 25);
-            this.rbExistingARMVNet.Margin = new System.Windows.Forms.Padding(2);
+            this.rbExistingARMVNet.Location = new System.Drawing.Point(130, 38);
             this.rbExistingARMVNet.Name = "rbExistingARMVNet";
-            this.rbExistingARMVNet.Size = new System.Drawing.Size(143, 17);
+            this.rbExistingARMVNet.Size = new System.Drawing.Size(210, 24);
             this.rbExistingARMVNet.TabIndex = 31;
             this.rbExistingARMVNet.Text = "Existing VNet in Location";
             this.rbExistingARMVNet.UseVisualStyleBackColor = true;
@@ -90,54 +86,49 @@ namespace MigAz.Azure.UserControls
             // rbVNetInMigration
             // 
             this.rbVNetInMigration.AutoSize = true;
-            this.rbVNetInMigration.Location = new System.Drawing.Point(87, 2);
-            this.rbVNetInMigration.Margin = new System.Windows.Forms.Padding(2);
+            this.rbVNetInMigration.Location = new System.Drawing.Point(130, 3);
             this.rbVNetInMigration.Name = "rbVNetInMigration";
-            this.rbVNetInMigration.Size = new System.Drawing.Size(138, 17);
+            this.rbVNetInMigration.Size = new System.Drawing.Size(203, 24);
             this.rbVNetInMigration.TabIndex = 30;
             this.rbVNetInMigration.Text = "VNet in MigAz Migration";
             this.rbVNetInMigration.UseVisualStyleBackColor = true;
             this.rbVNetInMigration.CheckedChanged += new System.EventHandler(this.rbVNetInMigration_CheckedChanged);
             // 
-            // cmbExistingArmSubnet
+            // cmbSubnet
             // 
-            this.cmbExistingArmSubnet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbExistingArmSubnet.FormattingEnabled = true;
-            this.cmbExistingArmSubnet.Location = new System.Drawing.Point(87, 78);
-            this.cmbExistingArmSubnet.Margin = new System.Windows.Forms.Padding(2);
-            this.cmbExistingArmSubnet.Name = "cmbExistingArmSubnet";
-            this.cmbExistingArmSubnet.Size = new System.Drawing.Size(216, 21);
-            this.cmbExistingArmSubnet.TabIndex = 33;
-            this.cmbExistingArmSubnet.SelectedIndexChanged += new System.EventHandler(this.cmbExistingArmSubnet_SelectedIndexChanged);
+            this.cmbSubnet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSubnet.FormattingEnabled = true;
+            this.cmbSubnet.Location = new System.Drawing.Point(130, 120);
+            this.cmbSubnet.Name = "cmbSubnet";
+            this.cmbSubnet.Size = new System.Drawing.Size(322, 28);
+            this.cmbSubnet.TabIndex = 33;
+            this.cmbSubnet.SelectedIndexChanged += new System.EventHandler(this.cmbSubnet_SelectedIndexChanged);
             // 
-            // cmbExistingArmVNets
+            // cmbVirtualNetwork
             // 
-            this.cmbExistingArmVNets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbExistingArmVNets.FormattingEnabled = true;
-            this.cmbExistingArmVNets.Location = new System.Drawing.Point(87, 52);
-            this.cmbExistingArmVNets.Margin = new System.Windows.Forms.Padding(2);
-            this.cmbExistingArmVNets.Name = "cmbExistingArmVNets";
-            this.cmbExistingArmVNets.Size = new System.Drawing.Size(216, 21);
-            this.cmbExistingArmVNets.TabIndex = 32;
-            this.cmbExistingArmVNets.SelectedIndexChanged += new System.EventHandler(this.cmbExistingArmVNets_SelectedIndexChanged);
+            this.cmbVirtualNetwork.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbVirtualNetwork.FormattingEnabled = true;
+            this.cmbVirtualNetwork.Location = new System.Drawing.Point(130, 80);
+            this.cmbVirtualNetwork.Name = "cmbVirtualNetwork";
+            this.cmbVirtualNetwork.Size = new System.Drawing.Size(322, 28);
+            this.cmbVirtualNetwork.TabIndex = 32;
+            this.cmbVirtualNetwork.SelectedIndexChanged += new System.EventHandler(this.cmbVirtualNetwork_SelectedIndexChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(0, 132);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Location = new System.Drawing.Point(0, 203);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(50, 13);
+            this.label9.Size = new System.Drawing.Size(73, 20);
             this.label9.TabIndex = 41;
             this.label9.Text = "Static IP:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 108);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(3, 166);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.Size = new System.Drawing.Size(82, 20);
             this.label1.TabIndex = 39;
             this.label1.Text = "Allocation:";
             // 
@@ -148,24 +139,24 @@ namespace MigAz.Azure.UserControls
             this.cmbAllocationMethod.Items.AddRange(new object[] {
             "Dynamic",
             "Static"});
-            this.cmbAllocationMethod.Location = new System.Drawing.Point(87, 104);
-            this.cmbAllocationMethod.Margin = new System.Windows.Forms.Padding(2);
+            this.cmbAllocationMethod.Location = new System.Drawing.Point(130, 160);
             this.cmbAllocationMethod.Name = "cmbAllocationMethod";
-            this.cmbAllocationMethod.Size = new System.Drawing.Size(216, 21);
+            this.cmbAllocationMethod.Size = new System.Drawing.Size(322, 28);
             this.cmbAllocationMethod.TabIndex = 38;
             this.cmbAllocationMethod.SelectedIndexChanged += new System.EventHandler(this.cmbAllocationMethod_SelectedIndexChanged);
             // 
             // txtStaticIp
             // 
             this.txtStaticIp.Enabled = false;
-            this.txtStaticIp.Location = new System.Drawing.Point(87, 130);
+            this.txtStaticIp.Location = new System.Drawing.Point(130, 200);
+            this.txtStaticIp.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.txtStaticIp.Name = "txtStaticIp";
-            this.txtStaticIp.Size = new System.Drawing.Size(100, 20);
+            this.txtStaticIp.Size = new System.Drawing.Size(150, 31);
             this.txtStaticIp.TabIndex = 42;
             // 
             // NetworkSelectionControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtStaticIp);
             this.Controls.Add(this.label9);
@@ -176,10 +167,11 @@ namespace MigAz.Azure.UserControls
             this.Controls.Add(this.label2);
             this.Controls.Add(this.rbExistingARMVNet);
             this.Controls.Add(this.rbVNetInMigration);
-            this.Controls.Add(this.cmbExistingArmSubnet);
-            this.Controls.Add(this.cmbExistingArmVNets);
+            this.Controls.Add(this.cmbSubnet);
+            this.Controls.Add(this.cmbVirtualNetwork);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "NetworkSelectionControl";
-            this.Size = new System.Drawing.Size(310, 163);
+            this.Size = new System.Drawing.Size(465, 251);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -192,8 +184,8 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton rbExistingARMVNet;
         private System.Windows.Forms.RadioButton rbVNetInMigration;
-        private System.Windows.Forms.ComboBox cmbExistingArmSubnet;
-        private System.Windows.Forms.ComboBox cmbExistingArmVNets;
+        private System.Windows.Forms.ComboBox cmbSubnet;
+        private System.Windows.Forms.ComboBox cmbVirtualNetwork;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbAllocationMethod;
