@@ -740,7 +740,7 @@ namespace MigAz.Azure
                     foreach (var location in locations)
                     {
                         Arm.Location armLocation = new Arm.Location(this, location);
-                        armLocation.InitializeChildrenAsync(azureContext);
+                        await armLocation.InitializeChildrenAsync(azureContext);
                         _ArmLocations.Add(armLocation);
 
                         azureContext.LogProvider.WriteLog("GetAzureARMLocations", "Created Arm Location " + armLocation.ToString());

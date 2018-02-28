@@ -19,7 +19,7 @@ namespace MigAz.Azure.MigrationTarget
         List<string> _AddressPrefixes = new List<string>();
         List<string> _DnsServers = new List<string>();
 
-        private VirtualNetwork() { }
+        public VirtualNetwork() { }
 
         public VirtualNetwork(Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
         {
