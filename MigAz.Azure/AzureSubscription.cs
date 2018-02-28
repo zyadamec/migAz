@@ -92,7 +92,7 @@ namespace MigAz.Azure
         public async Task InitializeChildrenAsync(bool useCache = false)
         {
             _ArmProviders = await this.GetResourceManagerProviders(useCache);
-            _ArmLocations = await this.GetAzureARMLocations();
+            _ArmLocations = await this.InitializeARMLocations();
         }
 
         #endregion
@@ -711,11 +711,11 @@ namespace MigAz.Azure
             }
         }
 
-        public async virtual Task<List<Arm.Location>> GetAzureARMLocations()
+        private async Task<List<Arm.Location>> InitializeARMLocations()
         {
             AzureContext azureContext = this.AzureTenant.AzureContext;
 
-            this.LogProvider.WriteLog("GetAzureARMLocations", "Start");
+            this.LogProvider.WriteLog("InitializeARMLocations", "Start");
 
             if (_ArmLocations != null)
                 return _ArmLocations;
@@ -1438,16 +1438,18 @@ namespace MigAz.Azure
             return null;
         }
 
-        public async Task<Arm.Location> GetAzureARMLocation(string location)
+        public Arm.Location GetAzureARMLocation(string location)
         {
             if (location == null || location.Length == 0)
                 throw new ArgumentException("Location parameter must be provided.");
 
-            List<Arm.Location> armLocations = await this.GetAzureARMLocations();
-            Arm.Location matchedLocation = armLocations.Where(a => a.DisplayName == location).FirstOrDefault();
+            if (_ArmLocations == null)
+                return null;
+
+            Arm.Location matchedLocation = _ArmLocations.Where(a => a.DisplayName == location).FirstOrDefault();
 
             if (matchedLocation == null)
-                matchedLocation = armLocations.Where(a => a.Name == location).FirstOrDefault();
+                matchedLocation = _ArmLocations.Where(a => a.Name == location).FirstOrDefault();
 
             return matchedLocation;
         }

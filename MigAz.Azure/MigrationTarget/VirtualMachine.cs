@@ -53,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
             #region Seek ARM Target Size
 
             // Get ARM Based Location (that matches location of Source ASM VM
-            Arm.Location armLocation = virtualMachine.AzureSubscription.GetAzureARMLocation(virtualMachine.Location).Result;
+            Arm.Location armLocation = virtualMachine.AzureSubscription.GetAzureARMLocation(virtualMachine.Location);
             if (armLocation != null)
             {
                 this.TargetSize = armLocation.SeekVmSize(virtualMachine.RoleSize.Name);

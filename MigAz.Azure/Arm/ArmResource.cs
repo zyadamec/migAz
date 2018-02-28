@@ -28,7 +28,7 @@ namespace MigAz.Azure.Arm
             this.ResourceGroup = await this.AzureSubscription.GetAzureARMResourceGroup(this.Id);
 
             if (this.LocationString != null && this.LocationString.Length > 0)
-                this.Location = await this.AzureSubscription.GetAzureARMLocation(this.LocationString);
+                this.Location = this.AzureSubscription.GetAzureARMLocation(this.LocationString);
 
             return;
         }
