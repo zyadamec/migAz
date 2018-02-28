@@ -40,7 +40,6 @@ namespace MigAz.Azure.UserControls
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.cboTenant = new System.Windows.Forms.ComboBox();
-            this.ckbIncludePreviewRegions = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lblAuthenticatedUser
@@ -147,23 +146,10 @@ namespace MigAz.Azure.UserControls
             this.cboTenant.TabIndex = 61;
             this.cboTenant.SelectedIndexChanged += new System.EventHandler(this.cboTenant_SelectedIndexChanged);
             // 
-            // ckbIncludePreviewRegions
-            // 
-            this.ckbIncludePreviewRegions.AutoSize = true;
-            this.ckbIncludePreviewRegions.Location = new System.Drawing.Point(525, 12);
-            this.ckbIncludePreviewRegions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ckbIncludePreviewRegions.Name = "ckbIncludePreviewRegions";
-            this.ckbIncludePreviewRegions.Size = new System.Drawing.Size(264, 24);
-            this.ckbIncludePreviewRegions.TabIndex = 63;
-            this.ckbIncludePreviewRegions.Text = "Include preview regions (France)";
-            this.ckbIncludePreviewRegions.UseVisualStyleBackColor = true;
-            this.ckbIncludePreviewRegions.CheckedChanged += new System.EventHandler(this.ckbIncludePreviewRegions_CheckedChanged);
-            // 
             // AzureArmLoginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.ckbIncludePreviewRegions);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cboTenant);
             this.Controls.Add(this.lblSubscriptions);
@@ -173,7 +159,7 @@ namespace MigAz.Azure.UserControls
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblAuthenticatedUser);
             this.Controls.Add(this.label2);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "AzureArmLoginControl";
             this.Size = new System.Drawing.Size(878, 214);
             this.ResumeLayout(false);
@@ -192,7 +178,6 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cboTenant;
-        private System.Windows.Forms.CheckBox ckbIncludePreviewRegions;
     }
 }
 
