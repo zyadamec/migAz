@@ -99,9 +99,9 @@ namespace MigAz.Azure.UserControls
                     lblTargetLocationRequired.Visible = true;
                 }
 
-                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView, virtualMachine.ToString(), virtualMachine.ImageKey, true, true, _TargetTreeView.ExportArtifacts.AvailablitySets);
-                osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView, virtualMachine.OSVirtualHardDisk.ToString(), virtualMachine.OSVirtualHardDisk.ImageKey, false, false, null);
-                primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView, virtualMachine.PrimaryNetworkInterface.ToString(), virtualMachine.PrimaryNetworkInterface.ImageKey, false, false, null);
+                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView, true, true, _TargetTreeView.ExportArtifacts.AvailablitySets);
+                osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView, false, false, null);
+                primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView, false, false, null);
 
                 foreach (Disk targetDisk in virtualMachine.DataDisks)
                 {

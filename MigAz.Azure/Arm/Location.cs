@@ -94,7 +94,7 @@ namespace MigAz.Azure.Arm
             }
             else
             {
-                if (_ArmVmSizes != null)
+                if (_ArmVmSizes == null)
                 {
                     AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
 

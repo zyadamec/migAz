@@ -91,7 +91,7 @@ namespace MigAz.Azure
 
         public async Task InitializeChildrenAsync(bool useCache = false)
         {
-            _ArmLocations = await this.InitializeARMLocations();
+            await this.InitializeARMLocations();
             _ArmProviders = await this.GetResourceManagerProviders(useCache);
 
             List<Task> armLocationChildTasks = new List<Task>();
@@ -720,15 +720,14 @@ namespace MigAz.Azure
             }
         }
 
-        private async Task<List<Arm.Location>> InitializeARMLocations()
+        private async Task InitializeARMLocations()
         {
             AzureContext azureContext = this.AzureTenant.AzureContext;
 
             this.LogProvider.WriteLog("InitializeARMLocations", "Start");
 
-                if (_ArmLocations != null)
-                    return _ArmLocations;
-
+            if (_ArmLocations == null)
+            {
                 JObject locationsJson = await this.GetAzureARMResources("Locations", null, null);
 
                 _ArmLocations = new List<Arm.Location>();
@@ -738,22 +737,18 @@ namespace MigAz.Azure
                     var locations = from location in locationsJson["value"]
                                     select location;
 
-                if (locations != null)
-                {
-                    foreach (var location in locations)
+                    if (locations != null)
                     {
-                        Arm.Location armLocation = new Arm.Location(this, location);
-                        _ArmLocations.Add(armLocation);
+                        foreach (var location in locations)
+                        {
+                            Arm.Location armLocation = new Arm.Location(this, location);
+                            _ArmLocations.Add(armLocation);
 
-                        this.LogProvider.WriteLog("GetAzureARMLocations", "Instantiated Arm Location " + armLocation.ToString());
+                            this.LogProvider.WriteLog("GetAzureARMLocations", "Instantiated Arm Location " + armLocation.ToString());
+                        }
                     }
                 }
             }
-
-            }
-            catch (Exception exc) { }
-
-            return _ArmLocations;
         }
 
         #region ASM Methods

@@ -20,7 +20,6 @@ namespace MigAz.Azure.UserControls
         private bool _IsBinding = false;
         private T _MigrationTarget;
         private TargetTreeView _TargetTreeView;
-        private String _ImageKey = null;
 
         public delegate Task AfterMigrationTargetChangedHandler<T>(ResourceSummary<T> sender, T selectedResource);
         public event AfterMigrationTargetChangedHandler<T> AfterMigrationTargetChanged;
@@ -38,7 +37,7 @@ namespace MigAz.Azure.UserControls
         }
 
 
-        public void Bind(T migrationTarget, TargetTreeView targetTreeView, String resourceText, String imageKey = null, bool allowSelection = false, bool allowNone = false, List<T> allowedResources = null)
+        public void Bind(T migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false, List<T> allowedResources = null)
         {
             _IsBinding = true;
 
@@ -46,7 +45,6 @@ namespace MigAz.Azure.UserControls
             {
                 _MigrationTarget = migrationTarget;
                 _TargetTreeView = targetTreeView;
-                _ImageKey = imageKey;
 
                 if (allowSelection)
                 {
@@ -90,12 +88,14 @@ namespace MigAz.Azure.UserControls
 
                     pictureBox1.Visible = migrationTarget != null;
                     lblResourceText.Visible = migrationTarget != null;
-                    lblResourceText.Text = resourceText;
+
+                    if (migrationTarget == null)
+                        lblResourceText.Text = "(None)";
+                    else
+                        lblResourceText.Text = migrationTarget.ToString();
                 }
 
-                if (_ImageKey != null)
-                    pictureBox1.Image = _TargetTreeView.ImageList.Images[_ImageKey];
-
+                pictureBox1.Image = _TargetTreeView.ImageList.Images[Core.MigrationTarget.GetImageKey(typeof(T))];
             }
             finally
             {
