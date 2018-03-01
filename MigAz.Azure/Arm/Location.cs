@@ -31,7 +31,7 @@ namespace MigAz.Azure.Arm
 
         internal async Task InitializeChildrenAsync()
         {
-            await this.LoadAzureARMVMSizes();
+            await this.InitializeARMVMSizes();
         }
 
         #endregion
@@ -78,48 +78,54 @@ namespace MigAz.Azure.Arm
 
         #region Methods
 
-        private async Task<List<VMSize>> LoadAzureARMVMSizes()
+        private async Task InitializeARMVMSizes()
         {
             AzureContext azureContext = this.AzureSubscription.AzureTenant.AzureContext;
+            azureContext.LogProvider.WriteLog("InitializeARMVMSizes", "Start - Location : " + this.Name);
 
-            azureContext.LogProvider.WriteLog("GetAzureARMLocationVMSizes", "Start - Location : " + this.Name);
-
-            if (_ArmVmSizes != null)
-                return _ArmVmSizes;
-
-            if (azureContext == null)
-                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
-            if (azureContext.TokenProvider == null)
-                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-
-            AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
-
-
-            // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-            string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
-            azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure VMSizes Location : " + this.ToString());
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
-            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
-
-            azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
-
-            var VMSizes = from VMSize in locationsVMSizesJson["value"]
-                            select VMSize;
-
-            List<VMSize> vmSizes = new List<VMSize>();
-            foreach (var VMSize in VMSizes)
+            ProviderResourceType provideResourceType = this.AzureSubscription.GetProviderResourceType(ArmConst.MicrosoftCompute, "locations/vmSizes");
+            if (provideResourceType == null)
             {
-                Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                vmSizes.Add(armVMSize);
+                azureContext.LogProvider.WriteLog("InitializeARMVMSizes", "Unable to locate Provider Resource Type - Provider : '" + ArmConst.MicrosoftCompute + "' Resource Type: '" + "locations/vmSizes" + "'");
+            }
+            else if (!provideResourceType.IsLocationSupported(this))
+            {
+                azureContext.LogProvider.WriteLog("InitializeARMVMSizes", "Provider Resource Type not supported in Location. - Provider : '" + ArmConst.MicrosoftCompute + "' Resource Type: '" + "locations/vmSizes" + "' Location: '" + this.ToString() + "'");
+            }
+            else
+            {
+                if (_ArmVmSizes == null)
+                {
+                    AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
+
+                    // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
+                    string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
+                    azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM VMSizes Location : " + this.ToString());
+
+                    AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+                    AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+                    JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
+
+                    azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
+
+                    var VMSizes = from VMSize in locationsVMSizesJson["value"]
+                                  select VMSize;
+
+                    List<VMSize> vmSizes = new List<VMSize>();
+                    foreach (var VMSize in VMSizes)
+                    {
+                        Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
+                        vmSizes.Add(armVMSize);
+
+                        azureContext.StatusProvider.UpdateStatus("BUSY: Instantiated VMSize '" + armVMSize.ToString() +"' for Location: " + this.ToString());
+                    }
+
+                    _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
+                }
             }
 
-            _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
-
+            azureContext.LogProvider.WriteLog("InitializeARMVMSizes", "End - Location : " + this.Name);
             azureContext.StatusProvider.UpdateStatus("Ready");
-
-            return _ArmVmSizes;
         }
 
         public VMSize SeekVmSize(string name)

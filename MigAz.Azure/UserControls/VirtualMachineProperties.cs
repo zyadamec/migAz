@@ -99,18 +99,18 @@ namespace MigAz.Azure.UserControls
                     lblTargetLocationRequired.Visible = true;
                 }
 
-                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView);
-                osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView);
-                primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView);
+                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView, true, true, _TargetTreeView.ExportArtifacts.AvailablitySets);
+                osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView, false, false, null);
+                primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView, false, false, null);
 
-                foreach (Azure.MigrationTarget.Disk targetDisk in virtualMachine.DataDisks)
+                foreach (Disk targetDisk in virtualMachine.DataDisks)
                 {
-                    AddResourceSummary(new ResourceSummary(targetDisk, targetTreeView));
+                    AddResourceSummary(new ResourceSummary<Disk>(targetDisk, targetTreeView));
                 }
-                foreach (Azure.MigrationTarget.NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
+                foreach (NetworkInterface targetNIC in virtualMachine.NetworkInterfaces)
                 {
                     if (!targetNIC.IsPrimary)
-                        AddResourceSummary(new ResourceSummary(targetNIC, targetTreeView));
+                        AddResourceSummary(new ResourceSummary<NetworkInterface>(targetNIC, targetTreeView));
                 }
 
                 label15.Visible = pictureBox1.Controls.Count > 0;
@@ -121,7 +121,16 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private void AddResourceSummary(ResourceSummary resourceSummary)
+        private void AddResourceSummary(ResourceSummary<Disk> resourceSummary)
+        {
+            if (pictureBox1.Controls.Count > 0)
+            {
+                resourceSummary.Top = pictureBox1.Controls[pictureBox1.Controls.Count - 1].Top + pictureBox1.Controls[pictureBox1.Controls.Count - 1].Height;
+            }
+
+            pictureBox1.Controls.Add(resourceSummary);
+        }
+        private void AddResourceSummary(ResourceSummary<NetworkInterface> resourceSummary)
         {
             if (pictureBox1.Controls.Count > 0)
             {
@@ -161,6 +170,14 @@ namespace MigAz.Azure.UserControls
             }
             else
                 _VirtualMachine.TargetSize = null;
+
+            if (!_IsBinding)
+                PropertyChanged?.Invoke();
+        }
+
+        private async Task availabilitySetSummary_AfterMigrationTargetChanged(ResourceSummary<MigrationTarget.AvailabilitySet> sender, MigrationTarget.AvailabilitySet selectedResource)
+        {
+            _VirtualMachine.TargetAvailabilitySet = selectedResource;
 
             if (!_IsBinding)
                 PropertyChanged?.Invoke();

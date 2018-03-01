@@ -122,7 +122,7 @@ namespace MigAz.Azure.UserControls
                 rbStorageAccountInMigration.Enabled = false;
             }
 
-            virtualMachineSummary.Bind(_TargetDisk.ParentVirtualMachine, _TargetTreeView);
+            virtualMachineSummary.Bind(_TargetDisk.ParentVirtualMachine, _TargetTreeView, false);
 
             _IsBinding = false;
         }

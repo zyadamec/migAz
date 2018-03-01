@@ -46,13 +46,13 @@ namespace MigAz.Azure.UserControls
             this.rbIPForwardingDisabled = new System.Windows.Forms.RadioButton();
             this.rbIPForwardingEnabled = new System.Windows.Forms.RadioButton();
             this.label13 = new System.Windows.Forms.Label();
-            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.VirtualMachine>();
             this.networkSelectionControl1 = new MigAz.Azure.UserControls.NetworkSelectionControl();
             this.label7 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary();
+            this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.NetworkSecurityGroup>();
             this.label8 = new System.Windows.Forms.Label();
-            this.resourceSummaryPublicIp = new MigAz.Azure.UserControls.ResourceSummary();
+            this.resourceSummaryPublicIp = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.PublicIp>();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -313,12 +313,12 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.RadioButton rbIPForwardingDisabled;
         private System.Windows.Forms.RadioButton rbIPForwardingEnabled;
         private System.Windows.Forms.Label label13;
-        private ResourceSummary virtualMachineSummary;
+        private ResourceSummary<MigrationTarget.VirtualMachine> virtualMachineSummary;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label2;
-        private ResourceSummary networkSecurityGroup;
+        private ResourceSummary<MigrationTarget.NetworkSecurityGroup> networkSecurityGroup;
         private System.Windows.Forms.Label label8;
-        private ResourceSummary resourceSummaryPublicIp;
+        private ResourceSummary<MigrationTarget.PublicIp> resourceSummaryPublicIp;
     }
 }
 

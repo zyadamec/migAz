@@ -27,6 +27,11 @@ namespace MigAz.Core
 
         public abstract string ImageKey { get; }
         public abstract string FriendlyObjectName { get; }
+
+        public static String GetImageKey(Type migrationType)
+        {
+            return migrationType.ToString().Substring(migrationType.ToString().LastIndexOf(".") + 1);
+        }
     }
 }
 

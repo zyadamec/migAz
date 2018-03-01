@@ -55,7 +55,7 @@ namespace MigAz.Azure.UserControls
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.txtTargetSize = new System.Windows.Forms.TextBox();
-            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.VirtualMachine>();
             this.label13 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -394,7 +394,7 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtTargetSize;
-        private ResourceSummary virtualMachineSummary;
+        private ResourceSummary<MigrationTarget.VirtualMachine> virtualMachineSummary;
         private System.Windows.Forms.Label label13;
     }
 }

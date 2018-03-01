@@ -763,55 +763,67 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private async void treeAzureResourcesSource_AfterCheck(object sender, TreeViewEventArgs e)
+
+        private async void treeAzureASM_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            //if (_SourceAsmNode == null)
-            //{
-            //    _SourceAsmNode = e.Node;
-            //}
+            if (_SourceAsmNode == null)
+            {
+                _SourceAsmNode = e.Node;
+            }
 
-            //if (e.Node.Checked)
-            //    await SelectDependencies(e.Node);
+            if (e.Node.Checked)
+                await SelectDependencies(e.Node);
 
-            //TreeNode resultUpdateARMTree = null;
+            TreeNode resultUpdateARMTree = null;
 
-            //Core.MigrationTarget migrationTarget = null;
-            //if (e.Node.Tag != null && e.Node.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
-            //{
-            //    migrationTarget = (Core.MigrationTarget)e.Node.Tag;
+            Core.MigrationTarget migrationTarget = null;
+            if (e.Node.Tag != null && e.Node.Tag.GetType().BaseType == typeof(Core.MigrationTarget))
+            {
+                migrationTarget = (Core.MigrationTarget)e.Node.Tag;
 
-            //    if (e.Node.Checked)
-            //    {
-            //        resultUpdateARMTree = e.Node;
-            //        AfterNodeChecked?.Invoke(migrationTarget);
-            //    }
-            //    else
-            //    {
-            //        AfterNodeUnchecked?.Invoke(migrationTarget);
-            //    }
-            //}
+                if (e.Node.Checked)
+                {
+                    resultUpdateARMTree = e.Node;
+                    AfterNodeChecked?.Invoke(migrationTarget);
+                }
+                else
+                {
+                    AfterNodeUnchecked?.Invoke(migrationTarget);
+                }
+            }
 
-            //if (_SourceAsmNode != null && _SourceAsmNode == e.Node)
-            //{
-            //    if (e.Node.Checked)
-            //    {
-            //        await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
-            //        FillUpIfFullDown(e.Node);
-            //        treeViewSourceResourceManager1.SelectedNode = e.Node;
-            //    }
-            //    else
-            //    {
-            //        await RecursiveCheckToggleUp(e.Node, e.Node.Checked);
-            //        await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
-            //    }
+            if (_SourceAsmNode != null && _SourceAsmNode == e.Node)
+            {
+                if (e.Node.Checked)
+                {
+                    await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                    FillUpIfFullDown(e.Node);
+                    treeAzureASM.SelectedNode = e.Node;
+                }
+                else
+                {
+                    await RecursiveCheckToggleUp(e.Node, e.Node.Checked);
+                    await RecursiveCheckToggleDown(e.Node, e.Node.Checked);
+                }
 
-            //    _SelectedNodes = this.GetSelectedNodes(treeViewSourceResourceManager1);
+                _SelectedNodes = this.GetSelectedNodes(treeAzureASM);
 
-            //    _SourceAsmNode = null;
+                _SourceAsmNode = null;
 
-            //    AfterNodeChanged?.Invoke(migrationTarget);
-            //}
+                AfterNodeChanged?.Invoke(migrationTarget);
+            }
         }
+
+        private List<TreeNode> GetSelectedNodes(TreeView treeView)
+        {
+            List<TreeNode> selectedNodes = new List<TreeNode>();
+            foreach (TreeNode treeNode in treeView.Nodes)
+            {
+                RecursiveNodeSelectedAdd(ref selectedNodes, treeNode);
+            }
+            return selectedNodes;
+        }
+
 
         private void RecursiveNodeSelectedAdd(ref List<TreeNode> selectedNodes, TreeNode parentNode)
         {
@@ -827,6 +839,35 @@ namespace MigAz.Azure.UserControls
             {
                 RecursiveNodeSelectedAdd(ref selectedNodes, childNode);
             }
+        }
+
+        private void FillUpIfFullDown(TreeNode node)
+        {
+            if (IsSelectedFullDown(node) && (node.Parent != null))
+            {
+                node = node.Parent;
+
+                while (node != null)
+                {
+                    if (AllChildrenChecked(node))
+                    {
+                        node.Checked = true;
+                        node = node.Parent;
+                    }
+                    else
+                        node = null;
+                }
+            }
+        }
+
+
+        private bool AllChildrenChecked(TreeNode node)
+        {
+            foreach (TreeNode childNode in node.Nodes)
+                if (!childNode.Checked)
+                    return false;
+
+            return true;
         }
 
         #endregion

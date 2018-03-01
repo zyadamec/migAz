@@ -200,8 +200,6 @@ namespace MigAz.Azure.UserControls
             {
                 AzureSubscription selectedSubscription = (AzureSubscription)cmbSender.SelectedItem;
 
-                await selectedSubscription.InitializeChildrenAsync();
-
                 if (_AzureContext.AzureSubscription != selectedSubscription)
                 {
                     await _AzureContext.SetSubscriptionContext((AzureSubscription)cmbSender.SelectedItem);

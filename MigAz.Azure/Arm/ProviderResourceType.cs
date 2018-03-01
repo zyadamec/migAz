@@ -15,10 +15,11 @@ namespace MigAz.Azure.Arm
         private JToken _ProviderResourceTypeToken;
         private Provider _Provider;
         private List<String> _ApiVersions;
+        private List<Location> _Locations;
 
         private ProviderResourceType() { }
 
-        public ProviderResourceType(JToken resourceToken, Provider provider)
+        public ProviderResourceType(Provider provider, JToken resourceToken)
         {
             _ProviderResourceTypeToken = resourceToken;
             _Provider = provider;
@@ -32,6 +33,17 @@ namespace MigAz.Azure.Arm
                 _ApiVersions.Add(apiVersion);
             }
 
+            _Locations = new List<Location>();
+            var locatinsJson = from locationJson in _ProviderResourceTypeToken["locations"]
+                                  select locationJson;
+
+            foreach (String locationString in locatinsJson)
+            {
+                Location resourceTypeLocation = this.Provider.AzureSubscription.GetAzureARMLocation(locationString);
+
+                if (resourceTypeLocation != null)
+                    _Locations.Add(resourceTypeLocation);
+            }
         }
 
         public Provider Provider
@@ -50,10 +62,16 @@ namespace MigAz.Azure.Arm
         public string ResourceType => (string)_ProviderResourceTypeToken["resourceType"];
 
         public List<String> ApiVersions => _ApiVersions;
+        public List<Location> Locations => _Locations;
 
         public override string ToString()
         {
             return this.ResourceType;
+        }
+
+        public bool IsLocationSupported(Location location)
+        {
+            return this.Locations.Contains(location);
         }
     }
 }

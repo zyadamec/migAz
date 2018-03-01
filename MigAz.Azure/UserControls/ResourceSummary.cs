@@ -11,65 +11,96 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
+using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class ResourceSummary : UserControl
+    public partial class ResourceSummary<T> : UserControl
     {
-        private Core.MigrationTarget _MigrationTarget;
+        private bool _IsBinding = false;
+        private T _MigrationTarget;
         private TargetTreeView _TargetTreeView;
+
+        public delegate Task AfterMigrationTargetChangedHandler<T>(ResourceSummary<T> sender, T selectedResource);
+        public event AfterMigrationTargetChangedHandler<T> AfterMigrationTargetChanged;
+
 
         public ResourceSummary()
         {
             InitializeComponent();
         }
 
-        public ResourceSummary(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView)
+        public ResourceSummary(T migrationTarget, TargetTreeView targetTreeView)
         {
             InitializeComponent();
             Bind(migrationTarget, targetTreeView);
         }
 
-        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false)
+
+        public void Bind(T migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false, List<T> allowedResources = null)
         {
-            _MigrationTarget = migrationTarget;
-            _TargetTreeView = targetTreeView;
+            _IsBinding = true;
 
-            if (_MigrationTarget != null && _TargetTreeView != null)
+            try
             {
-                pictureBox1.Image = _TargetTreeView.ImageList.Images[_MigrationTarget.ImageKey];
+                _MigrationTarget = migrationTarget;
+                _TargetTreeView = targetTreeView;
 
-                lblResourceText.Text = migrationTarget.ToString();
-
-                cmbResources.Items.Clear();
-                if (allowNone)
-                    cmbResources.Items.Add("(None)");
-
-                if (migrationTarget == null)
+                if (allowSelection)
                 {
-                    if (cmbResources.Items.Count > 0)
-                        cmbResources.SelectedIndex = 0;
+                    cmbResources.Enabled = allowSelection;
+                    cmbResources.Visible = allowSelection;
+                    lblResourceText.Enabled = !cmbResources.Enabled;
+                    lblResourceText.Visible = !cmbResources.Visible;
+
+                    cmbResources.Items.Clear();
+                    if (allowNone)
+                        cmbResources.Items.Add("(None)");
+
+                    if (allowedResources != null)
+                    {
+                        foreach (T allowedMigrationTargetResource in allowedResources)
+                        {
+                            cmbResources.Items.Add(allowedMigrationTargetResource);
+                        }
+                    }
+
+                    if (migrationTarget == null)
+                    {
+                        if (cmbResources.Items.Count > 0)
+                            cmbResources.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        int itemIndex = -1;
+                        if (cmbResources.Items.Contains(migrationTarget))
+                            itemIndex = cmbResources.Items.IndexOf(migrationTarget);
+                        else
+                            itemIndex = cmbResources.Items.Add(migrationTarget);
+
+                        if (itemIndex > -1)
+                            cmbResources.SelectedIndex = itemIndex;
+                    }
                 }
                 else
                 {
-                    int itemIndex = cmbResources.Items.Add(migrationTarget);
-                    cmbResources.SelectedIndex = itemIndex;
+                    cmbResources.Visible = false;
+
+                    pictureBox1.Visible = migrationTarget != null;
+                    lblResourceText.Visible = migrationTarget != null;
+
+                    if (migrationTarget == null)
+                        lblResourceText.Text = "(None)";
+                    else
+                        lblResourceText.Text = migrationTarget.ToString();
                 }
 
-                cmbResources.Enabled = allowSelection;
-                cmbResources.Visible = allowSelection;
-                lblResourceText.Enabled = !cmbResources.Enabled;
-                lblResourceText.Visible = !cmbResources.Visible;
+                pictureBox1.Image = _TargetTreeView.ImageList.Images[Core.MigrationTarget.GetImageKey(typeof(T))];
             }
-            else
+            finally
             {
-                pictureBox1.Visible = false;
-                lblResourceText.Visible = false;
-                cmbResources.Visible = false;
+                _IsBinding = false;
             }
-
-
-            
         }
 
         private void ResourceSummary_Click(object sender, EventArgs e)
@@ -86,7 +117,23 @@ namespace MigAz.Azure.UserControls
 
         private void cmbResources_SelectedIndexChanged(object sender, EventArgs e)
         {
+            T selectedMigrationTargetResource = default(T);
 
+            if (cmbResources.SelectedItem != null && cmbResources.SelectedItem.GetType().BaseType == typeof(Core.MigrationTarget))
+                selectedMigrationTargetResource = (T)cmbResources.SelectedItem;
+
+            if (!_IsBinding)
+                AfterMigrationTargetChanged?.Invoke(this, selectedMigrationTargetResource);
+        }
+
+        internal class AfterMigrationTargetChangedHandler
+        {
+            private Func<ResourceSummary<AvailabilitySet>, AvailabilitySet, Task> availabilitySetSummary_AfterMigrationTargetChanged;
+
+            public AfterMigrationTargetChangedHandler(Func<ResourceSummary<AvailabilitySet>, AvailabilitySet, Task> availabilitySetSummary_AfterMigrationTargetChanged)
+            {
+                this.availabilitySetSummary_AfterMigrationTargetChanged = availabilitySetSummary_AfterMigrationTargetChanged;
+            }
         }
     }
 }

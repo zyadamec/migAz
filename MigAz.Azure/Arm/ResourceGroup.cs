@@ -25,7 +25,7 @@ namespace MigAz.Azure.Arm
 
         public async Task InitializeChildrenAsync()
         {
-            this.Location = await this.AzureSubscription.GetAzureARMLocation(this.LocationString);
+            this.Location = this.AzureSubscription.GetAzureARMLocation(this.LocationString);
         }
 
         private ResourceGroup() { }
