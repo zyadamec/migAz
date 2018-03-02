@@ -235,8 +235,6 @@ namespace MigAz.Azure.UserControls
 
                 if (sender.AzureSubscription != null)
                 {
-                    await sender.AzureSubscription.InitializeChildrenAsync(false);
-
                     switch (cmbAzureResourceTypeSource.SelectedItem.ToString())
                     {
                         case "Azure Service Management (ASM / Classic)":

@@ -195,9 +195,7 @@ namespace MigAz.Azure
                 _AzureSubscription = azureSubscription;
 
                 if (_AzureSubscription != null)
-                {
-                    await _AzureRetriever.SetSubscriptionContext(_AzureSubscription);
-                }
+                    await _AzureSubscription.InitializeChildrenAsync();
 
                 if (AfterAzureSubscriptionChange != null)
                     await AfterAzureSubscriptionChange?.Invoke(this);

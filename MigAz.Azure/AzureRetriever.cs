@@ -26,7 +26,6 @@ namespace MigAz.Azure
     {
         private AzureContext _AzureContext;
         private object _lockObject = new object();
-        private AzureSubscription _AzureSubscription = null;
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
         public event OnRestResultHandler OnRestResult;
@@ -39,11 +38,6 @@ namespace MigAz.Azure
         public AzureRetriever(AzureContext azureContext)
         {
             _AzureContext = azureContext;
-        }
-
-        public AzureSubscription SubscriptionContext
-        {
-            get { return _AzureSubscription; }
         }
 
         public void ClearCache()
@@ -88,12 +82,6 @@ namespace MigAz.Azure
         }
 
 
-
-        public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
-        {
-            _AzureSubscription = azureSubscription;
-        }
-        
         public async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
         {
             _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Url: " + azureRestRequest.Url);
