@@ -217,7 +217,7 @@ namespace MigAz.Azure.Forms
             }
         }
 
-        private void cboSubscription_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cboSubscription_SelectedIndexChanged(object sender, EventArgs e)
         {
             AzureSubscription selectedSubscription = (AzureSubscription)cboSubscription.SelectedItem;
             _AzureLoginContextViewer.AzureContext.SetSubscriptionContext(selectedSubscription);
