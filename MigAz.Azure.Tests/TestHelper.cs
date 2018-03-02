@@ -48,7 +48,6 @@ namespace MigAz.Tests
 
             List<AzureSubscription> subscriptions = tenants[0].Subscriptions;
             await azureContext.SetSubscriptionContext(subscriptions[0]);
-            await azureContext.AzureRetriever.SetSubscriptionContext(subscriptions[0]);
 
             return azureContext;
         }
