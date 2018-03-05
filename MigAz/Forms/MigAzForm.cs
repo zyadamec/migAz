@@ -889,6 +889,12 @@ namespace MigAz.Forms
 
         #endregion
 
+        private void menuitemAzureEnvironments_Click(object sender, EventArgs e)
+        {
+            AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
+            azureEnvironmentDialog.Bind(_AzureEnvironments);
+            azureEnvironmentDialog.ShowDialog();
+        }
     }
 }
 

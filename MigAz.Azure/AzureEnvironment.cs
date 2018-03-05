@@ -9,11 +9,25 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure
 {
+    public enum AzureEnvironmentType
+    {
+        Azure,
+        AzureStack
+    }
+
     public class AzureEnvironment
     {
         #region Constructors
 
-        public AzureEnvironment(String name,
+        public AzureEnvironment()
+        {
+            this.Name = "NewAzureEnvironment";
+            this.AzureEnvironmentType = AzureEnvironmentType.Azure;
+        }
+
+        public AzureEnvironment(
+            AzureEnvironmentType azureEnvironmentType,
+            String name,
             String azureLoginUrl,
             String graphApiUrl,
             String asmServiceManagementUrl, 
@@ -21,6 +35,7 @@ namespace MigAz.Azure
             String storageEndpointUrl,
             String blobEndpointUrl)
         {
+            this.AzureEnvironmentType = azureEnvironmentType;
             this.Name = name;
             this.ASMServiceManagementUrl = asmServiceManagementUrl;
             this.ARMServiceManagementUrl = armServiceManagementUrl;
@@ -32,6 +47,7 @@ namespace MigAz.Azure
 
         #endregion
 
+        public AzureEnvironmentType AzureEnvironmentType { get; set; }
         public String Name { get; set; }
         public String ASMServiceManagementUrl { get; set; }
         public String ARMServiceManagementUrl { get; set; }
@@ -51,6 +67,7 @@ namespace MigAz.Azure
 
             azureEnvironments.Add(
                 new AzureEnvironment(
+                    AzureEnvironmentType.Azure,
                     "AzureCloud",
                     "https://login.microsoftonline.com/", // logonUrl
                     "https://graph.windows.net/", //GraphUrl
@@ -63,6 +80,7 @@ namespace MigAz.Azure
             // China Endpoints - https://msdn.microsoft.com/en-us/library/azure/dn578439.aspx
             azureEnvironments.Add(
                 new AzureEnvironment(
+                    AzureEnvironmentType.Azure,
                     "AzureChinaCloud",
                     "https://login.chinacloudapi.cn/", // logonUrl
                     "https://graph.chinacloudapi.cn/", //GraphUrl
@@ -75,6 +93,7 @@ namespace MigAz.Azure
             // Germany Endpoints - https://blogs.msdn.microsoft.com/azuregermany/2016/08/18/endpoints-in-microsoft-cloud-germany/
             azureEnvironments.Add(
                 new AzureEnvironment(
+                    AzureEnvironmentType.Azure,
                     "AzureGermanCloud",
                     "https://login.microsoftonline.de/", // logonUrl
                     "https://graph.cloudapi.de/", //GraphUrl
@@ -87,6 +106,7 @@ namespace MigAz.Azure
             // US Gov Endpoints - https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-developer-guide
             azureEnvironments.Add(
                 new AzureEnvironment(
+                    AzureEnvironmentType.Azure,
                     "AzureUSGovernment",
                     "https://login-us.microsoftonline.com/", // logonUrl
                     "https://graph.windows.net/", //GraphUrl
