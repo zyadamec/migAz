@@ -57,7 +57,7 @@ If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
 		if ($copyblobdetail.SourceExpiration -ne $null)
 		{
 			$sourceExpirationDate = [datetime] $copyblobdetail.SourceExpiration
-			if ($sourceExpirationDate -le (Get-Date))
+			if ($sourceExpirationDate -le ((Get-Date).ToUniversalTime()))
 			{
 				$sourceExpirationValid = $false
 				$StartBlobCopyError = $true
@@ -65,7 +65,7 @@ If ($StartType -eq $null -or $StartType -eq "StartBlobCopy")
 			}
 			else
 			{
-			$TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
+				$TimeDiff = New-TimeSpan ((Get-Date).ToUniversalTime()) $sourceExpirationDate
 
 				Write-Host " - WARNING: '$($copyblobdetail.TargetBlob)' source access expires in $($TimeDiff.Minutes) minute(s) ($($sourceExpirationDate))." -ForegroundColor Yellow
 			}

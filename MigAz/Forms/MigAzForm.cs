@@ -435,7 +435,7 @@ namespace MigAz.Forms
                     azureTargetContext.TemplateGenerator.TargetSubscription = azureTargetContext.AzureContext.AzureSubscription;
                     azureTargetContext.TemplateGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
                     azureTargetContext.TemplateGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
-
+                    azureTargetContext.TemplateGenerator.OutputDirectory = this.txtDestinationFolder.Text;
                     await azureTargetContext.TemplateGenerator.GenerateStreams();
 
                     foreach (TabPage tabPage in tabOutputResults.TabPages)
