@@ -51,7 +51,7 @@ namespace MigAz.Azure.UserControls
             }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.LastUserInfo != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                 {
