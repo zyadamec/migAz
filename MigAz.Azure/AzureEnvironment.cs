@@ -40,6 +40,11 @@ namespace MigAz.Azure
         public String BlobEndpointUrl { get; set; }
         public String GraphApiUrl { get; set; }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
         public static List<AzureEnvironment> GetAzureEnvironments()
         {
             List<AzureEnvironment> azureEnvironments = new List<AzureEnvironment>();

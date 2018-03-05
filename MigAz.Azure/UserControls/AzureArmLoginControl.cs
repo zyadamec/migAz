@@ -3,6 +3,7 @@
 
 using MigAz.Core.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,11 +19,15 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task BindContext(AzureContext azureContext)
+        public async Task BindContext(AzureContext azureContext, List<AzureEnvironment> azureEnvironments)
         {
             _AzureContext = azureContext;
 
-            cboAzureEnvironment.SelectedItem = null;
+            cboAzureEnvironment.Items.Clear();
+            foreach (AzureEnvironment azureEnvironment in azureEnvironments)
+            {
+                cboAzureEnvironment.Items.Add(azureEnvironment);
+            }
 
             int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureContext.AzureEnvironment.ToString());
             if (environmentIndex >= 0)
@@ -107,7 +112,7 @@ namespace MigAz.Azure.UserControls
                 if (cboAzureEnvironment.SelectedItem == null)
                     _AzureContext.AzureEnvironment = _AzureContext.AzureEnvironment;
                 else
-                    _AzureContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
+                    _AzureContext.AzureEnvironment = (AzureEnvironment)cboAzureEnvironment.SelectedItem;
             }
 
             Application.DoEvents();

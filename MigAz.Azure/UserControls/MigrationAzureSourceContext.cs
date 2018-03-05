@@ -128,7 +128,7 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
+        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior, List<AzureEnvironment> azureEnvironments)
         {
             _TargetSettings = targetSettings;
             _LogProvider = logProvider;
@@ -146,7 +146,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
-            await azureLoginContextViewerSource.Bind(_AzureContextSource);
+            await azureLoginContextViewerSource.Bind(_AzureContextSource, azureEnvironments);
             await treeViewSourceResourceManager1.Bind(statusProvider, logProvider, targetSettings, imageList, promptBehavior);
         }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Forms;
@@ -28,6 +29,7 @@ namespace MigAz.Azure.UserControls
         private AzureContext _ExistingContext;
         private AzureLoginChangeType _ChangeType = AzureLoginChangeType.NewContext;
         private AzureContextSelectedType _AzureContextSelectedType = AzureContextSelectedType.ExistingContext;
+        private List<AzureEnvironment> _AzureEnvironments;
 
         public delegate Task AfterContextChangedHandler(AzureLoginContextViewer sender);
         public event AfterContextChangedHandler AfterContextChanged;
@@ -37,9 +39,11 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(AzureContext azureContext)
+        public async Task Bind(AzureContext azureContext, List<AzureEnvironment> azureEnvironments)
         {
             _AzureContext = azureContext;
+            _AzureEnvironments = azureEnvironments;
+
             _AzureContext.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContext.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;
             _AzureContext.UserAuthenticated += _AzureContext_UserAuthenticated;
@@ -162,14 +166,14 @@ namespace MigAz.Azure.UserControls
                 if (_ExistingContext == null)
                 {
                     AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
-                    await azureLoginContextDialog.InitializeDialog(_AzureContext);
+                    await azureLoginContextDialog.InitializeDialog(_AzureContext, _AzureEnvironments);
                     azureLoginContextDialog.ShowDialog();
                     azureLoginContextDialog.Dispose();
                 }
                 else
                 {
                     AzureNewOrExistingLoginContextDialog azureLoginContextDialog = new AzureNewOrExistingLoginContextDialog();
-                    await azureLoginContextDialog.InitializeDialog(this);
+                    await azureLoginContextDialog.InitializeDialog(this, _AzureEnvironments);
                     azureLoginContextDialog.ShowDialog();
                     azureLoginContextDialog.Dispose();
                 }
@@ -177,7 +181,7 @@ namespace MigAz.Azure.UserControls
             else if (_ChangeType == AzureLoginChangeType.NewContext)
             {
                 AzureLoginContextDialog azureLoginContextDialog = new AzureLoginContextDialog();
-                await azureLoginContextDialog.InitializeDialog(_AzureContext);
+                await azureLoginContextDialog.InitializeDialog(_AzureContext, _AzureEnvironments);
                 azureLoginContextDialog.ShowDialog();
                 azureLoginContextDialog.Dispose();
             }

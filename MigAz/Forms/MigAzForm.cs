@@ -658,7 +658,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior, this._AzureEnvironments);
 
                 azureControl.AzureContext.AzureEnvironment = GetDefaultAzureEnvironment();
 
@@ -766,7 +766,7 @@ namespace MigAz.Forms
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
-                await azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
+                await azureTargetContext.Bind(this.LogProvider, this.StatusProvider, this._AzureEnvironments);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
                 azureTargetContext.AfterAzureSubscriptionChange += AzureTargetContext_AfterAzureSubscriptionChange;
                 azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;

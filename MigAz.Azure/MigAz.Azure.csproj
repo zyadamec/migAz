@@ -111,7 +111,7 @@
     <Compile Include="Arm\VMSize.cs" />
     <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Asm\RoleSize.cs" />
-    <Compile Include="AzureEnvirinment.cs" />
+    <Compile Include="AzureEnvironment.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="AzureSubscriptionResourceCache.cs" />

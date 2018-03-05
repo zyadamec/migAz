@@ -19,19 +19,21 @@ namespace MigAz.Azure.Forms
     {
         private bool _IsInitializing = false;
         private AzureLoginContextViewer _AzureLoginContextViewer;
+        private List<AzureEnvironment> _AzureEnvironments;
 
         public AzureNewOrExistingLoginContextDialog()
         {
             InitializeComponent();
         }
 
-        public async Task InitializeDialog(AzureLoginContextViewer azureLoginContextViewer)
+        public async Task InitializeDialog(AzureLoginContextViewer azureLoginContextViewer, List<AzureEnvironment> azureEnvironments)
         {
             try {
                 _IsInitializing = true;
 
                 _AzureLoginContextViewer = azureLoginContextViewer;
-                await azureArmLoginControl1.BindContext(azureLoginContextViewer.AzureContext);
+                _AzureEnvironments = azureEnvironments;
+                await azureArmLoginControl1.BindContext(azureLoginContextViewer.AzureContext, azureEnvironments);
 
                 azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Start AzureSubscriptionContextDialog InitializeDialog");
 
@@ -154,7 +156,7 @@ namespace MigAz.Azure.Forms
                 }
             }
 
-            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);
+            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
             cboTenant.Enabled = rbSameUserDifferentSubscription.Checked;
             cboSubscription.Enabled = rbSameUserDifferentSubscription.Checked;
             _AzureLoginContextViewer.UpdateLabels();
@@ -170,7 +172,7 @@ namespace MigAz.Azure.Forms
                 _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.SelectAccount;
             }
 
-            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext);
+            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
 
             azureArmLoginControl1.Enabled = rbNewContext.Checked;
             _AzureLoginContextViewer.UpdateLabels();
