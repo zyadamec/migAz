@@ -187,15 +187,12 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
         {
-            //await _AzureContextTargetARM.CopyContext(_AzureContextSource);
-
             AfterAzureTenantChange?.Invoke(sender);
         }
 
         private async Task _AzureContext_BeforeAzureSubscriptionChange(AzureContext sender)
         {
             //await SaveSubscriptionSettings(sender.AzureSubscription);
-            //await _AzureContextTargetARM.SetSubscriptionContext(null);
 
             BeforeAzureSubscriptionChange?.Invoke(sender);
         }

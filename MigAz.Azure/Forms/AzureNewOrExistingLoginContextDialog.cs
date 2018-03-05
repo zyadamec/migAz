@@ -138,7 +138,7 @@ namespace MigAz.Azure.Forms
             _AzureLoginContextViewer.UpdateLabels();
         }
 
-        private void rbSameUserDifferentSubscription_CheckedChanged(object sender, EventArgs e)
+        private async void rbSameUserDifferentSubscription_CheckedChanged(object sender, EventArgs e)
         {
             if (!_IsInitializing)
             {
@@ -147,7 +147,7 @@ namespace MigAz.Azure.Forms
                     _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
                     _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
 
-                    _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
+                    await _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
 
                     if (cboTenant.SelectedIndex == -1 && cboTenant.Items.Count > 0)
                     {
@@ -156,13 +156,13 @@ namespace MigAz.Azure.Forms
                 }
             }
 
-            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
+            await azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
             cboTenant.Enabled = rbSameUserDifferentSubscription.Checked;
             cboSubscription.Enabled = rbSameUserDifferentSubscription.Checked;
             _AzureLoginContextViewer.UpdateLabels();
         }
 
-        private void rbNewContext_CheckedChanged(object sender, EventArgs e)
+        private async void rbNewContext_CheckedChanged(object sender, EventArgs e)
         {
             if (rbNewContext.Checked)
             {
@@ -172,7 +172,7 @@ namespace MigAz.Azure.Forms
                 _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.SelectAccount;
             }
 
-            azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
+            await azureArmLoginControl1.BindContext(_AzureLoginContextViewer.AzureContext, _AzureEnvironments);
 
             azureArmLoginControl1.Enabled = rbNewContext.Checked;
             _AzureLoginContextViewer.UpdateLabels();
@@ -222,7 +222,7 @@ namespace MigAz.Azure.Forms
         private async void cboSubscription_SelectedIndexChanged(object sender, EventArgs e)
         {
             AzureSubscription selectedSubscription = (AzureSubscription)cboSubscription.SelectedItem;
-            _AzureLoginContextViewer.AzureContext.SetSubscriptionContext(selectedSubscription);
+            await _AzureLoginContextViewer.AzureContext.SetSubscriptionContext(selectedSubscription);
         }
     }
 }

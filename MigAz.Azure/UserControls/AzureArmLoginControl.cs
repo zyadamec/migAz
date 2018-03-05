@@ -29,12 +29,16 @@ namespace MigAz.Azure.UserControls
                 cboAzureEnvironment.Items.Add(azureEnvironment);
             }
 
-            int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureContext.AzureEnvironment.ToString());
-            if (environmentIndex >= 0)
+            if (_AzureContext.AzureEnvironment != null)
             {
-                cboAzureEnvironment.SelectedIndex = environmentIndex;
+                int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureContext.AzureEnvironment.ToString());
+                if (environmentIndex >= 0)
+                {
+                    cboAzureEnvironment.SelectedIndex = environmentIndex;
+                }
             }
-            else
+
+            if (cboAzureEnvironment.SelectedIndex < 0)
                 cboAzureEnvironment.SelectedIndex = 0;
 
             if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.LastUserInfo == null)
