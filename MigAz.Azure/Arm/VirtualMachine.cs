@@ -26,7 +26,11 @@ namespace MigAz.Azure.Arm
         {
             if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
             {
-                _OSVirtualHardDisk = new ManagedDisk(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                // Find and Link to Managed Disk
+                string managedDiskId = ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"].ToString();
+                ManagedDisk osDisk = azureSubscription.SeekManagedDisk(managedDiskId);
+                osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                _OSVirtualHardDisk = osDisk;
             }
             else
             {
@@ -37,7 +41,11 @@ namespace MigAz.Azure.Arm
             {
                 if (dataDiskToken["vhd"] == null)
                 {
-                    _DataDisks.Add(new ManagedDisk(this, dataDiskToken));
+                    // Find and Link to Managed Disk
+                    string managedDiskId = dataDiskToken["managedDisk"]["id"].ToString();
+                    ManagedDisk dataDisk = azureSubscription.SeekManagedDisk(managedDiskId);
+                    dataDisk.SetParentVirtualMachine(this, dataDiskToken);
+                    _DataDisks.Add(dataDisk);
                 }
                 else
                 {

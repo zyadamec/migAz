@@ -19,13 +19,10 @@ namespace MigAz.Azure.Arm
     public class ManagedDisk : ArmResource, IArmDisk
     {
         private VirtualMachine _VirtualMachine;
+        private JToken _VirtualMachineJToken;
 
         private ManagedDisk() : base(null, null) { }
 
-        public ManagedDisk(VirtualMachine virtualMachine, JToken resourceToken) : base(virtualMachine.AzureSubscription, resourceToken)
-        {
-            _VirtualMachine = virtualMachine;
-        }
         public ManagedDisk(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
         }
@@ -40,6 +37,12 @@ namespace MigAz.Azure.Arm
         public VirtualMachine ParentVirtualMachine
         {
             get { return _VirtualMachine; }
+        }
+
+        internal void SetParentVirtualMachine(VirtualMachine virtualMachine, JToken jToken)
+        {
+            _VirtualMachine = virtualMachine;
+            _VirtualMachineJToken = jToken;
         }
 
         public string Type
@@ -216,6 +219,9 @@ namespace MigAz.Azure.Arm
                         //response2.EnsureSuccessStatusCode();
                         string responseString = await response2.Content.ReadAsStringAsync();
                         JObject responseJson = JObject.Parse(responseString);
+
+                        if (responseJson["status"] == null && this._VirtualMachine != null)
+                            throw new MigAzSASUrlException("Unable to obtain SAS Token for Disk '" + this.ToString() + "'.  Disk is attached to Virtual Machine '" + this._VirtualMachine.ToString() + "' which may be running.  MigAz can currently only obtain the SAS URL for the Managed Disk when the owning VM is stopped.  Please ensure VM is stopped.");
 
                         diskOperationStatus = responseJson["status"].ToString();
 

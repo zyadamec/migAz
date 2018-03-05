@@ -35,6 +35,24 @@ namespace MigAz.Azure
         private List<Arm.ResourceGroup> _ArmResourceGroups = new List<Arm.ResourceGroup>();
         private Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>> _ArmAvailabilitySets = new Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>> _ArmVirtualMachines = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>>();
+
+        internal Arm.ManagedDisk SeekManagedDisk(string managedDiskId)
+        {
+            if (_ArmManagedDisks == null)
+                return null;
+
+            foreach (List<Arm.ManagedDisk> managedDiskList in this._ArmManagedDisks.Values)
+            {
+                foreach (Arm.ManagedDisk managedDisk in managedDiskList)
+                {
+                    if (String.Compare(managedDisk.Id, managedDiskId, true) == 0)
+                        return managedDisk;
+                }
+            }
+
+            return null;
+        }
+
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachineImage>> _ArmVirtualMachineImages = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachineImage>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetwork>> _ArmVirtualNetworks = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetwork>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.NetworkSecurityGroup>> _ArmNetworkSecurityGroups = new Dictionary<Arm.ResourceGroup, List<Arm.NetworkSecurityGroup>>();

@@ -89,6 +89,7 @@
     <Compile Include="Arm\LoadBalancingRule.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
+    <Compile Include="Arm\MigAzSASUrlException.cs" />
     <Compile Include="Arm\NetworkInterface.cs" />
     <Compile Include="Arm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Arm\NetworkSecurityGroup.cs" />
