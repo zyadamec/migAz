@@ -10,7 +10,7 @@ namespace MigAz.Tests.Fakes
 {
     class FakeAzureSubscription : ISubscription
     {
-        private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
+        private AzureEnvironment _AzureEnvironment;
 
         public Guid SubscriptionId
         {

@@ -181,13 +181,13 @@ namespace MigAz.Azure.Arm
             string url = "/subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
 
-            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureServiceUrls.GetARMServiceManagementUrl(), azureContext.AzureSubscription.AzureAdTenantId);
+            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ARMServiceManagementUrl, azureContext.AzureSubscription.AzureAdTenantId);
 
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.BaseAddress = new Uri(azureContext.AzureServiceUrls.GetARMServiceManagementUrl());
+                client.BaseAddress = new Uri(azureContext.AzureEnvironment.ARMServiceManagementUrl);
 
                 if (azureContext != null && azureContext.LogProvider != null)
                     azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' PostAsync " + url + "");

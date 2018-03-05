@@ -111,6 +111,7 @@
     <Compile Include="Arm\VMSize.cs" />
     <Compile Include="Asm\NetworkInterfaceIpConfiguration.cs" />
     <Compile Include="Asm\RoleSize.cs" />
+    <Compile Include="AzureEnvirinment.cs" />
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="AzureSubscriptionResourceCache.cs" />
@@ -148,6 +149,7 @@
     </Compile>
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IArmDisk.cs" />
+    <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
@@ -221,7 +223,6 @@
     <Compile Include="AzureContext.cs" />
     <Compile Include="AzureDomain.cs" />
     <Compile Include="AzureRetriever.cs" />
-    <Compile Include="AzureServiceUrls.cs" />
     <Compile Include="AzureSubscription.cs" />
     <Compile Include="AzureTenant.cs" />
     <Compile Include="AzureTokenProvider.cs" />

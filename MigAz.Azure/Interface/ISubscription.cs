@@ -7,16 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MigAz.Core.Interface
+namespace MigAz.Azure.Interface
 {
-    public enum AzureEnvironment
-    {
-        AzureCloud,
-        AzureChinaCloud,
-        AzureGermanCloud,
-        AzureUSGovernment
-    }
-
     public interface ISubscription
     {
             Guid SubscriptionId { get; }

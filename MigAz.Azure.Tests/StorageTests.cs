@@ -32,7 +32,8 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\AsmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
+            AzureEnvironment azureEnvironment = AzureEnvironment.GetAzureEnvironments()[0];
+            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(azureEnvironment, restResponseFile);
             await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
             await azureContextUSCommercial.AzureSubscription.BindAsmResources(targetSettings);
 
@@ -66,7 +67,8 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\ArmObjectsOffline.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(restResponseFile);
+            AzureEnvironment azureEnvironment = AzureEnvironment.GetAzureEnvironments()[0];
+            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(azureEnvironment, restResponseFile);
             await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
             await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 
@@ -102,7 +104,8 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
+            AzureEnvironment azureEnvironment = AzureEnvironment.GetAzureEnvironments()[0];
+            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(azureEnvironment, restResponseFile);
             await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
             await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 
@@ -181,7 +184,8 @@ namespace MigAz.Tests
         {
             string restResponseFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestDocs\\NewTest1\\temp.json");
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(Core.Interface.AzureEnvironment.AzureCloud, restResponseFile);
+            AzureEnvironment azureEnvironment = AzureEnvironment.GetAzureEnvironments()[0];
+            AzureContext azureContextUSCommercial = await TestHelper.SetupAzureContext(azureEnvironment, restResponseFile);
             await azureContextUSCommercial.AzureSubscription.InitializeChildrenAsync(true);
             await azureContextUSCommercial.AzureSubscription.BindArmResources(targetSettings);
 

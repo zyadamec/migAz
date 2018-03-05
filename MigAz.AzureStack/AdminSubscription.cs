@@ -19,7 +19,7 @@ namespace MigAz.AzureStack
 
         #region Constructors
 
-        private AdminSubscription() : base(null, null, new AzureEnvironment(), String.Empty, String.Empty)
+        private AdminSubscription() : base(null, null, new AzureEnvironment("NotAvailable", String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty), String.Empty, String.Empty)
         { }
 
         public AdminSubscription(AzureStackContext azureStackContext, JObject subscriptionJson, AzureTenant parentAzureTenant, AzureEnvironment azureEnvironment, String apiUrl, String tokenResourceUrl) : base(subscriptionJson, parentAzureTenant, azureEnvironment, apiUrl, tokenResourceUrl)
