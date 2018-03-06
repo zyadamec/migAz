@@ -17,8 +17,9 @@ namespace MigAz.Azure
 
     public class AzureEnvironment
     {
+        private AzureEnvironmentType _AzureEnvironmentType = AzureEnvironmentType.Azure;
         private bool _IsUserDefined = true;
-
+        private String _AzureStackAdminManagementUrl = String.Empty;
         #region Constructors
 
         public AzureEnvironment()
@@ -52,6 +53,7 @@ namespace MigAz.Azure
         {
             this.AzureEnvironmentType = azureEnvironment.AzureEnvironmentType;
             this.Name = "ClonedAzureEnvironment";
+            this.AzureStackAdminManagementUrl = azureEnvironment.AzureStackAdminManagementUrl;
             this.ASMServiceManagementUrl = azureEnvironment.ASMServiceManagementUrl;
             this.ARMServiceManagementUrl = azureEnvironment.ARMServiceManagementUrl;
             this.AzureLoginUrl = azureEnvironment.AzureLoginUrl;
@@ -62,8 +64,42 @@ namespace MigAz.Azure
 
         #endregion
 
-        public AzureEnvironmentType AzureEnvironmentType { get; set; }
+        public AzureEnvironmentType AzureEnvironmentType
+        {
+            get { return _AzureEnvironmentType; }
+            set
+            {
+                _AzureEnvironmentType = value;
+
+                switch (value)
+                {
+                    case AzureEnvironmentType.Azure:
+                        if (value == AzureEnvironmentType.Azure)
+                            this.AzureStackAdminManagementUrl = String.Empty;
+                        break;
+                    case AzureEnvironmentType.AzureStack:
+#if DEBUG
+                        this.AzureStackAdminManagementUrl = "https://adminmanagement.local.azurestack.external";
+#endif
+                        break;
+                }
+
+            }
+        }
         public String Name { get; set; }
+
+        public String AzureStackAdminManagementUrl
+        {
+            get { return _AzureStackAdminManagementUrl; }
+            set
+            {
+                if (_AzureEnvironmentType == AzureEnvironmentType.AzureStack)
+                    _AzureStackAdminManagementUrl = value;
+                else if (value != String.Empty)
+                    throw new ArgumentException("Cannot set Azure Stack Admin Management URL when AzureEnvironmentType is not AzureStack.");
+            }
+        }
+
         public String ASMServiceManagementUrl { get; set; }
         public String ARMServiceManagementUrl { get; set; }
         public String AzureLoginUrl { get; set; }

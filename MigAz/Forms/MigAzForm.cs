@@ -30,6 +30,7 @@ namespace MigAz.Forms
         private Guid _AppSessionGuid = Guid.NewGuid();
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
+        private AzureRetriever _AzureRetriever;
         private AppSettingsProvider _appSettingsProvider;
         private AzureTelemetryProvider _telemetryProvider = new AzureTelemetryProvider();
         private TreeNode _EventSourceNode;
@@ -46,6 +47,7 @@ namespace MigAz.Forms
             _appSettingsProvider = new AppSettingsProvider();
             _AzureEnvironments = AzureEnvironment.GetAzureEnvironments();
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
+            _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             splitContainer3.SplitterDistance = splitContainer3.Width / 2;
@@ -651,14 +653,14 @@ namespace MigAz.Forms
             }
         }
 
-        private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
+        private async void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
         {
             if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
-                //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior, this._AzureEnvironments);
+                // This will move to be based on the source context (upon instantiation)
+                await azureControl.Bind(this._AzureRetriever, this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior, this._AzureEnvironments);
 
                 azureControl.AzureContext.AzureEnvironment = GetDefaultAzureEnvironment();
 
@@ -680,7 +682,7 @@ namespace MigAz.Forms
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
                 MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                azureStackSourceContext.Bind(_logProvider, _statusProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+                await azureStackSourceContext.Bind(_AzureRetriever,this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
 
                 azureStackSourceContext.AzureStackContext.AzureEnvironment = GetDefaultAzureEnvironment();
 
@@ -766,7 +768,7 @@ namespace MigAz.Forms
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
-                await azureTargetContext.Bind(this.LogProvider, this.StatusProvider, this._AzureEnvironments);
+                await azureTargetContext.Bind(this._AzureRetriever, this._AzureEnvironments);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
                 azureTargetContext.AfterAzureSubscriptionChange += AzureTargetContext_AfterAzureSubscriptionChange;
                 azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
@@ -892,7 +894,7 @@ namespace MigAz.Forms
         private void menuitemAzureEnvironments_Click(object sender, EventArgs e)
         {
             AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
-            azureEnvironmentDialog.Bind(_AzureEnvironments);
+            azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments);
             azureEnvironmentDialog.ShowDialog();
         }
     }

@@ -17,9 +17,9 @@ namespace MigAz.AzureStack
     {
         AzureStackEndpoints _AzureStackEndpoints;
 
-        private AzureStackContext() : base(null, null) { }
+        private AzureStackContext() : base(null) { }
 
-        public AzureStackContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always) : base(logProvider, statusProvider, defaultPromptBehavior)
+        public AzureStackContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always) : base(azureRetriever, defaultPromptBehavior)
         {
         }
 
@@ -86,9 +86,14 @@ namespace MigAz.AzureStack
             return tenantSubscriptions;
         }
 
-        internal async Task LoadMetadataEndpoints(string azureStackEnvironment)
+        internal async void LoadMetadataEndpoints(string azureStackAdminManagementUrl)
         {
-            string metadataEndpointsUrlBase = azureStackEnvironment;
+            _AzureStackEndpoints = await AzureStackContext.LoadMetadataEndpoints(this.AzureRetriever, azureStackAdminManagementUrl);
+        }
+
+        public static async Task<AzureStackEndpoints> LoadMetadataEndpoints(AzureRetriever azureRetriever, string azureStackAdminManagementUrl)
+        {
+            string metadataEndpointsUrlBase = azureStackAdminManagementUrl;
 
             if (!metadataEndpointsUrlBase.EndsWith("/"))
                 metadataEndpointsUrlBase += "/";
@@ -96,8 +101,8 @@ namespace MigAz.AzureStack
             String metadataEndpointsUrl = metadataEndpointsUrlBase + "metadata/endpoints?api-version=2015-01-01";
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(metadataEndpointsUrl);
-            AzureRestResponse azureRestResponse = await AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            _AzureStackEndpoints = new AzureStackEndpoints(metadataEndpointsUrlBase, azureRestResponse);
+            AzureRestResponse azureRestResponse = await azureRetriever.GetAzureRestResponse(azureRestRequest);
+            return new AzureStackEndpoints(metadataEndpointsUrlBase, azureRestResponse);
         }
     }
 }

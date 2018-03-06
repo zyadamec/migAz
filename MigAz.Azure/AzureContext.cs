@@ -55,12 +55,12 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
+        public AzureContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
         {
-            _LogProvider = logProvider;
-            _StatusProvider = statusProvider;
+            _AzureRetriever = azureRetriever;
+            _LogProvider = azureRetriever.LogProvider;
+            _StatusProvider = azureRetriever.StatusProvider;
             _LoginPromptBehavior = defaultPromptBehavior;
-            _AzureRetriever = new AzureRetriever(this);
         }
 
         #endregion

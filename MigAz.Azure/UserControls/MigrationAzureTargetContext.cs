@@ -81,9 +81,9 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, List<AzureEnvironment> azureEnvironments)
+        public async Task Bind(AzureRetriever azureRetriever, List<AzureEnvironment> azureEnvironments)
         {
-            _AzureContextTarget = new AzureContext(logProvider, statusProvider);
+            _AzureContextTarget = new AzureContext(azureRetriever);
             _AzureContextTarget.AzureEnvironmentChanged += _AzureContextTarget_AzureEnvironmentChanged;
             _AzureContextTarget.UserAuthenticated += _AzureContextTarget_UserAuthenticated;
             _AzureContextTarget.BeforeAzureSubscriptionChange += _AzureContextTarget_BeforeAzureSubscriptionChange;
@@ -94,7 +94,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextTarget.AfterAzureTenantChange += _AzureContextTarget_AfterAzureTenantChange;
             azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
             await azureLoginContextViewerTarget.Bind(_AzureContextTarget, azureEnvironments);
-            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, logProvider, statusProvider);
+            this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, azureRetriever.LogProvider, azureRetriever.StatusProvider);
         }
 
         private async Task AzureLoginContextViewerTarget_AfterContextChanged(AzureLoginContextViewer sender)

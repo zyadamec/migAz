@@ -96,7 +96,7 @@ namespace MigAz.AzureStack.UserControls
                     cmbSubscriptions.Items.Clear();
 
                     // Obtain Azure Stack Envrionment Metadata
-                    await _AzureStackContext.LoadMetadataEndpoints(txtAzureStackEnvironment.Text);
+                    //await _AzureStackContext.LoadMetadataEndpoints(txtAzureStackEnvironment.Text);
                     txtAzureStackEnvironment.Enabled = false;
 
                     await _AzureStackContext.Login();

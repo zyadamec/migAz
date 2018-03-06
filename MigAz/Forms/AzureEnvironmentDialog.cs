@@ -1,4 +1,5 @@
 ﻿using MigAz.Azure;
+using MigAz.AzureStack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ namespace MigAz.Forms
 {
     public partial class AzureEnvironmentDialog : Form
     {
+        private AzureRetriever _AzureRetriever;
         private List<AzureEnvironment> _DefaultAzureEnvironments;
 
         public AzureEnvironmentDialog()
@@ -20,8 +22,9 @@ namespace MigAz.Forms
             InitializeComponent();
         }
 
-        public void Bind(List<AzureEnvironment> defaultAzureEnvironments)
+        public void Bind(AzureRetriever azureRetriever, List<AzureEnvironment> defaultAzureEnvironments)
         {
+            _AzureRetriever = azureRetriever;
             _DefaultAzureEnvironments = defaultAzureEnvironments;
 
             listBoxAzureEnvironments.Items.Clear();
@@ -109,14 +112,8 @@ namespace MigAz.Forms
         {
             AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
             azureEnvironment.AzureEnvironmentType = (AzureEnvironmentType)Enum.Parse(typeof(AzureEnvironmentType), cmbAzureEnvironmentType.SelectedItem.ToString());
-
-            switch (azureEnvironment.AzureEnvironmentType)
-            {
-                case AzureEnvironmentType.Azure:
-                    break;
-                case AzureEnvironmentType.AzureStack:
-                    break;
-            }
+            txtAzureStackAdminManagementUrl.Text = azureEnvironment.AzureStackAdminManagementUrl;
+            txtAzureStackAdminManagementUrl.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -147,6 +144,14 @@ namespace MigAz.Forms
         private void txtName_Validating(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        private async void btnQueryAzureStackMetadata_Click(object sender, EventArgs e)
+        {
+            // Obtain Azure Stack Envrionment Metadata
+            AzureStackEndpoints azureStackEndpoints = await AzureStackContext.LoadMetadataEndpoints(_AzureRetriever, txtAzureStackAdminManagementUrl.Text);
+            txtLoginUrl.Text = azureStackEndpoints.LoginEndpoint;
+            txtGraphApiUrl.Text = azureStackEndpoints.GraphEndpoint;
         }
     }
 }
