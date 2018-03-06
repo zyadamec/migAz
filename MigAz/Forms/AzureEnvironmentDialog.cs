@@ -82,12 +82,19 @@ namespace MigAz.Forms
         {
             txtName.Enabled = enabled;
             cmbAzureEnvironmentType.Enabled = enabled;
+
             txtLoginUrl.Enabled = enabled;
             txtGraphApiUrl.Enabled = enabled;
             txtASMManagementUrl.Enabled = enabled;
             txtARMManagementUrl.Enabled = enabled;
             txtStorageEndpoint.Enabled = enabled;
             txtBlobEndpoint.Enabled = enabled;
+
+            if (!enabled) // We only allow these to set upon true based on specific criteria
+            {
+                btnQueryAzureStackMetadata.Enabled = enabled;
+                txtAzureStackAdminManagementUrl.Enabled = enabled;
+            }
         }
 
         private void txtName_TextChanged(object sender, EventArgs e)
@@ -114,6 +121,7 @@ namespace MigAz.Forms
             azureEnvironment.AzureEnvironmentType = (AzureEnvironmentType)Enum.Parse(typeof(AzureEnvironmentType), cmbAzureEnvironmentType.SelectedItem.ToString());
             txtAzureStackAdminManagementUrl.Text = azureEnvironment.AzureStackAdminManagementUrl;
             txtAzureStackAdminManagementUrl.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
+            btnQueryAzureStackMetadata.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
