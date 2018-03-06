@@ -70,6 +70,7 @@
             this.txtName.Size = new System.Drawing.Size(250, 26);
             this.txtName.TabIndex = 1;
             this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
+            this.txtName.Validating += new System.ComponentModel.CancelEventHandler(this.txtName_Validating);
             // 
             // txtLoginUrl
             // 
@@ -195,6 +196,7 @@
             this.btnCloneAzureEnvironment.TabIndex = 19;
             this.btnCloneAzureEnvironment.Text = "&Clone";
             this.btnCloneAzureEnvironment.UseVisualStyleBackColor = true;
+            this.btnCloneAzureEnvironment.Click += new System.EventHandler(this.btnCloneAzureEnvironment_Click);
             // 
             // btnDeleteAzureEnvironment
             // 
@@ -227,6 +229,7 @@
             this.btnSave.TabIndex = 23;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnCancel
             // 

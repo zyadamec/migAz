@@ -46,6 +46,10 @@ namespace MigAz.Forms
                 txtARMManagementUrl.Text = String.Empty;
                 txtStorageEndpoint.Text = String.Empty;
                 txtBlobEndpoint.Text = String.Empty;
+
+                SetAzureEnvironmentFieldEnabled(false);
+                btnCloneAzureEnvironment.Enabled = false;
+                btnDeleteAzureEnvironment.Enabled = false;
             }
             else
             {
@@ -64,7 +68,23 @@ namespace MigAz.Forms
                 txtARMManagementUrl.Text = azureEnvironment.ARMServiceManagementUrl;
                 txtStorageEndpoint.Text = azureEnvironment.StorageEndpointUrl;
                 txtBlobEndpoint.Text = azureEnvironment.BlobEndpointUrl;
+
+                SetAzureEnvironmentFieldEnabled(azureEnvironment.IsUserDefined);
+                btnCloneAzureEnvironment.Enabled = true;
+                btnDeleteAzureEnvironment.Enabled = azureEnvironment.IsUserDefined;
             }
+        }
+
+        private void SetAzureEnvironmentFieldEnabled(bool enabled)
+        {
+            txtName.Enabled = enabled;
+            cmbAzureEnvironmentType.Enabled = enabled;
+            txtLoginUrl.Enabled = enabled;
+            txtGraphApiUrl.Enabled = enabled;
+            txtASMManagementUrl.Enabled = enabled;
+            txtARMManagementUrl.Enabled = enabled;
+            txtStorageEndpoint.Enabled = enabled;
+            txtBlobEndpoint.Enabled = enabled;
         }
 
         private void txtName_TextChanged(object sender, EventArgs e)
@@ -75,12 +95,6 @@ namespace MigAz.Forms
                 azureEnvironment.Name = txtName.Text.Trim();
                 listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex] = listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex];
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            AzureEnvironment azureEnvironment = new AzureEnvironment();
-            listBoxAzureEnvironments.Items.Add(azureEnvironment);
         }
 
         private void btnDeleteAzureEnvironment_Click(object sender, EventArgs e)
@@ -95,11 +109,44 @@ namespace MigAz.Forms
         {
             AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
             azureEnvironment.AzureEnvironmentType = (AzureEnvironmentType)Enum.Parse(typeof(AzureEnvironmentType), cmbAzureEnvironmentType.SelectedItem.ToString());
+
+            switch (azureEnvironment.AzureEnvironmentType)
+            {
+                case AzureEnvironmentType.Azure:
+                    break;
+                case AzureEnvironmentType.AzureStack:
+                    break;
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            AzureEnvironment azureEnvironment = new AzureEnvironment();
+            listBoxAzureEnvironments.Items.Add(azureEnvironment);
+            listBoxAzureEnvironments.SelectedIndex = listBoxAzureEnvironments.Items.IndexOf(azureEnvironment);
+        }
+
+        private void btnCloneAzureEnvironment_Click(object sender, EventArgs e)
+        {
+            AzureEnvironment selectedAzureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+            AzureEnvironment clonedAzureEnvironment = new AzureEnvironment(selectedAzureEnvironment);
+            listBoxAzureEnvironments.Items.Add(clonedAzureEnvironment);
+            listBoxAzureEnvironments.SelectedIndex = listBoxAzureEnvironments.Items.IndexOf(clonedAzureEnvironment);
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void txtName_Validating(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
         }
     }
 }
