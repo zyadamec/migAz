@@ -26,7 +26,8 @@ namespace MigAz.Forms
     {
         #region Variables
 
-        private List<AzureEnvironment> _AzureEnvironments;
+        private List<AzureEnvironment> _AzureEnvironments = new List<AzureEnvironment>();
+        private List<AzureEnvironment> _UserDefinedAzureEnvironments = new List<AzureEnvironment>();
         private Guid _AppSessionGuid = Guid.NewGuid();
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
@@ -894,7 +895,7 @@ namespace MigAz.Forms
         private void menuitemAzureEnvironments_Click(object sender, EventArgs e)
         {
             AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
-            azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments);
+            azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
             azureEnvironmentDialog.ShowDialog();
         }
     }

@@ -14,21 +14,29 @@ namespace MigAz.Forms
 {
     public partial class AzureEnvironmentDialog : Form
     {
+        private bool _istxtNameTextChangedEvent = false;
         private AzureRetriever _AzureRetriever;
         private List<AzureEnvironment> _DefaultAzureEnvironments;
+        private List<AzureEnvironment> _UserDefinedAzureEnvironments;
 
         public AzureEnvironmentDialog()
         {
             InitializeComponent();
         }
 
-        public void Bind(AzureRetriever azureRetriever, List<AzureEnvironment> defaultAzureEnvironments)
+        public void Bind(AzureRetriever azureRetriever, List<AzureEnvironment> defaultAzureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _AzureRetriever = azureRetriever;
             _DefaultAzureEnvironments = defaultAzureEnvironments;
+            _UserDefinedAzureEnvironments = userDefinedAzureEnvironments;
 
             listBoxAzureEnvironments.Items.Clear();
             foreach (AzureEnvironment azureEnvironment in defaultAzureEnvironments)
+            {
+                listBoxAzureEnvironments.Items.Add(azureEnvironment);
+            }
+
+            foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
             {
                 listBoxAzureEnvironments.Items.Add(azureEnvironment);
             }
@@ -39,42 +47,46 @@ namespace MigAz.Forms
 
         private void listBoxAzureEnvironments_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBoxAzureEnvironments.SelectedItem == null)
+            if (!_istxtNameTextChangedEvent)  // Rebind to refresh the name from the textbox causes double validation, only bind if not in the Name Text Changed event.
             {
-                cmbAzureEnvironmentType.SelectedIndex = 0;
-                txtName.Text = String.Empty;
-                txtLoginUrl.Text = String.Empty;
-                txtGraphApiUrl.Text = String.Empty;
-                txtASMManagementUrl.Text = String.Empty;
-                txtARMManagementUrl.Text = String.Empty;
-                txtStorageEndpoint.Text = String.Empty;
-                txtBlobEndpoint.Text = String.Empty;
-
-                SetAzureEnvironmentFieldEnabled(false);
-                btnCloneAzureEnvironment.Enabled = false;
-                btnDeleteAzureEnvironment.Enabled = false;
-            }
-            else
-            {
-                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
-
-                int azureEnvironmentTypeIndex = cmbAzureEnvironmentType.FindStringExact(azureEnvironment.AzureEnvironmentType.ToString());
-                if (azureEnvironmentTypeIndex >= 0)
-                    cmbAzureEnvironmentType.SelectedIndex = azureEnvironmentTypeIndex;
-                else
+                if (listBoxAzureEnvironments.SelectedItem == null)
+                {
                     cmbAzureEnvironmentType.SelectedIndex = 0;
+                    txtName.Text = String.Empty;
+                    txtLoginUrl.Text = String.Empty;
+                    txtGraphApiUrl.Text = String.Empty;
+                    txtASMManagementUrl.Text = String.Empty;
+                    txtARMManagementUrl.Text = String.Empty;
+                    txtStorageEndpoint.Text = String.Empty;
+                    txtBlobEndpoint.Text = String.Empty;
 
-                txtName.Text = azureEnvironment.Name;
-                txtLoginUrl.Text = azureEnvironment.AzureLoginUrl;
-                txtGraphApiUrl.Text = azureEnvironment.GraphApiUrl;
-                txtASMManagementUrl.Text = azureEnvironment.ASMServiceManagementUrl;
-                txtARMManagementUrl.Text = azureEnvironment.ARMServiceManagementUrl;
-                txtStorageEndpoint.Text = azureEnvironment.StorageEndpointUrl;
-                txtBlobEndpoint.Text = azureEnvironment.BlobEndpointUrl;
+                    SetAzureEnvironmentFieldEnabled(false);
+                    btnCloneAzureEnvironment.Enabled = false;
+                    btnDeleteAzureEnvironment.Enabled = false;
+                }
+                else
+                {
+                    AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
 
-                SetAzureEnvironmentFieldEnabled(azureEnvironment.IsUserDefined);
-                btnCloneAzureEnvironment.Enabled = true;
-                btnDeleteAzureEnvironment.Enabled = azureEnvironment.IsUserDefined;
+                    int azureEnvironmentTypeIndex = cmbAzureEnvironmentType.FindStringExact(azureEnvironment.AzureEnvironmentType.ToString());
+                    if (azureEnvironmentTypeIndex >= 0)
+                        cmbAzureEnvironmentType.SelectedIndex = azureEnvironmentTypeIndex;
+                    else
+                        cmbAzureEnvironmentType.SelectedIndex = 0;
+
+                    txtName.Text = azureEnvironment.Name;
+                    txtLoginUrl.Text = azureEnvironment.AzureLoginUrl;
+                    txtGraphApiUrl.Text = azureEnvironment.GraphApiUrl;
+                    txtASMManagementUrl.Text = azureEnvironment.ASMServiceManagementUrl;
+                    txtARMManagementUrl.Text = azureEnvironment.ARMServiceManagementUrl;
+                    txtStorageEndpoint.Text = azureEnvironment.StorageEndpointUrl;
+                    txtBlobEndpoint.Text = azureEnvironment.BlobEndpointUrl;
+
+                    SetAzureEnvironmentFieldEnabled(azureEnvironment.IsUserDefined);
+                    btnCloneAzureEnvironment.Enabled = true;
+                    btnDeleteAzureEnvironment.Enabled = azureEnvironment.IsUserDefined;
+                    txtName.Focus();
+                }
             }
         }
 
@@ -99,11 +111,20 @@ namespace MigAz.Forms
 
         private void txtName_TextChanged(object sender, EventArgs e)
         {
-            if (listBoxAzureEnvironments.SelectedItem != null)
+            try
             {
-                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
-                azureEnvironment.Name = txtName.Text.Trim();
-                listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex] = listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex];
+                _istxtNameTextChangedEvent = true;
+
+                if (listBoxAzureEnvironments.SelectedItem != null)
+                {
+                    AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                    azureEnvironment.Name = txtName.Text.Trim();
+                    listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex] = listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex];
+                }
+            }
+            finally
+            {
+                _istxtNameTextChangedEvent = false;
             }
         }
 
@@ -111,7 +132,12 @@ namespace MigAz.Forms
         {
             if (listBoxAzureEnvironments.SelectedItem != null)
             {
-                listBoxAzureEnvironments.Items.Remove(listBoxAzureEnvironments.SelectedItem);
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                if (MessageBox.Show("Are you sure you want to delete Azure Environment '" + azureEnvironment.Name + "'?", "Delete Azure Environment", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    listBoxAzureEnvironments.Items.Remove(listBoxAzureEnvironments.SelectedItem);
+                    _UserDefinedAzureEnvironments.Remove(azureEnvironment);
+                }
             }
         }
 
@@ -124,16 +150,13 @@ namespace MigAz.Forms
             btnQueryAzureStackMetadata.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void btnNew_Click(object sender, EventArgs e)
         {
             AzureEnvironment azureEnvironment = new AzureEnvironment();
             listBoxAzureEnvironments.Items.Add(azureEnvironment);
             listBoxAzureEnvironments.SelectedIndex = listBoxAzureEnvironments.Items.IndexOf(azureEnvironment);
+            _UserDefinedAzureEnvironments.Add(azureEnvironment);
+            txtName.Focus();
         }
 
         private void btnCloneAzureEnvironment_Click(object sender, EventArgs e)
@@ -142,16 +165,43 @@ namespace MigAz.Forms
             AzureEnvironment clonedAzureEnvironment = new AzureEnvironment(selectedAzureEnvironment);
             listBoxAzureEnvironments.Items.Add(clonedAzureEnvironment);
             listBoxAzureEnvironments.SelectedIndex = listBoxAzureEnvironments.Items.IndexOf(clonedAzureEnvironment);
+            _UserDefinedAzureEnvironments.Add(clonedAzureEnvironment);
+            txtName.Focus();
         }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
+   
         private void txtName_Validating(object sender, CancelEventArgs e)
         {
-            e.Cancel = true;
+            if (sender.GetType() == typeof(TextBox))
+            {
+                TextBox senderTextBox = (TextBox)sender;
+
+                if (senderTextBox.Text.Trim() == String.Empty)
+                {
+                    e.Cancel = true;
+                    MessageBox.Show("Name is required.", "Azure Environment");
+                }
+                else
+                {
+                    if (GetEnvironmentNameCount(senderTextBox.Text) > 1)
+                    {
+                        e.Cancel = true;
+                        MessageBox.Show("Azure Anvironment Name must be unique.", "Azure Environment");
+                    }
+                }
+            }
+        }
+
+        private int GetEnvironmentNameCount(string environmentName)
+        {
+            int nameCount = 0;
+            foreach (object objAzureEnvironment in listBoxAzureEnvironments.Items)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)objAzureEnvironment;
+                if (String.Compare(azureEnvironment.Name, environmentName.Trim(), true) == 0)
+                    nameCount++;
+            }
+
+            return nameCount;
         }
 
         private async void btnQueryAzureStackMetadata_Click(object sender, EventArgs e)
@@ -160,6 +210,11 @@ namespace MigAz.Forms
             AzureStackEndpoints azureStackEndpoints = await AzureStackContext.LoadMetadataEndpoints(_AzureRetriever, txtAzureStackAdminManagementUrl.Text);
             txtLoginUrl.Text = azureStackEndpoints.LoginEndpoint;
             txtGraphApiUrl.Text = azureStackEndpoints.GraphEndpoint;
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

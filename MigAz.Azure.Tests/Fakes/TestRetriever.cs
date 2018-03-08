@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure;
+using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,8 @@ namespace MIGAZ.Tests.Fakes
 {
     public class TestRetriever : AzureRetriever
     {
-        private AzureContext _AzureContext;
-
-        public TestRetriever(AzureContext azureContext) : base(azureContext)
+        public TestRetriever(ILogProvider logProvider, IStatusProvider statusProvider) : base(logProvider, statusProvider)
         {
-            _AzureContext = azureContext;
         }
 
         

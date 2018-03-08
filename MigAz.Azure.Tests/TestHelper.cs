@@ -35,10 +35,10 @@ namespace MigAz.Tests
             ILogProvider logProvider = new FakeLogProvider();
             IStatusProvider statusProvider = new FakeStatusProvider();
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContext = new AzureContext(logProvider, statusProvider);
+            TestRetriever testRetriever = new TestRetriever(logProvider, statusProvider);
+            AzureContext azureContext = new AzureContext(testRetriever);
             azureContext.AzureEnvironment = azureEnvironment;
             azureContext.TokenProvider = new FakeTokenProvider();
-            azureContext.AzureRetriever = new TestRetriever(azureContext);
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
             List<AzureTenant> tenants = await azureContext.GetAzureARMTenants(true);
 
