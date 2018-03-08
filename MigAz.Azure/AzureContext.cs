@@ -15,8 +15,7 @@ namespace MigAz.Azure
 {
     public class AzureContext
     {
-        private AzureEnvironment _AzureEnvironment = AzureEnvironment.AzureCloud;
-        private AzureServiceUrls _AzureServiceUrls;
+        private AzureEnvironment _AzureEnvironment;
         private ArmDiskType _DefaultTargetDiskType = ArmDiskType.ManagedDisk;
         private PromptBehavior _LoginPromptBehavior = PromptBehavior.Auto;
 
@@ -56,23 +55,17 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(ILogProvider logProvider, IStatusProvider statusProvider, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
+        public AzureContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
         {
-            _LogProvider = logProvider;
-            _StatusProvider = statusProvider;
+            _AzureRetriever = azureRetriever;
+            _LogProvider = azureRetriever.LogProvider;
+            _StatusProvider = azureRetriever.StatusProvider;
             _LoginPromptBehavior = defaultPromptBehavior;
-            _AzureServiceUrls = new AzureServiceUrls(this);
-            _AzureRetriever = new AzureRetriever(this);
         }
 
         #endregion
 
         #region Properties
-
-        public AzureServiceUrls AzureServiceUrls
-        {
-            get { return _AzureServiceUrls; }
-        }
 
         public ITokenProvider TokenProvider
         {
@@ -88,7 +81,7 @@ namespace MigAz.Azure
                 if (_AzureEnvironment != value)
                 {
                     _AzureEnvironment = value;
-                    this.TokenProvider = new AzureTokenProvider(this.AzureServiceUrls.GetAzureLoginUrl(), _LogProvider);
+                    this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment.AzureLoginUrl, _LogProvider);
 
                     AzureEnvironmentChanged?.Invoke(this);
                 }
@@ -173,12 +166,12 @@ namespace MigAz.Azure
 
         public virtual string GetARMTokenResourceUrl()
         {
-            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+            return this.AzureEnvironment.ARMServiceManagementUrl;
         }
 
         public virtual string GetARMServiceManagementUrl()
         {
-            return this.AzureServiceUrls.GetARMServiceManagementUrl();
+            return this.AzureEnvironment.ARMServiceManagementUrl;
         }
 
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
@@ -228,9 +221,9 @@ namespace MigAz.Azure
             if (this.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
-            AuthenticationResult tenantAuthenticationResult = await this.TokenProvider.GetToken(this.AzureServiceUrls.GetARMServiceManagementUrl(), Guid.Empty);
+            AuthenticationResult tenantAuthenticationResult = await this.TokenProvider.GetToken(this.AzureEnvironment.ARMServiceManagementUrl, Guid.Empty);
 
-            String tenantUrl = this.AzureServiceUrls.GetARMServiceManagementUrl() + "tenants?api-version=2015-01-01";
+            String tenantUrl = this.AzureEnvironment.ARMServiceManagementUrl + "tenants?api-version=2015-01-01";
             this.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);

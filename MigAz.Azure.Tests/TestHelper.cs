@@ -17,6 +17,7 @@ using MigAz.Core.Interface;
 using MigAz.Core.Generator;
 using MIGAZ.Tests.Fakes;
 using MigAz.Core;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Tests
 {
@@ -28,20 +29,16 @@ namespace MigAz.Tests
         {
             return new FakeAzureSubscription();
         }
-        public static async Task<AzureContext> SetupAzureContext(string restResponseFile)
-        {
-            return await SetupAzureContext(AzureEnvironment.AzureCloud, restResponseFile);
-        }
 
         public static async Task<AzureContext> SetupAzureContext(AzureEnvironment azureEnvironment, string restResponseFile)
         {
             ILogProvider logProvider = new FakeLogProvider();
             IStatusProvider statusProvider = new FakeStatusProvider();
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
-            AzureContext azureContext = new AzureContext(logProvider, statusProvider);
+            TestRetriever testRetriever = new TestRetriever(logProvider, statusProvider);
+            AzureContext azureContext = new AzureContext(testRetriever);
             azureContext.AzureEnvironment = azureEnvironment;
             azureContext.TokenProvider = new FakeTokenProvider();
-            azureContext.AzureRetriever = new TestRetriever(azureContext);
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
             List<AzureTenant> tenants = await azureContext.GetAzureARMTenants(true);
 

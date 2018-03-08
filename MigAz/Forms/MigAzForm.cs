@@ -18,6 +18,7 @@ using MigAz.UserControls;
 using MigAz.Core;
 using MigAz.AzureStack.UserControls;
 using MigAz.Azure.MigrationTarget;
+using System.Collections.Generic;
 
 namespace MigAz.Forms
 {
@@ -25,9 +26,12 @@ namespace MigAz.Forms
     {
         #region Variables
 
+        private List<AzureEnvironment> _AzureEnvironments = new List<AzureEnvironment>();
+        private List<AzureEnvironment> _UserDefinedAzureEnvironments = new List<AzureEnvironment>();
         private Guid _AppSessionGuid = Guid.NewGuid();
         private FileLogProvider _logProvider;
         private IStatusProvider _statusProvider;
+        private AzureRetriever _AzureRetriever;
         private AppSettingsProvider _appSettingsProvider;
         private AzureTelemetryProvider _telemetryProvider = new AzureTelemetryProvider();
         private TreeNode _EventSourceNode;
@@ -42,8 +46,9 @@ namespace MigAz.Forms
             _logProvider.OnMessage += _logProvider_OnMessage;
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
-
+            _AzureEnvironments = AzureEnvironment.GetAzureEnvironments();
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
+            _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             splitContainer3.SplitterDistance = splitContainer3.Width / 2;
@@ -59,7 +64,6 @@ namespace MigAz.Forms
 
             this.propertyPanel1.TargetTreeView = targetTreeView1;
             this.propertyPanel1.PropertyChanged += PropertyPanel1_PropertyChanged;
-
 
             AlertIfNewVersionAvailable();
         }
@@ -650,30 +654,16 @@ namespace MigAz.Forms
             }
         }
 
-        private void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
+        private async void migAzMigrationSourceSelection1_AfterMigrationSourceSelected(UserControl migrationSourceUserControl)
         {
             if (migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
-                //// This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+                // This will move to be based on the source context (upon instantiation)
+                azureControl.Bind(this._AzureRetriever, this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior, this._AzureEnvironments, ref this._UserDefinedAzureEnvironments);
 
-                switch (app.Default.AzureEnvironment)
-                {
-                    case "AzureCloud":
-                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureCloud;
-                        break;
-                    case "AzureGermanCloud":
-                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureGermanCloud;
-                        break;
-                    case "AzureChinaCloud":
-                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureChinaCloud;
-                        break;
-                    case "AzureUSGovernment":
-                        azureControl.AzureContext.AzureEnvironment = AzureEnvironment.AzureUSGovernment;
-                        break;
-                }
+                azureControl.AzureContext.AzureEnvironment = GetDefaultAzureEnvironment();
 
                 azureControl.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
                 azureControl.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
@@ -693,23 +683,10 @@ namespace MigAz.Forms
             else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
             {
                 MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                azureStackSourceContext.Bind(_logProvider, _statusProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
+                await azureStackSourceContext.Bind(_AzureRetriever,this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
 
-                switch (app.Default.AzureEnvironment)
-                {
-                    case "AzureCloud":
-                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureCloud;
-                        break;
-                    case "AzureGermanCloud":
-                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureGermanCloud;
-                        break;
-                    case "AzureChinaCloud":
-                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureChinaCloud;
-                        break;
-                    case "AzureUSGovernment":
-                        azureStackSourceContext.AzureStackContext.AzureEnvironment = AzureEnvironment.AzureUSGovernment;
-                        break;
-                }
+                azureStackSourceContext.AzureStackContext.AzureEnvironment = GetDefaultAzureEnvironment();
+
 
                 azureStackSourceContext.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
                 azureStackSourceContext.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
@@ -736,6 +713,13 @@ namespace MigAz.Forms
             migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
 
+        private AzureEnvironment GetDefaultAzureEnvironment()
+        {
+            if (_AzureEnvironments == null)
+                return null;
+
+            return _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+        }
 
         private void AzureControl_AfterContextChanged(UserControl sender)
         {
@@ -785,7 +769,7 @@ namespace MigAz.Forms
             if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
             {
                 MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
-                await azureTargetContext.Bind(this.LogProvider, this.StatusProvider);
+                azureTargetContext.Bind(this._AzureRetriever, this._AzureEnvironments, ref this._UserDefinedAzureEnvironments);
                 azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
                 azureTargetContext.AfterAzureSubscriptionChange += AzureTargetContext_AfterAzureSubscriptionChange;
                 azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
@@ -798,7 +782,7 @@ namespace MigAz.Forms
                     await azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
                 }
 
-                targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.ExistingContext.AzureServiceUrls.GetBlobEndpointUrl();
+                targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.ExistingContext.AzureEnvironment.BlobEndpointUrl;
                 targetTreeView1.TargetSubscription = azureTargetContext.ExistingContext.AzureSubscription;
                 await RebindPropertyPanel();
             }
@@ -812,14 +796,14 @@ namespace MigAz.Forms
 
         private async Task AzureTargetContext_AfterAzureSubscriptionChange(AzureContext sender)
         {
-            targetTreeView1.TargetBlobStorageNamespace = sender.AzureServiceUrls.GetBlobEndpointUrl();
+            targetTreeView1.TargetBlobStorageNamespace = sender.AzureEnvironment.BlobEndpointUrl;
             targetTreeView1.TargetSubscription = sender.AzureSubscription;
             await this.targetTreeView1.RefreshExportArtifacts();
         }
 
         private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
         {
-            targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureServiceUrls.GetBlobEndpointUrl();
+            targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureEnvironment.BlobEndpointUrl;
             targetTreeView1.TargetSubscription = sender.SelectedAzureContext.AzureSubscription;
             await this.targetTreeView1.RefreshExportArtifacts();
         }
@@ -908,6 +892,12 @@ namespace MigAz.Forms
 
         #endregion
 
+        private void menuitemAzureEnvironments_Click(object sender, EventArgs e)
+        {
+            AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
+            azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
+            azureEnvironmentDialog.ShowDialog();
+        }
     }
 }
 

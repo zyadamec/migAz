@@ -128,14 +128,14 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
+        public void Bind(AzureRetriever azureRetriever, IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior, List<AzureEnvironment> azureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _TargetSettings = targetSettings;
             _LogProvider = logProvider;
             _StatusProvider = statusProvider;
             _ImageList = imageList;
 
-            _AzureContextSource = new AzureContext(logProvider, statusProvider, promptBehavior);
+            _AzureContextSource = new AzureContext(azureRetriever, promptBehavior);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -146,8 +146,8 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
-            await azureLoginContextViewerSource.Bind(_AzureContextSource);
-            await treeViewSourceResourceManager1.Bind(statusProvider, logProvider, targetSettings, imageList, promptBehavior);
+            azureLoginContextViewerSource.Bind(_AzureContextSource, azureEnvironments, ref userDefinedAzureEnvironments);
+            treeViewSourceResourceManager1.Bind(logProvider, statusProvider, targetSettings, imageList, promptBehavior);
         }
 
         private void ResetForm()
@@ -187,15 +187,12 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_AfterAzureTenantChange(AzureContext sender)
         {
-            //await _AzureContextTargetARM.CopyContext(_AzureContextSource);
-
             AfterAzureTenantChange?.Invoke(sender);
         }
 
         private async Task _AzureContext_BeforeAzureSubscriptionChange(AzureContext sender)
         {
             //await SaveSubscriptionSettings(sender.AzureSubscription);
-            //await _AzureContextTargetARM.SetSubscriptionContext(null);
 
             BeforeAzureSubscriptionChange?.Invoke(sender);
         }

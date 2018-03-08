@@ -109,6 +109,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AzureEnvironmentDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AzureEnvironmentDialog.Designer.cs">
+      <DependentUpon>AzureEnvironmentDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\NewVersionAvailableDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,6 +158,9 @@
     <Compile Include="UserControls\MigAzMigrationTargetSelection.Designer.cs">
       <DependentUpon>MigAzMigrationTargetSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\AzureEnvironmentDialog.resx">
+      <DependentUpon>AzureEnvironmentDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\NewVersionAvailableDialog.resx">
       <DependentUpon>NewVersionAvailableDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -3,6 +3,7 @@
 
 using MigAz.Core.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,18 +19,31 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task BindContext(AzureContext azureContext)
+        public async Task BindContext(AzureContext azureContext, List<AzureEnvironment> azureEnvironments, List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _AzureContext = azureContext;
 
-            cboAzureEnvironment.SelectedItem = null;
-
-            int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureContext.AzureEnvironment.ToString());
-            if (environmentIndex >= 0)
+            cboAzureEnvironment.Items.Clear();
+            foreach (AzureEnvironment azureEnvironment in azureEnvironments)
             {
-                cboAzureEnvironment.SelectedIndex = environmentIndex;
+                cboAzureEnvironment.Items.Add(azureEnvironment);
             }
-            else
+
+            foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
+            {
+                cboAzureEnvironment.Items.Add(azureEnvironment);
+            }
+
+            if (_AzureContext.AzureEnvironment != null)
+            {
+                int environmentIndex = cboAzureEnvironment.FindStringExact(_AzureContext.AzureEnvironment.ToString());
+                if (environmentIndex >= 0)
+                {
+                    cboAzureEnvironment.SelectedIndex = environmentIndex;
+                }
+            }
+
+            if (cboAzureEnvironment.SelectedIndex < 0)
                 cboAzureEnvironment.SelectedIndex = 0;
 
             if (_AzureContext.TokenProvider == null || _AzureContext.TokenProvider.LastUserInfo == null)
@@ -46,7 +60,7 @@ namespace MigAz.Azure.UserControls
             }
 
             cboTenant.Items.Clear();
-            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null)
+            if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.LastUserInfo != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                 {
@@ -107,7 +121,7 @@ namespace MigAz.Azure.UserControls
                 if (cboAzureEnvironment.SelectedItem == null)
                     _AzureContext.AzureEnvironment = _AzureContext.AzureEnvironment;
                 else
-                    _AzureContext.AzureEnvironment = (AzureEnvironment) Enum.Parse(typeof(AzureEnvironment), cboAzureEnvironment.SelectedItem.ToString());
+                    _AzureContext.AzureEnvironment = (AzureEnvironment)cboAzureEnvironment.SelectedItem;
             }
 
             Application.DoEvents();
@@ -126,7 +140,7 @@ namespace MigAz.Azure.UserControls
                     cmbSubscriptions.Enabled = false;
                     cmbSubscriptions.Items.Clear();
 
-                    await _AzureContext.Login(_AzureContext.AzureServiceUrls.GetAzureLoginUrl(), _AzureContext.AzureServiceUrls.GetASMServiceManagementUrl());
+                    await _AzureContext.Login(_AzureContext.AzureEnvironment.AzureLoginUrl, _AzureContext.AzureEnvironment.ASMServiceManagementUrl);
 
                     if (_AzureContext.TokenProvider != null)
                     {

@@ -36,7 +36,7 @@ namespace MigAz.AzureStack.UserControls
             }
 
             cboTenant.Items.Clear();
-            if (_AzureStackContext.AzureRetriever != null && _AzureStackContext.TokenProvider != null)
+            if (_AzureStackContext.AzureRetriever != null && _AzureStackContext.TokenProvider != null && _AzureStackContext.TokenProvider.LastUserInfo != null)
             {
                 foreach (AzureTenant azureTenant in await _AzureStackContext.GetAzureARMTenants())
                 {
@@ -96,7 +96,7 @@ namespace MigAz.AzureStack.UserControls
                     cmbSubscriptions.Items.Clear();
 
                     // Obtain Azure Stack Envrionment Metadata
-                    await _AzureStackContext.LoadMetadataEndpoints(txtAzureStackEnvironment.Text);
+                    //await _AzureStackContext.LoadMetadataEndpoints(txtAzureStackEnvironment.Text);
                     txtAzureStackEnvironment.Enabled = false;
 
                     await _AzureStackContext.Login();

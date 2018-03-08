@@ -101,11 +101,6 @@ namespace MigAz.Azure.UserControls
             // 
             this.cboAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboAzureEnvironment.FormattingEnabled = true;
-            this.cboAzureEnvironment.Items.AddRange(new object[] {
-            "AzureCloud",
-            "AzureChinaCloud",
-            "AzureGermanCloud",
-            "AzureUSGovernment"});
             this.cboAzureEnvironment.Location = new System.Drawing.Point(181, 10);
             this.cboAzureEnvironment.Name = "cboAzureEnvironment";
             this.cboAzureEnvironment.Size = new System.Drawing.Size(243, 28);

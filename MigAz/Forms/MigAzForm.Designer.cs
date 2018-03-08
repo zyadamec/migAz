@@ -65,6 +65,7 @@ namespace MigAz.Forms
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuitemAzureEnvironments = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -259,7 +260,9 @@ namespace MigAz.Forms
             this.targetTreeView1.Size = new System.Drawing.Size(466, 205);
             this.targetTreeView1.StatusProvider = null;
             this.targetTreeView1.TabIndex = 0;
+            this.targetTreeView1.TargetBlobStorageNamespace = null;
             this.targetTreeView1.TargetSettings = null;
+            this.targetTreeView1.TargetSubscription = null;
             this.targetTreeView1.AfterTargetSelected += new MigAz.Azure.UserControls.TargetTreeView.AfterTargetSelectedHandler(this.targetTreeView1_AfterTargetSelected);
             this.targetTreeView1.AfterNewTargetResourceAdded += new MigAz.Azure.UserControls.TargetTreeView.AfterNewTargetResourceAddedHandler(this.targetTreeView1_AfterNewTargetResourceAdded);
             this.targetTreeView1.AfterExportArtifactRefresh += new MigAz.Azure.UserControls.TargetTreeView.AfterExportArtifactRefreshHandler(this.targetTreeView1_AfterExportArtifactRefresh);
@@ -392,6 +395,7 @@ namespace MigAz.Forms
             this.propertyPanel1.Size = new System.Drawing.Size(450, 471);
             this.propertyPanel1.StatusProvider = null;
             this.propertyPanel1.TabIndex = 8;
+            this.propertyPanel1.TargetTreeView = null;
             // 
             // panel1
             // 
@@ -463,6 +467,7 @@ namespace MigAz.Forms
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem2,
             this.toolStripSeparator1,
+            this.menuitemAzureEnvironments,
             this.optionsToolStripMenuItem,
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
@@ -473,30 +478,37 @@ namespace MigAz.Forms
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(213, 30);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(254, 30);
             this.toolStripMenuItem2.Text = "&New Migration";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(210, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(251, 6);
+            // 
+            // menuitemAzureEnvironments
+            // 
+            this.menuitemAzureEnvironments.Name = "menuitemAzureEnvironments";
+            this.menuitemAzureEnvironments.Size = new System.Drawing.Size(254, 30);
+            this.menuitemAzureEnvironments.Text = "&Azure Environments";
+            this.menuitemAzureEnvironments.Click += new System.EventHandler(this.menuitemAzureEnvironments_Click);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(254, 30);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(251, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(213, 30);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(254, 30);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -618,6 +630,7 @@ namespace MigAz.Forms
         private System.Windows.Forms.SplitContainer splitContainer4;
         private Azure.UserControls.TargetTreeView targetTreeView1;
         private UserControls.MigAzMigrationTargetSelection migAzMigrationTargetSelection1;
+        private System.Windows.Forms.ToolStripMenuItem menuitemAzureEnvironments;
     }
 }
 

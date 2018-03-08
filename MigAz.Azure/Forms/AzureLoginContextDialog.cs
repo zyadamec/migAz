@@ -3,6 +3,7 @@
 
 using MigAz.Azure;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,9 +16,9 @@ namespace MigAz.Azure.Forms
             InitializeComponent();
         }
 
-        public async Task InitializeDialog(AzureContext azureContext)
+        public async Task InitializeDialog(AzureContext azureContext, List<AzureEnvironment> azureEnvironments, List<AzureEnvironment> userDefinedAzureEnvironments)
         {
-            await this.azureArmLoginControl.BindContext(azureContext);
+            await this.azureArmLoginControl.BindContext(azureContext, azureEnvironments, userDefinedAzureEnvironments);
             azureContext.BeforeAzureSubscriptionChange += AzureContext_BeforeAzureSubscriptionChange;
             azureContext.AfterAzureSubscriptionChange += AzureContextSourceASM_AfterAzureSubscriptionChange;
         }

@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
 using MigAz.Core;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.Generator
 {
@@ -1298,8 +1299,7 @@ namespace MigAz.Azure.Generator
             copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
-            AzureServiceUrls azureServiceUrls = new AzureServiceUrls(this.TargetSubscription.AzureEnvironment, this.LogProvider);
-            copyblobdetail.TargetEndpoint = azureServiceUrls.GetStorageEndpointUrl();
+            copyblobdetail.TargetEndpoint = this.TargetSubscription.AzureEnvironment.StorageEndpointUrl;
 
             if (disk.TargetStorage != null)
             {
@@ -1484,9 +1484,7 @@ namespace MigAz.Azure.Generator
             {
                 subscriptionSwitch = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
 
-                if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
-                    azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
-                if (this.TargetSubscription.AzureEnvironment != AzureEnvironment.AzureCloud)
+                if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
 
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)

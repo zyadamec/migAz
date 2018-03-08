@@ -24,7 +24,8 @@ namespace MigAz.Azure
 {
     public class AzureRetriever
     {
-        private AzureContext _AzureContext;
+        private ILogProvider _LogProvider;
+        private IStatusProvider _StatusProvider;
         private object _lockObject = new object();
 
         public delegate void OnRestResultHandler(AzureRestResponse response);
@@ -35,9 +36,20 @@ namespace MigAz.Azure
 
         private AzureRetriever() { }
 
-        public AzureRetriever(AzureContext azureContext)
+        public AzureRetriever(ILogProvider logProvider, IStatusProvider statusProvider)
         {
-            _AzureContext = azureContext;
+            _LogProvider = logProvider;
+            _StatusProvider = statusProvider;
+        }
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+        }
+
+        public IStatusProvider StatusProvider
+        {
+            get { return _StatusProvider; }
         }
 
         public void ClearCache()
@@ -58,7 +70,7 @@ namespace MigAz.Azure
             string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
             if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }
 
-            string filePath = filedir + "\\AzureRestResponse-" + this._AzureContext.AzureEnvironment.ToString() + "-" + this._AzureContext.AzureSubscription.SubscriptionId + ".json";
+            string filePath = filedir + "\\AzureRestResponse-" + DateTime.UtcNow.Ticks.ToString() + ".json";
 
             StreamWriter saveSelectionWriter = new StreamWriter(filePath);
             saveSelectionWriter.Write(jsontext);
@@ -78,18 +90,18 @@ namespace MigAz.Azure
                 File.AppendAllText(logfilepath, Environment.NewLine);
             }
 
-            _AzureContext.LogProvider.WriteLog(method, requestGuid.ToString() + " Received REST Response");
+            _LogProvider.WriteLog(method, requestGuid.ToString() + " Received REST Response");
         }
 
 
         public async Task<AzureRestResponse> GetAzureRestResponse(AzureRestRequest azureRestRequest)
         {
-            _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Url: " + azureRestRequest.Url);
+            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Url: " + azureRestRequest.Url);
 
             if (azureRestRequest.UseCached && _RestApiCache.ContainsKey(azureRestRequest.Url))
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Using Cached Response");
-                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " End REST Request");
+                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Using Cached Response");
+                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " End REST Request");
                 AzureRestResponse cachedRestResponse = (AzureRestResponse)_RestApiCache[azureRestRequest.Url];
                 return cachedRestResponse;
             }
@@ -115,7 +127,7 @@ namespace MigAz.Azure
             string webRequesetResult = String.Empty;
             try
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + azureRestRequest.Method + " " + azureRestRequest.Url);
+                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + azureRestRequest.Method + " " + azureRestRequest.Url);
 
                 // Retry Guidlines for 500 series with Backoff Timer - https://msdn.microsoft.com/en-us/library/azure/jj878112.aspx  https://msdn.microsoft.com/en-us/library/azure/gg185909.aspx
                 HttpWebResponse response = null;
@@ -131,7 +143,7 @@ namespace MigAz.Azure
                     }
                     catch (WebException webException)
                     {
-                        _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " EXCEPTION " + webException.Message);
+                        _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " EXCEPTION " + webException.Message);
 
                         HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
 
@@ -145,8 +157,8 @@ namespace MigAz.Azure
                             DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
                             string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
 
-                            _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + sleepMessage);
-                            _AzureContext.StatusProvider.UpdateStatus(sleepMessage);
+                            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + sleepMessage);
+                            _StatusProvider.UpdateStatus(sleepMessage);
                             while (DateTime.Now < sleepUntil)
                             {
                                 Application.DoEvents();
@@ -155,14 +167,14 @@ namespace MigAz.Azure
 
                             if (retrySeconds > maxRetrySecond)
                             {
-                                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
-                                _AzureContext.StatusProvider.UpdateStatus("Too many retry.");
+                                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
+                                _StatusProvider.UpdateStatus("Too many retry.");
                                 throw webException;
                                 // too many retry -> throw exception 
                             }
 
-                            _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
-                            _AzureContext.StatusProvider.UpdateStatus("Initiating retry of Web Request.");
+                            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
+                            _StatusProvider.UpdateStatus("Initiating retry of Web Request.");
                         }
                         else
                             throw webException;
@@ -172,15 +184,15 @@ namespace MigAz.Azure
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
                 writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, webRequesetResult);
-                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
+                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
             }
             catch (Exception exception)
             {
-                _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + azureRestRequest.Url + "  EXCEPTION " + exception.Message);
+                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + azureRestRequest.Url + "  EXCEPTION " + exception.Message);
                 throw exception;
             }
 
-            _AzureContext.LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " End REST Request");
+            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " End REST Request");
 
             AzureRestResponse azureRestResponse = new AzureRestResponse(azureRestRequest, webRequesetResult);
 
@@ -191,10 +203,6 @@ namespace MigAz.Azure
 
             return azureRestResponse;
         }
-
-        
-
-    
     }
 }
 

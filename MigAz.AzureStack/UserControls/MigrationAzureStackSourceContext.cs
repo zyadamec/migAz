@@ -78,14 +78,14 @@ namespace MigAz.AzureStack.UserControls
             InitializeComponent();
         }
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, Core.TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
+        public async Task Bind(AzureRetriever azureRetriever, Core.TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
         {
             _TargetSettings = targetSettings;
-            _LogProvider = logProvider;
-            _StatusProvider = statusProvider;
+            _LogProvider = azureRetriever.LogProvider;
+            _StatusProvider = azureRetriever.StatusProvider;
             _ImageList = imageList;
 
-            _AzureStackContextSource = new AzureStackContext(_LogProvider, _StatusProvider, promptBehavior);
+            _AzureStackContextSource = new AzureStackContext(azureRetriever, promptBehavior);
             _AzureStackContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureStackContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureStackContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;
@@ -97,7 +97,7 @@ namespace MigAz.AzureStack.UserControls
             azureStackLoginContextViewer1.AfterContextChanged += AzureStackLoginContextViewerSource_AfterContextChanged;
 
             await this.azureStackLoginContextViewer1.Bind(_AzureStackContextSource);
-            await treeViewSourceResourceManager1.Bind(statusProvider, logProvider, targetSettings, imageList, promptBehavior);
+            treeViewSourceResourceManager1.Bind(azureRetriever.LogProvider, azureRetriever.StatusProvider, targetSettings, imageList, promptBehavior);
         }
 
 
