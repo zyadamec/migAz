@@ -19,12 +19,17 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public async Task BindContext(AzureContext azureContext, List<AzureEnvironment> azureEnvironments)
+        public async Task BindContext(AzureContext azureContext, List<AzureEnvironment> azureEnvironments, List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _AzureContext = azureContext;
 
             cboAzureEnvironment.Items.Clear();
             foreach (AzureEnvironment azureEnvironment in azureEnvironments)
+            {
+                cboAzureEnvironment.Items.Add(azureEnvironment);
+            }
+
+            foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
             {
                 cboAzureEnvironment.Items.Add(azureEnvironment);
             }

@@ -97,7 +97,7 @@ namespace MigAz.AzureStack.UserControls
             azureStackLoginContextViewer1.AfterContextChanged += AzureStackLoginContextViewerSource_AfterContextChanged;
 
             await this.azureStackLoginContextViewer1.Bind(_AzureStackContextSource);
-            await treeViewSourceResourceManager1.Bind(azureRetriever.LogProvider, azureRetriever.StatusProvider, targetSettings, imageList, promptBehavior);
+            treeViewSourceResourceManager1.Bind(azureRetriever.LogProvider, azureRetriever.StatusProvider, targetSettings, imageList, promptBehavior);
         }
 
 

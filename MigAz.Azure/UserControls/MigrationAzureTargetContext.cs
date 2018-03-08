@@ -81,7 +81,7 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(AzureRetriever azureRetriever, List<AzureEnvironment> azureEnvironments)
+        public void Bind(AzureRetriever azureRetriever, List<AzureEnvironment> azureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _AzureContextTarget = new AzureContext(azureRetriever);
             _AzureContextTarget.AzureEnvironmentChanged += _AzureContextTarget_AzureEnvironmentChanged;
@@ -93,7 +93,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextTarget.BeforeAzureTenantChange += _AzureContextTarget_BeforeAzureTenantChange;
             _AzureContextTarget.AfterAzureTenantChange += _AzureContextTarget_AfterAzureTenantChange;
             azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
-            await azureLoginContextViewerTarget.Bind(_AzureContextTarget, azureEnvironments);
+            azureLoginContextViewerTarget.Bind(_AzureContextTarget, azureEnvironments, ref userDefinedAzureEnvironments);
             this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, azureRetriever.LogProvider, azureRetriever.StatusProvider);
         }
 

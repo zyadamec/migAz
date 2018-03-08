@@ -93,7 +93,7 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(ILogProvider logProvider, IStatusProvider statusProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
+        public void Bind(ILogProvider logProvider, IStatusProvider statusProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior)
         {
             _TargetSettings = targetSettings;
             _LogProvider = logProvider;

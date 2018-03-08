@@ -128,7 +128,7 @@ namespace MigAz.Azure.UserControls
 
         #region Methods
 
-        public async Task Bind(AzureRetriever azureRetriever, IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior, List<AzureEnvironment> azureEnvironments)
+        public void Bind(AzureRetriever azureRetriever, IStatusProvider statusProvider, ILogProvider logProvider, TargetSettings targetSettings, ImageList imageList, PromptBehavior promptBehavior, List<AzureEnvironment> azureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
         {
             _TargetSettings = targetSettings;
             _LogProvider = logProvider;
@@ -146,8 +146,8 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
-            await azureLoginContextViewerSource.Bind(_AzureContextSource, azureEnvironments);
-            await treeViewSourceResourceManager1.Bind(logProvider, statusProvider, targetSettings, imageList, promptBehavior);
+            azureLoginContextViewerSource.Bind(_AzureContextSource, azureEnvironments, ref userDefinedAzureEnvironments);
+            treeViewSourceResourceManager1.Bind(logProvider, statusProvider, targetSettings, imageList, promptBehavior);
         }
 
         private void ResetForm()

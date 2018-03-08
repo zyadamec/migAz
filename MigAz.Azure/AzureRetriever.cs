@@ -70,7 +70,7 @@ namespace MigAz.Azure
             string filedir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\MigAz";
             if (!Directory.Exists(filedir)) { Directory.CreateDirectory(filedir); }
 
-            string filePath = filedir + "\\AzureRestResponse-" + DateTime.UtcNow.ToShortTimeString() + ".json";
+            string filePath = filedir + "\\AzureRestResponse-" + DateTime.UtcNow.Ticks.ToString() + ".json";
 
             StreamWriter saveSelectionWriter = new StreamWriter(filePath);
             saveSelectionWriter.Write(jsontext);
