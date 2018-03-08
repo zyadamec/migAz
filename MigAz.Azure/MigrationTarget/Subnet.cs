@@ -19,6 +19,12 @@ namespace MigAz.Azure.MigrationTarget
 
         private Subnet() { }
 
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, TargetSettings targetSettings)
+        {
+            _ParentVirtualNetwork = parentVirtualNetwork;
+            this.SetTargetName("NewSubnet", targetSettings);
+        }
+
         public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
         {
             _ParentVirtualNetwork = parentVirtualNetwork;

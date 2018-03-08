@@ -35,15 +35,20 @@ namespace MigAz.Azure.UserControls
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TargetTreeView));
             this.treeTargetARM = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.btnNewLoadBalancer = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.btnNewStorageAccount = new System.Windows.Forms.Button();
-            this.btnNewPublicIp = new System.Windows.Forms.Button();
-            this.btnNewAvailabilitySet = new System.Windows.Forms.Button();
-            this.lblAddNew = new System.Windows.Forms.Label();
-            this.btnNewVirtualNetwork = new System.Windows.Forms.Button();
-            this.panel1.SuspendLayout();
+            this.virtualNetworkMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.asdfasdfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resourceGroupMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newLoadBalancerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newPublicIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newAvailabilitySetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newStorageAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newVirtualNetworkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.virtualNetworkMenuStrip.SuspendLayout();
+            this.resourceGroupMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeTargetARM
@@ -59,6 +64,7 @@ namespace MigAz.Azure.UserControls
             this.treeTargetARM.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeTargetARM_DragDrop);
             this.treeTargetARM.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeTargetARM_DragEnter);
             this.treeTargetARM.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeTargetARM_KeyUp);
+            this.treeTargetARM.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeTargetARM_MouseClick);
             // 
             // label1
             // 
@@ -68,34 +74,6 @@ namespace MigAz.Azure.UserControls
             this.label1.Size = new System.Drawing.Size(150, 20);
             this.label1.TabIndex = 59;
             this.label1.Text = "Target Resource(s):";
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.btnNewVirtualNetwork);
-            this.panel1.Controls.Add(this.btnNewLoadBalancer);
-            this.panel1.Controls.Add(this.btnNewStorageAccount);
-            this.panel1.Controls.Add(this.btnNewPublicIp);
-            this.panel1.Controls.Add(this.btnNewAvailabilitySet);
-            this.panel1.Enabled = false;
-            this.panel1.Location = new System.Drawing.Point(138, 77);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(181, 251);
-            this.panel1.TabIndex = 60;
-            // 
-            // btnNewLoadBalancer
-            // 
-            this.btnNewLoadBalancer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewLoadBalancer.ImageKey = "LoadBalancer";
-            this.btnNewLoadBalancer.ImageList = this.imageList1;
-            this.btnNewLoadBalancer.Location = new System.Drawing.Point(1, 45);
-            this.btnNewLoadBalancer.Name = "btnNewLoadBalancer";
-            this.btnNewLoadBalancer.Size = new System.Drawing.Size(178, 39);
-            this.btnNewLoadBalancer.TabIndex = 3;
-            this.btnNewLoadBalancer.Text = "Load Balancer";
-            this.btnNewLoadBalancer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewLoadBalancer.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewLoadBalancer.UseVisualStyleBackColor = true;
-            this.btnNewLoadBalancer.Click += new System.EventHandler(this.btnNewLoadBalancer_Click);
             // 
             // imageList1
             // 
@@ -114,88 +92,107 @@ namespace MigAz.Azure.UserControls
             this.imageList1.Images.SetKeyName(10, "RouteTable");
             this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
             // 
-            // btnNewStorageAccount
+            // virtualNetworkMenuStrip
             // 
-            this.btnNewStorageAccount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewStorageAccount.ImageKey = "StorageAccount";
-            this.btnNewStorageAccount.ImageList = this.imageList1;
-            this.btnNewStorageAccount.Location = new System.Drawing.Point(1, 135);
-            this.btnNewStorageAccount.Name = "btnNewStorageAccount";
-            this.btnNewStorageAccount.Size = new System.Drawing.Size(178, 39);
-            this.btnNewStorageAccount.TabIndex = 2;
-            this.btnNewStorageAccount.Text = "Storage Account";
-            this.btnNewStorageAccount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewStorageAccount.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewStorageAccount.UseVisualStyleBackColor = true;
-            this.btnNewStorageAccount.Click += new System.EventHandler(this.btnNewStorageAccount_Click);
+            this.virtualNetworkMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.virtualNetworkMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asdfasdfToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem});
+            this.virtualNetworkMenuStrip.Name = "virtualNetworkMenuStrip";
+            this.virtualNetworkMenuStrip.Size = new System.Drawing.Size(504, 70);
             // 
-            // btnNewPublicIp
+            // asdfasdfToolStripMenuItem
             // 
-            this.btnNewPublicIp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewPublicIp.ImageKey = "PublicIp";
-            this.btnNewPublicIp.ImageList = this.imageList1;
-            this.btnNewPublicIp.Location = new System.Drawing.Point(0, 90);
-            this.btnNewPublicIp.Name = "btnNewPublicIp";
-            this.btnNewPublicIp.Size = new System.Drawing.Size(178, 39);
-            this.btnNewPublicIp.TabIndex = 1;
-            this.btnNewPublicIp.Text = "Public IP";
-            this.btnNewPublicIp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewPublicIp.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewPublicIp.UseVisualStyleBackColor = true;
-            this.btnNewPublicIp.Click += new System.EventHandler(this.btnNewPublicIp_Click);
+            this.asdfasdfToolStripMenuItem.Name = "asdfasdfToolStripMenuItem";
+            this.asdfasdfToolStripMenuItem.Size = new System.Drawing.Size(503, 30);
+            this.asdfasdfToolStripMenuItem.Text = "New &Subnet";
+            this.asdfasdfToolStripMenuItem.Click += new System.EventHandler(this.asdfasdfToolStripMenuItem_Click);
             // 
-            // btnNewAvailabilitySet
+            // toolStripMenuItem1
             // 
-            this.btnNewAvailabilitySet.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewAvailabilitySet.ImageKey = "AvailabilitySet";
-            this.btnNewAvailabilitySet.ImageList = this.imageList1;
-            this.btnNewAvailabilitySet.Location = new System.Drawing.Point(0, 0);
-            this.btnNewAvailabilitySet.Name = "btnNewAvailabilitySet";
-            this.btnNewAvailabilitySet.Size = new System.Drawing.Size(178, 39);
-            this.btnNewAvailabilitySet.TabIndex = 0;
-            this.btnNewAvailabilitySet.Text = "Availability Set";
-            this.btnNewAvailabilitySet.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewAvailabilitySet.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewAvailabilitySet.UseVisualStyleBackColor = true;
-            this.btnNewAvailabilitySet.Click += new System.EventHandler(this.btnNewAvailabilitySet_Click);
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(500, 6);
             // 
-            // lblAddNew
+            // removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem
             // 
-            this.lblAddNew.AutoSize = true;
-            this.lblAddNew.Location = new System.Drawing.Point(139, 45);
-            this.lblAddNew.Name = "lblAddNew";
-            this.lblAddNew.Size = new System.Drawing.Size(77, 20);
-            this.lblAddNew.TabIndex = 61;
-            this.lblAddNew.Text = "Add New:";
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem.Name = "removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem";
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem.Size = new System.Drawing.Size(503, 30);
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem.Text = "Remove Virtual Network from Target Resource Group";
+            this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem.Click += new System.EventHandler(this.removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem_Click);
             // 
-            // btnNewVirtualNetwork
+            // resourceGroupMenuStrip
             // 
-            this.btnNewVirtualNetwork.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewVirtualNetwork.ImageKey = "VirtualNetwork";
-            this.btnNewVirtualNetwork.ImageList = this.imageList1;
-            this.btnNewVirtualNetwork.Location = new System.Drawing.Point(0, 180);
-            this.btnNewVirtualNetwork.Name = "btnNewVirtualNetwork";
-            this.btnNewVirtualNetwork.Size = new System.Drawing.Size(178, 39);
-            this.btnNewVirtualNetwork.TabIndex = 4;
-            this.btnNewVirtualNetwork.Text = "Virutal Network";
-            this.btnNewVirtualNetwork.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewVirtualNetwork.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnNewVirtualNetwork.UseVisualStyleBackColor = true;
-            this.btnNewVirtualNetwork.Click += new System.EventHandler(this.btnNewVirtualNetwork_Click);
+            this.resourceGroupMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.resourceGroupMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem});
+            this.resourceGroupMenuStrip.Name = "resourceGroupMenuStrip";
+            this.resourceGroupMenuStrip.Size = new System.Drawing.Size(199, 67);
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newAvailabilitySetToolStripMenuItem,
+            this.newLoadBalancerToolStripMenuItem,
+            this.newPublicIPToolStripMenuItem,
+            this.newStorageAccountToolStripMenuItem,
+            this.newVirtualNetworkToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(198, 30);
+            this.newToolStripMenuItem.Text = "&New";
+            // 
+            // newLoadBalancerToolStripMenuItem
+            // 
+            this.newLoadBalancerToolStripMenuItem.Image = global::MigAz.Azure.Properties.Resources.LoadBalancer;
+            this.newLoadBalancerToolStripMenuItem.Name = "newLoadBalancerToolStripMenuItem";
+            this.newLoadBalancerToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newLoadBalancerToolStripMenuItem.Text = "Load Balancer";
+            this.newLoadBalancerToolStripMenuItem.Click += new System.EventHandler(this.newLoadBalancerToolStripMenuItem_Click);
+            // 
+            // newPublicIPToolStripMenuItem
+            // 
+            this.newPublicIPToolStripMenuItem.Image = global::MigAz.Azure.Properties.Resources.PublicIp;
+            this.newPublicIPToolStripMenuItem.Name = "newPublicIPToolStripMenuItem";
+            this.newPublicIPToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newPublicIPToolStripMenuItem.Text = "Public IP";
+            this.newPublicIPToolStripMenuItem.Click += new System.EventHandler(this.newPublicIPToolStripMenuItem_Click);
+            // 
+            // newAvailabilitySetToolStripMenuItem
+            // 
+            this.newAvailabilitySetToolStripMenuItem.Image = global::MigAz.Azure.Properties.Resources.AvailabilitySet;
+            this.newAvailabilitySetToolStripMenuItem.Name = "newAvailabilitySetToolStripMenuItem";
+            this.newAvailabilitySetToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newAvailabilitySetToolStripMenuItem.Text = "Availability Set";
+            this.newAvailabilitySetToolStripMenuItem.Click += new System.EventHandler(this.newAvailabilitySetToolStripMenuItem_Click);
+            // 
+            // newStorageAccountToolStripMenuItem
+            // 
+            this.newStorageAccountToolStripMenuItem.Image = global::MigAz.Azure.Properties.Resources.StorageAccount;
+            this.newStorageAccountToolStripMenuItem.Name = "newStorageAccountToolStripMenuItem";
+            this.newStorageAccountToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newStorageAccountToolStripMenuItem.Text = "Storage Account";
+            this.newStorageAccountToolStripMenuItem.Click += new System.EventHandler(this.newStorageAccountToolStripMenuItem_Click);
+            // 
+            // newVirtualNetworkToolStripMenuItem
+            // 
+            this.newVirtualNetworkToolStripMenuItem.Image = global::MigAz.Azure.Properties.Resources.VirtualNetwork;
+            this.newVirtualNetworkToolStripMenuItem.Name = "newVirtualNetworkToolStripMenuItem";
+            this.newVirtualNetworkToolStripMenuItem.Size = new System.Drawing.Size(227, 30);
+            this.newVirtualNetworkToolStripMenuItem.Text = "Virtual Network";
+            this.newVirtualNetworkToolStripMenuItem.Click += new System.EventHandler(this.newVirtualNetworkToolStripMenuItem_Click);
             // 
             // TargetTreeView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.lblAddNew);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.treeTargetARM);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "TargetTreeView";
             this.Size = new System.Drawing.Size(378, 374);
             this.Resize += new System.EventHandler(this.TargetTreeView_Resize);
-            this.panel1.ResumeLayout(false);
+            this.virtualNetworkMenuStrip.ResumeLayout(false);
+            this.resourceGroupMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -205,14 +202,18 @@ namespace MigAz.Azure.UserControls
 
         private System.Windows.Forms.TreeView treeTargetARM;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button btnNewAvailabilitySet;
         private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.Label lblAddNew;
-        private System.Windows.Forms.Button btnNewStorageAccount;
-        private System.Windows.Forms.Button btnNewPublicIp;
-        private System.Windows.Forms.Button btnNewLoadBalancer;
-        private System.Windows.Forms.Button btnNewVirtualNetwork;
+        private System.Windows.Forms.ContextMenuStrip virtualNetworkMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem asdfasdfToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip resourceGroupMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newAvailabilitySetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newLoadBalancerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newPublicIPToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newStorageAccountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newVirtualNetworkToolStripMenuItem;
     }
 }
 

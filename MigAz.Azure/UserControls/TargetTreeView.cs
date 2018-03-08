@@ -19,7 +19,6 @@ namespace MigAz.Azure.UserControls
 {
     public partial class TargetTreeView : UserControl
     {
-
         private ExportArtifacts _ExportArtifacts;
         private ResourceGroup _TargetResourceGroup;
         private TargetSettings _TargetSettings;
@@ -57,7 +56,6 @@ namespace MigAz.Azure.UserControls
             set
             {
                 this.treeTargetARM.ImageList = value;
-                this.btnNewAvailabilitySet.ImageList = value;
             }
         }
 
@@ -96,7 +94,6 @@ namespace MigAz.Azure.UserControls
             set
             {
                 treeTargetARM.Enabled = value;
-                panel1.Enabled = value;
             }
         }
 
@@ -733,10 +730,8 @@ namespace MigAz.Azure.UserControls
 
         private void TargetTreeView_Resize(object sender, EventArgs e)
         {
-            treeTargetARM.Width = this.Width - panel1.Width - 10 - 10;
+            treeTargetARM.Width = this.Width - 10;
             treeTargetARM.Height = this.Height - 40;
-            panel1.Left = treeTargetARM.Left + treeTargetARM.Width + 10;
-            lblAddNew.Left = panel1.Left;
         }
 
         public List<VirtualNetwork> GetVirtualNetworksInMigration()
@@ -851,6 +846,49 @@ namespace MigAz.Azure.UserControls
             return childCount;
         }
 
+ 
+        private async Task RemoveNodeStartingWithLastChildrenBackUpTree(TreeView treeTargetARM, TreeNode selectedNode)
+        {
+            if (selectedNode != null)
+            {
+                foreach (TreeNode childNode in selectedNode.Nodes)
+                {
+                    await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, childNode);
+                }
+
+                treeTargetARM.Nodes.Remove(selectedNode);
+
+                AfterSourceNodeRemoved?.Invoke(this, selectedNode);
+            }
+        }
+
+        
+        private async Task AddNewMigrationTargetResource(Core.MigrationTarget migrationTarget)
+        {
+            migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", ""), this.TargetSettings);
+
+            // Code has been slightly strucutured with anticipate of need for reuse across different object types
+            int counter = 0;
+            bool nameExists = true;
+
+            while (nameExists)
+            {
+                if (counter > 0)
+                    migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", "") + counter.ToString(), this.TargetSettings);
+
+                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(migrationTarget.ToString(), true);
+                nameExists = matchingNodes.Count() > 0;
+                counter++;
+            }
+
+            TreeNode newNode = this.AddMigrationTarget(migrationTarget).Result;
+
+            await this.RefreshExportArtifacts();
+            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+        }
+
+        #region treeTargetARM TreeView Events
+
         private async void treeTargetARM_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -872,26 +910,10 @@ namespace MigAz.Azure.UserControls
                 }
             }
         }
-
-        private async Task RemoveNodeStartingWithLastChildrenBackUpTree(TreeView treeTargetARM, TreeNode selectedNode)
-        {
-            if (selectedNode != null)
-            {
-                foreach (TreeNode childNode in selectedNode.Nodes)
-                {
-                    await RemoveNodeStartingWithLastChildrenBackUpTree(treeTargetARM, childNode);
-                }
-
-                treeTargetARM.Nodes.Remove(selectedNode);
-
-                AfterSourceNodeRemoved?.Invoke(this, selectedNode);
-            }
-        }
-
         private async void treeTargetARM_DragDrop(object sender, DragEventArgs e)
         {
             string methodName = "treeTargetARM_DragDrop";
-            
+
             this.LogProvider.WriteLog(methodName, "Start");
 
             if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
@@ -999,58 +1021,86 @@ namespace MigAz.Azure.UserControls
             DoDragDrop(e.Item, DragDropEffects.Move);
         }
 
-        private async void btnNewPublicIp_Click(object sender, EventArgs e)
+        private void treeTargetARM_MouseClick(object sender, MouseEventArgs e)
+        {
+            // https://support.microsoft.com/en-us/help/810001/how-to-display-a-context-menu-that-is-specific-to-a-selected-treeview
+            if (e.Button == MouseButtons.Right)
+            {
+                // Point where the mouse is clicked.
+                Point p = new Point(e.X, e.Y);
+
+                // Get the node that the user has clicked.
+                TreeNode node = treeTargetARM.GetNodeAt(p);
+                if (node != null)
+                {
+                    // Select the node the user has clicked.
+                    // The node appears selected until the menu is displayed on the screen.
+                    treeTargetARM.SelectedNode = node;
+                    
+                    if (node.Tag != null)
+                    {
+                        if (node.Tag.GetType() == typeof(ResourceGroup))
+                        {
+                            resourceGroupMenuStrip.Show(treeTargetARM, p);
+                        }
+                        else if (node.Tag.GetType() == typeof(VirtualNetwork))
+                        {
+                            virtualNetworkMenuStrip.Show(treeTargetARM, p);
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Resource Group Context Menu Events
+
+        private async void newAvailabilitySetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await AddNewMigrationTargetResource(new AvailabilitySet());
+        }
+
+        private async void newLoadBalancerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await AddNewMigrationTargetResource(new LoadBalancer());
+        }
+
+        private async void newPublicIPToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await AddNewMigrationTargetResource(new PublicIp());
         }
 
-        private async void btnNewStorageAccount_Click(object sender, EventArgs e)
+        private async void newStorageAccountToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StorageAccount storageAccount = new StorageAccount();
             storageAccount.BlobStorageNamespace = this.TargetBlobStorageNamespace;
             await AddNewMigrationTargetResource(storageAccount);
         }
 
-        private async void btnNewAvailabilitySet_Click(object sender, EventArgs e)
-        {
-            await AddNewMigrationTargetResource(new AvailabilitySet());
-        }
-
-        private async void btnNewLoadBalancer_Click(object sender, EventArgs e)
-        {
-            await AddNewMigrationTargetResource(new LoadBalancer());
-        }
-
-        private async void btnNewVirtualNetwork_Click(object sender, EventArgs e)
+        private async void newVirtualNetworkToolStripMenuItem_Click(object sender, EventArgs e)
         {
             await AddNewMigrationTargetResource(new VirtualNetwork());
         }
 
-        private async Task AddNewMigrationTargetResource(Core.MigrationTarget migrationTarget)
+        #endregion
+
+        #region Virtual Network Context Menu Events
+
+        private void asdfasdfToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", ""), this.TargetSettings);
-
-            // Code has been slightly strucutured with anticipate of need for reuse across different object types
-            int counter = 0;
-            bool nameExists = true;
-
-            while (nameExists)
-            {
-                if (counter > 0)
-                    migrationTarget.SetTargetName("New" + migrationTarget.FriendlyObjectName.Replace(" ", "") + counter.ToString(), this.TargetSettings);
-
-                TreeNode[] matchingNodes = treeTargetARM.Nodes.Find(migrationTarget.ToString(), true);
-                nameExists = matchingNodes.Count() > 0;
-                counter++;
-            }
-
-            TreeNode newNode = this.AddMigrationTarget(migrationTarget).Result;
-
-            await this.RefreshExportArtifacts();
-            AfterNewTargetResourceAdded?.Invoke(this, newNode);
+            VirtualNetwork virtualNetwork = (VirtualNetwork)treeTargetARM.SelectedNode.Tag;
+            Subnet subnet = new Subnet(virtualNetwork, this.TargetSettings);
+            TreeNode subnetNode = SeekARMChildTreeNode(treeTargetARM.SelectedNode.Nodes, subnet.ToString(), subnet.ToString(), subnet, true);
+            treeTargetARM.SelectedNode = subnetNode;
         }
 
+        private void removeVirtualNetworkFromTargetResourceGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        #endregion
     }
 }
 
