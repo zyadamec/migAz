@@ -16,7 +16,6 @@ using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
 using MigAz.UserControls;
 using MigAz.Core;
-using MigAz.AzureStack.UserControls;
 using MigAz.Azure.MigrationTarget;
 using System.Collections.Generic;
 
@@ -35,6 +34,7 @@ namespace MigAz.Forms
         private AppSettingsProvider _appSettingsProvider;
         private AzureTelemetryProvider _telemetryProvider = new AzureTelemetryProvider();
         private TreeNode _EventSourceNode;
+        private AzureContext _TargetAzureContext;
 
         #endregion
 
@@ -47,14 +47,18 @@ namespace MigAz.Forms
             _statusProvider = new UIStatusProvider(this.toolStripStatusLabel1);
             _appSettingsProvider = new AppSettingsProvider();
             _AzureEnvironments = AzureEnvironment.GetAzureEnvironments();
-            txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
             _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
+            _TargetAzureContext = new AzureContext(_AzureRetriever, app.Default.LoginPromptBehavior);
+
+            targetAzureContextViewer.Bind(_TargetAzureContext, _AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
+
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             splitContainer3.SplitterDistance = splitContainer3.Width / 2;
             splitContainer4.SplitterDistance = 45;
 
             lblLastOutputRefresh.Text = String.Empty;
+            txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
 
             // Future thought, do away with the "Set"s and consolidate to a Bind?
             this.targetTreeView1.LogProvider = this.LogProvider;
@@ -618,7 +622,7 @@ namespace MigAz.Forms
         {
             foreach (Control control in splitContainer4.Panel1.Controls)
             {
-                control.Width = splitContainer4.Panel1.Width;
+                control.Width = splitContainer4.Panel1.Width - 10;
                 control.Height = splitContainer4.Panel1.Height;
             }
         }
@@ -680,37 +684,13 @@ namespace MigAz.Forms
                 azureControl.AfterContextChanged += AzureControl_AfterContextChanged;
                 azureControl.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
             }
-            else if (migrationSourceUserControl.GetType() == typeof(MigrationAzureStackSourceContext))
-            {
-                MigrationAzureStackSourceContext azureStackSourceContext = (MigrationAzureStackSourceContext)migrationSourceUserControl;
-                await azureStackSourceContext.Bind(_AzureRetriever,this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior);
 
-                azureStackSourceContext.AzureStackContext.AzureEnvironment = GetDefaultAzureEnvironment();
-
-
-                azureStackSourceContext.AzureEnvironmentChanged += MigrationSourceControl_AzureEnvironmentChanged;
-                azureStackSourceContext.UserAuthenticated += MigrationSourceControl_UserAuthenticated;
-                azureStackSourceContext.BeforeAzureSubscriptionChange += MigrationSourceControl_BeforeAzureSubscriptionChange;
-                azureStackSourceContext.AfterAzureSubscriptionChange += MigrationSourceControl_AfterAzureSubscriptionChange;
-                azureStackSourceContext.BeforeUserSignOut += MigrationSourceControl_BeforeUserSignOut;
-                azureStackSourceContext.AfterUserSignOut += MigrationSourceControl_AfterUserSignOut;
-                azureStackSourceContext.AfterAzureTenantChange += MigrationSourceControl_AfterAzureTenantChange;
-                azureStackSourceContext.BeforeAzureTenantChange += MigrationSourceControl_BeforeAzureTenantChange;
-                azureStackSourceContext.AfterNodeChecked += MigrationSourceControl_AfterNodeChecked;
-                azureStackSourceContext.AfterNodeUnchecked += MigrationSourceControl_AfterNodeUnchecked;
-                azureStackSourceContext.AfterNodeChanged += MigrationSourceControl_AfterNodeChanged;
-                azureStackSourceContext.ClearContext += MigrationSourceControl_ClearContext;
-                azureStackSourceContext.AfterContextChanged += AzureControl_AfterContextChanged;
-                azureStackSourceContext.AzureStackContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-            }
 
             MigrationSourceSelectionControlVisible = false;
             splitContainer3.Panel1.Controls.Add(migrationSourceUserControl);
             migrationSourceUserControl.Top = 5;
             migrationSourceUserControl.Left = 5;
             splitContainer3_Panel1_Resize(this, null);
-
-            migAzMigrationTargetSelection1.MigrationSource = migrationSourceUserControl;
         }
 
         private AzureEnvironment GetDefaultAzureEnvironment()
@@ -721,91 +701,17 @@ namespace MigAz.Forms
             return _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
         }
 
-        private void AzureControl_AfterContextChanged(UserControl sender)
+        private async void AzureControl_AfterContextChanged(UserControl sender)
         {
-            this.MigrationTargetSelectionControl.MigrationSource = sender;
-        }
+            IMigrationSourceUserControl migrationSourceUserControl = (IMigrationSourceUserControl)sender;
+            targetAzureContextViewer.Enabled = migrationSourceUserControl.IsSourceContextAuthenticated;
 
-        private MigAzMigrationTargetSelection MigrationTargetSelectionControl
-        {
-            get
+            if (migrationSourceUserControl != null && migrationSourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
             {
-                foreach (Control control in splitContainer4.Panel1.Controls)
-                {
-                    if (control.GetType() == typeof(MigAzMigrationTargetSelection))
-                    {
-                        return (MigAzMigrationTargetSelection)control;
-                    }
-                }
-
-                return null;
+                MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceUserControl;
+                targetAzureContextViewer.ExistingContext = azureSourceContext.AzureContext;
+                await targetAzureContextViewer.AzureContext.CopyContext(azureSourceContext.AzureContext);
             }
-        }
-
-        private bool MigrationTargetSelectionControlVisible
-        {
-            get
-            {
-                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
-
-                if (targetSelectionControl != null)
-                    return targetSelectionControl.Visible;
-
-                return false;
-            }
-            set
-            {
-                MigAzMigrationTargetSelection targetSelectionControl = MigrationTargetSelectionControl;
-                if (targetSelectionControl != null)
-                {
-                    targetSelectionControl.Visible = value;
-                    targetSelectionControl.Enabled = value;
-                }
-            }
-        }
-
-        private async Task migAzMigrationTargetSelection1_AfterMigrationTargetSelected(UserControl migrationTargetUserControl)
-        {
-            if (migrationTargetUserControl.GetType() == typeof(MigrationAzureTargetContext))
-            {
-                MigrationAzureTargetContext azureTargetContext = (MigrationAzureTargetContext)migrationTargetUserControl;
-                azureTargetContext.Bind(this._AzureRetriever, this._AzureEnvironments, ref this._UserDefinedAzureEnvironments);
-                azureTargetContext.AfterContextChanged += AzureTargetContext_AfterContextChanged;
-                azureTargetContext.AfterAzureSubscriptionChange += AzureTargetContext_AfterAzureSubscriptionChange;
-                azureTargetContext.AzureContext.AzureRetriever.OnRestResult += AzureRetriever_OnRestResult;
-
-                IMigrationSourceUserControl migrationSourceControl = this.MigrationSourceControl;
-                if (migrationSourceControl != null && migrationSourceControl.GetType() == typeof(MigrationAzureSourceContext))
-                {
-                    MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceControl;
-                    azureTargetContext.ExistingContext = azureSourceContext.AzureContext;
-                    await azureTargetContext.AzureContext.CopyContext(azureSourceContext.AzureContext);
-                }
-
-                targetTreeView1.TargetBlobStorageNamespace = azureTargetContext.ExistingContext.AzureEnvironment.BlobEndpointUrl;
-                targetTreeView1.TargetSubscription = azureTargetContext.ExistingContext.AzureSubscription;
-                await RebindPropertyPanel();
-            }
-
-            MigrationTargetSelectionControlVisible = false;
-            splitContainer4.Panel1.Controls.Add(migrationTargetUserControl);
-            splitContainer4_Panel1_Resize(this, null);
-
-            await this.targetTreeView1.RefreshExportArtifacts();
-        }
-
-        private async Task AzureTargetContext_AfterAzureSubscriptionChange(AzureContext sender)
-        {
-            targetTreeView1.TargetBlobStorageNamespace = sender.AzureEnvironment.BlobEndpointUrl;
-            targetTreeView1.TargetSubscription = sender.AzureSubscription;
-            await this.targetTreeView1.RefreshExportArtifacts();
-        }
-
-        private async Task AzureTargetContext_AfterContextChanged(AzureLoginContextViewer sender)
-        {
-            targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureEnvironment.BlobEndpointUrl;
-            targetTreeView1.TargetSubscription = sender.SelectedAzureContext.AzureSubscription;
-            await this.targetTreeView1.RefreshExportArtifacts();
         }
 
         #endregion
@@ -897,6 +803,13 @@ namespace MigAz.Forms
             AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
             azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
             azureEnvironmentDialog.ShowDialog();
+        }
+
+        private async Task targetAzureContextViewer_AfterContextChanged(AzureLoginContextViewer sender)
+        {
+            targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureEnvironment.BlobEndpointUrl;
+            targetTreeView1.TargetSubscription = sender.SelectedAzureContext.AzureSubscription;
+            await this.targetTreeView1.RefreshExportArtifacts();
         }
     }
 }

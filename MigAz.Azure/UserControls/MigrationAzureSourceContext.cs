@@ -146,7 +146,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextSource.BeforeAzureTenantChange += _AzureContextSource_BeforeAzureTenantChange;
             azureLoginContextViewerSource.AfterContextChanged += AzureLoginContextViewerSource_AfterContextChanged;
 
-            azureLoginContextViewerSource.Bind(_AzureContextSource, azureEnvironments, ref userDefinedAzureEnvironments);
+            azureLoginContextViewerSource.Bind(_AzureContextSource, azureRetriever, azureEnvironments, ref userDefinedAzureEnvironments);
             treeViewSourceResourceManager1.Bind(logProvider, statusProvider, targetSettings, imageList, promptBehavior);
         }
 

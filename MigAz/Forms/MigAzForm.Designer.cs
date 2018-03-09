@@ -42,7 +42,7 @@ namespace MigAz.Forms
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.migAzMigrationSourceSelection1 = new MigAz.UserControls.MigAzMigrationSourceSelection();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.migAzMigrationTargetSelection1 = new MigAz.UserControls.MigAzMigrationTargetSelection();
+            this.targetAzureContextViewer = new MigAz.Azure.UserControls.AzureLoginContextViewer();
             this.targetTreeView1 = new MigAz.Azure.UserControls.TargetTreeView();
             this.tabMigAzMonitoring = new System.Windows.Forms.TabControl();
             this.tabMessages = new System.Windows.Forms.TabPage();
@@ -228,7 +228,7 @@ namespace MigAz.Forms
             // 
             // splitContainer4.Panel1
             // 
-            this.splitContainer4.Panel1.Controls.Add(this.migAzMigrationTargetSelection1);
+            this.splitContainer4.Panel1.Controls.Add(this.targetAzureContextViewer);
             this.splitContainer4.Panel1.Resize += new System.EventHandler(this.splitContainer4_Panel1_Resize);
             // 
             // splitContainer4.Panel2
@@ -239,13 +239,19 @@ namespace MigAz.Forms
             this.splitContainer4.SplitterDistance = 259;
             this.splitContainer4.TabIndex = 0;
             // 
-            // migAzMigrationTargetSelection1
+            // targetAzureContextViewer
             // 
-            this.migAzMigrationTargetSelection1.Location = new System.Drawing.Point(3, 6);
-            this.migAzMigrationTargetSelection1.Name = "migAzMigrationTargetSelection1";
-            this.migAzMigrationTargetSelection1.Size = new System.Drawing.Size(387, 141);
-            this.migAzMigrationTargetSelection1.TabIndex = 0;
-            this.migAzMigrationTargetSelection1.AfterMigrationTargetSelected += new MigAz.UserControls.MigAzMigrationTargetSelection.AfterMigrationTargetSelectedHandler(this.migAzMigrationTargetSelection1_AfterMigrationTargetSelected);
+            this.targetAzureContextViewer.AzureContextSelectedType = MigAz.Azure.UserControls.AzureContextSelectedType.ExistingContext;
+            this.targetAzureContextViewer.ChangeType = MigAz.Azure.UserControls.AzureLoginChangeType.NewOrExistingContext;
+            this.targetAzureContextViewer.Enabled = false;
+            this.targetAzureContextViewer.ExistingContext = null;
+            this.targetAzureContextViewer.Location = new System.Drawing.Point(5, 5);
+            this.targetAzureContextViewer.Margin = new System.Windows.Forms.Padding(2);
+            this.targetAzureContextViewer.Name = "targetAzureContextViewer";
+            this.targetAzureContextViewer.Size = new System.Drawing.Size(670, 169);
+            this.targetAzureContextViewer.TabIndex = 0;
+            this.targetAzureContextViewer.Title = "Target Azure Subscription";
+            this.targetAzureContextViewer.AfterContextChanged += new MigAz.Azure.UserControls.AzureLoginContextViewer.AfterContextChangedHandler(this.targetAzureContextViewer_AfterContextChanged);
             // 
             // targetTreeView1
             // 
@@ -629,8 +635,8 @@ namespace MigAz.Forms
         private UserControls.MigAzMigrationSourceSelection migAzMigrationSourceSelection1;
         private System.Windows.Forms.SplitContainer splitContainer4;
         private Azure.UserControls.TargetTreeView targetTreeView1;
-        private UserControls.MigAzMigrationTargetSelection migAzMigrationTargetSelection1;
         private System.Windows.Forms.ToolStripMenuItem menuitemAzureEnvironments;
+        private Azure.UserControls.AzureLoginContextViewer targetAzureContextViewer;
     }
 }
 

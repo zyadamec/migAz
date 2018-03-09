@@ -55,37 +55,7 @@
     <Compile Include="AdminSubscription.cs" />
     <Compile Include="AzureStackContext.cs" />
     <Compile Include="AzureStackEndpoints.cs" />
-    <Compile Include="Forms\AzureStackLoginContextDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AzureStackLoginContextDialog.Designer.cs">
-      <DependentUpon>AzureStackLoginContextDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserControls\AzureStackArmLoginControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AzureStackArmLoginControl.Designer.cs">
-      <DependentUpon>AzureStackArmLoginControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\AzureStackLoginContextViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AzureStackLoginContextViewer.Designer.cs">
-      <DependentUpon>AzureStackLoginContextViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureStackSourceContext.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureStackSourceContext.Designer.cs">
-      <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureStackTargetContext.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureStackTargetContext.Designer.cs">
-      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MigAz.Azure\MigAz.Azure.csproj">
@@ -96,23 +66,6 @@
       <Project>{1bdc90e2-902b-4397-8b4f-7dff2d486fc2}</Project>
       <Name>MigAz.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Forms\AzureStackLoginContextDialog.resx">
-      <DependentUpon>AzureStackLoginContextDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AzureStackArmLoginControl.resx">
-      <DependentUpon>AzureStackArmLoginControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AzureStackLoginContextViewer.resx">
-      <DependentUpon>AzureStackLoginContextViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MigrationAzureStackSourceContext.resx">
-      <DependentUpon>MigrationAzureStackSourceContext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MigrationAzureStackTargetContext.resx">
-      <DependentUpon>MigrationAzureStackTargetContext.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

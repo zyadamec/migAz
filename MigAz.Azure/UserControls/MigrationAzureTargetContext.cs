@@ -93,7 +93,7 @@ namespace MigAz.Azure.UserControls
             _AzureContextTarget.BeforeAzureTenantChange += _AzureContextTarget_BeforeAzureTenantChange;
             _AzureContextTarget.AfterAzureTenantChange += _AzureContextTarget_AfterAzureTenantChange;
             azureLoginContextViewerTarget.AfterContextChanged += AzureLoginContextViewerTarget_AfterContextChanged;
-            azureLoginContextViewerTarget.Bind(_AzureContextTarget, azureEnvironments, ref userDefinedAzureEnvironments);
+            azureLoginContextViewerTarget.Bind(_AzureContextTarget, azureRetriever, azureEnvironments, ref userDefinedAzureEnvironments);
             this._AzureGenerator = new AzureGenerator(_AzureContextTarget.AzureSubscription, _AzureContextTarget.AzureSubscription, azureRetriever.LogProvider, azureRetriever.StatusProvider);
         }
 
