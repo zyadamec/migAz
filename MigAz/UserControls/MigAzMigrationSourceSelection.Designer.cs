@@ -33,7 +33,6 @@ namespace MigAz.UserControls
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnAmazonWebServices = new System.Windows.Forms.Button();
-            this.btnAzureStack = new System.Windows.Forms.Button();
             this.btnAzure = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -41,7 +40,6 @@ namespace MigAz.UserControls
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.btnAmazonWebServices);
-            this.groupBox1.Controls.Add(this.btnAzureStack);
             this.groupBox1.Controls.Add(this.btnAzure);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
@@ -59,16 +57,6 @@ namespace MigAz.UserControls
             this.btnAmazonWebServices.Text = "AWS (Under Development)";
             this.btnAmazonWebServices.UseVisualStyleBackColor = true;
             this.btnAmazonWebServices.Click += new System.EventHandler(this.btnAmazonWebServices_Click);
-            // 
-            // btnAzureStack
-            // 
-            this.btnAzureStack.Location = new System.Drawing.Point(32, 176);
-            this.btnAzureStack.Name = "btnAzureStack";
-            this.btnAzureStack.Size = new System.Drawing.Size(278, 42);
-            this.btnAzureStack.TabIndex = 1;
-            this.btnAzureStack.Text = "Azure Stack (Under Development)";
-            this.btnAzureStack.UseVisualStyleBackColor = true;
-            this.btnAzureStack.Click += new System.EventHandler(this.btnAzureStack_Click);
             // 
             // btnAzure
             // 
@@ -96,7 +84,6 @@ namespace MigAz.UserControls
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnAzureStack;
         private System.Windows.Forms.Button btnAzure;
         private System.Windows.Forms.Button btnAmazonWebServices;
     }

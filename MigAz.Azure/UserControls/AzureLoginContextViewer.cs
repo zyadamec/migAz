@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Forms;
 
 namespace MigAz.Azure.UserControls
@@ -25,6 +26,7 @@ namespace MigAz.Azure.UserControls
 
     public partial class AzureLoginContextViewer : UserControl
     {
+        private AzureRetriever _AzureRetriever;
         private AzureContext _AzureContext;
         private AzureContext _ExistingContext;
         private AzureLoginChangeType _ChangeType = AzureLoginChangeType.NewContext;
@@ -40,11 +42,13 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public void Bind(AzureContext azureContext, List<AzureEnvironment> azureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
+        public void Bind(AzureContext azureContext, AzureRetriever azureRetriever, List<AzureEnvironment> azureEnvironments, ref List<AzureEnvironment> userDefinedAzureEnvironments)
         {
-            _AzureContext = azureContext;
+            _AzureRetriever = azureRetriever;
             _AzureEnvironments = azureEnvironments;
             _UserDefinedAzureEnvironments = userDefinedAzureEnvironments;
+
+            _AzureContext = azureContext;
 
             _AzureContext.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContext.AfterAzureTenantChange += _AzureContext_AfterAzureTenantChange;

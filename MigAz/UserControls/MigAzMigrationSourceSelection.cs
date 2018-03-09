@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
-using MigAz.AzureStack.UserControls;
 using MigAz.Azure.UserControls;
 using MigAz.AWS.UserControls;
 
@@ -36,11 +35,6 @@ namespace MigAz.UserControls
         private void btnAzure_Click(object sender, EventArgs e)
         {
             AfterMigrationSourceSelected?.Invoke(new MigrationAzureSourceContext());
-        }
-
-        private void btnAzureStack_Click(object sender, EventArgs e)
-        {
-            AfterMigrationSourceSelected?.Invoke(new MigrationAzureStackSourceContext());
         }
 
         private void btnAmazonWebServices_Click(object sender, EventArgs e)
