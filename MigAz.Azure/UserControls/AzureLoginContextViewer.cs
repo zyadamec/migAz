@@ -72,6 +72,7 @@ namespace MigAz.Azure.UserControls
             {
                 _ExistingContext = value;
                 UpdateLabels();
+                AfterContextChanged?.Invoke(this);
             }
         }
 
