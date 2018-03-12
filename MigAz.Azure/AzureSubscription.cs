@@ -36,7 +36,24 @@ namespace MigAz.Azure
         private Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>> _ArmAvailabilitySets = new Dictionary<Arm.ResourceGroup, List<Arm.AvailabilitySet>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>> _ArmVirtualMachines = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualMachine>>();
 
-        internal Arm.ManagedDisk SeekManagedDisk(string managedDiskId)
+        internal Arm.ManagedDisk SeekManagedDiskByName(string managedDiskId)
+        {
+            if (_ArmManagedDisks == null)
+                return null;
+
+            foreach (List<Arm.ManagedDisk> managedDiskList in this._ArmManagedDisks.Values)
+            {
+                foreach (Arm.ManagedDisk managedDisk in managedDiskList)
+                {
+                    if (String.Compare(managedDisk.Name, managedDiskId, true) == 0)
+                        return managedDisk;
+                }
+            }
+
+            return null;
+        }
+
+        internal Arm.ManagedDisk SeekManagedDiskById(string managedDiskId)
         {
             if (_ArmManagedDisks == null)
                 return null;
@@ -107,7 +124,7 @@ namespace MigAz.Azure
         }
 
 
-        public async Task InitializeChildrenAsync(bool useCache = false)
+        public async Task InitializeChildrenAsync(bool useCache = true)
         {
             await this.InitializeARMLocations();
             _ArmProviders = await this.GetResourceManagerProviders(useCache);
@@ -1471,7 +1488,7 @@ namespace MigAz.Azure
             return matchedLocation;
         }
 
-        internal async Task<List<Provider>> GetResourceManagerProviders(bool allowCache = false)
+        internal async Task<List<Provider>> GetResourceManagerProviders(bool allowCache = true)
         {
             AzureContext azureContext = this.AzureTenant.AzureContext;
             this.LogProvider.WriteLog("GetResourceManagerProviders", "Start - Subscription : " + this.ToString());

@@ -24,13 +24,29 @@ namespace MigAz.Azure.Arm
 
         public VirtualMachine(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
+            this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Constructing OS Disk");
+
             if (ResourceToken["properties"]["storageProfile"]["osDisk"]["vhd"] == null)
             {
                 // Find and Link to Managed Disk
-                string managedDiskId = ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"].ToString();
-                ManagedDisk osDisk = azureSubscription.SeekManagedDisk(managedDiskId);
-                osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
-                _OSVirtualHardDisk = osDisk;
+                if (ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"] == null)
+                {
+                    string managedDiskName = ResourceToken["properties"]["storageProfile"]["osDisk"]["name"].ToString();
+                    this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
+
+                    ManagedDisk osDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
+                    osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                    _OSVirtualHardDisk = osDisk;
+                }
+                else
+                {
+                    string managedDiskId = ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"].ToString();
+                    this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskId + "'.");
+
+                    ManagedDisk osDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
+                    osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                    _OSVirtualHardDisk = osDisk;
+                }
             }
             else
             {
@@ -39,13 +55,29 @@ namespace MigAz.Azure.Arm
 
             foreach (JToken dataDiskToken in ResourceToken["properties"]["storageProfile"]["dataDisks"])
             {
+                this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Constructing Data Disk");
+
                 if (dataDiskToken["vhd"] == null)
                 {
                     // Find and Link to Managed Disk
-                    string managedDiskId = dataDiskToken["managedDisk"]["id"].ToString();
-                    ManagedDisk dataDisk = azureSubscription.SeekManagedDisk(managedDiskId);
-                    dataDisk.SetParentVirtualMachine(this, dataDiskToken);
-                    _DataDisks.Add(dataDisk);
+                    if (dataDiskToken["managedDisk"] == null)
+                    {
+                        string managedDiskName = dataDiskToken["name"].ToString();
+                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
+
+                        ManagedDisk dataDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
+                        dataDisk.SetParentVirtualMachine(this, dataDiskToken);
+                        _DataDisks.Add(dataDisk);
+                    }
+                    else
+                    {
+                        string managedDiskId = dataDiskToken["managedDisk"]["id"].ToString();
+                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskId + "'.");
+
+                        ManagedDisk dataDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
+                        dataDisk.SetParentVirtualMachine(this, dataDiskToken);
+                        _DataDisks.Add(dataDisk);
+                    }
                 }
                 else
                 {

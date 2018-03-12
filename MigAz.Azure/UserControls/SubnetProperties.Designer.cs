@@ -183,10 +183,10 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblAddressSpace;
         private System.Windows.Forms.Label label4;
-        private ResourceSummary<MigrationTarget.NetworkSecurityGroup> networkSecurityGroup;
+        private MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.NetworkSecurityGroup> networkSecurityGroup;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label5;
-        private ResourceSummary<MigrationTarget.RouteTable> routeTable;
+        private MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.RouteTable> routeTable;
     }
 }
 
