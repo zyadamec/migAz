@@ -30,24 +30,21 @@ namespace MigAz.Azure.Generator
         private IStatusProvider _statusProvider;
         private Dictionary<string, MemoryStream> _TemplateStreams = new Dictionary<string, MemoryStream>();
         private string _OutputDirectory = String.Empty;
-        private ISubscription _SourceSubscription;
-        private ISubscription _TargetSubscription;
         private List<BlobCopyDetail> _CopyBlobDetails = new List<BlobCopyDetail>();
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
+        private AzureSubscription _TargetSubscription;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
 
         private TemplateGenerator() { }
 
-        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider, ISubscription sourceSubscription, ISubscription targetSubscription)
+        public TemplateGenerator(ILogProvider logProvider, IStatusProvider statusProvider)
         {
             _logProvider = logProvider;
             _statusProvider = statusProvider;
-            _SourceSubscription = sourceSubscription;
-            _TargetSubscription = targetSubscription;
         }
 
         public ILogProvider LogProvider
@@ -60,8 +57,12 @@ namespace MigAz.Azure.Generator
             get { return _statusProvider; }
         }
 
-        public ISubscription SourceSubscription { get { return _SourceSubscription; } set { _SourceSubscription = value; } }
-        public ISubscription TargetSubscription { get { return _TargetSubscription; } set { _TargetSubscription = value; } }
+
+        public AzureSubscription TargetSubscription
+        {
+            get { return _TargetSubscription; }
+            set { _TargetSubscription = value; }
+        }
 
         public Guid ExecutionGuid
         {
@@ -1257,8 +1258,9 @@ namespace MigAz.Azure.Generator
                 return null;
 
             BlobCopyDetail copyblobdetail = new BlobCopyDetail();
-            if (this.SourceSubscription != null)
-                copyblobdetail.SourceEnvironment = this.SourceSubscription.AzureEnvironment.ToString();
+            
+            if (disk.SourceStorageAccount != null && disk.SourceStorageAccount.AzureSubscription != null && disk.SourceStorageAccount.AzureSubscription.AzureEnvironment != null)
+                copyblobdetail.SourceEnvironment = disk.SourceStorageAccount.AzureSubscription.AzureEnvironment.ToString();
 
             copyblobdetail.TargetResourceGroup = resourceGroup.ToString();
             copyblobdetail.TargetLocation = resourceGroup.TargetLocation.Name.ToString();

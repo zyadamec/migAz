@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
 using MigAz.Core.ArmTemplate;
@@ -30,7 +31,7 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(Guid appSessionGuid, AzureGenerator templateGenerator)
+        public void PostTelemetryRecord(Guid appSessionGuid, AzureSubscription sourceSubscription, AzureGenerator templateGenerator)
         {
             if (templateGenerator == null)
                 throw new ArgumentException("Template Generator cannot be null.");
@@ -39,11 +40,11 @@ namespace MigAz.Providers
             telemetryrecord.AppSessionGuid = appSessionGuid;
             telemetryrecord.ExecutionGuid = templateGenerator.ExecutionGuid;
 
-            if (templateGenerator.SourceSubscription != null)
+            if (sourceSubscription != null)
             {
-                telemetryrecord.SourceEnvironment = templateGenerator.SourceSubscription.AzureEnvironment.ToString();
-                telemetryrecord.SourceSubscriptionGuid = templateGenerator.SourceSubscription.SubscriptionId;
-                telemetryrecord.SourceTenantGuid = templateGenerator.SourceSubscription.AzureAdTenantId;
+                telemetryrecord.SourceEnvironment = sourceSubscription.AzureEnvironment.ToString();
+                telemetryrecord.SourceSubscriptionGuid = sourceSubscription.SubscriptionId;
+                telemetryrecord.SourceTenantGuid = sourceSubscription.AzureAdTenantId;
                 telemetryrecord.OfferCategories = String.Empty; // templateGenerator.SourceSubscription.offercategories;
             }
 

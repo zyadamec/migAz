@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Generator\TemplateGenerator.cs" />
     <Compile Include="Interface\IArmDisk.cs" />
+    <Compile Include="Interface\IStorageAccount.cs" />
     <Compile Include="Interface\ISubscription.cs" />
     <Compile Include="Interface\ITokenProvider.cs" />
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
@@ -255,12 +256,6 @@
     </Compile>
     <Compile Include="UserControls\TreeViewSourceResourceManager.Designer.cs">
       <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureTargetContext.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\MigrationAzureTargetContext.Designer.cs">
-      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MigrationAzureSourceContext.cs">
       <SubType>UserControl</SubType>
@@ -400,9 +395,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\TreeViewSourceResourceManager.resx">
       <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\MigrationAzureTargetContext.resx">
-      <DependentUpon>MigrationAzureTargetContext.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\MigrationAzureSourceContext.resx">
       <DependentUpon>MigrationAzureSourceContext.cs</DependentUpon>

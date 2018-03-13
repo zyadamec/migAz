@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace MigAz.Core.Interface
+namespace MigAz.Azure.Interface
 {
     public interface IStorageAccount
     {
@@ -11,6 +11,7 @@ namespace MigAz.Core.Interface
 
         string AccountType { get; }
         string PrimaryLocation { get; }
+        AzureSubscription AzureSubscription { get; }
     }
 }
 

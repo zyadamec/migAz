@@ -93,7 +93,7 @@ namespace MigAz.AWS.UserControls
 
 //            azureLoginContextViewer21.Bind(_AzureContextTargetARM);
 
-//            this.TemplateGenerator = new AwsGenerator(LogProvider, StatusProvider);
+//            this.AzureGenerator = new AwsGenerator(LogProvider, StatusProvider);
 
 //            this.treeTargetARM.LogProvider = this.LogProvider;
 //            this.treeTargetARM.StatusProvider = this.StatusProvider;
@@ -111,7 +111,7 @@ namespace MigAz.AWS.UserControls
 //        private async Task _PropertyPanel_PropertyChanged()
 //        {
 //            if (_SourceAwsNode == null) // we are not going to update on every property bind during TreeView updates
-//                await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
+//                await this.AzureGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
 //        }
 
 
@@ -325,7 +325,7 @@ namespace MigAz.AWS.UserControls
 
 //                //_SelectedNodes = this.GetSelectedNodes(treeSourceASM);
 //                //UpdateExportItemsCount();
-//                await this.TemplateGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
+//                await this.AzureGenerator.UpdateArtifacts(treeTargetARM.GetExportArtifacts());
 
 //                _SourceAwsNode = null;
 
