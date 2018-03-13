@@ -38,7 +38,7 @@ namespace MigAz.Azure.UserControls
             this.label1 = new System.Windows.Forms.Label();
             this.pnblPublicProperties = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
-            this.resourceSummaryPublicIp = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.PublicIp>();
+            this.resourceSummaryPublicIp = new MigAz.Azure.UserControls.ResourceSummary();
             this.pnblPublicProperties.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -148,7 +148,7 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel pnblPublicProperties;
         private System.Windows.Forms.Label label8;
-        private ResourceSummary<MigrationTarget.PublicIp> resourceSummaryPublicIp;
+        private ResourceSummary resourceSummaryPublicIp;
     }
 }
 

@@ -37,6 +37,7 @@ namespace MigAz.Azure.UserControls
                 _Subnet = targetSubnet;
 
                 txtTargetName.Text = targetSubnet.TargetName;
+                txtAddressSpace.Text = targetSubnet.AddressPrefix;
 
                 if (targetSubnet.SourceSubnet != null)
                 {

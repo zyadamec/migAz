@@ -43,7 +43,7 @@ namespace MigAz.Azure.UserControls
 
                 foreach (VirtualMachine virtualMachine in _AvailabilitySet.TargetVirtualMachines)
                 {
-                    AddResourceSummary(new ResourceSummary<VirtualMachine>(virtualMachine, _TargetTreeView));
+                    AddResourceSummary(new ResourceSummary(virtualMachine, _TargetTreeView));
                 }
             }
             finally
@@ -52,7 +52,7 @@ namespace MigAz.Azure.UserControls
             }
         }
 
-        private void AddResourceSummary(ResourceSummary<VirtualMachine> resourceSummary)
+        private void AddResourceSummary(ResourceSummary resourceSummary)
         {
             if (pictureBox1.Controls.Count > 0)
             {
