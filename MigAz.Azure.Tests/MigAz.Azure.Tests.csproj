@@ -77,6 +77,7 @@
     <Compile Include="MigAzCoreTests.cs" />
     <Compile Include="StorageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControlTests.cs" />
     <Compile Include="VnetTests.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="VirtualMachineTests.cs" />

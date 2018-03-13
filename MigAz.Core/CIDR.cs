@@ -72,8 +72,16 @@ namespace MigAz.Core
             if (CIDRIPArray.Count() != 4)
                 return false; // Should have 4 IP Address parts
 
-            IPAddress ipAddress;
-            if (!IPAddress.TryParse(CIDRMaskArray[0], out ipAddress))
+            if (!IsValidIpAddress(CIDRMaskArray[0]))
+                return false;
+
+            return true;
+        }
+
+        public static bool IsValidIpAddress(string ipAddress)
+        {
+            IPAddress objIpAddress;
+            if (!IPAddress.TryParse(ipAddress, out objIpAddress))
                 return false;
 
             return true;
