@@ -60,9 +60,9 @@ namespace MigAz.Azure.UserControls
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.primaryNICSummary = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.NetworkInterface>();
-            this.osDiskSummary = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.Disk>();
-            this.availabilitySetSummary = new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.AvailabilitySet>();
+            this.primaryNICSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.osDiskSummary = new MigAz.Azure.UserControls.ResourceSummary();
+            this.availabilitySetSummary = new MigAz.Azure.UserControls.ResourceSummary();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -362,7 +362,7 @@ namespace MigAz.Azure.UserControls
             this.availabilitySetSummary.Name = "availabilitySetSummary";
             this.availabilitySetSummary.Size = new System.Drawing.Size(287, 31);
             this.availabilitySetSummary.TabIndex = 48;
-            this.availabilitySetSummary.AfterMigrationTargetChanged += new MigAz.Azure.UserControls.ResourceSummary<MigrationTarget.AvailabilitySet>.AfterMigrationTargetChangedHandler<MigrationTarget.AvailabilitySet>(this.availabilitySetSummary_AfterMigrationTargetChanged);
+            this.availabilitySetSummary.AfterMigrationTargetChanged += new MigAz.Azure.UserControls.ResourceSummary.AfterMigrationTargetChangedHandler(this.availabilitySetSummary_AfterMigrationTargetChanged);
             // 
             // VirtualMachineProperties
             // 
@@ -436,12 +436,12 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label8;
-        private ResourceSummary<MigrationTarget.Disk> osDiskSummary;
+        private ResourceSummary osDiskSummary;
         private System.Windows.Forms.Label label10;
-        private ResourceSummary<MigrationTarget.NetworkInterface> primaryNICSummary;
+        private ResourceSummary primaryNICSummary;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label15;
-        private ResourceSummary<MigrationTarget.AvailabilitySet> availabilitySetSummary;
+        private ResourceSummary availabilitySetSummary;
     }
 }
 

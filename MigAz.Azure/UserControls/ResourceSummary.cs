@@ -10,19 +10,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class ResourceSummary<T> : UserControl
+    public partial class ResourceSummary : UserControl
     {
         private bool _IsBinding = false;
-        private T _MigrationTarget;
+        private Core.MigrationTarget _MigrationTarget;
         private TargetTreeView _TargetTreeView;
 
-        public delegate Task AfterMigrationTargetChangedHandler<T>(ResourceSummary<T> sender, T selectedResource);
-        public event AfterMigrationTargetChangedHandler<T> AfterMigrationTargetChanged;
+        public delegate Task AfterMigrationTargetChangedHandler(ResourceSummary sender, Core.MigrationTarget selectedResource);
+        public event AfterMigrationTargetChangedHandler AfterMigrationTargetChanged;
 
 
         public ResourceSummary()
@@ -30,14 +31,14 @@ namespace MigAz.Azure.UserControls
             InitializeComponent();
         }
 
-        public ResourceSummary(T migrationTarget, TargetTreeView targetTreeView)
+        public ResourceSummary(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView)
         {
             InitializeComponent();
             Bind(migrationTarget, targetTreeView);
         }
 
 
-        public void Bind(T migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false, List<T> allowedResources = null)
+        public void Bind(Core.MigrationTarget migrationTarget, TargetTreeView targetTreeView, bool allowSelection = false, bool allowNone = false, List<Core.MigrationTarget> allowedResources = null)
         {
             _IsBinding = true;
 
@@ -59,7 +60,7 @@ namespace MigAz.Azure.UserControls
 
                     if (allowedResources != null)
                     {
-                        foreach (T allowedMigrationTargetResource in allowedResources)
+                        foreach (Core.MigrationTarget allowedMigrationTargetResource in allowedResources)
                         {
                             cmbResources.Items.Add(allowedMigrationTargetResource);
                         }
@@ -95,7 +96,10 @@ namespace MigAz.Azure.UserControls
                         lblResourceText.Text = migrationTarget.ToString();
                 }
 
-                pictureBox1.Image = _TargetTreeView.ImageList.Images[Core.MigrationTarget.GetImageKey(typeof(T))];
+                if (migrationTarget == null)
+                    pictureBox1.Image = null;
+                else
+                    pictureBox1.Image = _TargetTreeView.ImageList.Images[Core.MigrationTarget.GetImageKey(migrationTarget.GetType())];
             }
             finally
             {
@@ -117,23 +121,13 @@ namespace MigAz.Azure.UserControls
 
         private void cmbResources_SelectedIndexChanged(object sender, EventArgs e)
         {
-            T selectedMigrationTargetResource = default(T);
+            Core.MigrationTarget selectedMigrationTargetResource = null; 
 
             if (cmbResources.SelectedItem != null && cmbResources.SelectedItem.GetType().BaseType == typeof(Core.MigrationTarget))
-                selectedMigrationTargetResource = (T)cmbResources.SelectedItem;
+                selectedMigrationTargetResource = (Core.MigrationTarget)cmbResources.SelectedItem;
 
             if (!_IsBinding)
                 AfterMigrationTargetChanged?.Invoke(this, selectedMigrationTargetResource);
-        }
-
-        internal class AfterMigrationTargetChangedHandler
-        {
-            private Func<ResourceSummary<AvailabilitySet>, AvailabilitySet, Task> availabilitySetSummary_AfterMigrationTargetChanged;
-
-            public AfterMigrationTargetChangedHandler(Func<ResourceSummary<AvailabilitySet>, AvailabilitySet, Task> availabilitySetSummary_AfterMigrationTargetChanged)
-            {
-                this.availabilitySetSummary_AfterMigrationTargetChanged = availabilitySetSummary_AfterMigrationTargetChanged;
-            }
         }
     }
 }

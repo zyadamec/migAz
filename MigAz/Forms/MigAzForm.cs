@@ -9,14 +9,10 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using MigAz.Azure;
-using MigAz.Azure.Generator;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Azure.Interface;
 using MigAz.Azure.Forms;
-using MigAz.UserControls;
 using MigAz.Core;
-using MigAz.Azure.MigrationTarget;
 using System.Collections.Generic;
 
 namespace MigAz.Forms
@@ -710,7 +706,6 @@ namespace MigAz.Forms
             {
                 MigrationAzureSourceContext azureSourceContext = (MigrationAzureSourceContext)migrationSourceUserControl;
                 targetAzureContextViewer.ExistingContext = azureSourceContext.AzureContext;
-                await targetAzureContextViewer.AzureContext.CopyContext(azureSourceContext.AzureContext);
             }
         }
 

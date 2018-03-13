@@ -3,7 +3,7 @@
 
 namespace MigAz.Azure.UserControls
 {
-    partial class ResourceSummary<T>
+    partial class ResourceSummary
     {
         /// <summary> 
         /// Required designer variable.

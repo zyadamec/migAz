@@ -25,9 +25,11 @@ namespace MigAz.Tests
     {
         public const string TenantId = "11111111-1111-1111-1111-111111111111";
         public const string SubscriptionId = "22222222-2222-2222-2222-222222222222";
-        public static ISubscription GetTestAzureSubscription()
+        public static ISubscription GetTestAzureSubscription(AzureContext azureContext)
         {
-            return new FakeAzureSubscription();
+            FakeAzureSubscription fakeAzureSubscription = new FakeAzureSubscription();
+            fakeAzureSubscription.AzureEnvironment = azureContext.AzureEnvironment;
+            return fakeAzureSubscription;
         }
 
         public static async Task<AzureContext> SetupAzureContext(AzureEnvironment azureEnvironment, string restResponseFile)
@@ -52,7 +54,7 @@ namespace MigAz.Tests
         public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
         {
             ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
-            return new AzureGenerator(TestHelper.GetTestAzureSubscription(), TestHelper.GetTestAzureSubscription(), azureContext.LogProvider, azureContext.StatusProvider);
+            return new AzureGenerator(TestHelper.GetTestAzureSubscription(azureContext), TestHelper.GetTestAzureSubscription(azureContext), azureContext.LogProvider, azureContext.StatusProvider);
         }
 
         public static JObject GetJsonData(MemoryStream closedStream)
