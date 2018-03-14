@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using MigAz.Azure;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace MigAz.Forms
@@ -128,13 +130,7 @@ namespace MigAz.Forms
             chkBuildEmpty.Checked = app.Default.BuildEmpty;
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
             upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
-
-            int defaultAzureEnvironmentIndex = cmbDefaultAzureEnvironment.FindString(app.Default.AzureEnvironment);
-            if (defaultAzureEnvironmentIndex >= 0)
-                cmbDefaultAzureEnvironment.SelectedIndex = defaultAzureEnvironmentIndex;
-            else
-                cmbDefaultAzureEnvironment.SelectedIndex = 0;
-
+            
             if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
                 rbClassicDisk.Checked = true;
             else
@@ -204,6 +200,25 @@ namespace MigAz.Forms
         private void comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             _HasChanges = true;
+        }
+
+        internal void Bind(List<AzureEnvironment> standardAzureEnvironments, List<AzureEnvironment> userDefinedAzureEnvironments)
+        {
+            cmbDefaultAzureEnvironment.Items.Clear();
+            foreach (AzureEnvironment azureEnvironment in standardAzureEnvironments)
+            {
+                cmbDefaultAzureEnvironment.Items.Add(azureEnvironment);
+            }
+            foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
+            {
+                cmbDefaultAzureEnvironment.Items.Add(azureEnvironment);
+            }
+
+            int defaultAzureEnvironmentIndex = cmbDefaultAzureEnvironment.FindStringExact(app.Default.AzureEnvironment);
+            if (defaultAzureEnvironmentIndex >= 0)
+                cmbDefaultAzureEnvironment.SelectedIndex = defaultAzureEnvironmentIndex;
+            else
+                cmbDefaultAzureEnvironment.SelectedIndex = 0;
         }
     }
 }

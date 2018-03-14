@@ -367,7 +367,7 @@ namespace MigAz.Azure
                                 }
 
                                 if (!targetVNetExists)
-                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + virtualMachineTargetVirtualNetwork.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.", networkInterface);
+                                    this.AddAlert(AlertType.Error, "Target Virtual Network '" + virtualMachineTargetVirtualNetwork.ToString() + "' for Virtual Machine '" + virtualMachine.ToString() + "' Network Interface '" + networkInterface.ToString() + "' is invalid, as it is not included in the migration / template.  Either include the source Virtual Network in the Migration Template (if this is the first time migration needing a new ARM Virtual Network), or select an existing ARM Virtual Network and Subnet to migrate the Virtual Machine into.", networkInterface);
                             }
                         }
 

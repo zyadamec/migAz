@@ -192,8 +192,6 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_BeforeAzureSubscriptionChange(AzureContext sender)
         {
-            //await SaveSubscriptionSettings(sender.AzureSubscription);
-
             BeforeAzureSubscriptionChange?.Invoke(sender);
         }
 
@@ -211,9 +209,7 @@ namespace MigAz.Azure.UserControls
 
         private async Task _AzureContext_BeforeUserSignOut()
         {
-            //await SaveSubscriptionSettings(this._AzureContextSource.AzureSubscription);
-
-            BeforeUserSignOut?.Invoke();
+            await BeforeUserSignOut?.Invoke();
         }
 
         private async Task _AzureContext_AfterUserSignOut()
@@ -221,7 +217,7 @@ namespace MigAz.Azure.UserControls
             ResetForm();
             this.IsSourceContextAuthenticated = false;
 
-            AfterUserSignOut?.Invoke();
+            await AfterUserSignOut?.Invoke();
         }
 
         private async Task _AzureContext_AfterAzureSubscriptionChange(AzureContext sender)
@@ -247,7 +243,6 @@ namespace MigAz.Azure.UserControls
                     }
 
                     _AzureContextSource.AzureRetriever.SaveRestCache();
-                    //        await ReadSubscriptionSettings(sender.AzureSubscription);
                 }
             }
             catch (Exception exc)

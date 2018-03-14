@@ -14,6 +14,7 @@ using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Forms;
 using MigAz.Core;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace MigAz.Forms
 {
@@ -47,6 +48,11 @@ namespace MigAz.Forms
             _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
             _TargetAzureContext = new AzureContext(_AzureRetriever, app.Default.LoginPromptBehavior);
             _AzureGenerator = new AzureGenerator(_logProvider, _statusProvider);
+
+            if (app.Default.UserDefinedAzureEnvironments != null && app.Default.UserDefinedAzureEnvironments != String.Empty)
+            {
+                _UserDefinedAzureEnvironments  = JsonConvert.DeserializeObject<List<AzureEnvironment>>(app.Default.UserDefinedAzureEnvironments);
+            }
 
             targetAzureContextViewer.Bind(_TargetAzureContext, _AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
 
@@ -328,6 +334,7 @@ namespace MigAz.Forms
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OptionsDialog optionsDialog = new OptionsDialog();
+            optionsDialog.Bind(_AzureEnvironments, _UserDefinedAzureEnvironments);
             optionsDialog.ShowDialog();
 
             IMigrationSourceUserControl sourceUserControl = this.MigrationSourceControl;
@@ -629,10 +636,23 @@ namespace MigAz.Forms
 
         private AzureEnvironment GetDefaultAzureEnvironment()
         {
-            if (_AzureEnvironments == null)
-                return null;
+            AzureEnvironment defaultAzureEnvironment;
 
-            return _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+            if (_AzureEnvironments != null)
+            {
+                defaultAzureEnvironment = _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+                if (defaultAzureEnvironment != null)
+                    return defaultAzureEnvironment;
+            }
+
+            if (_UserDefinedAzureEnvironments != null)
+            {
+                defaultAzureEnvironment = _UserDefinedAzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+                if (defaultAzureEnvironment != null)
+                    return defaultAzureEnvironment;
+            }
+
+            return null;
         }
 
         private async void AzureControl_AfterContextChanged(UserControl sender)
@@ -736,6 +756,10 @@ namespace MigAz.Forms
             AzureEnvironmentDialog azureEnvironmentDialog = new AzureEnvironmentDialog();
             azureEnvironmentDialog.Bind(_AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
             azureEnvironmentDialog.ShowDialog();
+
+            // Save User Defined Azure Environments to App Settings
+            app.Default.UserDefinedAzureEnvironments = JsonConvert.SerializeObject(_UserDefinedAzureEnvironments);
+            app.Default.Save();
         }
 
         private async Task targetAzureContextViewer_AfterContextChanged(AzureLoginContextViewer sender)

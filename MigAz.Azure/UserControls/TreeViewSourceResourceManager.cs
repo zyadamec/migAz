@@ -324,21 +324,31 @@ namespace MigAz.Azure.UserControls
                             {
                                 #region Auto Select Virtual Network from each IpConfiguration
 
-                                foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
-                                {
-                                    if (ipConfiguration.TargetVirtualNetwork != null && ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                                    {
-                                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
-                                        foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(targetVirtualNetwork.SourceName, true))
-                                        {
-                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
-                                            {
-                                                if (!treeNode.Checked)
-                                                    treeNode.Checked = true;
-                                            }
-                                        }
-                                    }
-                                }
+                                // This source code to auto select the Virtual Network as a Parent node has been commented out purposefully.
+                                // It was observed through use of MigAz that users were not aware that "including the Virtual Network" in multiple 
+                                // migrations was actually creating new / independent / non-connected versions of the same Virtual Network.
+                                // It is valid that the user would want to migrate the Virtual Network during the first run migration; however, beyond
+                                // that first pass (the Azure ARM Virtual Network exists) the user is more likely to need to migrate the Virtual Machine(s)
+                                // into an existing Azure Virtual Network.  In order to guide the user in this direction, we do not want to auto select the 
+                                // source Virtual Network to be included in the Migration Template as a new Virtual Network.  We want the user to explicitly
+                                // select and include the source Azure Virtual Network into the Migration Template (if they want to include it), or utilize
+                                // the built in property editor dialogs to "select an existing Virtual Network and Subnet".
+
+                                //foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.TargetNetworkInterfaceIpConfigurations)
+                                //{
+                                //    if (ipConfiguration.TargetVirtualNetwork != null && ipConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                                //    {
+                                //        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = (Azure.MigrationTarget.VirtualNetwork)ipConfiguration.TargetVirtualNetwork;
+                                //        foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(targetVirtualNetwork.SourceName, true))
+                                //        {
+                                //            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                                //            {
+                                //                if (!treeNode.Checked)
+                                //                    treeNode.Checked = true;
+                                //            }
+                                //        }
+                                //    }
+                                //}
 
                                 #endregion
 
@@ -395,6 +405,22 @@ namespace MigAz.Azure.UserControls
                             }
 
                             #endregion
+
+                            #region Parent Availability Set
+
+                            if (asmVirtualMachine.AvailabilitySetName != null && asmVirtualMachine.AvailabilitySetName != String.Empty)
+                            {
+                                foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(asmVirtualMachine.AvailabilitySetName, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
+                                    }
+                                }
+                            }
+
+                            #endregion
                         }
 
                         else if (targetVirtualMachine.Source.GetType() == typeof(Azure.Arm.VirtualMachine))
@@ -403,45 +429,33 @@ namespace MigAz.Azure.UserControls
 
                             #region process virtual network
 
-                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
-                            {
-                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
-                                {
-                                    if (ipConfiguration.VirtualNetwork != null)
-                                    {
-                                        foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
-                                        {
-                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
-                                            {
-                                                if (!treeNode.Checked)
-                                                    treeNode.Checked = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            // This source code to auto select the Virtual Network as a Parent node has been commented out purposefully.
+                            // It was observed through use of MigAz that users were not aware that "including the Virtual Network" in multiple 
+                            // migrations was actually creating new / independent / non-connected versions of the same Virtual Network.
+                            // It is valid that the user would want to migrate the Virtual Network during the first run migration; however, beyond
+                            // that first pass (the Azure ARM Virtual Network exists) the user is more likely to need to migrate the Virtual Machine(s)
+                            // into an existing Azure Virtual Network.  In order to guide the user in this direction, we do not want to auto select the 
+                            // source Virtual Network to be included in the Migration Template as a new Virtual Network.  We want the user to explicitly
+                            // select and include the source Azure Virtual Network into the Migration Template (if they want to include it), or utilize
+                            // the built in property editor dialogs to "select an existing Virtual Network and Subnet".
 
-                            #endregion
-
-                            #region process virtual network
-
-                            foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
-                            {
-                                foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
-                                {
-                                    if (ipConfiguration.VirtualNetwork != null)
-                                    {
-                                        foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
-                                        {
-                                            if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
-                                            {
-                                                if (!treeNode.Checked)
-                                                    treeNode.Checked = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            //foreach (Azure.Arm.NetworkInterface networkInterface in armVirtualMachine.NetworkInterfaces)
+                            //{
+                            //    foreach (Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
+                            //    {
+                            //        if (ipConfiguration.VirtualNetwork != null)
+                            //        {
+                            //            foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(ipConfiguration.VirtualNetwork.Name, true))
+                            //            {
+                            //                if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork)))
+                            //                {
+                            //                    if (!treeNode.Checked)
+                            //                        treeNode.Checked = true;
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                             #endregion
 
@@ -575,6 +589,22 @@ namespace MigAz.Azure.UserControls
                                                     treeNode.Checked = true;
                                             }
                                         }
+                                    }
+                                }
+                            }
+
+                            #endregion
+
+                            #region Parent Availability Set
+
+                            if (armVirtualMachine.AvailabilitySet != null)
+                            {
+                                foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(armVirtualMachine.AvailabilitySet.Name, true))
+                                {
+                                    if ((treeNode.Tag != null) && (treeNode.Tag.GetType() == typeof(Azure.MigrationTarget.AvailabilitySet)))
+                                    {
+                                        if (!treeNode.Checked)
+                                            treeNode.Checked = true;
                                     }
                                 }
                             }

@@ -58,6 +58,7 @@ namespace MigAz.Forms
             this.txtNetworkInterfaceCardSuffix = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.cmbLoginPromptBehavior = new System.Windows.Forms.ComboBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cmbDefaultAzureEnvironment = new System.Windows.Forms.ComboBox();
@@ -73,7 +74,6 @@ namespace MigAz.Forms
             this.chkAutoSelectDependencies = new System.Windows.Forms.CheckBox();
             this.chkBuildEmpty = new System.Windows.Forms.CheckBox();
             this.chkAllowTelemetry = new System.Windows.Forms.CheckBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.upDownAccessSASMinutes)).BeginInit();
@@ -378,6 +378,15 @@ namespace MigAz.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "MigAz Options";
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(68, 225);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(52, 20);
+            this.label15.TabIndex = 14;
+            this.label15.Text = "Login:";
+            // 
             // cmbLoginPromptBehavior
             // 
             this.cmbLoginPromptBehavior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -407,11 +416,6 @@ namespace MigAz.Forms
             // 
             this.cmbDefaultAzureEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDefaultAzureEnvironment.FormattingEnabled = true;
-            this.cmbDefaultAzureEnvironment.Items.AddRange(new object[] {
-            "AzureCloud",
-            "AzureGermanCloud",
-            "AzureChinaCloud",
-            "AzureUSGovernment"});
             this.cmbDefaultAzureEnvironment.Location = new System.Drawing.Point(530, 57);
             this.cmbDefaultAzureEnvironment.Name = "cmbDefaultAzureEnvironment";
             this.cmbDefaultAzureEnvironment.Size = new System.Drawing.Size(273, 28);
@@ -572,15 +576,6 @@ namespace MigAz.Forms
             this.chkAllowTelemetry.Text = "Allow telemetry collection";
             this.chkAllowTelemetry.UseVisualStyleBackColor = true;
             this.chkAllowTelemetry.CheckedChanged += new System.EventHandler(this.chkAllowTelemetry_CheckedChanged);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(68, 225);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(52, 20);
-            this.label15.TabIndex = 14;
-            this.label15.Text = "Login:";
             // 
             // OptionsDialog
             // 
