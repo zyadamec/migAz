@@ -41,11 +41,11 @@ namespace MigAz.Azure
             this.AzureEnvironmentType = azureEnvironmentType;
             this.Name = name;
             this.ASMServiceManagementUrl = asmServiceManagementUrl;
-            this.ARMServiceManagementUrl = armServiceManagementUrl;
-            this.AzureLoginUrl = azureLoginUrl;
+            this.ResourceManagerEndpoint = armServiceManagementUrl;
+            this.ActiveDirectoryEndpoint = azureLoginUrl;
             this.StorageEndpointUrl = storageEndpointUrl;
             this.BlobEndpointUrl = blobEndpointUrl;
-            this.GraphApiUrl = graphApiUrl;
+            this.GraphEndpoint = graphApiUrl;
         }
 
 
@@ -55,11 +55,11 @@ namespace MigAz.Azure
             this.Name = "ClonedAzureEnvironment";
             this.AzureStackAdminManagementUrl = azureEnvironment.AzureStackAdminManagementUrl;
             this.ASMServiceManagementUrl = azureEnvironment.ASMServiceManagementUrl;
-            this.ARMServiceManagementUrl = azureEnvironment.ARMServiceManagementUrl;
-            this.AzureLoginUrl = azureEnvironment.AzureLoginUrl;
+            this.ResourceManagerEndpoint = azureEnvironment.ResourceManagerEndpoint;
+            this.ActiveDirectoryEndpoint = azureEnvironment.ActiveDirectoryEndpoint;
             this.StorageEndpointUrl = azureEnvironment.StorageEndpointUrl;
             this.BlobEndpointUrl = azureEnvironment.BlobEndpointUrl;
-            this.GraphApiUrl = azureEnvironment.GraphApiUrl;
+            this.GraphEndpoint = azureEnvironment.GraphEndpoint;
         }
 
         #endregion
@@ -101,11 +101,11 @@ namespace MigAz.Azure
         }
 
         public String ASMServiceManagementUrl { get; set; }
-        public String ARMServiceManagementUrl { get; set; }
-        public String AzureLoginUrl { get; set; }
+        public String ResourceManagerEndpoint { get; set; }
+        public String ActiveDirectoryEndpoint { get; set; }
         public String StorageEndpointUrl { get; set; }
         public String BlobEndpointUrl { get; set; }
-        public String GraphApiUrl { get; set; }
+        public String GraphEndpoint { get; set; }
         public bool IsUserDefined
         {
             get { return _IsUserDefined; }

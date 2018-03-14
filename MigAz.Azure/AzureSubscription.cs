@@ -1567,10 +1567,10 @@ namespace MigAz.Azure
             this.LogProvider.WriteLog("GetAzureArmVirtualMachine", "Start - '" + virtualMachine.ResourceGroup.ToString() + "' Resource Group / '" + virtualMachine.ToString() + "' Virtual Machine");
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-get
-            string url = this.AzureTenant.AzureContext.AzureEnvironment.ARMServiceManagementUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
+            string url = this.AzureTenant.AzureContext.AzureEnvironment.ResourceManagerEndpoint + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
             this.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Virtual Machine Details : '" + virtualMachine.ResourceGroup.ToString() + "' / '" + virtualMachine.ToString() + "' " + this.SubscriptionId);
 
-            AuthenticationResult armToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ARMServiceManagementUrl, this.AzureAdTenantId);
+            AuthenticationResult armToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ResourceManagerEndpoint, this.AzureAdTenantId);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, "GET", false);
             AzureRestResponse azureRestResponse = await this.AzureTenant.AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);

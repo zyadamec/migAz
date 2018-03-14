@@ -1481,6 +1481,7 @@ namespace MigAz.Azure.Generator
             string azureEnvironmentSwitch = String.Empty;
             string tenantSwitch = String.Empty;
             string subscriptionSwitch = String.Empty;
+            StringBuilder sbCustomAzureEnvironment = new StringBuilder();
 
             if (this.TargetSubscription != null)
             {
@@ -1489,10 +1490,32 @@ namespace MigAz.Azure.Generator
                 if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
 
+                if (this.TargetSubscription.AzureEnvironment.IsUserDefined)
+                {
+                    sbCustomAzureEnvironment.Append("<li>");
+                    sbCustomAzureEnvironment.Append("<p>Your Azure Resource Manager deployment utilized a custom Azure Environment.  Ensure Azure PowerShell has this custom Azure Environment added:</p>");
+
+                    // https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/add-azurermenvironment?view=azurermps-4.4.1
+                    sbCustomAzureEnvironment.Append("<pre>");
+                    sbCustomAzureEnvironment.Append("Add-AzureRmEnvironment");
+                    sbCustomAzureEnvironment.Append(" -Name ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.Name);
+                    sbCustomAzureEnvironment.Append(" -ResourceManagerEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ResourceManagerEndpoint);
+                    sbCustomAzureEnvironment.Append(" -GraphEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GraphEndpoint);
+                    sbCustomAzureEnvironment.Append(" -ActiveDirectoryEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ActiveDirectoryEndpoint);
+                    sbCustomAzureEnvironment.Append("</pre>");
+
+                    sbCustomAzureEnvironment.Append("</li>");
+                }
+
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
                     tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
 
+            instructionContent = instructionContent.Replace("{AddCustomEnvironment}", sbCustomAzureEnvironment.ToString());
             instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
             instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
             instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);

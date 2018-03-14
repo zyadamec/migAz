@@ -75,10 +75,10 @@ namespace MigAz.Forms
                         cmbAzureEnvironmentType.SelectedIndex = 0;
 
                     txtName.Text = azureEnvironment.Name;
-                    txtLoginUrl.Text = azureEnvironment.AzureLoginUrl;
-                    txtGraphApiUrl.Text = azureEnvironment.GraphApiUrl;
+                    txtLoginUrl.Text = azureEnvironment.ActiveDirectoryEndpoint;
+                    txtGraphApiUrl.Text = azureEnvironment.GraphEndpoint;
                     txtASMManagementUrl.Text = azureEnvironment.ASMServiceManagementUrl;
-                    txtARMManagementUrl.Text = azureEnvironment.ARMServiceManagementUrl;
+                    txtARMManagementUrl.Text = azureEnvironment.ResourceManagerEndpoint;
                     txtStorageEndpoint.Text = azureEnvironment.StorageEndpointUrl;
                     txtBlobEndpoint.Text = azureEnvironment.BlobEndpointUrl;
 
