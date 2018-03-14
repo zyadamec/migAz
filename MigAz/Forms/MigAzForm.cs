@@ -364,18 +364,18 @@ namespace MigAz.Forms
             if (migrationSourceControl == null)
                 throw new ArgumentException("Unable to Refresh Output:  NULL MigrationSourceControl Context");
 
-            if (targetAzureContextViewer.AzureContext == null)
-                throw new ArgumentException("Unable to Refresh Output:  NULL Target AzureContext");
+            if (targetAzureContextViewer.ExistingContext == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL Target Existing Azure Context");
 
-            if (targetAzureContextViewer.AzureContext.AzureSubscription == null)
-                throw new ArgumentException("Unable to Refresh Output:  NULL Target AzureContext AzureSubscription");
+            if (targetAzureContextViewer.ExistingContext.AzureSubscription == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL Target Existing Azure Context");
 
             if (this.AzureGenerator == null)
                 throw new ArgumentException("Unable to Refresh Output:  NULL TemplateGenerator");
 
             if (this.AzureGenerator != null)
             {
-                this.AzureGenerator.TargetSubscription = targetAzureContextViewer.AzureContext.AzureSubscription;
+                this.AzureGenerator.TargetSubscription = targetAzureContextViewer.ExistingContext.AzureSubscription;
                 this.AzureGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
                 this.AzureGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
                 this.AzureGenerator.OutputDirectory = this.txtDestinationFolder.Text;
