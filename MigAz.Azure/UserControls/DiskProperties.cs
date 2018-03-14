@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Core.Interface;
 using MigAz.Azure.MigrationTarget;
+using MigAz.Azure.Interface;
 
 namespace MigAz.Azure.UserControls
 {

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using MigAz.Azure.Interface;
 using MigAz.Core.Interface;
 using System;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ namespace MigAz.Azure.Asm
     {
         #region Variables
 
-        private AzureContext _AzureContext;
         private XmlNode _XmlNode = null;
         private StorageAccountKeys _AsmStorageAccountKeys;
+        private AzureSubscription _AzureSubscription;
 
         #endregion
 
@@ -23,15 +24,22 @@ namespace MigAz.Azure.Asm
         private StorageAccount() { }
 
 
-        public StorageAccount(AzureContext azureContext, XmlNode xmlNode)
+        public StorageAccount(AzureSubscription azureSubscription, XmlNode xmlNode)
         {
-            _AzureContext = azureContext;
+            _AzureSubscription = azureSubscription;
             _XmlNode = xmlNode;
         }
 
         #endregion
 
         #region Properties
+
+        public AzureSubscription AzureSubscription
+        {
+            get { return _AzureSubscription; }
+            private set { _AzureSubscription = value; }
+        }
+
 
         public string AccountType
         {
@@ -77,7 +85,7 @@ namespace MigAz.Azure.Asm
         {
             get
             {
-                return _AzureContext.AzureEnvironment.BlobEndpointUrl;
+                return this.AzureSubscription.AzureEnvironment.BlobEndpointUrl;
             }
         }
 
@@ -98,7 +106,7 @@ namespace MigAz.Azure.Asm
 
         internal async Task LoadStorageAccountKeysAsync(AzureContext azureContext)
         {
-            _AsmStorageAccountKeys = await this._AzureContext.AzureSubscription.GetAzureAsmStorageAccountKeys(this.Name);
+            _AsmStorageAccountKeys = await this.AzureSubscription.GetAzureAsmStorageAccountKeys(this.Name);
         }
 
         public override string ToString()

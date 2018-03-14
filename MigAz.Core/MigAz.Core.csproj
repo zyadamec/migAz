@@ -67,7 +67,6 @@
     <Compile Include="Interface\ISaveSelectionProvider.cs" />
     <Compile Include="Interface\ISettingsProvider.cs" />
     <Compile Include="Interface\IStatusProvider.cs" />
-    <Compile Include="Interface\IStorageAccount.cs" />
     <Compile Include="Interface\IStorageTarget.cs" />
     <Compile Include="Interface\ISubnet.cs" />
     <Compile Include="Interface\ITelemetryProvider.cs" />

@@ -28,7 +28,19 @@ namespace MigAz.Azure.UserControls
         public override string Text
         {
             get { return txtIpAddress.Text; }
-            set { txtIpAddress.Text = value; }
+            set
+            {
+                string newValue = value;
+                if (newValue.Contains("/"))
+                {
+                    newValue = newValue.Substring(0, newValue.IndexOf("/"));
+                }
+
+                if (Core.IPv4CIDR.IsValidIpAddress(newValue))
+                    txtIpAddress.Text = newValue;
+                else
+                    throw new ArgumentException("Invalid Ip Address Value: " + value);
+            }
         }
 
         public new bool Enabled
@@ -144,8 +156,6 @@ namespace MigAz.Azure.UserControls
                         return;
                     }
                 }
-
-                
             }
             else
             {

@@ -839,7 +839,7 @@ namespace MigAz.Azure
             XmlDocument storageAccountsXml = await this.GetAzureAsmResources("StorageAccounts", null);
             foreach (XmlNode storageAccountXml in storageAccountsXml.SelectNodes("//StorageService"))
             {
-                Asm.StorageAccount asmStorageAccount = new Asm.StorageAccount(azureContext, storageAccountXml);
+                Asm.StorageAccount asmStorageAccount = new Asm.StorageAccount(this, storageAccountXml);
                 _StorageAccounts.Add(asmStorageAccount);
             }
 

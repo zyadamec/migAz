@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using MigAz.Core.Interface;
 using System.Collections.Generic;
 using MigAz.Azure.MigrationTarget;
+using System.Linq;
 
 namespace MigAz.Azure.UserControls
 {
@@ -99,7 +100,7 @@ namespace MigAz.Azure.UserControls
                     lblTargetLocationRequired.Visible = true;
                 }
 
-                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView, true, true, null); // russell  _TargetTreeView.ExportArtifacts.AvailablitySets);
+                availabilitySetSummary.Bind(virtualMachine.TargetAvailabilitySet, _TargetTreeView, true, true, _TargetTreeView.ExportArtifacts.AvailablitySets.Cast<Core.MigrationTarget>().ToList());
                 osDiskSummary.Bind(virtualMachine.OSVirtualHardDisk, _TargetTreeView, false, false, null);
                 primaryNICSummary.Bind(virtualMachine.PrimaryNetworkInterface, _TargetTreeView, false, false, null);
 
