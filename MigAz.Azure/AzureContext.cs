@@ -81,7 +81,7 @@ namespace MigAz.Azure
                 if (_AzureEnvironment != value)
                 {
                     _AzureEnvironment = value;
-                    this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment.ActiveDirectoryEndpoint, _LogProvider);
+                    this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment, _LogProvider);
 
                     AzureEnvironmentChanged?.Invoke(this);
                 }
@@ -139,10 +139,10 @@ namespace MigAz.Azure
 
         #region Methods
 
-        public async Task Login(string loginEndpoint, string resourceUrl)
+        public async Task Login(string resourceUrl)
         {
             if (this.TokenProvider == null)
-                this.TokenProvider = new AzureTokenProvider(loginEndpoint, this.LogProvider);
+                this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment, this.LogProvider);
 
             await this.TokenProvider.Login(resourceUrl, this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);

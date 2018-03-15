@@ -18,23 +18,23 @@ namespace MigAz.Azure
         private const string strReturnUrl = "urn:ietf:wg:oauth:2.0:oob";
         private const string strClientId = "1950a258-227b-4e31-a9cf-717495945fc2";
         private ILogProvider _LogProvider;
-        private string _LogonUrl = String.Empty;
+        private AzureEnvironment _AzureEnvironment;
         private AuthenticationContext _AuthenticationContext;
         private Dictionary<Guid, AuthenticationContext> _TenantAuthenticationContext = new Dictionary<Guid, AuthenticationContext>();
         private UserInfo _LastUserInfo;
 
         private AzureTokenProvider() { }
 
-        public AzureTokenProvider(string logonUrl, ILogProvider logProvider)
+        public AzureTokenProvider(AzureEnvironment azureEnvironment, ILogProvider logProvider)
         {
-            _LogonUrl = logonUrl;
-            _AuthenticationContext = new AuthenticationContext(_LogonUrl + "common");
+            _AzureEnvironment = azureEnvironment;
+            _AuthenticationContext = new AuthenticationContext(_AzureEnvironment.ActiveDirectoryEndpoint + _AzureEnvironment.AdTenant);
             _LogProvider = logProvider;
         }
 
-        public string LogonUrl
+        public AzureEnvironment AzureEnvironment
         {
-            get { return _LogonUrl; }
+            get { return _AzureEnvironment; }
         }
 
         public UserInfo LastUserInfo
@@ -51,7 +51,7 @@ namespace MigAz.Azure
                 return _TenantAuthenticationContext[tenantGuid];
             else
             {
-                AuthenticationContext tenantAuthenticationContext = new AuthenticationContext(_LogonUrl + tenantGuid.ToString() + "/");
+                AuthenticationContext tenantAuthenticationContext = new AuthenticationContext(_AzureEnvironment.ActiveDirectoryEndpoint + tenantGuid.ToString() + "/");
                 _TenantAuthenticationContext.Add(tenantGuid, tenantAuthenticationContext);
                 return tenantAuthenticationContext;
             }
@@ -120,7 +120,7 @@ namespace MigAz.Azure
         {
             bool status = false;
             if (((object)lhs == null && (object)rhs == null) ||
-                ((object)lhs != null && (object)rhs != null && lhs._LogonUrl == rhs._LogonUrl))
+                ((object)lhs != null && (object)rhs != null && lhs.AzureEnvironment == rhs.AzureEnvironment))
             {
                 status = true;
             }

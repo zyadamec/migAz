@@ -31,7 +31,7 @@ namespace MigAz.Tests.Fakes
             return null;
         }
 
-        public Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto)
+        public Task<AuthenticationResult> Login(String resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto)
         {
             return null;
         }

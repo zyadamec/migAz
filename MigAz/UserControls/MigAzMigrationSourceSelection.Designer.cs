@@ -43,14 +43,15 @@ namespace MigAz.UserControls
             this.groupBox1.Controls.Add(this.btnAzure);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(310, 533);
+            this.groupBox1.Size = new System.Drawing.Size(333, 227);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Migration Source";
             // 
             // btnAmazonWebServices
             // 
-            this.btnAmazonWebServices.Location = new System.Drawing.Point(32, 224);
+            this.btnAmazonWebServices.Enabled = false;
+            this.btnAmazonWebServices.Location = new System.Drawing.Point(32, 129);
             this.btnAmazonWebServices.Name = "btnAmazonWebServices";
             this.btnAmazonWebServices.Size = new System.Drawing.Size(272, 45);
             this.btnAmazonWebServices.TabIndex = 2;
@@ -60,7 +61,7 @@ namespace MigAz.UserControls
             // 
             // btnAzure
             // 
-            this.btnAzure.Location = new System.Drawing.Point(32, 72);
+            this.btnAzure.Location = new System.Drawing.Point(32, 51);
             this.btnAzure.Name = "btnAzure";
             this.btnAzure.Size = new System.Drawing.Size(123, 45);
             this.btnAzure.TabIndex = 0;
