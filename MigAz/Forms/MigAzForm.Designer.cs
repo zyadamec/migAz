@@ -483,6 +483,7 @@ namespace MigAz.Forms
             // 
             // toolStripMenuItem2
             // 
+            this.toolStripMenuItem2.Enabled = false;
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(254, 30);
             this.toolStripMenuItem2.Text = "&New Migration";
