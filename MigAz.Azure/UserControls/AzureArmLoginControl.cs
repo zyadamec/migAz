@@ -140,7 +140,7 @@ namespace MigAz.Azure.UserControls
                     cmbSubscriptions.Enabled = false;
                     cmbSubscriptions.Items.Clear();
 
-                    await _AzureContext.Login(_AzureContext.AzureEnvironment.ActiveDirectoryEndpoint, _AzureContext.AzureEnvironment.ASMServiceManagementUrl);
+                    await _AzureContext.Login(_AzureContext.AzureEnvironment.ActiveDirectoryEndpoint, _AzureContext.AzureEnvironment.ServiceManagementUrl);
 
                     if (_AzureContext.TokenProvider != null)
                     {

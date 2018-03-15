@@ -1301,7 +1301,7 @@ namespace MigAz.Azure.Generator
             copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
-            copyblobdetail.TargetEndpoint = this.TargetSubscription.AzureEnvironment.StorageEndpointUrl;
+            copyblobdetail.TargetEndpoint = this.TargetSubscription.AzureEnvironment.StorageEndpointSuffix;
 
             if (disk.TargetStorage != null)
             {
@@ -1500,12 +1500,31 @@ namespace MigAz.Azure.Generator
                     sbCustomAzureEnvironment.Append("Add-AzureRmEnvironment");
                     sbCustomAzureEnvironment.Append(" -Name ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.Name);
+                    sbCustomAzureEnvironment.Append(" -AdTenant ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.AdTenant);
                     sbCustomAzureEnvironment.Append(" -ResourceManagerEndpoint ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ResourceManagerEndpoint);
                     sbCustomAzureEnvironment.Append(" -GraphEndpoint ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GraphEndpoint);
+                    sbCustomAzureEnvironment.Append(" -GraphEndpointResourceId ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GraphEndpoint);
                     sbCustomAzureEnvironment.Append(" -ActiveDirectoryEndpoint ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ActiveDirectoryEndpoint);
+                    sbCustomAzureEnvironment.Append(" -StorageEndpointSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.StorageEndpointSuffix);
+                    sbCustomAzureEnvironment.Append(" -SqlDatabaseDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.SqlDatabaseDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -TrafficManagerDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.TrafficManagerDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -AzureKeyVaultDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.AzureKeyVaultDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -ServiceManagementUrl ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ServiceManagementUrl);
+                    sbCustomAzureEnvironment.Append(" -ActiveDirectoryServiceEndpointResourceId ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ActiveDirectoryServiceEndpointResourceId);
+                    sbCustomAzureEnvironment.Append(" -GalleryUrl ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GalleryUrl);
+
                     sbCustomAzureEnvironment.Append("</pre>");
 
                     sbCustomAzureEnvironment.Append("</li>");
