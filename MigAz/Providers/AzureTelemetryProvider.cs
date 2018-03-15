@@ -40,6 +40,12 @@ namespace MigAz.Providers
             telemetryrecord.AppSessionGuid = appSessionGuid;
             telemetryrecord.ExecutionGuid = templateGenerator.ExecutionGuid;
 
+#if DEBUG
+            telemetryrecord.ConfigurationMode = "Debug";
+#else
+            telemetryrecord.ConfigurationMode = "Release";
+#endif
+
             if (sourceSubscription != null)
             {
                 telemetryrecord.SourceEnvironment = sourceSubscription.AzureEnvironment.ToString();

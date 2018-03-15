@@ -8,6 +8,7 @@ namespace MigAz.Azure.Models
 {
     public class TelemetryRecord
     {
+        public String ConfigurationMode;
         public Guid AppSessionGuid;
         public Guid ExecutionGuid;
         public Guid SourceTenantGuid;
