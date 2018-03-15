@@ -184,6 +184,42 @@ namespace MigAz.Azure.UserControls
                             virtualNetworkParentNode.Nodes.Add(tnVirtualNetwork);
                         }
 
+                        foreach (MigrationTarget.VirtualNetworkGateway targetVirtualNetworkGateway in azureSubscription.ArmTargetVirtualNetworkGateways)
+                        {
+                            TreeNode virtualNetworkGatewayParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualNetworkGateway)targetVirtualNetworkGateway.SourceVirtualNetworkGateway).ResourceGroup);
+
+                            TreeNode tnVirtualNetworkGateway = new TreeNode(targetVirtualNetworkGateway.SourceName);
+                            tnVirtualNetworkGateway.Name = targetVirtualNetworkGateway.SourceName;
+                            tnVirtualNetworkGateway.Tag = targetVirtualNetworkGateway;
+                            tnVirtualNetworkGateway.ImageKey = targetVirtualNetworkGateway.ImageKey;
+                            tnVirtualNetworkGateway.SelectedImageKey = targetVirtualNetworkGateway.ImageKey;
+                            virtualNetworkGatewayParentNode.Nodes.Add(tnVirtualNetworkGateway);
+                        }
+
+                        foreach (MigrationTarget.LocalNetworkGateway targetLocalNetworkGateway in azureSubscription.ArmTargetLocalNetworkGateways)
+                        {
+                            TreeNode localNetworkGatewayParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.LocalNetworkGateway)targetLocalNetworkGateway.SourceLocalNetworkGateway).ResourceGroup);
+
+                            TreeNode tnLocalNetworkGateway = new TreeNode(targetLocalNetworkGateway.SourceName);
+                            tnLocalNetworkGateway.Name = targetLocalNetworkGateway.SourceName;
+                            tnLocalNetworkGateway.Tag = targetLocalNetworkGateway;
+                            tnLocalNetworkGateway.ImageKey = targetLocalNetworkGateway.ImageKey;
+                            tnLocalNetworkGateway.SelectedImageKey = targetLocalNetworkGateway.ImageKey;
+                            localNetworkGatewayParentNode.Nodes.Add(tnLocalNetworkGateway);
+                        }
+
+                        foreach (MigrationTarget.VirtualNetworkGatewayConnection targetConnection in azureSubscription.ArmTargetConnections)
+                        {
+                            TreeNode connectionParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.VirtualNetworkGatewayConnection)targetConnection.SourceConnection).ResourceGroup);
+
+                            TreeNode tnConnection = new TreeNode(targetConnection.SourceName);
+                            tnConnection.Name = targetConnection.SourceName;
+                            tnConnection.Tag = targetConnection;
+                            tnConnection.ImageKey = targetConnection.ImageKey;
+                            tnConnection.SelectedImageKey = targetConnection.ImageKey;
+                            connectionParentNode.Nodes.Add(tnConnection);
+                        }
+
                         foreach (MigrationTarget.StorageAccount targetStorageAccount in azureSubscription.ArmTargetStorageAccounts)
                         {
                             TreeNode storageAccountParentNode = GetResourceGroupTreeNode(subscriptionNodeARM, ((Azure.Arm.StorageAccount)targetStorageAccount.SourceAccount).ResourceGroup);

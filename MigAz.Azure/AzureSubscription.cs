@@ -78,6 +78,8 @@ namespace MigAz.Azure
         private Dictionary<Arm.ResourceGroup, List<Arm.LoadBalancer>> _ArmLoadBalancers = new Dictionary<Arm.ResourceGroup, List<Arm.LoadBalancer>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>> _ArmNetworkInterfaces = new Dictionary<Arm.ResourceGroup, List<Arm.NetworkInterface>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>> _ArmVirtualNetworkGateways = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGateway>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGatewayConnection>> _ArmVirtualNetworkGatewayConnections = new Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGatewayConnection>>();
+        private Dictionary<Arm.ResourceGroup, List<Arm.LocalNetworkGateway>> _ArmLocalNetworkGateways = new Dictionary<Arm.ResourceGroup, List<Arm.LocalNetworkGateway>>();
 
         private Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>> _ArmPublicIPs = new Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>>();
         private Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>> _ArmRouteTables = new Dictionary<Arm.ResourceGroup, List<Arm.RouteTable>>();
@@ -87,6 +89,9 @@ namespace MigAz.Azure
         private List<Azure.MigrationTarget.VirtualNetwork> _AsmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
         private List<Azure.MigrationTarget.VirtualMachine> _AsmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
         private List<Azure.MigrationTarget.StorageAccount> _ArmTargetStorageAccounts = new List<MigrationTarget.StorageAccount>();
+        private List<Azure.MigrationTarget.VirtualNetworkGateway> _ArmTargetVirtualNetworkGateways = new List<MigrationTarget.VirtualNetworkGateway>();
+        private List<Azure.MigrationTarget.LocalNetworkGateway> _ArmTargetLocalNetworkGateways = new List<MigrationTarget.LocalNetworkGateway>();
+        private List<Azure.MigrationTarget.VirtualNetworkGatewayConnection> _ArmTargetConnections = new List<MigrationTarget.VirtualNetworkGatewayConnection>();
         private List<Azure.MigrationTarget.VirtualNetwork> _ArmTargetVirtualNetworks = new List<MigrationTarget.VirtualNetwork>();
         private List<Azure.MigrationTarget.VirtualMachine> _ArmTargetVirtualMachines = new List<MigrationTarget.VirtualMachine>();
         private List<Azure.MigrationTarget.AvailabilitySet> _ArmTargetAvailabilitySets = new List<MigrationTarget.AvailabilitySet>();
@@ -446,6 +451,14 @@ namespace MigAz.Azure
         {
             get { return _ArmVirtualNetworkGateways; }
         }
+        internal Dictionary<Arm.ResourceGroup, List<Arm.LocalNetworkGateway>> ArmLocalNetworkGateways
+        {
+            get { return _ArmLocalNetworkGateways; }
+        }
+        internal Dictionary<Arm.ResourceGroup, List<Arm.VirtualNetworkGatewayConnection>> ArmVirtualNetworkGatewayConnections
+        {
+            get { return _ArmVirtualNetworkGatewayConnections; }
+        }
         internal Dictionary<Arm.ResourceGroup, List<Arm.PublicIP>> ArmPublicIPs
         {
             get { return _ArmPublicIPs; }
@@ -469,6 +482,9 @@ namespace MigAz.Azure
 
 
         public List<Azure.MigrationTarget.StorageAccount> ArmTargetStorageAccounts { get { return _ArmTargetStorageAccounts; } }
+        public List<Azure.MigrationTarget.VirtualNetworkGateway> ArmTargetVirtualNetworkGateways { get { return _ArmTargetVirtualNetworkGateways; } }
+        public List<Azure.MigrationTarget.LocalNetworkGateway> ArmTargetLocalNetworkGateways { get { return _ArmTargetLocalNetworkGateways; } }
+        public List<Azure.MigrationTarget.VirtualNetworkGatewayConnection> ArmTargetConnections { get { return _ArmTargetConnections; } }
         public List<Azure.MigrationTarget.VirtualNetwork> ArmTargetVirtualNetworks { get { return _ArmTargetVirtualNetworks; } }
         public List<Azure.MigrationTarget.VirtualMachine> ArmTargetVirtualMachines { get { return _ArmTargetVirtualMachines; } }
         //public List<Azure.MigrationTarget.VirtualMachineImage> ArmTargetVirtualMachineImages { get { return _ArmTargetVirtualMachineImages; } }
@@ -692,6 +708,30 @@ namespace MigAz.Azure
                     armVirtualNetworkTasks.Add(armVirtualNetworkTask);
                 }
                 await Task.WhenAll(armVirtualNetworkTasks.ToArray());
+
+                List<Task> armVirtualNetworkGatewayTasks = new List<Task>();
+                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                {
+                    Task armVirtualNetworkGatewayTask = LoadARMVirtualNetworkGateways(armResourceGroup, targetSettings);
+                    armVirtualNetworkGatewayTasks.Add(armVirtualNetworkGatewayTask);
+                }
+                await Task.WhenAll(armVirtualNetworkGatewayTasks.ToArray());
+
+                List<Task> armLocalNetworkGatewayTasks = new List<Task>();
+                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                {
+                    Task armLocalNetworkGatewayTask = LoadARMLocalNetworkGateways(armResourceGroup, targetSettings);
+                    armLocalNetworkGatewayTasks.Add(armLocalNetworkGatewayTask);
+                }
+                await Task.WhenAll(armLocalNetworkGatewayTasks.ToArray());
+
+                List<Task> armVirtualNetworkConnectionTasks = new List<Task>();
+                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                {
+                    Task armVirtualNetworkConnectionTask = LoadARMVirtualNetworkConnections(armResourceGroup, targetSettings);
+                    armVirtualNetworkConnectionTasks.Add(armVirtualNetworkConnectionTask);
+                }
+                await Task.WhenAll(armVirtualNetworkConnectionTasks.ToArray());
 
                 List<Task> armStorageAccountTasks = new List<Task>();
                 foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
@@ -1333,10 +1373,6 @@ namespace MigAz.Azure
                 Arm.VirtualNetwork armVirtualNetwork = new Arm.VirtualNetwork(this, virtualNetwork);
 
                 await armVirtualNetwork.InitializeChildrenAsync();
-                foreach (Arm.VirtualNetworkGateway v in await azureContext.AzureSubscription.GetAzureARMVirtualNetworkGateways(resourceGroup))
-                {
-                    // todo now asap, why is this here
-                }
 
                 resourceGroupVirtualNetworks.Add(armVirtualNetwork);
                 this.LogProvider.WriteLog("GetAzureARMVirtualNetworks", "Loaded ARM Virtual Network '" + armVirtualNetwork.Name + "'.");
@@ -1802,11 +1838,69 @@ namespace MigAz.Azure
             foreach (var virtualNetworkGateway in virtualNetworkGateways)
             {
                 Arm.VirtualNetworkGateway armVirtualNetworkGateway = new Arm.VirtualNetworkGateway(this, virtualNetworkGateway);
+                await armVirtualNetworkGateway.InitializeChildrenAsync();
                 resourceGroupVirtualNetworkGateways.Add(armVirtualNetworkGateway);
             }
 
             resourceGroup.AzureSubscription.ArmVirtualNetworkGateways.Add(resourceGroup, resourceGroupVirtualNetworkGateways);
             return resourceGroupVirtualNetworkGateways;
+        }
+
+
+        public async Task<List<Arm.LocalNetworkGateway>> GetAzureARMLocalNetworkGateways(ResourceGroup resourceGroup)
+        {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            this.LogProvider.WriteLog("GetAzureARMLocalNetworkGateways", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (resourceGroup.AzureSubscription.ArmLocalNetworkGateways.ContainsKey(resourceGroup))
+                return resourceGroup.AzureSubscription.ArmLocalNetworkGateways[resourceGroup];
+
+            JObject localNetworkGatewaysJson = await this.GetAzureARMResources("LocalNetworkGateways", resourceGroup, null);
+
+            var localNetworkGateways = from localNetworkGateway in localNetworkGatewaysJson["value"]
+                                         select localNetworkGateway;
+
+            List<Arm.LocalNetworkGateway> resourceGroupLocalNetworkGateways = new List<Arm.LocalNetworkGateway>();
+
+            foreach (var localNetworkGateway in localNetworkGateways)
+            {
+                Arm.LocalNetworkGateway armLocalNetworkGateway = new Arm.LocalNetworkGateway(this, localNetworkGateway);
+                await armLocalNetworkGateway.InitializeChildrenAsync();
+                resourceGroupLocalNetworkGateways.Add(armLocalNetworkGateway);
+            }
+
+            resourceGroup.AzureSubscription.ArmLocalNetworkGateways.Add(resourceGroup, resourceGroupLocalNetworkGateways);
+            return resourceGroupLocalNetworkGateways;
+        }
+
+        public async Task<List<Arm.VirtualNetworkGatewayConnection>> GetAzureARMVirtualNetworkConnections(ResourceGroup resourceGroup)
+        {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            this.LogProvider.WriteLog("GetAzureARMVirtualNetworkConnections", "Start - '" + resourceGroup.ToString() + "' Resource Group");
+
+            if (resourceGroup.AzureSubscription.ArmVirtualNetworkGatewayConnections.ContainsKey(resourceGroup))
+                return resourceGroup.AzureSubscription.ArmVirtualNetworkGatewayConnections[resourceGroup];
+
+            JObject connectionsJson = await this.GetAzureARMResources("VirtualNetworkConnections", resourceGroup, null);
+
+            var connections = from connection in connectionsJson["value"]
+                                       select connection;
+
+            List<Arm.VirtualNetworkGatewayConnection> resourceGroupConnections = new List<Arm.VirtualNetworkGatewayConnection>();
+
+            foreach (var connection in connections)
+            {
+                Arm.VirtualNetworkGatewayConnection armConnection = new Arm.VirtualNetworkGatewayConnection(this, connection);
+                await armConnection.InitializeChildrenAsync();
+                resourceGroupConnections.Add(armConnection);
+            }
+
+            resourceGroup.AzureSubscription.ArmVirtualNetworkGatewayConnections.Add(resourceGroup, resourceGroupConnections);
+            return resourceGroupConnections;
         }
 
 
@@ -2130,6 +2224,16 @@ namespace MigAz.Azure
                     url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=" +this.GetProviderMaxApiVersion("Microsoft.Network", "virtualNetworkGateways");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
                     break;
+                case "VirtualNetworkConnections":
+                    // https://docs.microsoft.com/en-us/rest/api/network-gateway/virtualnetworkgatewayconnections/list
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderGatewayConnection + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "connections");
+                    this.StatusProvider.UpdateStatus("BUSY: Getting ARM Connections for Resource Group '" + resourceGroup.Name + "'.");
+                    break;
+                case "LocalNetworkGateways":
+                    // https://docs.microsoft.com/en-us/rest/api/network-gateway/localnetworkgateways/list
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLocalNetworkGateways + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "localNetworkGateways");
+                    this.StatusProvider.UpdateStatus("BUSY: Getting ARM Local Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
+                    break;
                 case "NetworkSecurityGroups":
                     // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll
                     url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "networkSecurityGroups");
@@ -2332,6 +2436,42 @@ namespace MigAz.Azure
             {
                 MigrationTarget.StorageAccount targetStorageAccount = new MigrationTarget.StorageAccount(armStorageAccount, targetSettings);
                 this.ArmTargetStorageAccounts.Add(targetStorageAccount);
+            }
+        }
+        
+        private async Task LoadARMVirtualNetworkGateways(ResourceGroup resourceGroup, TargetSettings targetSettings)
+        {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.VirtualNetworkGateway armVirtualNetworkGateway in await this.GetAzureARMVirtualNetworkGateways(resourceGroup))
+            {
+                MigrationTarget.VirtualNetworkGateway targetVirtualNetworkGateway = new MigrationTarget.VirtualNetworkGateway(armVirtualNetworkGateway, targetSettings);
+                this.ArmTargetVirtualNetworkGateways.Add(targetVirtualNetworkGateway);
+            }
+        }
+
+        private async Task LoadARMLocalNetworkGateways(ResourceGroup resourceGroup, TargetSettings targetSettings)
+        {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.LocalNetworkGateway armLocalNetworkGateway in await this.GetAzureARMLocalNetworkGateways(resourceGroup))
+            {
+                MigrationTarget.LocalNetworkGateway targetLocalNetworkGateway = new MigrationTarget.LocalNetworkGateway(armLocalNetworkGateway, targetSettings);
+                this.ArmTargetLocalNetworkGateways.Add(targetLocalNetworkGateway);
+            }
+        }
+
+        private async Task LoadARMVirtualNetworkConnections(ResourceGroup resourceGroup, TargetSettings targetSettings)
+        {
+            if (resourceGroup == null)
+                throw new ArgumentException("ResourceGroup parameter must be provided");
+
+            foreach (Arm.VirtualNetworkGatewayConnection armConnection in await this.GetAzureARMVirtualNetworkConnections(resourceGroup))
+            {
+                MigrationTarget.VirtualNetworkGatewayConnection targetConnection = new MigrationTarget.VirtualNetworkGatewayConnection(armConnection, targetSettings);
+                this.ArmTargetConnections.Add(targetConnection);
             }
         }
 
