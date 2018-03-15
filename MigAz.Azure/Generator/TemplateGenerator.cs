@@ -1301,7 +1301,7 @@ namespace MigAz.Azure.Generator
             copyblobdetail.TargetContainer = disk.TargetStorageAccountContainer;
             copyblobdetail.TargetBlob = disk.TargetStorageAccountBlob;
 
-            copyblobdetail.TargetEndpoint = this.TargetSubscription.AzureEnvironment.StorageEndpointUrl;
+            copyblobdetail.TargetEndpoint = this.TargetSubscription.AzureEnvironment.StorageEndpointSuffix;
 
             if (disk.TargetStorage != null)
             {
@@ -1481,6 +1481,7 @@ namespace MigAz.Azure.Generator
             string azureEnvironmentSwitch = String.Empty;
             string tenantSwitch = String.Empty;
             string subscriptionSwitch = String.Empty;
+            StringBuilder sbCustomAzureEnvironment = new StringBuilder();
 
             if (this.TargetSubscription != null)
             {
@@ -1489,10 +1490,51 @@ namespace MigAz.Azure.Generator
                 if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
                     azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
 
+                if (this.TargetSubscription.AzureEnvironment.IsUserDefined)
+                {
+                    sbCustomAzureEnvironment.Append("<li>");
+                    sbCustomAzureEnvironment.Append("<p>Your Azure Resource Manager deployment utilized a custom Azure Environment.  Ensure Azure PowerShell has this custom Azure Environment added:</p>");
+
+                    // https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/add-azurermenvironment?view=azurermps-4.4.1
+                    sbCustomAzureEnvironment.Append("<pre>");
+                    sbCustomAzureEnvironment.Append("Add-AzureRmEnvironment");
+                    sbCustomAzureEnvironment.Append(" -Name ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.Name);
+                    sbCustomAzureEnvironment.Append(" -AdTenant ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.AdTenant);
+                    sbCustomAzureEnvironment.Append(" -ResourceManagerEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ResourceManagerEndpoint);
+                    sbCustomAzureEnvironment.Append(" -GraphEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GraphEndpoint);
+                    sbCustomAzureEnvironment.Append(" -GraphEndpointResourceId ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GraphEndpoint);
+                    sbCustomAzureEnvironment.Append(" -ActiveDirectoryEndpoint ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ActiveDirectoryEndpoint);
+                    sbCustomAzureEnvironment.Append(" -StorageEndpointSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.StorageEndpointSuffix);
+                    sbCustomAzureEnvironment.Append(" -SqlDatabaseDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.SqlDatabaseDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -TrafficManagerDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.TrafficManagerDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -AzureKeyVaultDnsSuffix ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.AzureKeyVaultDnsSuffix);
+                    sbCustomAzureEnvironment.Append(" -ServiceManagementUrl ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ServiceManagementUrl);
+                    sbCustomAzureEnvironment.Append(" -ActiveDirectoryServiceEndpointResourceId ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.ActiveDirectoryServiceEndpointResourceId);
+                    sbCustomAzureEnvironment.Append(" -GalleryUrl ");
+                    sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.GalleryUrl);
+
+                    sbCustomAzureEnvironment.Append("</pre>");
+
+                    sbCustomAzureEnvironment.Append("</li>");
+                }
+
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
                     tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
 
+            instructionContent = instructionContent.Replace("{AddCustomEnvironment}", sbCustomAzureEnvironment.ToString());
             instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
             instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
             instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);

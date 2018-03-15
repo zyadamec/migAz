@@ -54,7 +54,12 @@ namespace MigAz.Tests
         public static async Task<AzureGenerator> SetupTemplateGenerator(AzureContext azureContext)
         {
             ITelemetryProvider telemetryProvider = new FakeTelemetryProvider();
-            return new AzureGenerator(azureContext.LogProvider, azureContext.StatusProvider);
+            AzureGenerator azureGenerator = new AzureGenerator(azureContext.LogProvider, azureContext.StatusProvider);
+
+            // For Tests, we'll set the target subscription of the Azure Generator to the Azure Context provided by the AzureContext
+            azureGenerator.TargetSubscription = azureContext.AzureSubscription;
+
+            return azureGenerator;
         }
 
         public static JObject GetJsonData(MemoryStream closedStream)

@@ -293,12 +293,12 @@ namespace MigAz {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
+        public string UserDefinedAzureEnvironments {
             get {
-                return ((string)(this["Setting"]));
+                return ((string)(this["UserDefinedAzureEnvironments"]));
             }
             set {
-                this["Setting"] = value;
+                this["UserDefinedAzureEnvironments"] = value;
             }
         }
     }

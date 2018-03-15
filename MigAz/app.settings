@@ -71,7 +71,7 @@
     <Setting Name="LoginPromptBehavior" Type="Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior" Scope="User">
       <Value Profile="(Default)">SelectAccount</Value>
     </Setting>
-    <Setting Name="Setting" Type="System.String" Scope="User">
+    <Setting Name="UserDefinedAzureEnvironments" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

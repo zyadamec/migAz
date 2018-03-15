@@ -1567,10 +1567,10 @@ namespace MigAz.Azure
             this.LogProvider.WriteLog("GetAzureArmVirtualMachine", "Start - '" + virtualMachine.ResourceGroup.ToString() + "' Resource Group / '" + virtualMachine.ToString() + "' Virtual Machine");
 
             // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-get
-            string url = this.AzureTenant.AzureContext.AzureEnvironment.ARMServiceManagementUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
+            string url = this.AzureTenant.AzureContext.AzureEnvironment.ResourceManagerEndpoint + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + virtualMachine.ResourceGroup.ToString() + ArmConst.ProviderVirtualMachines + virtualMachine.ToString() + "?$expand=instanceView&api-version=2016-04-30-preview";
             this.StatusProvider.UpdateStatus("BUSY: Getting ARM Azure Virtual Machine Details : '" + virtualMachine.ResourceGroup.ToString() + "' / '" + virtualMachine.ToString() + "' " + this.SubscriptionId);
 
-            AuthenticationResult armToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ARMServiceManagementUrl, this.AzureAdTenantId);
+            AuthenticationResult armToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ResourceManagerEndpoint, this.AzureAdTenantId);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, "GET", false);
             AzureRestResponse azureRestResponse = await this.AzureTenant.AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
@@ -1987,87 +1987,87 @@ namespace MigAz.Azure
             switch (resourceType)
             {
                 case "VirtualNetworks":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/virtualnetwork";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/virtualnetwork";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Virtual Networks for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 // https://msdn.microsoft.com/en-us/library/azure/dn469422.aspx
                 case "RoleSize":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/rolesizes";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/rolesizes";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Role Sizes for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 case "ClientRootCertificates":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Client Root Certificates for Virtual Network : " + info["virtualnetworkname"] + "...");
                     break;
                 case "ClientRootCertificate":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates/" + info["thumbprint"];
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/clientrootcertificates/" + info["thumbprint"];
                     this.StatusProvider.UpdateStatus("BUSY: Getting certificate data for certificate : " + info["thumbprint"] + "...");
                     break;
                 case "NetworkSecurityGroup":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/networksecuritygroups/" + info["name"] + "?detaillevel=Full";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/networksecuritygroups/" + info["name"] + "?detaillevel=Full";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Network Security Group : " + info["name"] + "...");
                     break;
                 case "NetworkSecurityGroups":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/networksecuritygroups";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/networksecuritygroups";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Network Security Groups");
                     break;
                 case "RouteTable":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/routetables/" + info["name"] + "?detailLevel=full";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/routetables/" + info["name"] + "?detailLevel=full";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Route Table : " + info["routetablename"] + "...");
                     break;
                 case "NSGSubnet":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/virtualnetwork/" + info["virtualnetworkname"] + "/subnets/" + info["subnetname"] + "/networksecuritygroups";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/virtualnetwork/" + info["virtualnetworkname"] + "/subnets/" + info["subnetname"] + "/networksecuritygroups";
                     this.StatusProvider.UpdateStatus("BUSY: Getting NSG for subnet " + info["subnetname"] + "...");
                     break;
                 case "VirtualNetworkGateway":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Virtual Network Gateway : " + info["virtualnetworkname"] + "...");
                     break;
                 case "VirtualNetworkGatewaySharedKey":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/connection/" + info["localnetworksitename"] + "/sharedkey";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/" + info["virtualnetworkname"] + "/gateway/connection/" + info["localnetworksitename"] + "/sharedkey";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Virtual Network Gateway Shared Key: " + info["localnetworksitename"] + "...");
                     break;
                 case "StorageAccounts":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/storageservices";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/storageservices";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Storage Accounts for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 case "StorageAccount":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/storageservices/" + info["name"];
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/storageservices/" + info["name"];
                     this.StatusProvider.UpdateStatus("BUSY: Getting Storage Account '" + info["name"] + " ' for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 case "StorageAccountKeys":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/storageservices/" + info["name"] + "/keys";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/storageservices/" + info["name"] + "/keys";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Storage Account '" + info["name"] + "' Keys.");
                     break;
                 case "CloudServices":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/hostedservices";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/hostedservices";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Cloud Services for Subscription ID : " + this.SubscriptionId + "...");
                     break;
                 case "CloudService":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/hostedservices/" + info["name"] + "?embed-detail=true";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/hostedservices/" + info["name"] + "?embed-detail=true";
                     this.StatusProvider.UpdateStatus("BUSY: Getting Virtual Machines for Cloud Service : " + info["name"] + "...");
                     break;
                 case "VirtualMachine":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/hostedservices/" + info["cloudservicename"] + "/deployments/" + info["deploymentname"] + "/roles/" + info["virtualmachinename"];
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/hostedservices/" + info["cloudservicename"] + "/deployments/" + info["deploymentname"] + "/roles/" + info["virtualmachinename"];
                     this.StatusProvider.UpdateStatus("BUSY: Getting Virtual Machine '" + info["virtualmachinename"] + "' for Cloud Service '" + info["virtualmachinename"] + "'");
                     break;
                 case "VMImages":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/images";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/images";
                     break;
                 case "ReservedIPs":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/services/networking/reservedips";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/services/networking/reservedips";
                     break;
                 case "AffinityGroup":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/affinitygroups/" + info["affinitygroupname"];
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/affinitygroups/" + info["affinitygroupname"];
                     break;
                 case "Locations":
-                    url = this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl + this.SubscriptionId + "/locations";
+                    url = this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl + this.SubscriptionId + "/locations";
                     break;
                 default:
                     throw new ArgumentException("Unknown ResourceType: " + resourceType);
             }
 
-            AuthenticationResult asmToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ASMServiceManagementUrl, this.AzureAdTenantId);
+            AuthenticationResult asmToken = await this.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureTenant.AzureContext.AzureEnvironment.ServiceManagementUrl, this.AzureAdTenantId);
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(url, asmToken);
             azureRestRequest.Headers.Add("x-ms-version", "2015-04-01");

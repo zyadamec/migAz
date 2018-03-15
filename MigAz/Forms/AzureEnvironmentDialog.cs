@@ -53,12 +53,17 @@ namespace MigAz.Forms
                 {
                     cmbAzureEnvironmentType.SelectedIndex = 0;
                     txtName.Text = String.Empty;
+                    txtAzureStackAdminManagementUrl.Text = String.Empty;
                     txtLoginUrl.Text = String.Empty;
+                    txtAdTenant.Text = String.Empty;
                     txtGraphApiUrl.Text = String.Empty;
                     txtASMManagementUrl.Text = String.Empty;
                     txtARMManagementUrl.Text = String.Empty;
                     txtStorageEndpoint.Text = String.Empty;
                     txtBlobEndpoint.Text = String.Empty;
+                    txtSQLDatabaseDnsSuffix.Text = String.Empty;
+                    txtTrafficManagerDnsSuffix.Text = String.Empty;
+                    txtAzureKeyVaultDnsSuffix.Text = String.Empty;
 
                     SetAzureEnvironmentFieldEnabled(false);
                     btnCloneAzureEnvironment.Enabled = false;
@@ -75,12 +80,17 @@ namespace MigAz.Forms
                         cmbAzureEnvironmentType.SelectedIndex = 0;
 
                     txtName.Text = azureEnvironment.Name;
-                    txtLoginUrl.Text = azureEnvironment.AzureLoginUrl;
-                    txtGraphApiUrl.Text = azureEnvironment.GraphApiUrl;
-                    txtASMManagementUrl.Text = azureEnvironment.ASMServiceManagementUrl;
-                    txtARMManagementUrl.Text = azureEnvironment.ARMServiceManagementUrl;
-                    txtStorageEndpoint.Text = azureEnvironment.StorageEndpointUrl;
+                    txtAzureStackAdminManagementUrl.Text = azureEnvironment.AzureStackAdminManagementUrl;
+                    txtLoginUrl.Text = azureEnvironment.ActiveDirectoryEndpoint;
+                    txtAdTenant.Text = azureEnvironment.AdTenant;
+                    txtGraphApiUrl.Text = azureEnvironment.GraphEndpoint;
+                    txtASMManagementUrl.Text = azureEnvironment.ServiceManagementUrl;
+                    txtARMManagementUrl.Text = azureEnvironment.ResourceManagerEndpoint;
+                    txtStorageEndpoint.Text = azureEnvironment.StorageEndpointSuffix;
                     txtBlobEndpoint.Text = azureEnvironment.BlobEndpointUrl;
+                    txtSQLDatabaseDnsSuffix.Text = azureEnvironment.SqlDatabaseDnsSuffix;
+                    txtTrafficManagerDnsSuffix.Text = azureEnvironment.TrafficManagerDnsSuffix;
+                    txtAzureKeyVaultDnsSuffix.Text = azureEnvironment.AzureKeyVaultDnsSuffix;
 
                     SetAzureEnvironmentFieldEnabled(azureEnvironment.IsUserDefined);
                     btnCloneAzureEnvironment.Enabled = true;
@@ -96,11 +106,15 @@ namespace MigAz.Forms
             cmbAzureEnvironmentType.Enabled = enabled;
 
             txtLoginUrl.Enabled = enabled;
+            txtAdTenant.Enabled = enabled;
             txtGraphApiUrl.Enabled = enabled;
             txtASMManagementUrl.Enabled = enabled;
             txtARMManagementUrl.Enabled = enabled;
             txtStorageEndpoint.Enabled = enabled;
             txtBlobEndpoint.Enabled = enabled;
+            txtSQLDatabaseDnsSuffix.Enabled = enabled;
+            txtTrafficManagerDnsSuffix.Enabled = enabled;
+            txtAzureKeyVaultDnsSuffix.Enabled = enabled;
 
             if (!enabled) // We only allow these to set upon true based on specific criteria
             {
@@ -109,24 +123,7 @@ namespace MigAz.Forms
             }
         }
 
-        private void txtName_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                _istxtNameTextChangedEvent = true;
-
-                if (listBoxAzureEnvironments.SelectedItem != null)
-                {
-                    AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
-                    azureEnvironment.Name = txtName.Text.Trim();
-                    listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex] = listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex];
-                }
-            }
-            finally
-            {
-                _istxtNameTextChangedEvent = false;
-            }
-        }
+        
 
         private void btnDeleteAzureEnvironment_Click(object sender, EventArgs e)
         {
@@ -143,11 +140,14 @@ namespace MigAz.Forms
 
         private void cmbAzureEnvironmentType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
-            azureEnvironment.AzureEnvironmentType = (AzureEnvironmentType)Enum.Parse(typeof(AzureEnvironmentType), cmbAzureEnvironmentType.SelectedItem.ToString());
-            txtAzureStackAdminManagementUrl.Text = azureEnvironment.AzureStackAdminManagementUrl;
-            txtAzureStackAdminManagementUrl.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
-            btnQueryAzureStackMetadata.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.AzureEnvironmentType = (AzureEnvironmentType)Enum.Parse(typeof(AzureEnvironmentType), cmbAzureEnvironmentType.SelectedItem.ToString());
+                txtAzureStackAdminManagementUrl.Text = azureEnvironment.AzureStackAdminManagementUrl;
+                txtAzureStackAdminManagementUrl.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
+                btnQueryAzureStackMetadata.Enabled = azureEnvironment.AzureEnvironmentType == AzureEnvironmentType.AzureStack;
+            }
         }
 
         private void btnNew_Click(object sender, EventArgs e)
@@ -169,6 +169,63 @@ namespace MigAz.Forms
             txtName.Focus();
         }
    
+        
+
+        private int GetEnvironmentNameCount(string environmentName)
+        {
+            int nameCount = 0;
+            foreach (object objAzureEnvironment in listBoxAzureEnvironments.Items)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)objAzureEnvironment;
+                if (String.Compare(azureEnvironment.Name, environmentName.Trim(), true) == 0)
+                    nameCount++;
+            }
+
+            return nameCount;
+        }
+
+        private async void btnQueryAzureStackMetadata_Click(object sender, EventArgs e)
+        {
+            // Obtain Azure Stack Envrionment Metadata
+            try
+            {
+                AzureStackEndpoints azureStackEndpoints = await AzureStackContext.LoadMetadataEndpoints(_AzureRetriever, txtAzureStackAdminManagementUrl.Text);
+
+                txtLoginUrl.Text = azureStackEndpoints.LoginEndpoint;
+                txtGraphApiUrl.Text = azureStackEndpoints.GraphEndpoint;
+            }
+            catch (System.Net.WebException exc)
+            {
+                MessageBox.Show(exc.Message);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #region Field Events
+
+        private void txtName_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                _istxtNameTextChangedEvent = true;
+
+                if (listBoxAzureEnvironments.SelectedItem != null)
+                {
+                    AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                    azureEnvironment.Name = txtName.Text;
+                    listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex] = listBoxAzureEnvironments.Items[listBoxAzureEnvironments.SelectedIndex];
+                }
+            }
+            finally
+            {
+                _istxtNameTextChangedEvent = false;
+            }
+        }
+
         private void txtName_Validating(object sender, CancelEventArgs e)
         {
             if (sender.GetType() == typeof(TextBox))
@@ -191,30 +248,106 @@ namespace MigAz.Forms
             }
         }
 
-        private int GetEnvironmentNameCount(string environmentName)
+        private void txtAzureStackAdminManagementUrl_TextChanged(object sender, EventArgs e)
         {
-            int nameCount = 0;
-            foreach (object objAzureEnvironment in listBoxAzureEnvironments.Items)
+            if (listBoxAzureEnvironments.SelectedItem != null)
             {
-                AzureEnvironment azureEnvironment = (AzureEnvironment)objAzureEnvironment;
-                if (String.Compare(azureEnvironment.Name, environmentName.Trim(), true) == 0)
-                    nameCount++;
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.AzureStackAdminManagementUrl = txtAzureStackAdminManagementUrl.Text;
             }
-
-            return nameCount;
         }
 
-        private async void btnQueryAzureStackMetadata_Click(object sender, EventArgs e)
+
+        private void txtLoginUrl_TextChanged(object sender, EventArgs e)
         {
-            // Obtain Azure Stack Envrionment Metadata
-            AzureStackEndpoints azureStackEndpoints = await AzureStackContext.LoadMetadataEndpoints(_AzureRetriever, txtAzureStackAdminManagementUrl.Text);
-            txtLoginUrl.Text = azureStackEndpoints.LoginEndpoint;
-            txtGraphApiUrl.Text = azureStackEndpoints.GraphEndpoint;
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.ActiveDirectoryEndpoint = txtLoginUrl.Text;
+            }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void txtGraphApiUrl_TextChanged(object sender, EventArgs e)
         {
-            this.Close();
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.GraphEndpoint = txtGraphApiUrl.Text;
+            }
         }
+
+        private void txtASMManagementUrl_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.ServiceManagementUrl = txtASMManagementUrl.Text;
+            }
+        }
+
+        private void txtARMManagementUrl_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.ResourceManagerEndpoint = txtARMManagementUrl.Text;
+            }
+        }
+
+        private void txtStorageEndpoint_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.StorageEndpointSuffix = txtStorageEndpoint.Text;
+            }
+        }
+
+        private void txtBlobEndpoint_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.BlobEndpointUrl = txtBlobEndpoint.Text;
+            }
+        }
+
+        private void txtAdTenant_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.AdTenant = txtAdTenant.Text;
+            }
+        }
+
+        private void txtSQLDatabaseDnsSuffix_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.SqlDatabaseDnsSuffix = txtSQLDatabaseDnsSuffix.Text;
+            }
+        }
+
+        private void txtTrafficManagerDnsSuffix_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.TrafficManagerDnsSuffix = txtTrafficManagerDnsSuffix.Text;
+            }
+        }
+
+        private void txtAzureKeyVaultDnsSuffix_TextChanged(object sender, EventArgs e)
+        {
+            if (listBoxAzureEnvironments.SelectedItem != null)
+            {
+                AzureEnvironment azureEnvironment = (AzureEnvironment)listBoxAzureEnvironments.SelectedItem;
+                azureEnvironment.AzureKeyVaultDnsSuffix = txtAzureKeyVaultDnsSuffix.Text;
+            }
+        }
+
+        #endregion
     }
 }

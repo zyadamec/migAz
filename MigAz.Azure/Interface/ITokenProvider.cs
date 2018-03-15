@@ -13,8 +13,6 @@ namespace MigAz.Azure.Interface
     public interface ITokenProvider
     {
         UserInfo LastUserInfo { get; }
-        string LogonUrl { get; }
-
         Task<AuthenticationResult> GetToken(string resourceUrl, Guid tenantGuid, PromptBehavior promptBehavior = PromptBehavior.Auto);
         Task<AuthenticationResult> Login(string resourceUrl, PromptBehavior promptBehavior = PromptBehavior.Auto);
     }

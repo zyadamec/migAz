@@ -81,7 +81,7 @@ namespace MigAz.Azure
                 if (_AzureEnvironment != value)
                 {
                     _AzureEnvironment = value;
-                    this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment.AzureLoginUrl, _LogProvider);
+                    this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment, _LogProvider);
 
                     AzureEnvironmentChanged?.Invoke(this);
                 }
@@ -139,10 +139,10 @@ namespace MigAz.Azure
 
         #region Methods
 
-        public async Task Login(string loginEndpoint, string resourceUrl)
+        public async Task Login(string resourceUrl)
         {
             if (this.TokenProvider == null)
-                this.TokenProvider = new AzureTokenProvider(loginEndpoint, this.LogProvider);
+                this.TokenProvider = new AzureTokenProvider(this.AzureEnvironment, this.LogProvider);
 
             await this.TokenProvider.Login(resourceUrl, this.LoginPromptBehavior);
             UserAuthenticated?.Invoke(this);
@@ -166,12 +166,12 @@ namespace MigAz.Azure
 
         public virtual string GetARMTokenResourceUrl()
         {
-            return this.AzureEnvironment.ARMServiceManagementUrl;
+            return this.AzureEnvironment.ResourceManagerEndpoint;
         }
 
         public virtual string GetARMServiceManagementUrl()
         {
-            return this.AzureEnvironment.ARMServiceManagementUrl;
+            return this.AzureEnvironment.ResourceManagerEndpoint;
         }
 
         public async Task SetSubscriptionContext(AzureSubscription azureSubscription)
@@ -221,9 +221,9 @@ namespace MigAz.Azure
             if (this.TokenProvider == null)
                 throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
 
-            AuthenticationResult tenantAuthenticationResult = await this.TokenProvider.GetToken(this.AzureEnvironment.ARMServiceManagementUrl, Guid.Empty);
+            AuthenticationResult tenantAuthenticationResult = await this.TokenProvider.GetToken(this.AzureEnvironment.ResourceManagerEndpoint, Guid.Empty);
 
-            String tenantUrl = this.AzureEnvironment.ARMServiceManagementUrl + "tenants?api-version=2015-01-01";
+            String tenantUrl = this.AzureEnvironment.ResourceManagerEndpoint + "tenants?api-version=2015-01-01";
             this.StatusProvider.UpdateStatus("BUSY: Getting Tenants...");
 
             AzureRestRequest azureRestRequest = new AzureRestRequest(tenantUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);

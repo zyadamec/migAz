@@ -157,6 +157,7 @@ namespace MigAz.Azure.UserControls
             // 
             // txtAddressSpace
             // 
+            this.txtAddressSpace.Enabled = false;
             this.txtAddressSpace.Location = new System.Drawing.Point(175, 133);
             this.txtAddressSpace.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtAddressSpace.Name = "txtAddressSpace";

@@ -34,6 +34,7 @@
             <p>Your template is located at <a href="{templatePath}">{templatePath}</a>.</p>
             {migAzMessages}
         </li>
+        {AddCustomEnvironment}
         <li>
             <p>Open Azure PowerShell and sign into your target subscription.</p>
             <pre>Login-AzureRmAccount{migAzAzureEnvironmentSwitch}{tenantSwitch}{subscriptionSwitch}

@@ -30,6 +30,12 @@ namespace MigAz.Azure.UserControls
             get { return txtIpAddress.Text; }
             set
             {
+                if (value == null || value == String.Empty)
+                {
+                    txtIpAddress.Text = String.Empty;
+                    return;
+                }
+
                 string newValue = value;
                 if (newValue.Contains("/"))
                 {
