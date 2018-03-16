@@ -22,6 +22,7 @@ namespace MigAz.Azure
         private AzureTenant _AzureTenant;
         private AzureSubscription _AzureSubscription;
         private AzureRetriever _AzureRetriever;
+        private TargetSettings _TargetSettings;
         private ILogProvider _LogProvider;
         private IStatusProvider _StatusProvider;
         private ITokenProvider _TokenProvider;
@@ -55,9 +56,10 @@ namespace MigAz.Azure
 
         private AzureContext() { }
 
-        public AzureContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
+        public AzureContext(AzureRetriever azureRetriever, TargetSettings targetSettings, PromptBehavior defaultPromptBehavior = PromptBehavior.Always)
         {
             _AzureRetriever = azureRetriever;
+            _TargetSettings = targetSettings;
             _LogProvider = azureRetriever.LogProvider;
             _StatusProvider = azureRetriever.StatusProvider;
             _LoginPromptBehavior = defaultPromptBehavior;
@@ -182,13 +184,15 @@ namespace MigAz.Azure
                     await BeforeAzureSubscriptionChange?.Invoke(this);
 
                 if (azureSubscription != null)
+                {
                     if (azureSubscription.AzureTenant != this.AzureTenant)
                         await SetTenantContext(azureSubscription.AzureTenant);
 
-                _AzureSubscription = azureSubscription;
+                    await azureSubscription.InitializeChildrenAsync();
+                    await azureSubscription.BindArmResources(_TargetSettings);
+                }
 
-                if (_AzureSubscription != null)
-                    await _AzureSubscription.InitializeChildrenAsync();
+                _AzureSubscription = azureSubscription;
 
                 if (AfterAzureSubscriptionChange != null)
                     await AfterAzureSubscriptionChange?.Invoke(this);

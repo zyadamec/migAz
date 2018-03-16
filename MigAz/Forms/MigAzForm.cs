@@ -46,7 +46,7 @@ namespace MigAz.Forms
             _appSettingsProvider = new AppSettingsProvider();
             _AzureEnvironments = AzureEnvironment.GetAzureEnvironments();
             _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
-            _TargetAzureContext = new AzureContext(_AzureRetriever, app.Default.LoginPromptBehavior);
+            _TargetAzureContext = new AzureContext(_AzureRetriever, _appSettingsProvider.GetTargetSettings(), app.Default.LoginPromptBehavior);
             _AzureGenerator = new AzureGenerator(_logProvider, _statusProvider);
 
             if (app.Default.UserDefinedAzureEnvironments != null && app.Default.UserDefinedAzureEnvironments != String.Empty)
@@ -764,6 +764,11 @@ namespace MigAz.Forms
 
         private async Task targetAzureContextViewer_AfterContextChanged(AzureLoginContextViewer sender)
         {
+            if (sender.SelectedAzureContext.AzureSubscription != null)
+            {
+                await sender.SelectedAzureContext.AzureSubscription.BindArmResources(targetTreeView1.TargetSettings);
+            }
+
             targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureEnvironment.BlobEndpointUrl;
             targetTreeView1.TargetSubscription = sender.SelectedAzureContext.AzureSubscription;
             await this.targetTreeView1.RefreshExportArtifacts();

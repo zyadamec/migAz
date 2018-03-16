@@ -41,8 +41,13 @@ namespace MigAz.Azure.UserControls
 
                 if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
                 {
-                    rbExistingARMVNet.Text = "Existing VNet in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
-                    this.ExistingARMVNetEnabled = targetTreeView.GetExistingVirtualNetworksInTargetLocation().Count() > 0;
+                    int existingVNetCount = targetTreeView.GetExistingVirtualNetworksInTargetLocation().Count();
+
+                    rbExistingARMVNet.Text = "Existing VNet(s) in " + _TargetTreeView.TargetResourceGroup.TargetLocation.DisplayName;
+                    if (existingVNetCount == 0)
+                        rbExistingARMVNet.Text = "No " + rbExistingARMVNet.Text;
+
+                    this.ExistingARMVNetEnabled = existingVNetCount > 0;
                 }
                 else
                 {

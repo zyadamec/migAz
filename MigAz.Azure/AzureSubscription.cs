@@ -507,8 +507,6 @@ namespace MigAz.Azure
         {
             if (!_IsAsmLoaded)
             {
-                _IsAsmLoaded = true;
-
                 await this.GetAzureASMRoleSizes();
 
                 foreach (Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroup in await this.GetAzureAsmNetworkSecurityGroups())
@@ -667,15 +665,17 @@ namespace MigAz.Azure
                     }
 
                 }
+
+                _IsAsmLoaded = true;
             }
+
+            StatusProvider.UpdateStatus("Ready");
         }
 
         public async Task BindArmResources(TargetSettings targetSettings)
         {
             if (!_IsArmLoaded)
             {
-                _IsArmLoaded = true;
-
                 List<Task> armNetworkSecurityGroupTasks = new List<Task>();
                 foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
                 {
@@ -792,7 +792,11 @@ namespace MigAz.Azure
                 //    armVirtualMachineImageTasks.Add(armVirtualMachineImageTask);
                 //}
                 //await Task.WhenAll(armVirtualMachineImageTasks.ToArray());
+
+                _IsArmLoaded = true;
             }
+
+            StatusProvider.UpdateStatus("Ready");
         }
 
         private async Task InitializeARMLocations()
@@ -1285,7 +1289,7 @@ namespace MigAz.Azure
 
             foreach (JObject resourceGroupJson in resourceGroups)
             {
-                ResourceGroup resourceGroup = new ResourceGroup(resourceGroupJson, azureContext.AzureEnvironment, azureContext.AzureSubscription);
+                ResourceGroup resourceGroup = new ResourceGroup(resourceGroupJson, azureContext.AzureEnvironment, this);
                 await resourceGroup.InitializeChildrenAsync();
                 this.ArmResourceGroups.Add(resourceGroup);
                 this.LogProvider.WriteLog("GetAzureARMResourceGroups", "Loaded ARM Resource Group '" + resourceGroup.Name + "'.");
