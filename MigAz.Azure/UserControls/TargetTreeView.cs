@@ -136,7 +136,19 @@ namespace MigAz.Azure.UserControls
             {
                 Type tagType = selectedNode.Tag.GetType();
 
-                if (tagType == typeof(VirtualNetwork))
+                if (tagType == typeof(VirtualNetworkGateway))
+                {
+                    exportArtifacts.VirtualNetworkGateways.Add((VirtualNetworkGateway)selectedNode.Tag);
+                }
+                else if (tagType == typeof(VirtualNetworkGatewayConnection))
+                {
+                    exportArtifacts.VirtualNetworkGatewayConnections.Add((VirtualNetworkGatewayConnection)selectedNode.Tag);
+                }
+                else if (tagType == typeof(LocalNetworkGateway))
+                {
+                    exportArtifacts.LocalNetworkGateways.Add((LocalNetworkGateway)selectedNode.Tag);
+                }
+                else if (tagType == typeof(VirtualNetwork))
                 {
                     exportArtifacts.VirtualNetworks.Add((VirtualNetwork)selectedNode.Tag);
                 }
@@ -387,7 +399,15 @@ namespace MigAz.Azure.UserControls
 
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
 
-            if (parentNode.GetType() == typeof(VirtualNetwork))
+            if (parentNode.GetType() == typeof(VirtualNetworkGateway))
+            {
+                VirtualNetworkGateway targetVirtualNetworkGateway = (VirtualNetworkGateway)parentNode;
+                TreeNode virtualNetworkGatewayNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetworkGateway.ToString(), targetVirtualNetworkGateway.ToString(), targetVirtualNetworkGateway, true);
+                
+                targetResourceGroupNode.ExpandAll();
+                return virtualNetworkGatewayNode;
+            }
+            else if (parentNode.GetType() == typeof(VirtualNetwork))
             {
                 VirtualNetwork targetVirtualNetwork = (VirtualNetwork)parentNode;
                 TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.ToString(), targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
@@ -399,6 +419,22 @@ namespace MigAz.Azure.UserControls
 
                 targetResourceGroupNode.ExpandAll();
                 return virtualNetworkNode;
+            }
+            else if (parentNode.GetType() == typeof(LocalNetworkGateway))
+            {
+                LocalNetworkGateway targetLocalNetworkGateway = (LocalNetworkGateway)parentNode;
+                TreeNode localNetworkGatewayNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLocalNetworkGateway.ToString(), targetLocalNetworkGateway.ToString(), targetLocalNetworkGateway, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return localNetworkGatewayNode;
+            }
+            else if (parentNode.GetType() == typeof(VirtualNetworkGatewayConnection))
+            {
+                VirtualNetworkGatewayConnection targetConnection = (VirtualNetworkGatewayConnection)parentNode;
+                TreeNode connectionNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetConnection.ToString(), targetConnection.ToString(), targetConnection, true);
+
+                targetResourceGroupNode.ExpandAll();
+                return connectionNode;
             }
             else if (parentNode.GetType() == typeof(StorageAccount))
             {

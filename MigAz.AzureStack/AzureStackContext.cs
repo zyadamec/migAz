@@ -17,9 +17,9 @@ namespace MigAz.AzureStack
     {
         AzureStackEndpoints _AzureStackEndpoints;
 
-        private AzureStackContext() : base(null) { }
+        private AzureStackContext() : base(null, null) { }
 
-        public AzureStackContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always) : base(azureRetriever, defaultPromptBehavior)
+        public AzureStackContext(AzureRetriever azureRetriever, PromptBehavior defaultPromptBehavior = PromptBehavior.Always) : base(azureRetriever, null, defaultPromptBehavior)
         {
         }
 

@@ -82,6 +82,7 @@ namespace MigAz.Azure.UserControls
             this._MigrationTarget = null;
             this.ResourceImage = null;
             this.ResourceText = String.Empty;
+            this.lblResourceType.Text = String.Empty;
             this.pnlProperties.Controls.Clear();
         }
 
@@ -113,8 +114,30 @@ namespace MigAz.Azure.UserControls
             this._MigrationTarget = migrationTarget;
             this.ResourceText = migrationTarget.ToString();
             this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];
+            this.lblResourceType.Text = migrationTarget.FriendlyObjectName;
 
-            if (migrationTarget.GetType() == typeof(VirtualMachine))
+            if (migrationTarget.GetType() == typeof(VirtualNetworkGateway))
+            {
+                VirtualNetworkGatewayProperties properties = new VirtualNetworkGatewayProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                properties.Bind((VirtualNetworkGateway)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if (migrationTarget.GetType() == typeof(LocalNetworkGateway))
+            {
+                LocalNetworkGatewayProperties properties = new LocalNetworkGatewayProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                properties.Bind((LocalNetworkGateway)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if(migrationTarget.GetType() == typeof(VirtualNetworkGatewayConnection))
+            {
+                VirtualNetworkConnectionProperties properties = new VirtualNetworkConnectionProperties();
+                properties.PropertyChanged += Properties_PropertyChanged;
+                properties.Bind((VirtualNetworkGatewayConnection)migrationTarget, _TargetTreeView);
+                this.PropertyDetailControl = properties;
+            }
+            else if(migrationTarget.GetType() == typeof(VirtualMachine))
             {
                 VirtualMachineProperties properties = new VirtualMachineProperties();
                 properties.PropertyChanged += Properties_PropertyChanged;

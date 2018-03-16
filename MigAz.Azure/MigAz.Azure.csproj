@@ -84,9 +84,11 @@
     <Compile Include="Arm\AvailabilitySet.cs" />
     <Compile Include="Arm\BackEndAddressPool.cs" />
     <Compile Include="Arm\ClassicDisk.cs" />
+    <Compile Include="Arm\VirtualNetworkGatewayConnection.cs" />
     <Compile Include="Arm\FrontEndIpConfiguration.cs" />
     <Compile Include="Arm\LoadBalancer.cs" />
     <Compile Include="Arm\LoadBalancingRule.cs" />
+    <Compile Include="Arm\LocalNetworkGateway.cs" />
     <Compile Include="Arm\Location.cs" />
     <Compile Include="Arm\ManagedDisk.cs" />
     <Compile Include="Arm\MigAzSASUrlException.cs" />
@@ -155,12 +157,14 @@
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
+    <Compile Include="MigrationTarget\VirtualNetworkGatewayConnection.cs" />
     <Compile Include="MigrationTarget\Constants.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />
     <Compile Include="MigrationTarget\FrontEndIpConfiguration.cs" />
     <Compile Include="MigrationTarget\InboundNatRule.cs" />
     <Compile Include="MigrationTarget\LoadBalancer.cs" />
     <Compile Include="MigrationTarget\LoadBalancingRule.cs" />
+    <Compile Include="MigrationTarget\LocalNetworkGateway.cs" />
     <Compile Include="MigrationTarget\ManagedDiskStorage.cs" />
     <Compile Include="MigrationTarget\NetworkInterface.cs" />
     <Compile Include="MigrationTarget\NetworkInterfaceIpConfiguration.cs" />
@@ -250,6 +254,12 @@
     </Compile>
     <Compile Include="UserControls\LoadBalancerProperties.Designer.cs">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\LocalNetworkGatewayProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\LocalNetworkGatewayProperties.Designer.cs">
+      <DependentUpon>LocalNetworkGatewayProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\TreeViewSourceResourceManager.cs">
       <SubType>UserControl</SubType>
@@ -341,6 +351,18 @@
     <Compile Include="UserControls\VirtualMachineProperties.Designer.cs">
       <DependentUpon>VirtualMachineProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\VirtualNetworkConnectionProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\VirtualNetworkConnectionProperties.Designer.cs">
+      <DependentUpon>VirtualNetworkConnectionProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\VirtualNetworkGatewayProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\VirtualNetworkGatewayProperties.Designer.cs">
+      <DependentUpon>VirtualNetworkGatewayProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\VirtualNetworkProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -393,6 +415,9 @@
     <EmbeddedResource Include="UserControls\LoadBalancerProperties.resx">
       <DependentUpon>LoadBalancerProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\LocalNetworkGatewayProperties.resx">
+      <DependentUpon>LocalNetworkGatewayProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\TreeViewSourceResourceManager.resx">
       <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>
     </EmbeddedResource>
@@ -434,6 +459,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\VirtualMachineProperties.resx">
       <DependentUpon>VirtualMachineProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\VirtualNetworkConnectionProperties.resx">
+      <DependentUpon>VirtualNetworkConnectionProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\VirtualNetworkGatewayProperties.resx">
+      <DependentUpon>VirtualNetworkGatewayProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\VirtualNetworkProperties.resx">
       <DependentUpon>VirtualNetworkProperties.cs</DependentUpon>

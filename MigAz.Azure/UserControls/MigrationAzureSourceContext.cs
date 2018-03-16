@@ -135,7 +135,7 @@ namespace MigAz.Azure.UserControls
             _StatusProvider = statusProvider;
             _ImageList = imageList;
 
-            _AzureContextSource = new AzureContext(azureRetriever, promptBehavior);
+            _AzureContextSource = new AzureContext(azureRetriever, targetSettings, promptBehavior);
             _AzureContextSource.AzureEnvironmentChanged += _AzureContext_AzureEnvironmentChanged;
             _AzureContextSource.UserAuthenticated += _AzureContext_UserAuthenticated;
             _AzureContextSource.BeforeAzureSubscriptionChange += _AzureContext_BeforeAzureSubscriptionChange;

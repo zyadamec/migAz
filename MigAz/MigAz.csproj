@@ -212,8 +212,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AvailabilitySet.png" />
+    <Content Include="Resources\Connection.png" />
     <Content Include="Resources\Disks.png" />
     <Content Include="Resources\LoadBalancer.png" />
+    <Content Include="Resources\LocalNetworkGateway.png" />
     <Content Include="Resources\NetworkInterface.png" />
     <Content Include="Resources\NetworkSecurityGroup.png" />
     <Content Include="Resources\PublicIp.png" />
@@ -223,6 +225,7 @@
     <Content Include="Resources\VirtualMachine.png" />
     <Content Include="Resources\VirtualMachineImage.png" />
     <Content Include="Resources\VirtualMachineScaleSet.png" />
+    <Content Include="Resources\VirtualNetworkGateway.png" />
     <Content Include="Resources\VNet.png" />
     <Content Include="Images\Azure SDK.ico" />
     <None Include="Resources\ResourceGroup.png" />

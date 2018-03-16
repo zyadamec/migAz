@@ -38,12 +38,14 @@ namespace MigAz.Azure.UserControls
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.lblResourceType = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblResourceType);
             this.groupBox1.Controls.Add(this.pnlProperties);
             this.groupBox1.Controls.Add(this.lblAzureObjectName);
             this.groupBox1.Controls.Add(this.pictureBox1);
@@ -70,7 +72,7 @@ namespace MigAz.Azure.UserControls
             // 
             this.lblAzureObjectName.AutoSize = true;
             this.lblAzureObjectName.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzureObjectName.Location = new System.Drawing.Point(65, 35);
+            this.lblAzureObjectName.Location = new System.Drawing.Point(65, 28);
             this.lblAzureObjectName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAzureObjectName.Name = "lblAzureObjectName";
             this.lblAzureObjectName.Size = new System.Drawing.Size(170, 21);
@@ -103,6 +105,18 @@ namespace MigAz.Azure.UserControls
             this.imageList1.Images.SetKeyName(9, "VirtualNetwork");
             this.imageList1.Images.SetKeyName(10, "RouteTable");
             this.imageList1.Images.SetKeyName(11, "VirtualMachineImage");
+            this.imageList1.Images.SetKeyName(12, "Connection");
+            this.imageList1.Images.SetKeyName(13, "VirtualNetworkGateway");
+            this.imageList1.Images.SetKeyName(14, "LocalNetworkGateway");
+            // 
+            // lblResourceType
+            // 
+            this.lblResourceType.AutoSize = true;
+            this.lblResourceType.Location = new System.Drawing.Point(67, 49);
+            this.lblResourceType.Name = "lblResourceType";
+            this.lblResourceType.Size = new System.Drawing.Size(35, 13);
+            this.lblResourceType.TabIndex = 64;
+            this.lblResourceType.Text = "label1";
             // 
             // PropertyPanel
             // 
@@ -127,6 +141,7 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel pnlProperties;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.Label lblResourceType;
     }
 }
 

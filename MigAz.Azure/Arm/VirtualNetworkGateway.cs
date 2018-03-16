@@ -19,6 +19,12 @@ namespace MigAz.Azure.Arm
         {
         }
 
+        public new async Task InitializeChildrenAsync()
+        {
+            await base.InitializeChildrenAsync();
+        }
+
+
 
         public override string ToString()
         {

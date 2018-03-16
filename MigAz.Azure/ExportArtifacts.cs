@@ -21,6 +21,9 @@ namespace MigAz.Azure
 
         public ExportArtifacts(AzureSubscription targetSubscription)
         {
+            VirtualNetworkGateways = new List<VirtualNetworkGateway>();
+            VirtualNetworkGatewayConnections = new List<VirtualNetworkGatewayConnection>();
+            LocalNetworkGateways = new List<LocalNetworkGateway>();
             NetworkSecurityGroups = new List<NetworkSecurityGroup>();
             RouteTables = new List<RouteTable>();
             StorageAccounts = new List<StorageAccount>();
@@ -38,6 +41,9 @@ namespace MigAz.Azure
 
 
         public ResourceGroup ResourceGroup { get; set; }
+        public List<VirtualNetworkGateway> VirtualNetworkGateways { get; }
+        public List<VirtualNetworkGatewayConnection> VirtualNetworkGatewayConnections { get; }
+        public List<LocalNetworkGateway> LocalNetworkGateways { get; }
         public List<NetworkSecurityGroup> NetworkSecurityGroups { get; }
         public List<StorageAccount> StorageAccounts { get; }
         public List<VirtualNetwork> VirtualNetworks { get; }

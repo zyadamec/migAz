@@ -24,7 +24,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(this.SourceName, targetSettings);
         }
 
-        public IVirtualNetworkGateway SourceVirtualNetworkGateway { get; }
+        public IVirtualNetworkGateway SourceVirtualNetworkGateway { get { return _SourceVirtualNetworkGateway; } }
 
         public String SourceName
         {

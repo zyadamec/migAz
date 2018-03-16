@@ -38,7 +38,7 @@ namespace MigAz.Tests
             IStatusProvider statusProvider = new FakeStatusProvider();
             TargetSettings targetSettings = new FakeSettingsProvider().GetTargetSettings();
             TestRetriever testRetriever = new TestRetriever(logProvider, statusProvider);
-            AzureContext azureContext = new AzureContext(testRetriever);
+            AzureContext azureContext = new AzureContext(testRetriever, targetSettings);
             azureContext.AzureEnvironment = azureEnvironment;
             azureContext.TokenProvider = new FakeTokenProvider();
             azureContext.AzureRetriever.LoadRestCache(restResponseFile);
