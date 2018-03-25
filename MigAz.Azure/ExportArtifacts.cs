@@ -414,6 +414,12 @@ namespace MigAz.Azure
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
                     ValidateVMDisk(dataDisk);
+
+                    int lunCount = virtualMachine.DataDisks.Where(a => a.Lun == dataDisk.Lun).Count();
+                    if (lunCount > 1)
+                    {
+                        this.AddAlert(AlertType.Error, "Multiple data disks are assigned to LUN " + dataDisk.Lun.ToString() + " on Virtual Machine '" + virtualMachine.ToString() + "'.  Data Disk LUNs must be unique.", dataDisk);
+                    }
                 }
 
                 if (!virtualMachine.IsManagedDisks && !virtualMachine.IsUnmanagedDisks)
