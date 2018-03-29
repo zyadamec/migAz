@@ -486,7 +486,6 @@ namespace MigAz.Azure
                 // We are calling Validate Disk Standards here (only for non-managed disks, as noted above) as all Managed Disks are validated for Disk Standards through the ExportArtifacts.Disks Collection
                 ValidateDiskStandards(targetDisk);
             }
-
         }
 
         private void ValidateDiskStandards(MigrationTarget.Disk targetDisk)
