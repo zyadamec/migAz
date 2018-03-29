@@ -8,9 +8,9 @@ namespace MigAz.Azure.Models
 {
     public class TelemetryRecord
     {
-        public String ConfigurationMode;
+        public Guid Id;
         public Guid AppSessionGuid;
-        public Guid ExecutionGuid;
+        public String ConfigurationMode;
         public Guid SourceTenantGuid;
         public Guid SourceSubscriptionGuid;
         public string SourceEnvironment;
@@ -20,6 +20,7 @@ namespace MigAz.Azure.Models
         public Dictionary<string, string> ProcessedResources;
         public string OfferCategories;
         public string SourceVersion;
+        public DateTime UtcDateTime = DateTime.UtcNow;
     }
 }
 

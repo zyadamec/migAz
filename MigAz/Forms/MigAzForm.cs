@@ -382,7 +382,6 @@ namespace MigAz.Forms
 
             if (this.AzureGenerator != null)
             {
-                this.AzureGenerator.TargetSubscription = targetAzureContextViewer.ExistingContext.AzureSubscription;
                 this.AzureGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
                 this.AzureGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
                 this.AzureGenerator.OutputDirectory = this.txtDestinationFolder.Text;

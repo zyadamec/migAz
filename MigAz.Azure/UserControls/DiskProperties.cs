@@ -62,6 +62,12 @@ namespace MigAz.Azure.UserControls
             _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
 
+            // LUN Index cannot be higher than the number of Data Disks supported by the Azure VM Size, 0 based index, thus - 1
+            if (targetDisk.ParentVirtualMachine == null || targetDisk.ParentVirtualMachine.TargetSize == null)
+                upDownLUN.Maximum = 0;
+            else
+                upDownLUN.Maximum = targetDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1;
+
             await BindCommon();
         }
 
@@ -122,6 +128,9 @@ namespace MigAz.Azure.UserControls
             {
                 rbStorageAccountInMigration.Enabled = false;
             }
+
+            if (_TargetDisk.Lun != null)
+                upDownLUN.Value = _TargetDisk.Lun.Value;
 
             virtualMachineSummary.Bind(_TargetDisk.ParentVirtualMachine, _TargetTreeView, false);
 
@@ -419,6 +428,18 @@ namespace MigAz.Azure.UserControls
             }
         }
 
+        private void upDownLUN_ValueChanged(object sender, EventArgs e)
+        {
+            if (_TargetDisk != null)
+            {
+                _TargetDisk.Lun = (long)upDownLUN.Value;
+
+                if (!_IsBinding)
+                {
+                    PropertyChanged?.Invoke();
+                }
+            }
+        }
     }
 }
 

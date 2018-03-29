@@ -68,14 +68,14 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public Int32 Lun
+        public int? Lun
         {
             get
             {
                 try
                 {
-                    Int32 lun = -1;
-                    Int32.TryParse((string)this.ResourceToken["lun"], out lun);
+                    int lun = -1;
+                    int.TryParse((string)this.ResourceToken["lun"], out lun);
 
                     return lun;
                 }

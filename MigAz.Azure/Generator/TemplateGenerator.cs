@@ -34,7 +34,6 @@ namespace MigAz.Azure.Generator
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
-        private AzureSubscription _TargetSubscription;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -60,8 +59,13 @@ namespace MigAz.Azure.Generator
 
         public AzureSubscription TargetSubscription
         {
-            get { return _TargetSubscription; }
-            set { _TargetSubscription = value; }
+            get
+            {
+                if (_ExportArtifacts == null)
+                    return null;
+
+                return _ExportArtifacts.TargetSubscription;
+            }
         }
 
         public Guid ExecutionGuid

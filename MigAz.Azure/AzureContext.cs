@@ -116,15 +116,6 @@ namespace MigAz.Azure
             get { return _StatusProvider; }
         }
 
-        public async Task CopyContext(AzureContext sourceContext)
-        {
-            this.AzureEnvironment = sourceContext.AzureEnvironment;
-            await this.SetTenantContext(sourceContext.AzureTenant);
-            await this.SetSubscriptionContext(sourceContext.AzureSubscription);
-            this.LoginPromptBehavior = sourceContext.LoginPromptBehavior;
-            await UserAuthenticated?.Invoke(this);
-        }
-
         public PromptBehavior LoginPromptBehavior
         {
             get { return _LoginPromptBehavior; }
@@ -187,9 +178,6 @@ namespace MigAz.Azure
                 {
                     if (azureSubscription.AzureTenant != this.AzureTenant)
                         await SetTenantContext(azureSubscription.AzureTenant);
-
-                    await azureSubscription.InitializeChildrenAsync();
-                    await azureSubscription.BindArmResources(_TargetSettings);
                 }
 
                 _AzureSubscription = azureSubscription;

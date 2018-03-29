@@ -276,12 +276,12 @@ namespace MigAz.Azure
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
                     if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
+                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine.OSVirtualHardDisk);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
                         if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
+                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", dataDisk);
                     }
                 }
                 else
@@ -481,6 +481,9 @@ namespace MigAz.Azure
 
             if (targetDisk.IsSmallerThanSourceDisk)
                 this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Size of " + targetDisk.DiskSizeInGB.ToString() + " GB cannot be smaller than the source Disk Size of " + targetDisk.SourceDisk.DiskSizeGb.ToString() + " GB.", targetDisk);
+
+            if (targetDisk.IsTargetLunDifferentThanSourceLun)
+                this.AddAlert(AlertType.Warning, "Disk '" + targetDisk.ToString() + "' target LUN " + targetDisk.Lun.ToString() + " does not match the source LUN " + targetDisk.SourceDisk.Lun.ToString() + ".", targetDisk);
 
             if (targetDisk.SourceDisk != null && targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {
