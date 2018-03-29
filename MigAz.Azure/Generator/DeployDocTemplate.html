@@ -41,12 +41,8 @@
 Select-AzureRmSubscription{subscriptionSwitch}</pre>
         </li>
         <li>
-            <p>Create a new Resource Group in your chosen region</p>
-<pre>New-AzureRmResourceGroup -Name "{resourceGroupName}" -Location "{location}"</pre>
-        </li>
-        <li>
             <p>Deploy your ARM Resources to the new '{resourceGroupName}' Resource Group with the following PowerShell command:</p>
-<pre>{migazExecutionCommand}{resourceGroupNameParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
+            <pre>{migazExecutionCommand}{resourceGroupNameParameter}{resourceGroupLocationParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
 </pre>
         </li>
     </ol>

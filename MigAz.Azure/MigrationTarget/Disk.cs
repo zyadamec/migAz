@@ -86,7 +86,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public Int64? Lun
         {
-            get;set;
+            get;
+            set;
         }
 
         public Int32 DiskSizeInGB

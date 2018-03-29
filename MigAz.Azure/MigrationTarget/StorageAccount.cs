@@ -1,12 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,8 +20,14 @@ namespace MigAz.Azure.MigrationTarget
 {
     public class StorageAccount : Core.MigrationTarget, IStorageTarget
     {
+        #region Variables
+
         private IStorageAccount _Source;
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
+
+        #endregion
+
+        #region Constructors
 
         public StorageAccount()
         {
@@ -39,6 +51,10 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(source.Name, targetSettings);
             this.StorageAccountType = MigrationTarget.StorageAccount.GetStorageAccountType(source.AccountType);
         }
+
+        #endregion
+
+        #region Properties
 
         public string BlobStorageNamespace
         {
@@ -71,6 +87,15 @@ namespace MigAz.Azure.MigrationTarget
             set { _StorageAccountType = value; }
         }
 
+        public bool IsNameAvailable
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
+        #region Static Methods
 
         private static StorageAccountType GetStorageAccountType(string storageAccountType)
         {
@@ -87,6 +112,64 @@ namespace MigAz.Azure.MigrationTarget
             return 24 - targetSettings.StorageAccountSuffix.Length;
         }
 
+        #endregion
+
+        #region Methods
+
+        public async Task<bool> CheckNameAvailability(AzureSubscription targetSubscription)
+        {
+            if (targetSubscription == null)
+                throw new ArgumentException("Target Subscription must be specified to check Storage Account Name Availability.");
+
+            if (targetSubscription.SubscriptionId == Guid.Empty)
+            {
+                this.IsNameAvailable = true;
+                return this.IsNameAvailable;
+            }
+
+            AzureContext azureContext = targetSubscription.AzureTenant.AzureContext;
+
+            if (azureContext != null && azureContext.LogProvider != null)
+                azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString());
+
+            if (azureContext != null && azureContext.StatusProvider != null)
+                azureContext.StatusProvider.UpdateStatus("Checking Name Availabilty for target Storage Account '" + this.ToString() + "'");
+
+            // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts/checknameavailability
+            string url = "/subscriptions/" + targetSubscription.SubscriptionId + ArmConst.ProviderStorage + "checkNameAvailability?api-version=2017-06-01";
+            string strAccessSAS = String.Empty;
+
+            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.BaseAddress = new Uri(azureContext.AzureEnvironment.ResourceManagerEndpoint);
+
+                if (azureContext != null && azureContext.LogProvider != null)
+                    azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url + "");
+
+                using (var response = await client.PostAsJsonAsync(url,
+                        new
+                        {
+                            name = this.ToString(),
+                            type = ArmConst.TypeStorageAccount
+                        })
+                    )
+                {
+                    String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
+                    JObject responseJson = JObject.Parse(strResponse);
+                    this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
+                        responseJson != null &&
+                        responseJson["nameAvailable"] != null &&
+                        String.Compare(responseJson["nameAvailable"].ToString(), "True", true) == 0);
+                }
+            }
+
+            return this.IsNameAvailable;
+        }
+
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
             string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
@@ -97,6 +180,8 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetName = value;
             this.TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
         }
+
+        #endregion
     }
 }
 

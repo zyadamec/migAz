@@ -22,7 +22,9 @@ namespace MigAz.Core.ArmTemplate
         public const string ProviderVirtualNetworkGateways = "/providers/Microsoft.Network/virtualNetworkGateways/";
         public const string ProviderNetworkInterfaces = "/providers/Microsoft.Network/networkInterfaces/";
         public const string ProviderAvailabilitySets = "/providers/" + MicrosoftCompute + "/availabilitySets/";
+        public const string ProviderStorage = "/providers/Microsoft.Storage/";
         public const string ProviderStorageAccounts = "/providers/Microsoft.Storage/storageAccounts/";
+        public const string TypeStorageAccount = "Microsoft.Storage/storageAccounts";
         public const string ProviderExpressRouteCircuits = "/providers/Microsoft.Network/expressRouteCircuits/";
         public const string ProviderVirtualMachines = "/providers/" + MicrosoftCompute + "/virtualMachines/";
         public const string ProviderVirtualMachineImages = "/providers/" + MicrosoftCompute + "/images/";

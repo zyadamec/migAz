@@ -74,6 +74,9 @@ namespace MigAz.Azure.Arm
             {
                 try
                 {
+                    if (this.ResourceToken["lun"] == null)
+                        return null;
+
                     int lun = -1;
                     int.TryParse((string)this.ResourceToken["lun"], out lun);
 
