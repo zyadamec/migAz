@@ -20,7 +20,6 @@ namespace MigAz.Azure.Models
         public Dictionary<string, string> ProcessedResources;
         public string OfferCategories;
         public string SourceVersion;
-        public DateTime UtcDateTime = DateTime.UtcNow;
     }
 }
 

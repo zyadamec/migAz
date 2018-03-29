@@ -765,7 +765,9 @@ namespace MigAz.Forms
         {
             if (sender.SelectedAzureContext.AzureSubscription != null)
             {
-                await sender.SelectedAzureContext.AzureSubscription.BindArmResources(targetTreeView1.TargetSettings);
+                // Russell
+                //await sender.SelectedAzureContext.AzureSubscription.InitializeChildrenAsync();
+                //await sender.SelectedAzureContext.AzureSubscription.BindArmResources(targetTreeView1.TargetSettings);
             }
 
             targetTreeView1.TargetBlobStorageNamespace = sender.SelectedAzureContext.AzureEnvironment.BlobEndpointUrl;
