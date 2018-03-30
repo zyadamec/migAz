@@ -167,6 +167,9 @@ namespace MigAz.Azure.MigrationTarget
                 }
             }
 
+            if (azureContext != null && azureContext.StatusProvider != null)
+                azureContext.StatusProvider.UpdateStatus("Ready");
+
             return this.IsNameAvailable;
         }
 
