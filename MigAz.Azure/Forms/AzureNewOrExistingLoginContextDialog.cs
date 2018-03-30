@@ -150,12 +150,35 @@ namespace MigAz.Azure.Forms
                     _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
                     _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
 
-                    await _AzureLoginContextViewer.AzureContext.CopyContext(_AzureLoginContextViewer.ExistingContext);
 
                     if (cboTenant.SelectedIndex == -1 && cboTenant.Items.Count > 0)
                     {
                         cboTenant.SelectedIndex = 0;
                     }
+
+                    if (cboTenant.SelectedItem != null)
+                    {
+                        AzureTenant azureTenant = (AzureTenant)cboTenant.SelectedItem;
+                        if (_AzureLoginContextViewer.AzureContext.AzureTenant != azureTenant)
+                        {
+                            await _AzureLoginContextViewer.AzureContext.SetTenantContext(azureTenant);
+                        }
+                    }
+
+                    if (cboSubscription.SelectedIndex == -1 && cboSubscription.Items.Count > 0)
+                    {
+                        cboSubscription.SelectedIndex = 0;
+                    }
+
+                    if (cboSubscription.SelectedItem != null)
+                    {
+                        AzureSubscription azureSubscription = (AzureSubscription)cboSubscription.SelectedItem;
+                        if (_AzureLoginContextViewer.AzureContext.AzureSubscription != azureSubscription)
+                        {
+                            await _AzureLoginContextViewer.AzureContext.SetSubscriptionContext(azureSubscription);
+                        }
+                    }
+
                 }
             }
 

@@ -20,7 +20,7 @@ namespace MigAz.Core.Interface
         Int32 DiskSizeGb { get; }
         bool IsEncrypted { get; }
         StorageAccountType StorageAccountType { get; }
-
+        int? Lun { get; }
     }
 }
 

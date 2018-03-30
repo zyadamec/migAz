@@ -236,6 +236,8 @@ namespace MigAz.Azure.UserControls
                         case "Azure Resource Manager (ARM)":
                             treeViewSourceResourceManager1.Enabled = true;
                             treeViewSourceResourceManager1.Visible = true;
+                            await sender.AzureSubscription.InitializeChildrenAsync();
+                            await sender.AzureSubscription.BindArmResources(_TargetSettings);
                             await treeViewSourceResourceManager1.BindArmResources(sender, sender.AzureSubscription, _TargetSettings);
                             break;
                         default:

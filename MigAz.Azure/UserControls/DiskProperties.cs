@@ -62,6 +62,12 @@ namespace MigAz.Azure.UserControls
             _TargetTreeView = targetTreeView;
             _TargetDisk = targetDisk;
 
+            // LUN Index cannot be higher than the number of Data Disks supported by the Azure VM Size, 0 based index, thus - 1
+            if (targetDisk.ParentVirtualMachine == null || targetDisk.ParentVirtualMachine.TargetSize == null)
+                upDownLUN.Maximum = 0;
+            else
+                upDownLUN.Maximum = targetDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1;
+
             await BindCommon();
         }
 
@@ -121,6 +127,25 @@ namespace MigAz.Azure.UserControls
             if (!_TargetTreeView.HasStorageAccount)
             {
                 rbStorageAccountInMigration.Enabled = false;
+            }
+
+            upDownLUN.Visible = _TargetDisk.Lun.HasValue;
+            upDownLUN.Enabled = _TargetDisk.Lun.HasValue;
+            if (_TargetDisk.Lun.HasValue)
+            {
+                // There is a chance that the assigned LUN Value exceeds the Max Allowed LUN Value.
+                // This can happen, for example, if the Disk LUN was index 15 and the VM is resized from DS3 to DS2
+                // thus exceeding the Max allowed.  In this case, we're going to temporarily increase the Max value
+                // to avoid value assignment error, and then handle downsizing / scaling back the Max allowed value
+                // as the value is decreased (max value reassignment to occur in the UpDown ValueChanged Event).
+                // We are utilizing the MigAz Error validation here to tell the user their LUN index exceeds that of the VM Size.
+                if (upDownLUN.Maximum < _TargetDisk.Lun.Value)
+                {
+                    // Since it exceeds, we'll allow the Max value increase, and downsize in the UpDown ValueChanged Event
+                    upDownLUN.Maximum = _TargetDisk.Lun.Value;
+                }
+
+                upDownLUN.Value = _TargetDisk.Lun.Value;
             }
 
             virtualMachineSummary.Bind(_TargetDisk.ParentVirtualMachine, _TargetTreeView, false);
@@ -419,6 +444,24 @@ namespace MigAz.Azure.UserControls
             }
         }
 
+        private void upDownLUN_ValueChanged(object sender, EventArgs e)
+        {
+            if (_TargetDisk != null)
+            {
+                if (!_IsBinding)
+                {
+                    _TargetDisk.Lun = (long)upDownLUN.Value;
+
+                    if (_TargetDisk.ParentVirtualMachine != null && upDownLUN.Maximum > _TargetDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1)
+                    {
+                        // Downsize the UpDown control Max value, as the user downsizes the value (do not allow re-increase, but do allow user to scale down into allowable range of Vm Size)
+                        upDownLUN.Maximum = upDownLUN.Value;
+                    }
+
+                    PropertyChanged?.Invoke();
+                }
+            }
+        }
     }
 }
 

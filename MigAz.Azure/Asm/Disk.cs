@@ -48,14 +48,14 @@ namespace MigAz.Azure.Asm
             get { return _DataDiskNode.SelectSingleNode("DiskName").InnerText; }
         }
 
-        public Int64? Lun
+        public int? Lun
         {
             get
             {
                 if (_DataDiskNode.SelectSingleNode("Lun") == null)
                     return null;
 
-                return Int64.Parse(_DataDiskNode.SelectSingleNode("Lun").InnerText);
+                return int.Parse(_DataDiskNode.SelectSingleNode("Lun").InnerText);
             }
         }
 

@@ -54,7 +54,7 @@ namespace MigAz.Azure.Arm
             }
         }
 
-        public int Lun => Convert.ToInt32((string)ResourceToken["lun"]);
+        public int? Lun => Convert.ToInt32((string)ResourceToken["lun"]);
 
         public string MediaLink
         {

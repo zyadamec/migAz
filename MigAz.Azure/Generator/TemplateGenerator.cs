@@ -34,7 +34,6 @@ namespace MigAz.Azure.Generator
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
-        private AzureSubscription _TargetSubscription;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -60,8 +59,13 @@ namespace MigAz.Azure.Generator
 
         public AzureSubscription TargetSubscription
         {
-            get { return _TargetSubscription; }
-            set { _TargetSubscription = value; }
+            get
+            {
+                if (_ExportArtifacts == null)
+                    return null;
+
+                return _ExportArtifacts.TargetSubscription;
+            }
         }
 
         public Guid ExecutionGuid
@@ -251,11 +255,11 @@ namespace MigAz.Azure.Generator
                 if (HasBlobCopyDetails)
                 {
                     await SerializeBlobCopyDetails(); // Serialize blob copy details
-                    await SerializeMigAzPowerShell();
                 }
 
                 await SerializeExportTemplate();
                 await SerializeParameterTemplate();
+                await SerializeMigAzPowerShell();
             }
             else
                 LogProvider.WriteLog("GenerateStreams", "ExportArtifacts is null, nothing to export.");
@@ -1546,6 +1550,7 @@ namespace MigAz.Azure.Generator
             instructionContent = instructionContent.Replace("{exportPath}", _OutputDirectory);
             instructionContent = instructionContent.Replace("{migAzMessages}", BuildMigAzMessages());
             instructionContent = instructionContent.Replace("{resourceGroupNameParameter}", " -ResourceGroupName \"" + this.TargetResourceGroupName + "\"");
+            instructionContent = instructionContent.Replace("{resourceGroupLocationParameter}", " -ResourceGroupLocation \"" + this.TargetResourceGroupLocation + "\"");
             instructionContent = instructionContent.Replace("{templateFileParameter}", " -TemplateFile \"" + GetTemplatePath() + "\"");
 
             if (this.BuildEmpty)
@@ -1560,10 +1565,7 @@ namespace MigAz.Azure.Generator
                     instructionContent = instructionContent.Replace("{blobCopyFileParameter}", String.Empty);
             }
 
-            if (this.HasBlobCopyDetails)
-                instructionContent = instructionContent.Replace("{migazExecutionCommand}", "&amp; '" + _OutputDirectory + "MigAz.ps1'");
-            else
-                instructionContent = instructionContent.Replace("{migazExecutionCommand}", "New-AzureRmResourceGroupDeployment");
+            instructionContent = instructionContent.Replace("{migazExecutionCommand}", "&amp; '" + _OutputDirectory + "MigAz.ps1'");
 
             if (this.Parameters.Count == 0)
                 instructionContent = instructionContent.Replace("{templateParameterFileParameter}", String.Empty);

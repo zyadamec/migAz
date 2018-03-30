@@ -24,11 +24,14 @@ namespace MigAz.Azure
 
         #region Variables
 
+        private bool _IsInitializingChildren = false;
+        private bool _IsInitializingChildrenCompleted = false;
         private JObject _SubscriptionJson;
         private AzureEnvironment _AzureEnvironment;
         private AzureTenant _ParentTenant;
 
         private bool _IsAsmLoaded = false;
+        private bool _IsArmLoading = false;
         private bool _IsArmLoaded = false;
         private List<Arm.Location> _ArmLocations;
         private List<Arm.Provider> _ArmProviders;
@@ -131,6 +134,11 @@ namespace MigAz.Azure
 
         public async Task InitializeChildrenAsync(bool useCache = true)
         {
+            if (_IsInitializingChildren)
+                return;
+
+            _IsInitializingChildren = true;
+
             await this.InitializeARMLocations();
             _ArmProviders = await this.GetResourceManagerProviders(useCache);
 
@@ -142,6 +150,7 @@ namespace MigAz.Azure
             }
             await Task.WhenAll(armLocationChildTasks.ToArray());
 
+            _IsInitializingChildrenCompleted = true;
         }
 
         #endregion
@@ -674,127 +683,140 @@ namespace MigAz.Azure
 
         public async Task BindArmResources(TargetSettings targetSettings)
         {
-            if (!_IsArmLoaded)
+            if (!_IsInitializingChildrenCompleted)
             {
-                List<Task> armNetworkSecurityGroupTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armNetworkSecurityGroupTask = LoadARMNetworkSecurityGroups(armResourceGroup, targetSettings);
-                    armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
-                }
-                await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
-
-                List<Task> armRouteTableTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armRouteTableTask = LoadARMRouteTables(armResourceGroup, targetSettings);
-                    armRouteTableTasks.Add(armRouteTableTask);
-                }
-                await Task.WhenAll(armRouteTableTasks.ToArray());
-
-                List<Task> armPublicIPTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armPublicIPTask = LoadARMPublicIPs(armResourceGroup, targetSettings);
-                    armPublicIPTasks.Add(armPublicIPTask);
-                }
-                await Task.WhenAll(armPublicIPTasks.ToArray());
-
-
-                List<Task> armVirtualNetworkTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armVirtualNetworkTask = LoadARMVirtualNetworks(armResourceGroup, targetSettings);
-                    armVirtualNetworkTasks.Add(armVirtualNetworkTask);
-                }
-                await Task.WhenAll(armVirtualNetworkTasks.ToArray());
-
-                List<Task> armVirtualNetworkGatewayTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armVirtualNetworkGatewayTask = LoadARMVirtualNetworkGateways(armResourceGroup, targetSettings);
-                    armVirtualNetworkGatewayTasks.Add(armVirtualNetworkGatewayTask);
-                }
-                await Task.WhenAll(armVirtualNetworkGatewayTasks.ToArray());
-
-                List<Task> armLocalNetworkGatewayTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armLocalNetworkGatewayTask = LoadARMLocalNetworkGateways(armResourceGroup, targetSettings);
-                    armLocalNetworkGatewayTasks.Add(armLocalNetworkGatewayTask);
-                }
-                await Task.WhenAll(armLocalNetworkGatewayTasks.ToArray());
-
-                List<Task> armVirtualNetworkConnectionTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armVirtualNetworkConnectionTask = LoadARMVirtualNetworkConnections(armResourceGroup, targetSettings);
-                    armVirtualNetworkConnectionTasks.Add(armVirtualNetworkConnectionTask);
-                }
-                await Task.WhenAll(armVirtualNetworkConnectionTasks.ToArray());
-
-                List<Task> armStorageAccountTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armStorageAccountTask = LoadARMStorageAccounts(armResourceGroup, targetSettings);
-                    armStorageAccountTasks.Add(armStorageAccountTask);
-                }
-                await Task.WhenAll(armStorageAccountTasks.ToArray());
-
-                if (this.ExistsProviderResourceType("Microsoft.Compute", "disks"))
-                {
-                    List<Task> armManagedDiskTasks = new List<Task>();
-                    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                    {
-                        Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup, targetSettings);
-                        armManagedDiskTasks.Add(armManagedDiskTask);
-                    }
-                    await Task.WhenAll(armManagedDiskTasks.ToArray());
-                }
-                
-                List<Task> armAvailabilitySetTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armAvailabilitySetTask = LoadARMAvailabilitySets(armResourceGroup, targetSettings);
-                    armAvailabilitySetTasks.Add(armAvailabilitySetTask);
-                }
-                await Task.WhenAll(armAvailabilitySetTasks.ToArray());
-
-                List<Task> armNetworkInterfaceTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups, targetSettings);
-                    armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
-                }
-                await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
-
-                List<Task> armVirtualMachineTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armVirtualMachineTask = LoadARMVirtualMachines(armResourceGroup, targetSettings);
-                    armVirtualMachineTasks.Add(armVirtualMachineTask);
-                }
-                await Task.WhenAll(armVirtualMachineTasks.ToArray());
-
-
-                List<Task> armLoadBalancerTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armLoadBalancerTask = LoadARMLoadBalancers(armResourceGroup, targetSettings);
-                    armLoadBalancerTasks.Add(armLoadBalancerTask);
-                }
-                await Task.WhenAll(armLoadBalancerTasks.ToArray());
-
-                //List<Task> armVirtualMachineImageTasks = new List<Task>();
-                //foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                //{
-                //    Task armVirtualMachineImageTask = LoadARMVirtualMachineImages(armResourceGroup);
-                //    armVirtualMachineImageTasks.Add(armVirtualMachineImageTask);
-                //}
-                //await Task.WhenAll(armVirtualMachineImageTasks.ToArray());
-
-                _IsArmLoaded = true;
+                this.LogProvider.WriteLog("BindArmResources", "Azure Subscription Child Initialization not yet started or not yet completed.  Skipping BindArmResources.");
+                StatusProvider.UpdateStatus("Ready");
+                return;
             }
+
+            if (_IsArmLoading)
+            {
+                this.LogProvider.WriteLog("BindArmResources", "Azure Subscription Bind ARM Resources already loading.  Skipping.");
+                StatusProvider.UpdateStatus("Ready");
+                return;
+            }
+
+            _IsArmLoading = true;
+
+            List<Task> armNetworkSecurityGroupTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armNetworkSecurityGroupTask = LoadARMNetworkSecurityGroups(armResourceGroup, targetSettings);
+                armNetworkSecurityGroupTasks.Add(armNetworkSecurityGroupTask);
+            }
+            await Task.WhenAll(armNetworkSecurityGroupTasks.ToArray());
+
+            List<Task> armRouteTableTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armRouteTableTask = LoadARMRouteTables(armResourceGroup, targetSettings);
+                armRouteTableTasks.Add(armRouteTableTask);
+            }
+            await Task.WhenAll(armRouteTableTasks.ToArray());
+
+            List<Task> armPublicIPTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armPublicIPTask = LoadARMPublicIPs(armResourceGroup, targetSettings);
+                armPublicIPTasks.Add(armPublicIPTask);
+            }
+            await Task.WhenAll(armPublicIPTasks.ToArray());
+
+
+            List<Task> armVirtualNetworkTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armVirtualNetworkTask = LoadARMVirtualNetworks(armResourceGroup, targetSettings);
+                armVirtualNetworkTasks.Add(armVirtualNetworkTask);
+            }
+            await Task.WhenAll(armVirtualNetworkTasks.ToArray());
+
+            List<Task> armVirtualNetworkGatewayTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armVirtualNetworkGatewayTask = LoadARMVirtualNetworkGateways(armResourceGroup, targetSettings);
+                armVirtualNetworkGatewayTasks.Add(armVirtualNetworkGatewayTask);
+            }
+            await Task.WhenAll(armVirtualNetworkGatewayTasks.ToArray());
+
+            List<Task> armLocalNetworkGatewayTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armLocalNetworkGatewayTask = LoadARMLocalNetworkGateways(armResourceGroup, targetSettings);
+                armLocalNetworkGatewayTasks.Add(armLocalNetworkGatewayTask);
+            }
+            await Task.WhenAll(armLocalNetworkGatewayTasks.ToArray());
+
+            List<Task> armVirtualNetworkConnectionTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armVirtualNetworkConnectionTask = LoadARMVirtualNetworkConnections(armResourceGroup, targetSettings);
+                armVirtualNetworkConnectionTasks.Add(armVirtualNetworkConnectionTask);
+            }
+            await Task.WhenAll(armVirtualNetworkConnectionTasks.ToArray());
+
+            List<Task> armStorageAccountTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armStorageAccountTask = LoadARMStorageAccounts(armResourceGroup, targetSettings);
+                armStorageAccountTasks.Add(armStorageAccountTask);
+            }
+            await Task.WhenAll(armStorageAccountTasks.ToArray());
+
+            if (this.ExistsProviderResourceType("Microsoft.Compute", "disks"))
+            {
+                List<Task> armManagedDiskTasks = new List<Task>();
+                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+                {
+                    Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup, targetSettings);
+                    armManagedDiskTasks.Add(armManagedDiskTask);
+                }
+                await Task.WhenAll(armManagedDiskTasks.ToArray());
+            }
+                
+            List<Task> armAvailabilitySetTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armAvailabilitySetTask = LoadARMAvailabilitySets(armResourceGroup, targetSettings);
+                armAvailabilitySetTasks.Add(armAvailabilitySetTask);
+            }
+            await Task.WhenAll(armAvailabilitySetTasks.ToArray());
+
+            List<Task> armNetworkInterfaceTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups, targetSettings);
+                armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
+            }
+            await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
+
+            List<Task> armVirtualMachineTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armVirtualMachineTask = LoadARMVirtualMachines(armResourceGroup, targetSettings);
+                armVirtualMachineTasks.Add(armVirtualMachineTask);
+            }
+            await Task.WhenAll(armVirtualMachineTasks.ToArray());
+
+
+            List<Task> armLoadBalancerTasks = new List<Task>();
+            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            {
+                Task armLoadBalancerTask = LoadARMLoadBalancers(armResourceGroup, targetSettings);
+                armLoadBalancerTasks.Add(armLoadBalancerTask);
+            }
+            await Task.WhenAll(armLoadBalancerTasks.ToArray());
+
+            //List<Task> armVirtualMachineImageTasks = new List<Task>();
+            //foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //{
+            //    Task armVirtualMachineImageTask = LoadARMVirtualMachineImages(armResourceGroup);
+            //    armVirtualMachineImageTasks.Add(armVirtualMachineImageTask);
+            //}
+            //await Task.WhenAll(armVirtualMachineImageTasks.ToArray());
+
+            _IsArmLoaded = true;
 
             StatusProvider.UpdateStatus("Ready");
         }

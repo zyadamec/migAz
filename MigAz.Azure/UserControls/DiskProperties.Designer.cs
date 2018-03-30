@@ -57,6 +57,9 @@ namespace MigAz.Azure.UserControls
             this.txtTargetSize = new System.Windows.Forms.TextBox();
             this.virtualMachineSummary = new MigAz.Azure.UserControls.ResourceSummary();
             this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.upDownLUN = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLUN)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -144,10 +147,10 @@ namespace MigAz.Azure.UserControls
             this.rbExistingARMStorageAccount.AutoSize = true;
             this.rbExistingARMStorageAccount.Enabled = false;
             this.rbExistingARMStorageAccount.Location = new System.Drawing.Point(103, 220);
-            this.rbExistingARMStorageAccount.Margin = new System.Windows.Forms.Padding(2);
+            this.rbExistingARMStorageAccount.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbExistingARMStorageAccount.Name = "rbExistingARMStorageAccount";
             this.rbExistingARMStorageAccount.Size = new System.Drawing.Size(173, 17);
-            this.rbExistingARMStorageAccount.TabIndex = 2;
+            this.rbExistingARMStorageAccount.TabIndex = 3;
             this.rbExistingARMStorageAccount.Text = "Existing ARM Storage in Target";
             this.rbExistingARMStorageAccount.UseVisualStyleBackColor = true;
             this.rbExistingARMStorageAccount.CheckedChanged += new System.EventHandler(this.rbExistingARMStorageAccount_CheckedChanged);
@@ -156,10 +159,10 @@ namespace MigAz.Azure.UserControls
             // 
             this.rbStorageAccountInMigration.AutoSize = true;
             this.rbStorageAccountInMigration.Location = new System.Drawing.Point(103, 198);
-            this.rbStorageAccountInMigration.Margin = new System.Windows.Forms.Padding(2);
+            this.rbStorageAccountInMigration.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbStorageAccountInMigration.Name = "rbStorageAccountInMigration";
             this.rbStorageAccountInMigration.Size = new System.Drawing.Size(151, 17);
-            this.rbStorageAccountInMigration.TabIndex = 1;
+            this.rbStorageAccountInMigration.TabIndex = 2;
             this.rbStorageAccountInMigration.Text = "Storage in MigAz Migration";
             this.rbStorageAccountInMigration.UseVisualStyleBackColor = true;
             this.rbStorageAccountInMigration.CheckedChanged += new System.EventHandler(this.rbStorageAccountInMigration_CheckedChanged);
@@ -180,11 +183,11 @@ namespace MigAz.Azure.UserControls
             this.cmbTargetStorage.Enabled = false;
             this.cmbTargetStorage.FormattingEnabled = true;
             this.cmbTargetStorage.Location = new System.Drawing.Point(103, 242);
-            this.cmbTargetStorage.Margin = new System.Windows.Forms.Padding(2);
+            this.cmbTargetStorage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbTargetStorage.Name = "cmbTargetStorage";
             this.cmbTargetStorage.Size = new System.Drawing.Size(198, 21);
             this.cmbTargetStorage.Sorted = true;
-            this.cmbTargetStorage.TabIndex = 3;
+            this.cmbTargetStorage.TabIndex = 4;
             this.cmbTargetStorage.SelectedIndexChanged += new System.EventHandler(this.cmbTargetStorage_SelectedIndexChanged);
             // 
             // lblAsmStorageAccount
@@ -222,10 +225,10 @@ namespace MigAz.Azure.UserControls
             // txtTargetDiskName
             // 
             this.txtTargetDiskName.Location = new System.Drawing.Point(103, 277);
-            this.txtTargetDiskName.Margin = new System.Windows.Forms.Padding(2);
+            this.txtTargetDiskName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtTargetDiskName.Name = "txtTargetDiskName";
             this.txtTargetDiskName.Size = new System.Drawing.Size(196, 20);
-            this.txtTargetDiskName.TabIndex = 4;
+            this.txtTargetDiskName.TabIndex = 5;
             this.txtTargetDiskName.TextChanged += new System.EventHandler(this.txtTargetDiskName_TextChanged);
             this.txtTargetDiskName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetDiskName_KeyPress);
             // 
@@ -243,10 +246,10 @@ namespace MigAz.Azure.UserControls
             // 
             this.rbManagedDisk.AutoSize = true;
             this.rbManagedDisk.Location = new System.Drawing.Point(103, 176);
-            this.rbManagedDisk.Margin = new System.Windows.Forms.Padding(2);
+            this.rbManagedDisk.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbManagedDisk.Name = "rbManagedDisk";
             this.rbManagedDisk.Size = new System.Drawing.Size(94, 17);
-            this.rbManagedDisk.TabIndex = 0;
+            this.rbManagedDisk.TabIndex = 1;
             this.rbManagedDisk.Text = "Managed Disk";
             this.rbManagedDisk.UseVisualStyleBackColor = true;
             this.rbManagedDisk.CheckedChanged += new System.EventHandler(this.rbManagedDIsk_CheckedChanged);
@@ -264,10 +267,10 @@ namespace MigAz.Azure.UserControls
             // txtBlobName
             // 
             this.txtBlobName.Location = new System.Drawing.Point(103, 299);
-            this.txtBlobName.Margin = new System.Windows.Forms.Padding(2);
+            this.txtBlobName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtBlobName.Name = "txtBlobName";
             this.txtBlobName.Size = new System.Drawing.Size(196, 20);
-            this.txtBlobName.TabIndex = 5;
+            this.txtBlobName.TabIndex = 6;
             this.txtBlobName.TextChanged += new System.EventHandler(this.txtBlobName_TextChanged);
             this.txtBlobName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTargetDiskName_KeyPress);
             // 
@@ -304,11 +307,11 @@ namespace MigAz.Azure.UserControls
             // txtTargetSize
             // 
             this.txtTargetSize.Location = new System.Drawing.Point(103, 323);
-            this.txtTargetSize.Margin = new System.Windows.Forms.Padding(2);
+            this.txtTargetSize.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtTargetSize.MaxLength = 4;
             this.txtTargetSize.Name = "txtTargetSize";
             this.txtTargetSize.Size = new System.Drawing.Size(53, 20);
-            this.txtTargetSize.TabIndex = 6;
+            this.txtTargetSize.TabIndex = 7;
             this.txtTargetSize.TextChanged += new System.EventHandler(this.txtTargetSize_TextChanged);
             this.txtTargetSize.Validating += new System.ComponentModel.CancelEventHandler(this.txtTargetSize_Validating);
             // 
@@ -316,9 +319,10 @@ namespace MigAz.Azure.UserControls
             // 
             this.virtualMachineSummary.AutoSize = true;
             this.virtualMachineSummary.Location = new System.Drawing.Point(103, 148);
+            this.virtualMachineSummary.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.virtualMachineSummary.Name = "virtualMachineSummary";
-            this.virtualMachineSummary.Size = new System.Drawing.Size(71, 28);
-            this.virtualMachineSummary.TabIndex = 32;
+            this.virtualMachineSummary.Size = new System.Drawing.Size(193, 28);
+            this.virtualMachineSummary.TabIndex = 0;
             // 
             // label13
             // 
@@ -330,10 +334,35 @@ namespace MigAz.Azure.UserControls
             this.label13.TabIndex = 33;
             this.label13.Text = "Virtual Machine:";
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(11, 348);
+            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(32, 13);
+            this.label14.TabIndex = 34;
+            this.label14.Text = "LUN:";
+            // 
+            // upDownLUN
+            // 
+            this.upDownLUN.Location = new System.Drawing.Point(103, 347);
+            this.upDownLUN.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.upDownLUN.Name = "upDownLUN";
+            this.upDownLUN.Size = new System.Drawing.Size(44, 20);
+            this.upDownLUN.TabIndex = 8;
+            this.upDownLUN.ValueChanged += new System.EventHandler(this.upDownLUN_ValueChanged);
+            // 
             // DiskProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.upDownLUN);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.virtualMachineSummary);
             this.Controls.Add(this.label11);
@@ -360,9 +389,10 @@ namespace MigAz.Azure.UserControls
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblDiskName);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DiskProperties";
             this.Size = new System.Drawing.Size(320, 388);
+            ((System.ComponentModel.ISupportInitialize)(this.upDownLUN)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -396,6 +426,8 @@ namespace MigAz.Azure.UserControls
         private System.Windows.Forms.TextBox txtTargetSize;
         private ResourceSummary virtualMachineSummary;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown upDownLUN;
     }
 }
 

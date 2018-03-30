@@ -86,7 +86,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public Int64? Lun
         {
-            get;set;
+            get;
+            set;
         }
 
         public Int32 DiskSizeInGB
@@ -181,6 +182,17 @@ namespace MigAz.Azure.MigrationTarget
                     return true;
 
                 return false;
+            }
+        }
+
+        public bool IsTargetLunDifferentThanSourceLun
+        {
+            get
+            {
+                if (this.SourceDisk == null)
+                    return false; // No source disk to compare to, thus false
+                else
+                    return this.Lun != this.SourceDisk.Lun;
             }
         }
 

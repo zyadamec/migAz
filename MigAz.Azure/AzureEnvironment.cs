@@ -217,7 +217,7 @@ namespace MigAz.Azure
                 AzureEnvironmentType.Azure,
                 "AzureUSGovernment",
                 "Common", // AdTenant
-                "https://login-us.microsoftonline.com/", // logonUrl
+                "https://login.microsoftonline.us/", // logonUrl
                 "https://graph.windows.net/", //GraphUrl
                 "https://management.core.usgovcloudapi.net/", // ASM
                 "https://management.usgovcloudapi.net/", // ARM

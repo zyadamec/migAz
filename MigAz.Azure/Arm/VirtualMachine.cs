@@ -31,21 +31,49 @@ namespace MigAz.Azure.Arm
                 // Find and Link to Managed Disk
                 if (ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"] == null)
                 {
-                    string managedDiskName = ResourceToken["properties"]["storageProfile"]["osDisk"]["name"].ToString();
-                    this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
+                    if (ResourceToken["properties"]["storageProfile"]["osDisk"]["name"] != null)
+                    {
+                        string managedDiskName = ResourceToken["properties"]["storageProfile"]["osDisk"]["name"].ToString();
+                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
 
-                    ManagedDisk osDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
-                    osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
-                    _OSVirtualHardDisk = osDisk;
+                        ManagedDisk osDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
+                        if (osDisk != null)
+                        {
+                            osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                            _OSVirtualHardDisk = osDisk;
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else
                 {
-                    string managedDiskId = ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"].ToString();
-                    this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskId + "'.");
+                    if (ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"] != null)
+                    {
+                        string managedDiskId = ResourceToken["properties"]["storageProfile"]["osDisk"]["managedDisk"]["id"].ToString();
+                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Id '" + managedDiskId + "'.");
 
-                    ManagedDisk osDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
-                    osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
-                    _OSVirtualHardDisk = osDisk;
+                        ManagedDisk osDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
+                        if (osDisk != null)
+                        {
+                            osDisk.SetParentVirtualMachine(this, ResourceToken["properties"]["storageProfile"]["osDisk"]);
+                            _OSVirtualHardDisk = osDisk;
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
                 }
             }
             else
@@ -62,21 +90,46 @@ namespace MigAz.Azure.Arm
                     // Find and Link to Managed Disk
                     if (dataDiskToken["managedDisk"] == null)
                     {
-                        string managedDiskName = dataDiskToken["name"].ToString();
-                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
+                        if (dataDiskToken["name"] != null)
+                        {
+                            string managedDiskName = dataDiskToken["name"].ToString();
+                            this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskName + "'.  Managed Disk object not available for By Id seek.");
 
-                        ManagedDisk dataDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
-                        dataDisk.SetParentVirtualMachine(this, dataDiskToken);
-                        _DataDisks.Add(dataDisk);
+                            ManagedDisk dataDisk = azureSubscription.SeekManagedDiskByName(managedDiskName);
+                            if (dataDisk != null)
+                            {
+                                dataDisk.SetParentVirtualMachine(this, dataDiskToken);
+                                _DataDisks.Add(dataDisk);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else
+                        {
+
+                        }
                     }
                     else
                     {
-                        string managedDiskId = dataDiskToken["managedDisk"]["id"].ToString();
-                        this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Name '" + managedDiskId + "'.");
+                        if (dataDiskToken["managedDisk"]["id"] != null)
+                        {
+                            string managedDiskId = dataDiskToken["managedDisk"]["id"].ToString();
+                            this.AzureSubscription.LogProvider.WriteLog("Arm.VirutalMachine Ctor", "Seeking Managed Disk By Id '" + managedDiskId + "'.");
 
-                        ManagedDisk dataDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
-                        dataDisk.SetParentVirtualMachine(this, dataDiskToken);
-                        _DataDisks.Add(dataDisk);
+                            ManagedDisk dataDisk = azureSubscription.SeekManagedDiskById(managedDiskId);
+                            if (dataDisk != null)
+                            {
+                                dataDisk.SetParentVirtualMachine(this, dataDiskToken);
+                                _DataDisks.Add(dataDisk);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+
                     }
                 }
                 else

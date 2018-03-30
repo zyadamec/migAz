@@ -264,21 +264,75 @@
     "Response": "{\r\n  \"value\": [\r\n    {\r\n      \"name\": \"VMWithPublicIP-vnet\",\r\n      \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/virtualNetworks/VMWithPublicIP-vnet\",\r\n      \"etag\": \"W/\\\"a28003af-cfe6-47dc-92f3-dbf868fe7596\\\"\",\r\n      \"type\": \"Microsoft.Network/virtualNetworks\",\r\n      \"location\": \"westus\",\r\n      \"properties\": {\r\n        \"provisioningState\": \"Succeeded\",\r\n        \"resourceGuid\": \"75a95b9d-5615-46be-97b2-7581e8856f3a\",\r\n        \"addressSpace\": {\r\n          \"addressPrefixes\": [\r\n            \"10.0.2.0/24\"\r\n          ]\r\n        },\r\n        \"subnets\": [\r\n          {\r\n            \"name\": \"default\",\r\n            \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/virtualNetworks/VMWithPublicIP-vnet/subnets/default\",\r\n            \"etag\": \"W/\\\"a28003af-cfe6-47dc-92f3-dbf868fe7596\\\"\",\r\n            \"properties\": {\r\n              \"provisioningState\": \"Succeeded\",\r\n              \"addressPrefix\": \"10.0.2.0/24\",\r\n              \"ipConfigurations\": [\r\n                {\r\n                  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/networkInterfaces/vmwithpublicip299/ipConfigurations/ipconfig1\"\r\n                }\r\n              ]\r\n            }\r\n          }\r\n        ],\r\n        \"virtualNetworkPeerings\": []\r\n      }\r\n    }\r\n  ]\r\n}"
   },
   "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01": {
-    "RequestGuid": "29bedd3c-4a77-4ceb-82ae-e04b2d245581",
+    "RequestGuid": "b1aee98c-33b1-4b09-b88f-5ba4ad72986a",
     "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01",
-    "AccessToken": "",
+    "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
   "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01": {
-    "RequestGuid": "532b39c8-7b3e-4f17-90ef-8f2cb0250c92",
+    "RequestGuid": "edb59218-40ba-40eb-8b12-0820f71a539b",
     "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01",
-    "AccessToken": "",
-    "Response": "{\"value\":[]}"
+    "AccessToken": "0123456789",
+    "Response": "{\r\n  \"value\": [\r\n    {\r\n      \"name\": \"MyNetworkGateway\",\r\n      \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/virtualNetworkGateways/MyNetworkGateway\",\r\n      \"etag\": \"W/\\\"d0daf5c7-e5f1-49f4-b092-07429b4bcc88\\\"\",\r\n      \"type\": \"Microsoft.Network/virtualNetworkGateways\",\r\n      \"location\": \"westus\",\r\n      \"properties\": {\r\n        \"provisioningState\": \"Succeeded\",\r\n        \"resourceGuid\": \"9c2a0521-28f9-4690-a9c4-3ee27301de63\",\r\n        \"ipConfigurations\": [\r\n          {\r\n            \"name\": \"default\",\r\n            \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/virtualNetworkGateways/MyNetworkGateway/ipConfigurations/default\",\r\n            \"etag\": \"W/\\\"d0daf5c7-e5f1-49f4-b092-07429b4bcc88\\\"\",\r\n            \"properties\": {\r\n              \"provisioningState\": \"Succeeded\",\r\n              \"privateIPAllocationMethod\": \"Dynamic\",\r\n              \"publicIPAddress\": {\r\n                \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/publicIPAddresses/MyNetworkGateway-PIP\"\r\n              },\r\n              \"subnet\": {\r\n                \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/test/subnets/GatewaySubnet\"\r\n              }\r\n            }\r\n          }\r\n        ],\r\n        \"sku\": {\r\n          \"name\": \"VpnGw2\",\r\n          \"tier\": \"VpnGw2\",\r\n          \"capacity\": 2\r\n        },\r\n        \"gatewayType\": \"Vpn\",\r\n        \"vpnType\": \"RouteBased\",\r\n        \"enableBgp\": false,\r\n        \"activeActive\": false,\r\n        \"vpnClientConfiguration\": {\r\n          \"vpnClientProtocols\": [\r\n            \"SSTP\",\r\n            \"IkeV2\"\r\n          ],\r\n          \"vpnClientRootCertificates\": [],\r\n          \"vpnClientRevokedCertificates\": [],\r\n          \"vpnClientIpsecPolicies\": []\r\n        },\r\n        \"bgpSettings\": {\r\n          \"asn\": 65515,\r\n          \"bgpPeeringAddress\": \"10.249.31.254\",\r\n          \"peerWeight\": 0\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}"
   },
   "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01": {
-    "RequestGuid": "fb58894b-dc72-424c-84e1-d8e32f664aa1",
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
     "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01",
-    "AccessToken": "",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/virtualNetworkGateways/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/localNetworkGateways/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/connections/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VMWithPublicIP/providers/Microsoft.Network/connections/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/connections/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/connections/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/connections/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ManagedDisk/providers/Microsoft.Network/connections/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
+    "Response": "{\"value\":[]}"
+  },
+  "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/connections/?api-version=2018-01-01": {
+    "RequestGuid": "789ee3f4-428c-47a3-9c44-fdde28665450",
+    "Url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Network/connections/?api-version=2018-01-01",
+    "AccessToken": "0123456789",
     "Response": "{\"value\":[]}"
   },
   "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ASMTest/providers/Microsoft.Storage/storageAccounts/?api-version=2016-01-01": {

@@ -168,8 +168,10 @@ namespace MigAz.Azure
 
             foreach (MigrationTarget.StorageAccount targetStorageAccount in this.StorageAccounts)
             {
-                if (targetStorageAccount.ToString() == targetStorageAccount.SourceName)
-                    this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' must be different than its Source Name.", targetStorageAccount);
+                await targetStorageAccount.CheckNameAvailability(this.TargetSubscription);
+
+                if (!targetStorageAccount.IsNameAvailable)
+                    this.AddAlert(AlertType.Error, "Target Name for Storage Account '" + targetStorageAccount.ToString() + "' already exists within Azure Environment " + this.TargetSubscription.AzureEnvironment.ToString() + ".  A new (available) target name must be specified.", targetStorageAccount);
 
                 if (targetStorageAccount.BlobStorageNamespace == null || targetStorageAccount.BlobStorageNamespace.Trim().Length <= 0)
                     this.AddAlert(AlertType.Error, "Blob Storage Namespace for Target Storage Account '" + targetStorageAccount.ToString() + "' must be specified.", targetStorageAccount);
@@ -276,12 +278,12 @@ namespace MigAz.Azure
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
                     if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
+                        this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine.OSVirtualHardDisk);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                     {
                         if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
-                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine);
+                            this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  Data Disk '" + dataDisk.ToString() + "' should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", dataDisk);
                     }
                 }
                 else
@@ -414,6 +416,25 @@ namespace MigAz.Azure
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
                     ValidateVMDisk(dataDisk);
+
+                    if (dataDisk.ParentVirtualMachine != null)
+                    {
+                        if (!dataDisk.Lun.HasValue)
+                        {
+                            this.AddAlert(AlertType.Error, "Virtual Machine '" + dataDisk.ParentVirtualMachine.ToString() + "' Data Disk '" + " must have a LUN Index assigned.", dataDisk);
+                        }
+                        else
+                        {
+                            if (dataDisk.Lun > dataDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1)
+                                this.AddAlert(AlertType.Error, "Virtual Machine '" + dataDisk.ParentVirtualMachine.ToString() + "' Data Disk '" + " LUN index " + dataDisk.Lun.Value.ToString() + " exceeds the maximum LUN of " + (dataDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1).ToString() + " allowed by VM Size '" + dataDisk.ParentVirtualMachine.TargetSize.ToString() + "'.", dataDisk);
+                        }
+                    }
+
+                    int lunCount = virtualMachine.DataDisks.Where(a => a.Lun == dataDisk.Lun).Count();
+                    if (lunCount > 1)
+                    {
+                        this.AddAlert(AlertType.Error, "Multiple data disks are assigned to LUN " + dataDisk.Lun.ToString() + " on Virtual Machine '" + virtualMachine.ToString() + "'.  Data Disk LUNs must be unique.", dataDisk);
+                    }
                 }
 
                 if (!virtualMachine.IsManagedDisks && !virtualMachine.IsUnmanagedDisks)
@@ -465,7 +486,6 @@ namespace MigAz.Azure
                 // We are calling Validate Disk Standards here (only for non-managed disks, as noted above) as all Managed Disks are validated for Disk Standards through the ExportArtifacts.Disks Collection
                 ValidateDiskStandards(targetDisk);
             }
-
         }
 
         private void ValidateDiskStandards(MigrationTarget.Disk targetDisk)
@@ -475,6 +495,9 @@ namespace MigAz.Azure
 
             if (targetDisk.IsSmallerThanSourceDisk)
                 this.AddAlert(AlertType.Error, "Disk '" + targetDisk.ToString() + "' Size of " + targetDisk.DiskSizeInGB.ToString() + " GB cannot be smaller than the source Disk Size of " + targetDisk.SourceDisk.DiskSizeGb.ToString() + " GB.", targetDisk);
+
+            if (targetDisk.IsTargetLunDifferentThanSourceLun)
+                this.AddAlert(AlertType.Warning, "Disk '" + targetDisk.ToString() + "' target LUN " + targetDisk.Lun.ToString() + " does not match the source LUN " + targetDisk.SourceDisk.Lun.ToString() + ".", targetDisk);
 
             if (targetDisk.SourceDisk != null && targetDisk.SourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
             {

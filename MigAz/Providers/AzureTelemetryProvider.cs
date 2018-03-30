@@ -38,7 +38,7 @@ namespace MigAz.Providers
 
             TelemetryRecord telemetryrecord = new TelemetryRecord();
             telemetryrecord.AppSessionGuid = appSessionGuid;
-            telemetryrecord.ExecutionGuid = templateGenerator.ExecutionGuid;
+            telemetryrecord.Id = templateGenerator.ExecutionGuid;
 
 #if DEBUG
             telemetryrecord.ConfigurationMode = "Debug";
