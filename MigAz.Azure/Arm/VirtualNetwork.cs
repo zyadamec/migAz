@@ -104,6 +104,8 @@ namespace MigAz.Azure.Arm
 
         public async Task<bool> IsIpAddressAvailable(string ipAddress)
         {
+            return true;
+
             ipAddress = "10.0.0.8";
             this.AzureSubscription.LogProvider.WriteLog("IsIpAddressAvailable", "Start");
             this.AzureSubscription.StatusProvider.UpdateStatus("BUSY: Checking if IP Address '" + ipAddress + "' is available in Azure Virtual Network '" + this.Name + "'.");
