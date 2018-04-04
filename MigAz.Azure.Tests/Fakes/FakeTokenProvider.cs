@@ -24,6 +24,7 @@ namespace MigAz.Tests.Fakes
         public UserInfo LastUserInfo
         {
             get { return null; }
+            set { }
         }
 
         public async Task<AuthenticationResult> GetToken(string resourceUrl, Guid tenantGuid, PromptBehavior promptBehavior = PromptBehavior.Auto)

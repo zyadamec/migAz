@@ -175,6 +175,9 @@ namespace MigAz.Azure
 
                 if (targetStorageAccount.BlobStorageNamespace == null || targetStorageAccount.BlobStorageNamespace.Trim().Length <= 0)
                     this.AddAlert(AlertType.Error, "Blob Storage Namespace for Target Storage Account '" + targetStorageAccount.ToString() + "' must be specified.", targetStorageAccount);
+
+                if (!this.IsStorageAccountVmDiskTarget(targetStorageAccount))
+                    this.AddAlert(AlertType.Warning, "Target Storage Account '" + targetStorageAccount.ToString() + "' is not utilized within this Resource Group Deployment as a Virtual Machine Disk Target.  Consider removing to avoid creation of a non-utilized Storage Account.", targetStorageAccount);
             }
 
             foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in this.VirtualNetworks)
@@ -476,6 +479,35 @@ namespace MigAz.Azure
 
             if (AfterResourceValidation != null)
                 await AfterResourceValidation.Invoke();
+        }
+
+        internal bool IsStorageAccountVmDiskTarget(StorageAccount targetStorageAccount)
+        {
+            foreach (VirtualMachine virtrualMachine in this.VirtualMachines)
+            {
+                if (virtrualMachine.OSVirtualHardDisk.TargetStorage != null && virtrualMachine.OSVirtualHardDisk.TargetStorage.GetType() == typeof(StorageAccount))
+                {
+                    StorageAccount osDiskStorageAccount = (StorageAccount)virtrualMachine.OSVirtualHardDisk.TargetStorage;
+                    if (osDiskStorageAccount == targetStorageAccount)
+                    {
+                        return true;
+                    }
+                }
+
+                foreach (Disk dataDisk in virtrualMachine.DataDisks)
+                {
+                    if (dataDisk.TargetStorage != null && dataDisk.TargetStorage.GetType() == typeof(StorageAccount))
+                    {
+                        StorageAccount dataDiskStorageAccount = (StorageAccount)dataDisk.TargetStorage;
+                        if (dataDiskStorageAccount == targetStorageAccount)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private void ValidateVMDisk(MigrationTarget.Disk targetDisk)

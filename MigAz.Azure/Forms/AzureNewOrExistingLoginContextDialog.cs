@@ -147,6 +147,8 @@ namespace MigAz.Azure.Forms
             {
                 if (rbSameUserDifferentSubscription.Checked)
                 {
+                    _AzureLoginContextViewer.AzureContext.TokenProvider.LastUserInfo = _AzureLoginContextViewer.ExistingContext.TokenProvider.LastUserInfo;
+                    _AzureLoginContextViewer.AzureContext.AzureEnvironment = _AzureLoginContextViewer.ExistingContext.AzureEnvironment;
                     _AzureLoginContextViewer.AzureContextSelectedType = AzureContextSelectedType.SameUserDifferentSubscription;
                     _AzureLoginContextViewer.AzureContext.LoginPromptBehavior = PromptBehavior.Auto;
 

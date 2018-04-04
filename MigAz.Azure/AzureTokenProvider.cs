@@ -40,6 +40,7 @@ namespace MigAz.Azure
         public UserInfo LastUserInfo
         {
             get { return _LastUserInfo; }
+            set { _LastUserInfo = value; }
         }
 
         private AuthenticationContext GetTenantAuthenticationContext(Guid tenantGuid)
