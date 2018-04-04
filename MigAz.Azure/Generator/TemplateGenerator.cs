@@ -161,7 +161,13 @@ namespace MigAz.Azure.Generator
                 foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + targetStorageAccount.ToString());
-                    BuildStorageAccountObject(targetStorageAccount);
+                    if (!_ExportArtifacts.IsStorageAccountVmDiskTarget(targetStorageAccount))
+                    {
+                        // We are only going to add the Storage Account into the Resourge Group Deployment JSON if the Storage Account IS NOT A TARGET Storage Account for VM Disks
+                        // This is done so the ResourceGroupDeployment does not fail with error that the storage account defined in the JSON Template already exists.
+                        // Any VM targeted Storage Account will be created via the MigAz.ps1 execution and should not be included in the JSON for Resource Group Deployment.
+                        BuildStorageAccountObject(targetStorageAccount);
+                    }
                 }
                 LogProvider.WriteLog("GenerateStreams", "End processing selected Storage Accounts");
 
@@ -995,7 +1001,6 @@ namespace MigAz.Azure.Generator
                 templateVirtualMachine.apiVersion = "2017-03-30";
             }
 
-            List<IStorageTarget> storageaccountdependencies = new List<IStorageTarget>();
             List<string> dependson = new List<string>();
 
             // process network interface
@@ -1092,9 +1097,6 @@ namespace MigAz.Azure.Generator
                     {
                         // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
                         this._CopyBlobDetails.Add(await BuildCopyBlob(targetVirtualMachine.OSVirtualHardDisk, targetResourceGroup));
-
-                        if (!storageaccountdependencies.Contains(targetVirtualMachine.OSVirtualHardDisk.TargetStorage))
-                            storageaccountdependencies.Add(targetVirtualMachine.OSVirtualHardDisk.TargetStorage);
                     }
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
@@ -1143,9 +1145,6 @@ namespace MigAz.Azure.Generator
                         {
                             // BuildBlobCopy is only called here for migration to Existing ARM Storage Accounts, as call to BuildBlobCopy for ManagedDisks is already called via the "foreach (ManagedDisk in ManagedDisks)" in GenerateStreams to ensure all ManagedDisks are exported
                             this._CopyBlobDetails.Add(await BuildCopyBlob(dataDisk, targetResourceGroup));
-
-                            if (!storageaccountdependencies.Contains(dataDisk.TargetStorage))
-                                storageaccountdependencies.Add(dataDisk.TargetStorage);
                         }
                     }
                     else if (dataDisk.IsManagedDisk)
@@ -1181,12 +1180,6 @@ namespace MigAz.Azure.Generator
                 virtualmachine_properties.availabilitySet = availabilitySetReference;
                 availabilitySetReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetVirtualMachine.TargetAvailabilitySet.ToString() + "')]";
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetVirtualMachine.TargetAvailabilitySet.ToString() + "')]");
-            }
-
-            foreach (IStorageTarget storageaccountdependency in storageaccountdependencies)
-            {
-                if (storageaccountdependency.GetType() == typeof(Azure.MigrationTarget.StorageAccount)) // only add depends on if it is a Storage Account in the target template.  Otherwise, we'll get a "not in template" error for a resource that exists in another Resource Group.
-                    dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderStorageAccounts + storageaccountdependency + "')]");
             }
 
             templateVirtualMachine.properties = virtualmachine_properties;
