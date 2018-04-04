@@ -212,17 +212,34 @@ namespace MigAz.Azure
                 {
                     if (targetLoadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
                     {
-                        if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
+                        if (targetLoadBalancer.FrontEndIpConfigurations.Count > 0)
                         {
-                            this.AddAlert(AlertType.Error, "Internal Load Balancer must have an internal Subnet association.", targetLoadBalancer);
-                        }
-                        else
-                        {
-                            if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static)
+                            if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet == null)
                             {
-                                if (!IPv4CIDR.IsIpAddressInAddressPrefix(targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix, targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                this.AddAlert(AlertType.Error, "Internal Load Balancer must have an internal Subnet association.", targetLoadBalancer);
+                            }
+                            else
+                            {
+                                if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static)
                                 {
-                                    this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not valid in Subnet '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.ToString() + "' Address Prefix '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix + "'.", targetLoadBalancer);
+                                    if (!IPv4CIDR.IsIpAddressInAddressPrefix(targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix, targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                    {
+                                        this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not valid within Subnet '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.ToString() + "' Address Prefix '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix + "'.", targetLoadBalancer);
+                                    }
+                                    else
+                                    {
+                                        if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork != null &&
+                                            targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.GetType() == typeof(Azure.Arm.VirtualNetwork) &&
+                                            IPv4CIDR.IsValidIpAddress(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress) // Only worth passing to Azure for Availability validation if the IP address is valid.
+                                            )
+                                        {
+                                            Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork;
+                                            if (!await armVirtualNetwork.IsIpAddressAvailable(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                            {
+                                                this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not available within Virtual Network '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.ToString() + "'.", targetLoadBalancer);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

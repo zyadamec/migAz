@@ -74,11 +74,11 @@ namespace MigAz.Azure.Arm
             {
                 try
                 {
-                    if (this.ResourceToken["lun"] == null)
+                    if (this._VirtualMachineJToken == null || this._VirtualMachineJToken["lun"] == null)
                         return null;
 
                     int lun = -1;
-                    int.TryParse((string)this.ResourceToken["lun"], out lun);
+                    int.TryParse((string)this._VirtualMachineJToken["lun"], out lun);
 
                     return lun;
                 }
@@ -92,10 +92,10 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                if (this.ResourceToken["caching"] == null)
+                if (this._VirtualMachineJToken == null || this._VirtualMachineJToken["caching"] == null)
                     return String.Empty;
 
-                return (string)this.ResourceToken["caching"];
+                return (string)this._VirtualMachineJToken["caching"];
             }
         }
 
@@ -119,7 +119,16 @@ namespace MigAz.Azure.Arm
         }
         public string AccountType
         {
-            get { return (string)ResourceToken["properties"]["accountType"]; }
+            get
+            {
+                if (ResourceToken["properties"]["accountType"] != null)
+                    return (string)ResourceToken["properties"]["accountType"];
+
+                if (ResourceToken["sku"]["name"] != null)
+                    return (string)ResourceToken["sku"]["name"];
+
+                return String.Empty;
+            }
         }
 
         public StorageAccountType StorageAccountType

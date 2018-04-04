@@ -179,6 +179,10 @@ namespace MigAz.Azure
                         else
                             throw webException;
                     }
+                    catch (Exception exc)
+                    {
+                        int i = 0;
+                    }
                 }
 
                 webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
