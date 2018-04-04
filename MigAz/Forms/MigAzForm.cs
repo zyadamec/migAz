@@ -700,8 +700,8 @@ namespace MigAz.Forms
 
         private async Task RebindPropertyPanel()
         {
-            if (this.targetTreeView1 != null && this.targetTreeView1.SelectedNode != null)
-                await BindPropertyPanel(this.targetTreeView1, this.targetTreeView1.SelectedNode);
+            //if (this.targetTreeView1 != null && this.targetTreeView1.SelectedNode != null)
+               // await BindPropertyPanel(this.targetTreeView1, this.targetTreeView1.SelectedNode);
         }
 
         private async Task BindPropertyPanel(TargetTreeView targetTreeView, TreeNode selectedNode)

@@ -42,10 +42,7 @@ namespace MigAz.Azure.UserControls
                     newValue = newValue.Substring(0, newValue.IndexOf("/"));
                 }
 
-                if (Core.IPv4CIDR.IsValidIpAddress(newValue))
-                    txtIpAddress.Text = newValue;
-                else
-                    throw new ArgumentException("Invalid Ip Address Value: " + value);
+                txtIpAddress.Text = newValue;
             }
         }
 

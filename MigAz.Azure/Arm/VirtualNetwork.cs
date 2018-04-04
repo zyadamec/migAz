@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using Newtonsoft.Json.Linq;
@@ -67,6 +68,8 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        #region Properties
+
         public string Type => (string)ResourceToken["type"];
         public ISubnet GatewaySubnet
         {
@@ -90,10 +93,37 @@ namespace MigAz.Azure.Arm
             get { return ResourceTokenGateways; }
         }
 
+        #endregion
+
+        #region Methods
+
         public override string ToString()
         {
             return this.Name;
         }
+
+        public async Task<bool> IsIpAddressAvailable(string ipAddress)
+        {
+            return true;
+
+            ipAddress = "10.0.0.8";
+            this.AzureSubscription.LogProvider.WriteLog("IsIpAddressAvailable", "Start");
+            this.AzureSubscription.StatusProvider.UpdateStatus("BUSY: Checking if IP Address '" + ipAddress + "' is available in Azure Virtual Network '" + this.Name + "'.");
+
+            //https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/checkipaddressavailability
+
+            string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderVirtualNetwork + this.Name + "/CheckIPAddressAvailability?api-version=2018-01-01&ipAddress=" + ipAddress;
+
+            AuthenticationResult armToken = await this.AzureSubscription.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureAdTenantId);
+
+            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, "GET", false);
+            AzureRestResponse azureRestResponse = await this.AzureSubscription.AzureTenant.AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+            JObject j = JObject.Parse(azureRestResponse.Response);
+
+            return false;
+        }
+
+        #endregion
 
         public bool HasNonGatewaySubnet
         {
