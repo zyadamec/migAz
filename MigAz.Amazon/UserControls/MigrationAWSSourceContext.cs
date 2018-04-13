@@ -32,6 +32,11 @@ namespace MigAz.AWS.UserControls
             set { _IsAuthenticated = value; }
         }
 
+        public string MigrationSourceType
+        {
+            get { return "Amazon Web Services"; }
+        }
+
         public Task UncheckMigrationTarget(MigrationTarget migrationTarget)
         {
             throw new NotImplementedException();

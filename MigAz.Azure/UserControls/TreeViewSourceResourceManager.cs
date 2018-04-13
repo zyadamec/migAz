@@ -20,7 +20,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class TreeViewSourceResourceManager : UserControl, IMigrationSourceUserControl
+    public partial class TreeViewSourceResourceManager : UserControl
     {
         //private AzureContext _AzureContextSource;
         private List<TreeNode> _SelectedNodes = new List<TreeNode>();

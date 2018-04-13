@@ -485,7 +485,7 @@ namespace MigAz.Forms
                 if (AppSettingsProvider.AllowTelemetry)
                 {
                     StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                    _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, targetAzureContextViewer.ExistingContext.AzureSubscription, this.AzureGenerator);
+                    _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, this.MigrationSourceControl.MigrationSourceType, targetAzureContextViewer.ExistingContext.AzureSubscription, this.AzureGenerator);
                 }
             }
 

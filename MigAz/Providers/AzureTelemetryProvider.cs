@@ -31,7 +31,7 @@ namespace MigAz.Providers
             return processedItems;
         }
 
-        public void PostTelemetryRecord(Guid appSessionGuid, AzureSubscription sourceSubscription, AzureGenerator templateGenerator)
+        public void PostTelemetryRecord(Guid appSessionGuid, string migrationSourceType, AzureSubscription sourceSubscription, AzureGenerator templateGenerator)
         {
             if (templateGenerator == null)
                 throw new ArgumentException("Template Generator cannot be null.");
@@ -39,6 +39,7 @@ namespace MigAz.Providers
             TelemetryRecord telemetryrecord = new TelemetryRecord();
             telemetryrecord.AppSessionGuid = appSessionGuid;
             telemetryrecord.Id = templateGenerator.ExecutionGuid;
+            telemetryrecord.MigrationSourceType = migrationSourceType;
 
 #if DEBUG
             telemetryrecord.ConfigurationMode = "Debug";
