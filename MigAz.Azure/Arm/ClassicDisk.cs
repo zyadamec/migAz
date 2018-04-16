@@ -232,6 +232,11 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public string HostCaching
+        {
+            get { return this.Caching; }
+        }
+
         public override string ToString()
         {
             return this.Name;

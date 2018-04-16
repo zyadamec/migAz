@@ -21,6 +21,7 @@ namespace MigAz.Core.Interface
         bool IsEncrypted { get; }
         StorageAccountType StorageAccountType { get; }
         int? Lun { get; }
+        String HostCaching { get; }
     }
 }
 
