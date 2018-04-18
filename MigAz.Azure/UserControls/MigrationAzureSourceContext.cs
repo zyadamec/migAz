@@ -107,6 +107,14 @@ namespace MigAz.Azure.UserControls
             get { return _IsAuthenticated; }
             set { _IsAuthenticated = value; }
         }
+
+        public String MigrationSourceType
+        {
+            get
+            {
+                return cmbAzureResourceTypeSource.SelectedItem.ToString();
+            }
+        }
         public AzureContext AzureContext
         {
             get { return _AzureContextSource; }

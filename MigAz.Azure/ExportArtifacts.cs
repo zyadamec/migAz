@@ -237,7 +237,9 @@ namespace MigAz.Azure
                                             )
                                         {
                                             Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork;
-                                            if (!await armVirtualNetwork.IsIpAddressAvailable(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                            (bool isAvailable, List<String> availableIps) = await armVirtualNetwork.IsIpAddressAvailable(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress);
+
+                                            if (!isAvailable)
                                             {
                                                 this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not available within Virtual Network '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.ToString() + "'.", targetLoadBalancer);
                                             }
@@ -437,23 +439,20 @@ namespace MigAz.Azure
                 {
                     ValidateVMDisk(dataDisk);
 
-                    if (dataDisk.ParentVirtualMachine != null)
+                    if (!dataDisk.Lun.HasValue || dataDisk.Lun.Value == -1)
                     {
-                        if (!dataDisk.Lun.HasValue)
-                        {
-                            this.AddAlert(AlertType.Error, "Virtual Machine '" + dataDisk.ParentVirtualMachine.ToString() + "' Data Disk '" + " must have a LUN Index assigned.", dataDisk);
-                        }
-                        else
-                        {
-                            if (dataDisk.Lun > dataDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1)
-                                this.AddAlert(AlertType.Error, "Virtual Machine '" + dataDisk.ParentVirtualMachine.ToString() + "' Data Disk '" + " LUN index " + dataDisk.Lun.Value.ToString() + " exceeds the maximum LUN of " + (dataDisk.ParentVirtualMachine.TargetSize.maxDataDiskCount - 1).ToString() + " allowed by VM Size '" + dataDisk.ParentVirtualMachine.TargetSize.ToString() + "'.", dataDisk);
-                        }
+                        this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' must have a valid LUN Index assigned.", dataDisk);
                     }
-
-                    int lunCount = virtualMachine.DataDisks.Where(a => a.Lun == dataDisk.Lun).Count();
-                    if (lunCount > 1)
+                    else
                     {
-                        this.AddAlert(AlertType.Error, "Multiple data disks are assigned to LUN " + dataDisk.Lun.ToString() + " on Virtual Machine '" + virtualMachine.ToString() + "'.  Data Disk LUNs must be unique.", dataDisk);
+                        if (dataDisk.Lun > virtualMachine.TargetSize.maxDataDiskCount - 1)
+                           this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' LUN index " + dataDisk.Lun.Value.ToString() + " exceeds the maximum LUN of " + (virtualMachine.TargetSize.maxDataDiskCount - 1).ToString() + " allowed by VM Size '" + virtualMachine.TargetSize.ToString() + "'.", dataDisk);
+
+                        int lunCount = virtualMachine.DataDisks.Where(a => a.Lun == dataDisk.Lun).Count();
+                        if (lunCount > 1)
+                        {
+                            this.AddAlert(AlertType.Error, "Multiple data disks are assigned to LUN " + dataDisk.Lun.ToString() + " on Virtual Machine '" + virtualMachine.ToString() + "'.  Data Disk LUNs must be unique.", dataDisk);
+                        }
                     }
                 }
 

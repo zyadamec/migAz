@@ -764,7 +764,7 @@ namespace MigAz.Azure
             }
             await Task.WhenAll(armStorageAccountTasks.ToArray());
 
-            if (this.ExistsProviderResourceType("Microsoft.Compute", "disks"))
+            if (this.ExistsProviderResourceType(ArmConst.MicrosoftCompute, "disks"))
             {
                 List<Task> armManagedDiskTasks = new List<Task>();
                 foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
@@ -2236,38 +2236,38 @@ namespace MigAz.Azure
                     break;
                 case "AvailabilitySets":
                     // https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/availabilitysets-list-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderAvailabilitySets + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "availabilitySets");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderAvailabilitySets + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "availabilitySets");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Availability Sets for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworks":
                     // https://msdn.microsoft.com/en-us/library/azure/mt163557.aspx
                     // https://docs.microsoft.com/en-us/rest/api/network/list-virtual-networks-within-a-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetwork + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "virtualNetworks");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetwork + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "virtualNetworks");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Networks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworkGateways":
                     // https://docs.microsoft.com/en-us/rest/api/network/virtualnetworkgateways#VirtualNetworkGateways_List
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=" +this.GetProviderMaxApiVersion("Microsoft.Network", "virtualNetworkGateways");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualNetworkGateways + "?api-version=" +this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "virtualNetworkGateways");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualNetworkConnections":
                     // https://docs.microsoft.com/en-us/rest/api/network-gateway/virtualnetworkgatewayconnections/list
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderGatewayConnection + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "connections");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderGatewayConnection + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "connections");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Connections for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "LocalNetworkGateways":
                     // https://docs.microsoft.com/en-us/rest/api/network-gateway/localnetworkgateways/list
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLocalNetworkGateways + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "localNetworkGateways");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLocalNetworkGateways + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "localNetworkGateways");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Local Network Gateways for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkSecurityGroups":
                     // https://docs.microsoft.com/en-us/rest/api/network/networksecuritygroups#NetworkSecurityGroups_ListAll
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "networkSecurityGroups");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkSecurityGroups + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "networkSecurityGroups");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Security Groups for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "NetworkInterfaces":
                     // https://docs.microsoft.com/en-us/rest/api/network/networkinterfaces#NetworkInterfaces_ListAll
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "networkInterfaces"); ;
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderNetworkInterfaces + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "networkInterfaces"); ;
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Network Interfaces for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "StorageAccounts":
@@ -2283,32 +2283,32 @@ namespace MigAz.Azure
                     break;
                 case "VirtualMachines":
                     // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "virtualMachines");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachines + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "virtualMachines");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machines for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "VirtualMachineImages":
                     // https://docs.microsoft.com/en-us/rest/api/compute/manageddisks/images/images-list-by-resource-group
-                    //url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "disks");
+                    //url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderVirtualMachineImages + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "disks");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Virtual Machine Images for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "ManagedDisks":
                     // https://docs.microsoft.com/en-us/rest/api/manageddisks/disks/disks-list-by-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Compute", "disks");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderManagedDisks + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "disks");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Managed Disks for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "LoadBalancers":
                     // https://docs.microsoft.com/en-us/rest/api/network/loadbalancer/list-load-balancers-within-a-subscription
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "loadBalancers");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderLoadBalancers + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "loadBalancers");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Load Balancers for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "PublicIPs":
                     // https://docs.microsoft.com/en-us/rest/api/network/virtualnetwork/list-public-ip-addresses-within-a-resource-group
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "publicIPAddresses");
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderPublicIpAddress + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "publicIPAddresses");
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Public IPs for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 case "RouteTables":
                     // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/routetables/list
-                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderRouteTables + "?api-version=" + this.GetProviderMaxApiVersion("Microsoft.Network", "routeTables"); 
+                    url = this.ApiUrl + "subscriptions/" + this.SubscriptionId + "/resourceGroups/" + resourceGroup.Name + ArmConst.ProviderRouteTables + "?api-version=" + this.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "routeTables"); 
                     this.StatusProvider.UpdateStatus("BUSY: Getting ARM Route Tables for Resource Group '" + resourceGroup.Name + "'.");
                     break;
                 default:

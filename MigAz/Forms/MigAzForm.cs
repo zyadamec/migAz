@@ -80,7 +80,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.4.2.2";
+            string currentVersion = "2.4.2.3";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -485,7 +485,7 @@ namespace MigAz.Forms
                 if (AppSettingsProvider.AllowTelemetry)
                 {
                     StatusProvider.UpdateStatus("BUSY: saving telemetry information");
-                    _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, targetAzureContextViewer.ExistingContext.AzureSubscription, this.AzureGenerator);
+                    _telemetryProvider.PostTelemetryRecord(_AppSessionGuid, this.MigrationSourceControl.MigrationSourceType, targetAzureContextViewer.ExistingContext.AzureSubscription, this.AzureGenerator);
                 }
             }
 

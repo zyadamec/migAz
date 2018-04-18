@@ -12,6 +12,7 @@ namespace MigAz.Core.Interface
     public interface IMigrationSourceUserControl
     {
         bool IsSourceContextAuthenticated { get; set; }
+        String MigrationSourceType { get; }
         Task UncheckMigrationTarget(MigrationTarget migrationTarget);
     }
 }

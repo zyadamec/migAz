@@ -311,6 +311,8 @@ if ($StartType -eq $null -and $MonitorBlobCopySuccess -eq $false)
 }
 elseif (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $true) -or $StartType -eq "ResourceGroupDeployment" -or $StartType -eq "RetryDeployment")
 {
+	$ResourceGroupDeploymentError = $null
+
 	Write-Host "Beginning Azure Resource Group Deployment" -ForegroundColor Green
 	Write-Host " * ResourceGroupName '$($ResourceGroupName)'"
 	Write-Host " * TemplateFile '$($TemplateFile)'"
@@ -329,7 +331,7 @@ elseif (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $true) -or $Start
 		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
 	}
 
-	if ($ResourceGroupDeploymentError -eq $false)
+	if ($ResourceGroupDeploymentError -eq $null)
 	{
 		$ResourceGroupDeploymentSuccess = $true
 	}

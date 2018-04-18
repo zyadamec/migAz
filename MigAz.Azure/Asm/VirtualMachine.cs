@@ -50,6 +50,7 @@ namespace MigAz.Azure.Asm
             foreach (XmlNode dataDiskNode in _XmlNode.SelectNodes("//DataVirtualHardDisks/DataVirtualHardDisk"))
             {
                 Disk asmDisk = new Disk(azureSubscription, dataDiskNode);
+
                 _DataDisks.Add(asmDisk);
             }
 

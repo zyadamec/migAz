@@ -85,17 +85,17 @@ namespace MigAz.Azure.UserControls
             else if (_TargetDisk.TargetStorage != null && _TargetDisk.TargetStorage.GetType() == typeof(Azure.Arm.StorageAccount))
                 rbExistingARMStorageAccount.Checked = true;
 
-            lblAsmStorageAccount.Text = String.Empty;
-            lblDiskName.Text = _TargetDisk.TargetName;
-            lblHostCaching.Text = _TargetDisk.HostCaching;
-            lblLUN.Text = _TargetDisk.Lun.ToString();
             txtTargetDiskName.Text = _TargetDisk.TargetName;
             txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
             txtTargetSize.Text = _TargetDisk.DiskSizeInGB.ToString();
 
+            lblAsmStorageAccount.Text = String.Empty;
             if (_TargetDisk.SourceDisk != null)
             {
+                lblDiskName.Text = _TargetDisk.TargetName;
+                lblHostCaching.Text = _TargetDisk.SourceDisk.HostCaching;
+                lblLUN.Text = _TargetDisk.SourceDisk.Lun.ToString();
                 lblSourceSizeGb.Text = _TargetDisk.SourceDisk.DiskSizeGb.ToString();
 
                 if (_TargetDisk.SourceDisk.GetType() == typeof(Azure.Asm.Disk))
@@ -110,6 +110,14 @@ namespace MigAz.Azure.UserControls
                     if (armDisk.SourceStorageAccount != null)
                         lblAsmStorageAccount.Text = armDisk.SourceStorageAccount.Name;
                 }
+            }
+            else
+            {
+                lblDiskName.Text = String.Empty;
+                lblHostCaching.Text = String.Empty;
+                lblLUN.Text = String.Empty;
+                lblSourceSizeGb.Text = String.Empty;
+                lblAsmStorageAccount.Text = String.Empty;
             }
 
             if (_TargetTreeView.TargetResourceGroup != null && _TargetTreeView.TargetResourceGroup.TargetLocation != null)
@@ -144,6 +152,11 @@ namespace MigAz.Azure.UserControls
                     // Since it exceeds, we'll allow the Max value increase, and downsize in the UpDown ValueChanged Event
                     upDownLUN.Maximum = _TargetDisk.Lun.Value;
                 }
+
+                if (_TargetDisk.Lun.Value == -1)
+                    upDownLUN.Minimum = -1;
+                else
+                    upDownLUN.Minimum = 0;
 
                 upDownLUN.Value = _TargetDisk.Lun.Value;
             }
@@ -456,6 +469,11 @@ namespace MigAz.Azure.UserControls
                     {
                         // Downsize the UpDown control Max value, as the user downsizes the value (do not allow re-increase, but do allow user to scale down into allowable range of Vm Size)
                         upDownLUN.Maximum = upDownLUN.Value;
+                    }
+
+                    if (upDownLUN.Minimum == -1 && _TargetDisk.Lun >= 0)
+                    {
+                        upDownLUN.Minimum = 0;
                     }
 
                     PropertyChanged?.Invoke();

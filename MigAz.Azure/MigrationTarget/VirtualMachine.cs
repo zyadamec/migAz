@@ -37,10 +37,13 @@ namespace MigAz.Azure.MigrationTarget
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
                 Disk targetDataDisk = new Disk(asmDataDisk, this, targetSettings);
-                this.DataDisks.Add(targetDataDisk);
+
+                EnsureDataDiskTargetLunIsNotNull(ref targetDataDisk);
 
                 if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                     targetDataDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.AsmTargetStorageAccounts, asmDataDisk.StorageAccountName);
+
+                this.DataDisks.Add(targetDataDisk);
             }
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
@@ -129,6 +132,7 @@ namespace MigAz.Azure.MigrationTarget
                 if (dataDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
                 {
                     Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)dataDisk;
+                    MigrationTarget.Disk targetDataDisk = null;
 
                     foreach (Disk targetDisk in virtualMachine.AzureSubscription.ArmTargetManagedDisks)
                     {
@@ -137,23 +141,33 @@ namespace MigAz.Azure.MigrationTarget
                             Azure.Arm.ManagedDisk targetDiskSourceDisk = (Azure.Arm.ManagedDisk)targetDisk.SourceDisk;
                             if (String.Compare(targetDiskSourceDisk.Name, sourceManagedDisk.Name, true) == 0)
                             {
-                                this.DataDisks.Add(targetDisk);
-                                targetDisk.ParentVirtualMachine = this;
-                                targetDisk.Lun = sourceManagedDisk.Lun;
-                                targetDisk.HostCaching = sourceManagedDisk.HostCaching;
+                                targetDataDisk = targetDisk;
                                 break;
                             }
                         }
+                    }
+
+                    if (targetDataDisk != null)
+                    {
+                        EnsureDataDiskTargetLunIsNotNull(ref targetDataDisk);
+                        targetDataDisk.ParentVirtualMachine = this;
+                        targetDataDisk.Lun = sourceManagedDisk.Lun;
+                        targetDataDisk.HostCaching = sourceManagedDisk.HostCaching;
+
+                        this.DataDisks.Add(targetDataDisk);
                     }
                 }
                 else if(dataDisk.GetType() == typeof(Arm.ClassicDisk))
                 {
                     Disk targetDataDisk = new Disk(dataDisk, this, targetSettings);
-                    this.DataDisks.Add(targetDataDisk);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
                     if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
                         targetDataDisk.TargetStorage = SeekTargetStorageAccount(virtualMachine.AzureSubscription.ArmTargetStorageAccounts, armDisk.StorageAccountName);
+
+                    EnsureDataDiskTargetLunIsNotNull(ref targetDataDisk);
+
+                    this.DataDisks.Add(targetDataDisk);
                 }
             }
 
@@ -184,6 +198,17 @@ namespace MigAz.Azure.MigrationTarget
                 {
                     _PlanAttributes.Add(planAttribute.Name, planAttribute.Value.ToString());
                 }
+            }
+        }
+
+        private void EnsureDataDiskTargetLunIsNotNull(ref Disk targetDataDisk)
+        {
+            if (!targetDataDisk.Lun.HasValue)
+            {
+                // Every Data Disk should have a Lun Index already assigned from the ASM XML.  In the event it does not have a value, we are going to 
+                // change the LUN from Null to -1 to indicate the disks is a data disk, but the LUN could not be determined.  Given that -1 is not an 
+                // allowed LUN Index, we'll use -1 in the tool to identify that this Disk is a Data Disk, is missing LUN index, require user to specify index.
+                targetDataDisk.Lun = -1;
             }
         }
 

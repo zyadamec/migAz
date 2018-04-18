@@ -10,6 +10,7 @@ namespace MigAz.Azure.Models
     {
         public Guid Id;
         public Guid AppSessionGuid;
+        public String MigrationSourceType;
         public String ConfigurationMode;
         public Guid SourceTenantGuid;
         public Guid SourceSubscriptionGuid;
