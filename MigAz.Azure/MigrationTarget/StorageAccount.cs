@@ -118,6 +118,8 @@ namespace MigAz.Azure.MigrationTarget
 
         public async Task<bool> CheckNameAvailability(AzureSubscription targetSubscription)
         {
+            const String checkNameAvailability = "checkNameAvailability";
+
             if (targetSubscription == null)
                 throw new ArgumentException("Target Subscription must be specified to check Storage Account Name Availability.");
 
@@ -129,46 +131,55 @@ namespace MigAz.Azure.MigrationTarget
 
             AzureContext azureContext = targetSubscription.AzureTenant.AzureContext;
 
-            if (azureContext != null && azureContext.LogProvider != null)
-                azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString());
-
-            if (azureContext != null && azureContext.StatusProvider != null)
-                azureContext.StatusProvider.UpdateStatus("Checking Name Availabilty for target Storage Account '" + this.ToString() + "'");
-
-            // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts/checknameavailability
-            string url = "/subscriptions/" + targetSubscription.SubscriptionId + ArmConst.ProviderStorage + "checkNameAvailability?api-version=2017-06-01";
-            string strAccessSAS = String.Empty;
-
-            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
-
-            using (var client = new HttpClient())
+            if (targetSubscription.ExistsProviderResourceType(ArmConst.MicrosoftStorage, checkNameAvailability))
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.BaseAddress = new Uri(azureContext.AzureEnvironment.ResourceManagerEndpoint);
 
                 if (azureContext != null && azureContext.LogProvider != null)
-                    azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url + "");
+                    azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString());
 
-                using (var response = await client.PostAsJsonAsync(url,
-                        new
-                        {
-                            name = this.ToString(),
-                            type = ArmConst.TypeStorageAccount
-                        })
-                    )
+                if (azureContext != null && azureContext.StatusProvider != null)
+                    azureContext.StatusProvider.UpdateStatus("Checking Name Availabilty for target Storage Account '" + this.ToString() + "'");
+
+                // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts/checknameavailability
+                string url = "/subscriptions/" + targetSubscription.SubscriptionId + ArmConst.ProviderStorage + checkNameAvailability + "?api-version=" + targetSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftStorage, checkNameAvailability);
+
+                AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
+
+                using (var client = new HttpClient())
                 {
-                    String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
-                    JObject responseJson = JObject.Parse(strResponse);
-                    this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
-                        responseJson != null &&
-                        responseJson["nameAvailable"] != null &&
-                        String.Compare(responseJson["nameAvailable"].ToString(), "True", true) == 0);
-                }
-            }
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.BaseAddress = new Uri(azureContext.AzureEnvironment.ResourceManagerEndpoint);
 
-            if (azureContext != null && azureContext.StatusProvider != null)
-                azureContext.StatusProvider.UpdateStatus("Ready");
+                    if (azureContext != null && azureContext.LogProvider != null)
+                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url + "");
+
+                    using (var response = await client.PostAsJsonAsync(url,
+                            new
+                            {
+                                name = this.ToString(),
+                                type = ArmConst.TypeStorageAccount
+                            })
+                        )
+                    {
+                        String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
+                        JObject responseJson = JObject.Parse(strResponse);
+                        this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
+                            responseJson != null &&
+                            responseJson["nameAvailable"] != null &&
+                            String.Compare(responseJson["nameAvailable"].ToString(), "True", true) == 0);
+                    }
+                }
+
+                if (azureContext != null && azureContext.StatusProvider != null)
+                    azureContext.StatusProvider.UpdateStatus("Ready");
+
+            }
+            else
+            {
+                azureContext.LogProvider.WriteLog("CheckNameAvailability", "Provider Resource Type does not exist.  Unable to check if storage account name is available.");
+                this.IsNameAvailable = true;
+            }
 
             return this.IsNameAvailable;
         }

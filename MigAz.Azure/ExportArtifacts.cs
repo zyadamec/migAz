@@ -237,7 +237,9 @@ namespace MigAz.Azure
                                             )
                                         {
                                             Arm.VirtualNetwork armVirtualNetwork = (Arm.VirtualNetwork)targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork;
-                                            if (!await armVirtualNetwork.IsIpAddressAvailable(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
+                                            (bool isAvailable, List<String> availableIps) = await armVirtualNetwork.IsIpAddressAvailable(targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress);
+
+                                            if (!isAvailable)
                                             {
                                                 this.AddAlert(AlertType.Error, "Load Balancer '" + targetLoadBalancer.ToString() + "' IP Address '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress + "' is not available within Virtual Network '" + targetLoadBalancer.FrontEndIpConfigurations[0].TargetVirtualNetwork.ToString() + "'.", targetLoadBalancer);
                                             }

@@ -99,7 +99,7 @@ namespace MigAz.Azure.Arm
                     AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
 
                     // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-                    string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion("Microsoft.Compute", "locations/vmSizes");
+                    string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "locations/vmSizes");
                     azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM VMSizes Location : " + this.ToString());
 
                     AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);

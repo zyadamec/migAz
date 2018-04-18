@@ -8,6 +8,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
@@ -101,27 +103,85 @@ namespace MigAz.Azure.Arm
         {
             return this.Name;
         }
-
-        public async Task<bool> IsIpAddressAvailable(string ipAddress)
+        
+        public async Task<(bool isAvailable, List<String> availableIps)> IsIpAddressAvailable(string ipAddress)
         {
-            return true;
+            //https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/checkipaddressavailability
+            const String CheckIPAddressAvailability = "CheckIPAddressAvailability";
+            bool isAvailable = false;
+            List<String> ipsAvailable = null;
 
-            ipAddress = "10.0.0.8";
             this.AzureSubscription.LogProvider.WriteLog("IsIpAddressAvailable", "Start");
             this.AzureSubscription.StatusProvider.UpdateStatus("BUSY: Checking if IP Address '" + ipAddress + "' is available in Azure Virtual Network '" + this.Name + "'.");
 
-            //https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/checkipaddressavailability
+            if (this.AzureSubscription.SubscriptionId == Guid.Empty)
+            {
+                return (true, null);
+            }
 
-            string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderVirtualNetwork + this.Name + "/CheckIPAddressAvailability?api-version=2018-01-01&ipAddress=" + ipAddress;
+            AzureContext azureContext = this.AzureSubscription.AzureTenant.AzureContext;
 
-            AuthenticationResult armToken = await this.AzureSubscription.AzureTenant.AzureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureAdTenantId);
+            if (this.AzureSubscription.ExistsProviderResourceType(ArmConst.MicrosoftNetwork, "virtualNetworks"))
+            {
 
-            AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken, "GET", false);
-            AzureRestResponse azureRestResponse = await this.AzureSubscription.AzureTenant.AzureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject j = JObject.Parse(azureRestResponse.Response);
+                if (azureContext != null && azureContext.LogProvider != null)
+                    azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString());
 
-            return false;
+                if (azureContext != null && azureContext.StatusProvider != null)
+                    azureContext.StatusProvider.UpdateStatus("Checking Name Availabilty for target Storage Account '" + this.ToString() + "'");
+
+                // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts/checknameavailability
+                string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderVirtualNetwork + this.Name + "/" + CheckIPAddressAvailability + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftNetwork, "virtualNetworks") + "&ipAddress=" + ipAddress;
+
+                AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.BaseAddress = new Uri(azureContext.AzureEnvironment.ResourceManagerEndpoint);
+
+                    if (azureContext != null && azureContext.LogProvider != null)
+                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url + "");
+
+                    using (var response = await client.GetAsync(url))
+                    {
+                        String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
+                        JObject responseJson = JObject.Parse(strResponse);
+                        isAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
+                            responseJson != null &&
+                            responseJson["available"] != null &&
+                            String.Compare(responseJson["available"].ToString(), "True", true) == 0);
+
+                        if (responseJson["availableIPAddresses"] != null)
+                        {
+                            ipsAvailable = new List<String>();
+
+                            var ipAddressesJson = from ipAddressJson in responseJson["availableIPAddresses"]
+                                                  select ipAddressJson;
+
+                            foreach (String ipAddressJson in ipAddressesJson)
+                            {
+                                ipsAvailable.Add(ipAddressJson);
+                            }
+                        }
+                    }
+                }
+
+
+            }
+            else
+            {
+                azureContext.LogProvider.WriteLog("CheckNameAvailability", "Provider Resource Type does not exist.  Unable to check if storage account name is available.");
+                isAvailable = true;
+            }
+
+            if (azureContext != null && azureContext.StatusProvider != null)
+                azureContext.StatusProvider.UpdateStatus("Ready");
+
+            return (isAvailable, ipsAvailable);
         }
+
 
         #endregion
 
