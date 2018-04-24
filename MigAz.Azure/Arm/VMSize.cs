@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
@@ -53,6 +54,17 @@ namespace MigAz.Azure.Arm
             
         }
 
+        public bool IsAcceleratedNetworkingSupported
+        {
+            get
+            {
+                // https://azure.microsoft.com/en-us/blog/maximize-your-vm-s-performance-with-accelerated-networking-now-generally-available-for-both-windows-and-linux/
+                // Supported VM series include D/DSv2, D/DSv3, E/ESv3, F/FS, FSv2, and Ms/Mms.
+
+                Regex regExAcceleratedNetworking = new Regex(@"(_D[0-9]+|_DS[0-9]+_V2|_DS[0-9]+_V3|_E[0-9]+|_ES[0-9]+_V3|_F[0-9]+|_FS[0-9]+|_FS[0-9]+_V2|_MS[0-9]+|_MMS[0-9]+)", RegexOptions.IgnoreCase);
+                return regExAcceleratedNetworking.IsMatch(this.Name);
+            }
+        }
     }
 }
 

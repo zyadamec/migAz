@@ -223,6 +223,7 @@ namespace MigAz.Azure
                             }
                             else
                             {
+                                // russell
                                 if (targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIPAllocationMethod == IPAllocationMethodEnum.Static)
                                 {
                                     if (!IPv4CIDR.IsIpAddressInAddressPrefix(targetLoadBalancer.FrontEndIpConfigurations[0].TargetSubnet.AddressPrefix, targetLoadBalancer.FrontEndIpConfigurations[0].TargetPrivateIpAddress))
@@ -361,9 +362,15 @@ namespace MigAz.Azure
                             break;
                         }
                     }
+
                     if (!networkInterfaceExistsInExport)
                     {
                         this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' is used by Virtual Machine '" + virtualMachine.ToString() + "', but is not included in the exported resources.", virtualMachine);
+                    }
+
+                    if (networkInterface.EnableAcceleratedNetworking && !virtualMachine.TargetSize.IsAcceleratedNetworkingSupported)
+                    {
+                        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' has Accelerated Networking enabled, but the Virtual Machine must be of VM Series 'D', 'DSv2', 'DSv3', 'E', 'ESv3', 'F', 'FS', 'FSv2', 'Ms' or 'Mms' to support Accelerated Networking.", networkInterface);
                     }
 
                     if (networkInterface.NetworkSecurityGroup != null)

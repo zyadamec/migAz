@@ -53,7 +53,12 @@ namespace MigAz.Azure.UserControls
             this.networkSecurityGroup = new MigAz.Azure.UserControls.ResourceSummary();
             this.label8 = new System.Windows.Forms.Label();
             this.resourceSummaryPublicIp = new MigAz.Azure.UserControls.ResourceSummary();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.rbAcceleratedNetworkingDisabled = new System.Windows.Forms.RadioButton();
+            this.rbAcceleratedNetworkingEnabled = new System.Windows.Forms.RadioButton();
+            this.label9 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblVirtualNetworkName
@@ -149,7 +154,7 @@ namespace MigAz.Azure.UserControls
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 465);
+            this.label1.Location = new System.Drawing.Point(3, 462);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(111, 20);
             this.label1.TabIndex = 39;
@@ -159,10 +164,10 @@ namespace MigAz.Azure.UserControls
             // 
             this.panel1.Controls.Add(this.rbIPForwardingDisabled);
             this.panel1.Controls.Add(this.rbIPForwardingEnabled);
-            this.panel1.Location = new System.Drawing.Point(136, 462);
+            this.panel1.Location = new System.Drawing.Point(195, 459);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(300, 37);
+            this.panel1.Size = new System.Drawing.Size(230, 37);
             this.panel1.TabIndex = 42;
             // 
             // rbIPForwardingDisabled
@@ -192,7 +197,7 @@ namespace MigAz.Azure.UserControls
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 506);
+            this.label13.Location = new System.Drawing.Point(3, 548);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(122, 20);
             this.label13.TabIndex = 44;
@@ -201,10 +206,10 @@ namespace MigAz.Azure.UserControls
             // virtualMachineSummary
             // 
             this.virtualMachineSummary.AutoSize = true;
-            this.virtualMachineSummary.Location = new System.Drawing.Point(189, 503);
+            this.virtualMachineSummary.Location = new System.Drawing.Point(189, 545);
             this.virtualMachineSummary.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.virtualMachineSummary.Name = "virtualMachineSummary";
-            this.virtualMachineSummary.Size = new System.Drawing.Size(106, 43);
+            this.virtualMachineSummary.Size = new System.Drawing.Size(287, 43);
             this.virtualMachineSummary.TabIndex = 43;
             // 
             // networkSelectionControl1
@@ -230,7 +235,7 @@ namespace MigAz.Azure.UserControls
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 538);
+            this.label2.Location = new System.Drawing.Point(3, 580);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(181, 20);
             this.label2.TabIndex = 47;
@@ -239,16 +244,16 @@ namespace MigAz.Azure.UserControls
             // networkSecurityGroup
             // 
             this.networkSecurityGroup.AutoSize = true;
-            this.networkSecurityGroup.Location = new System.Drawing.Point(189, 535);
+            this.networkSecurityGroup.Location = new System.Drawing.Point(189, 577);
             this.networkSecurityGroup.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.networkSecurityGroup.Name = "networkSecurityGroup";
-            this.networkSecurityGroup.Size = new System.Drawing.Size(106, 43);
+            this.networkSecurityGroup.Size = new System.Drawing.Size(287, 43);
             this.networkSecurityGroup.TabIndex = 46;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 571);
+            this.label8.Location = new System.Drawing.Point(3, 613);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(74, 20);
             this.label8.TabIndex = 49;
@@ -257,16 +262,61 @@ namespace MigAz.Azure.UserControls
             // resourceSummaryPublicIp
             // 
             this.resourceSummaryPublicIp.AutoSize = true;
-            this.resourceSummaryPublicIp.Location = new System.Drawing.Point(189, 568);
+            this.resourceSummaryPublicIp.Location = new System.Drawing.Point(189, 610);
             this.resourceSummaryPublicIp.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.resourceSummaryPublicIp.Name = "resourceSummaryPublicIp";
-            this.resourceSummaryPublicIp.Size = new System.Drawing.Size(106, 43);
+            this.resourceSummaryPublicIp.Size = new System.Drawing.Size(287, 43);
             this.resourceSummaryPublicIp.TabIndex = 48;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.rbAcceleratedNetworkingDisabled);
+            this.panel2.Controls.Add(this.rbAcceleratedNetworkingEnabled);
+            this.panel2.Location = new System.Drawing.Point(195, 497);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(230, 37);
+            this.panel2.TabIndex = 51;
+            // 
+            // rbAcceleratedNetworkingDisabled
+            // 
+            this.rbAcceleratedNetworkingDisabled.AutoSize = true;
+            this.rbAcceleratedNetworkingDisabled.Location = new System.Drawing.Point(116, 3);
+            this.rbAcceleratedNetworkingDisabled.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.rbAcceleratedNetworkingDisabled.Name = "rbAcceleratedNetworkingDisabled";
+            this.rbAcceleratedNetworkingDisabled.Size = new System.Drawing.Size(96, 24);
+            this.rbAcceleratedNetworkingDisabled.TabIndex = 43;
+            this.rbAcceleratedNetworkingDisabled.Text = "Disabled";
+            this.rbAcceleratedNetworkingDisabled.UseVisualStyleBackColor = true;
+            this.rbAcceleratedNetworkingDisabled.CheckedChanged += new System.EventHandler(this.rbAcceleratedNetworkingDisabled_CheckedChanged);
+            // 
+            // rbAcceleratedNetworkingEnabled
+            // 
+            this.rbAcceleratedNetworkingEnabled.AutoSize = true;
+            this.rbAcceleratedNetworkingEnabled.Location = new System.Drawing.Point(0, 3);
+            this.rbAcceleratedNetworkingEnabled.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.rbAcceleratedNetworkingEnabled.Name = "rbAcceleratedNetworkingEnabled";
+            this.rbAcceleratedNetworkingEnabled.Size = new System.Drawing.Size(93, 24);
+            this.rbAcceleratedNetworkingEnabled.TabIndex = 42;
+            this.rbAcceleratedNetworkingEnabled.Text = "Enabled";
+            this.rbAcceleratedNetworkingEnabled.UseVisualStyleBackColor = true;
+            this.rbAcceleratedNetworkingEnabled.CheckedChanged += new System.EventHandler(this.rbAcceleratedNetworkingEnabled_CheckedChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 500);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(181, 20);
+            this.label9.TabIndex = 50;
+            this.label9.Text = "Accelerated Networking:";
             // 
             // NetworkInterfaceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.resourceSummaryPublicIp);
             this.Controls.Add(this.label2);
@@ -291,6 +341,8 @@ namespace MigAz.Azure.UserControls
             this.Size = new System.Drawing.Size(465, 740);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -319,6 +371,10 @@ namespace MigAz.Azure.UserControls
         private ResourceSummary networkSecurityGroup;
         private System.Windows.Forms.Label label8;
         private ResourceSummary resourceSummaryPublicIp;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.RadioButton rbAcceleratedNetworkingDisabled;
+        private System.Windows.Forms.RadioButton rbAcceleratedNetworkingEnabled;
+        private System.Windows.Forms.Label label9;
     }
 }
 
