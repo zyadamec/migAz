@@ -368,9 +368,16 @@ namespace MigAz.Azure
                         this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' is used by Virtual Machine '" + virtualMachine.ToString() + "', but is not included in the exported resources.", virtualMachine);
                     }
 
-                    if (networkInterface.EnableAcceleratedNetworking && !virtualMachine.TargetSize.IsAcceleratedNetworkingSupported)
+                    if (virtualMachine.TargetSize != null)
                     {
-                        this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' has Accelerated Networking enabled, but the Virtual Machine must be of VM Series 'D', 'DSv2', 'DSv3', 'E', 'ESv3', 'F', 'FS', 'FSv2', 'Ms' or 'Mms' to support Accelerated Networking.", networkInterface);
+                        if (networkInterface.EnableAcceleratedNetworking && !virtualMachine.TargetSize.IsAcceleratedNetworkingSupported)
+                        {
+                            this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' has Accelerated Networking enabled, but the Virtual Machine must be of VM Series 'D', 'DSv2', 'DSv3', 'E', 'ESv3', 'F', 'FS', 'FSv2', 'Ms' or 'Mms' to support Accelerated Networking.", networkInterface);
+                        }
+                        else if (!networkInterface.EnableAcceleratedNetworking && virtualMachine.TargetSize.IsAcceleratedNetworkingSupported)
+                        {
+                            this.AddAlert(AlertType.Recommendation, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' has Accelerated Networking disabled and the Virtual Machine Size '" + virtualMachine.TargetSize.ToString() + "' can support Accelerated Networking.  Consider enabling Accelerated Networking.", networkInterface);
+                        }
                     }
 
                     if (networkInterface.NetworkSecurityGroup != null)
