@@ -350,6 +350,7 @@ namespace MigAz.Core.ArmTemplate
     {
         public List<IpConfiguration> ipConfigurations;
         public bool enableIPForwarding = false;
+        public bool enableAcceleratedNetworking = false;
         public Reference NetworkSecurityGroup;
     }
 

@@ -15,6 +15,7 @@ namespace MigAz.Azure.MigrationTarget
     {
         private INetworkInterface _SourceNetworkInterface;
         private bool _EnableIPForwarding = false;
+        private bool _EnableAcceleratedNetworking = false;
         private List<MigrationTarget.NetworkInterfaceIpConfiguration> _TargetNetworkInterfaceIpConfigurations = new List<MigrationTarget.NetworkInterfaceIpConfiguration>();
         private BackEndAddressPool _BackEndAddressPool = null;
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
@@ -28,7 +29,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(networkInterface.Name, targetSettings);
             this.IsPrimary = networkInterface.IsPrimary;
             this.EnableIPForwarding = networkInterface.EnableIpForwarding;
-
+            
             foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
                 NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(asmNetworkInterfaceIpConfiguration, virtualNetworks, targetSettings);
@@ -47,6 +48,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(networkInterface.Name, targetSettings);
             this.IsPrimary = networkInterface.IsPrimary;
             this.EnableIPForwarding = networkInterface.EnableIPForwarding;
+            this.EnableAcceleratedNetworking = networkInterface.EnableAcceleratedNetworking;
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
@@ -69,6 +71,12 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _EnableIPForwarding; }
             set { _EnableIPForwarding = value; }
+        }
+
+        public bool EnableAcceleratedNetworking
+        {
+            get { return _EnableAcceleratedNetworking; }
+            set { _EnableAcceleratedNetworking = value; }
         }
 
         public VirtualMachine ParentVirtualMachine

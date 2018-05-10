@@ -47,6 +47,9 @@ namespace MigAz.Azure.Arm
             {
                 try
                 {
+                    if (ResourceToken["properties"]["enableIPForwarding"] == null)
+                        return false;
+
                     return (bool)ResourceToken["properties"]["enableIPForwarding"];
                 }
                 catch
@@ -55,8 +58,24 @@ namespace MigAz.Azure.Arm
                 }
             }
         }
+        public bool EnableAcceleratedNetworking
+        {
+            get
+            {
+                try
+                {
+                    if (ResourceToken["properties"]["enableAcceleratedNetworking"] == null)
+                        return false;
 
-        public string EnableAcceleratedNetworking => (string)ResourceToken["properties"]["enableAcceleratedNetworking"];
+                    return (bool)ResourceToken["properties"]["enableAcceleratedNetworking"];
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public Guid ResourceGuid => new Guid((string)ResourceToken["properties"]["resourceGuid"]);
         public bool IsPrimary => Convert.ToBoolean((string)ResourceToken["properties"]["primary"]);
         public VirtualMachine VirtualMachine

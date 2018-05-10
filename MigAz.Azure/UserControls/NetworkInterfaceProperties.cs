@@ -59,6 +59,11 @@ namespace MigAz.Azure.UserControls
                 else
                     rbIPForwardingDisabled.Checked = true;
 
+                if (_TargetNetworkInterface.EnableAcceleratedNetworking)
+                    rbAcceleratedNetworkingEnabled.Checked = true;
+                else
+                    rbAcceleratedNetworkingDisabled.Checked = true;
+
                 if (_TargetNetworkInterface.SourceNetworkInterface != null)
                 {
                     if (_TargetNetworkInterface.SourceNetworkInterface.GetType() == typeof(Azure.Asm.NetworkInterface))
@@ -112,18 +117,46 @@ namespace MigAz.Azure.UserControls
 
         private void rbIPForwardingEnabled_CheckedChanged(object sender, EventArgs e)
         {
-            _TargetNetworkInterface.EnableIPForwarding = true;
+            if (rbIPForwardingEnabled.Checked)
+            {
+                _TargetNetworkInterface.EnableIPForwarding = true;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+                if (!_IsBinding)
+                    PropertyChanged?.Invoke();
+            }
         }
 
         private void rbIPForwardingDisabled_CheckedChanged(object sender, EventArgs e)
         {
-            _TargetNetworkInterface.EnableIPForwarding = false;
+            if (rbIPForwardingDisabled.Checked)
+            {
+                _TargetNetworkInterface.EnableIPForwarding = false;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+                if (!_IsBinding)
+                    PropertyChanged?.Invoke();
+            }
+        }
+
+        private void rbAcceleratedNetworkingEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbAcceleratedNetworkingEnabled.Checked)
+            {
+                _TargetNetworkInterface.EnableAcceleratedNetworking = true;
+
+                if (!_IsBinding)
+                    PropertyChanged?.Invoke();
+            }
+        }
+
+        private void rbAcceleratedNetworkingDisabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbAcceleratedNetworkingDisabled.Checked)
+            {
+                _TargetNetworkInterface.EnableAcceleratedNetworking = false;
+
+                if (!_IsBinding)
+                    PropertyChanged?.Invoke();
+            }
         }
     }
 }
