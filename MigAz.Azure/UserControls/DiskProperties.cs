@@ -341,7 +341,7 @@ namespace MigAz.Azure.UserControls
 
             if (_TargetDisk != null)
             {
-                if (_TargetDisk.TargetStorage == null)
+                if (_TargetDisk.TargetStorage == null && cmbSender.SelectedItem != null)
                 {
                     if (cmbSender.SelectedItem.GetType() == typeof(Azure.MigrationTarget.StorageAccount))
                     {
