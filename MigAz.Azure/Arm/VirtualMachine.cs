@@ -200,7 +200,7 @@ namespace MigAz.Azure.Arm
         {
             await base.InitializeChildrenAsync();
 
-            if (this.AvailabilitySetId != String.Empty)
+            if (this.AvailabilitySetId != null && this.AvailabilitySetId != String.Empty)
                 this.AvailabilitySet = this.AzureSubscription.GetAzureARMAvailabilitySet(this.AvailabilitySetId);
 
             if (this.AvailabilitySet != null)
