@@ -350,7 +350,7 @@ If (($StartType -eq $null -and $ResourceGroupDeploymentSuccess -eq $false) -or $
 	{
 		Write-Host ""
 
-		Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -Debug -Confirm:$false -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
+		Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -Debug -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
 	}
 	else
 	{
