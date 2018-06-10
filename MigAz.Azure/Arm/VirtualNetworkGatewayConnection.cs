@@ -16,14 +16,6 @@ namespace MigAz.Azure.Arm
         {
         }
 
-        public string connectionType => (string)ResourceToken["properties"]["connectionType"];
-        public string routingWeight => (string)ResourceToken["properties"]["routingWeight"];
-        public string enableBgp => (string)ResourceToken["properties"]["enableBgp"];
-        public string usePolicyBasedTrafficSelectors => (string)ResourceToken["properties"]["usePolicyBasedTrafficSelectors"];
-        //public string ipsecPolicies => (string)ResourceToken["properties"]["ipsecPolicies"];
-        public string ingressBytesTransferred => (string)ResourceToken["properties"]["ingressBytesTransferred"];
-        public string egressBytesTransferred => (string)ResourceToken["properties"]["egressBytesTransferred"];
-
         public override string ToString()
         {
             return this.Name;

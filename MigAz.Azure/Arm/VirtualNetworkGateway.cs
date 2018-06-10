@@ -19,14 +19,6 @@ namespace MigAz.Azure.Arm
         {
         }
 
-        public string gatewayType => (string)ResourceToken["properties"]["gatewayType"];
-        public string vpnType => (string)ResourceToken["properties"]["vpnType"];
-        public string enableBgp => (string)ResourceToken["properties"]["enableBgp"];
-        public string activeActive => (string)ResourceToken["properties"]["activeActive"];
-        public string skuName => (string)ResourceToken["properties"]["sku"]["name"];
-        public string skuTier => (string)ResourceToken["properties"]["sku"]["tier"];
-        public string skuCapacity => (string)ResourceToken["properties"]["sku"]["capacity"];
-
         public new async Task InitializeChildrenAsync()
         {
             await base.InitializeChildrenAsync();
