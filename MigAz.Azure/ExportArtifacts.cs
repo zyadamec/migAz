@@ -280,7 +280,7 @@ namespace MigAz.Azure
             {
                 if (availablitySet.TargetVirtualMachines.Count == 0)
                 {
-                    this.AddAlert(AlertType.Warning, "Availability Set '" + availablitySet.ToString() + "' does not contain any Virtual Machines and will be exported as an empty Availability Set.", availablitySet);
+                    this.AddAlert(AlertType.Error, "Availability Set '" + availablitySet.ToString() + "' does not contain any Virtual Machines.  Remove the Availability Set from the Target Resources for export or associate Virtual Machines to the Availability Set.", availablitySet);
                 }
                 else if (availablitySet.TargetVirtualMachines.Count == 1)
                 {
