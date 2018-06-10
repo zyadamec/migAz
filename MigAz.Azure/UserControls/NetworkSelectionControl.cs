@@ -249,10 +249,10 @@ namespace MigAz.Azure.UserControls
 
                 if (_NetworkInterfaceTarget != null)
                 {
-                    if (_NetworkInterfaceTarget.GetType() == typeof(MigrationTarget.NetworkInterfaceIpConfiguration))
+                    if (_NetworkInterfaceTarget.GetType() == typeof(NetworkInterfaceIpConfiguration))
                     {
                         NetworkInterfaceIpConfiguration targetNetworkInterface = (NetworkInterfaceIpConfiguration)_NetworkInterfaceTarget;
-                        if (targetNetworkInterface.SourceIpConfiguration != null)
+                        if (targetNetworkInterface.TargetVirtualNetwork != null)
                         {
                             if (targetNetworkInterface.TargetVirtualNetwork.GetType() == typeof(Arm.VirtualNetwork))
                             {
