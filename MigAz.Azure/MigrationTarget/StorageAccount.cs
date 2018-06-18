@@ -152,7 +152,7 @@ namespace MigAz.Azure.MigrationTarget
                     client.BaseAddress = new Uri(azureContext.AzureEnvironment.ResourceManagerEndpoint);
 
                     if (azureContext != null && azureContext.LogProvider != null)
-                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url + "");
+                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url);
 
                     using (var response = await client.PostAsJsonAsync(url,
                             new
@@ -163,6 +163,10 @@ namespace MigAz.Azure.MigrationTarget
                         )
                     {
                         String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
+                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "HttpStatusCode: '" + response.StatusCode);
+                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Response:  '" + strResponse);
+
+
                         JObject responseJson = JObject.Parse(strResponse);
                         this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
                             responseJson != null &&
