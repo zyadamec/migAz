@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Linq;
 using MigAz.Core;
 using MigAz.Azure.Interface;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure.Generator
 {
@@ -34,6 +35,7 @@ namespace MigAz.Azure.Generator
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
+        private AzureTokenProvider _TargetAzureTokenProvider = null;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -84,6 +86,12 @@ namespace MigAz.Azure.Generator
             set { _AccessSASTokenLifetime = value; }
         }
 
+        public AzureTokenProvider TargetAzureTokenProvider
+        {
+            get { return _TargetAzureTokenProvider; }
+            set { _TargetAzureTokenProvider = value; }
+        }
+
         public String OutputDirectory
         {
             get { return _OutputDirectory; }
@@ -102,8 +110,6 @@ namespace MigAz.Azure.Generator
         public List<ArmResource> Resources { get { return _Resources; } }
         public Dictionary<string, Core.ArmTemplate.Parameter> Parameters { get { return _Parameters; } }
         public Dictionary<string, MemoryStream> TemplateStreams { get { return _TemplateStreams; } }
-
-
 
         public bool IsProcessed(ArmResource resource)
         {
@@ -1482,17 +1488,29 @@ namespace MigAz.Azure.Generator
                 instructionContent = reader.ReadToEnd();
             }
 
-            string azureEnvironmentSwitch = String.Empty;
-            string tenantSwitch = String.Empty;
-            string subscriptionSwitch = String.Empty;
+            string azureEnvironmentParameter = String.Empty;
+            string tenantParameter = String.Empty;
+            string subscriptionParameter = String.Empty;
+            string accountIdParameter = String.Empty;
+            string accessTokenParameter = String.Empty;
             StringBuilder sbCustomAzureEnvironment = new StringBuilder();
 
             if (this.TargetSubscription != null)
             {
-                subscriptionSwitch = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
+                if (this.TargetAzureTokenProvider != null)
+                {
+                    AuthenticationResult authenticationResult = this.TargetAzureTokenProvider.GetToken(this.TargetSubscription.TokenResourceUrl, this.TargetSubscription.AzureTenant.TenantId).Result;
+                    if (authenticationResult != null)
+                    {
+                        accountIdParameter = " -AccountId '" + authenticationResult.UserInfo.DisplayableId + "'";
+                        accessTokenParameter = " -AccessToken '" + authenticationResult.AccessToken + "'";
+                    }
+                }
+
+                subscriptionParameter = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
 
                 if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
-                    azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
+                    azureEnvironmentParameter = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
 
                 if (this.TargetSubscription.AzureEnvironment.IsUserDefined)
                 {
@@ -1535,13 +1553,15 @@ namespace MigAz.Azure.Generator
                 }
 
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
-                    tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
+                    tenantParameter = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
 
             instructionContent = instructionContent.Replace("{AddCustomEnvironment}", sbCustomAzureEnvironment.ToString());
-            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
-            instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
-            instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);
+            instructionContent = instructionContent.Replace("{azureEnvironmentParameter}", azureEnvironmentParameter);
+            instructionContent = instructionContent.Replace("{tenantParameter}", tenantParameter);
+            instructionContent = instructionContent.Replace("{subscriptionParameter}", subscriptionParameter);
+            instructionContent = instructionContent.Replace("{accountIdParameter}", accountIdParameter);
+            instructionContent = instructionContent.Replace("{accessTokenParameter}", accessTokenParameter);
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
             instructionContent = instructionContent.Replace("{resourceGroupName}", this.TargetResourceGroupName);
