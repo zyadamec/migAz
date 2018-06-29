@@ -1596,6 +1596,12 @@ namespace MigAz.Azure.Generator
             byte[] c = asciiEncoding.GetBytes(instructionContent);
             MemoryStream instructionStream = new MemoryStream();
             await instructionStream.WriteAsync(c, 0, c.Length);
+
+            if (TemplateStreams.Keys.Contains(this.GetDeployInstructionFilename()))
+            {
+                TemplateStreams.Remove(this.GetDeployInstructionFilename());
+            }
+
             TemplateStreams.Add(this.GetDeployInstructionFilename(), instructionStream);
 
             LogProvider.WriteLog("SerializeDeploymentInstructions", "End");
