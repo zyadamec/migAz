@@ -3,24 +3,39 @@
 
 # Parameters
 param (
-    [Parameter(Mandatory = $true)] 
-    $ResourceGroupName,
+    [Parameter(Mandatory = $false)] 
+    [string] $Environment = "AzureCloud",
 
     [Parameter(Mandatory = $true)] 
-    $ResourceGroupLocation,
+    [Guid] $TenantId,
 
     [Parameter(Mandatory = $true)] 
-    $TemplateFile,
+    [Guid] $SubscriptionId,
 
     [Parameter(Mandatory = $false)] 
-    $TemplateParameterFile,
+    [string] $AccountId,
 
     [Parameter(Mandatory = $false)] 
-    $BlobCopyFile,
+    [string] $AccessToken,
+
+    [Parameter(Mandatory = $true)] 
+    [string] $ResourceGroupName,
+
+    [Parameter(Mandatory = $true)] 
+    [string] $ResourceGroupLocation,
+
+    [Parameter(Mandatory = $true)] 
+    [string] $TemplateFile,
+
+    [Parameter(Mandatory = $false)] 
+    [string] $TemplateParameterFile,
+
+    [Parameter(Mandatory = $false)] 
+    [string] $BlobCopyFile,
 
     [ValidateSet("CreateResourceGroup", "TestResourceGroupDeployment", "StartBlobCopy", "MonitorBlobCopy", "CancelBlobCopy", "ResourceGroupDeployment", "DeleteMigAzTempStorage", "RetryDeployment")]
     [Parameter(Mandatory = $false)] 
-    $StartType,
+    [string] $StartType,
 
     $RefreshInterval = 10
 )
@@ -39,13 +54,22 @@ if ((get-command Get-AzureRmStorageAccountKey).Version.ToString() -lt '4.0.1')
     Exit
 }
 
+if ($AccountId -ne $null -and $AccessToken -ne $null)
+{
+	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId -AccountId $AccountId -AccessToken $AccessToken
+}
+else
+{
+	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId
+}
+
 $CreateResourceGroupSuccess = $false
 $StartBlobCopySuccess = $false
 $TestResourceGroupDeploymentSuccess = $false
 $MonitorBlobCopySuccess = $false
 $ResourceGroupDeploymentSuccess = $false
 
-If ($StartType -eq $null -or $StartType -eq "CreateResourceGroup")
+If ($StartType -eq "" -or $StartType -eq "CreateResourceGroup")
 {
 	$CreateResourceGroupError = $false
 	Write-Host "Getting Azure Resource Group '$($ResourceGroupName)'"
@@ -67,7 +91,7 @@ If ($StartType -eq $null -or $StartType -eq "CreateResourceGroup")
 }
 
 # If Initiating the copy of all blobs
-If (($StartType -eq $null -and $CreateResourceGroupSuccess -eq $true) -or $StartType -eq "StartBlobCopy")
+If (($StartType -eq "" -and $CreateResourceGroupSuccess -eq $true) -or $StartType -eq "StartBlobCopy")
 {
 	If ($BlobCopyFile -eq $null)
 	{
@@ -178,7 +202,7 @@ If (($StartType -eq $null -and $CreateResourceGroupSuccess -eq $true) -or $Start
 }
 
 # If waiting for all blobs to copy and get statistics
-If (($StartType -eq $null -and $StartBlobCopySuccess -eq $true) -or $StartType -eq "MonitorBlobCopy")
+If (($StartType -eq "" -and $StartBlobCopySuccess -eq $true) -or $StartType -eq "MonitorBlobCopy")
 {
 	If ($BlobCopyFile -eq $null)
 	{
@@ -268,7 +292,7 @@ If (($StartType -eq $null -and $StartBlobCopySuccess -eq $true) -or $StartType -
 }
 
 # If to Cancel blobs copy
-If (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $false) -or $StartType -eq "CancelBlobCopy")
+If (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $false) -or $StartType -eq "CancelBlobCopy")
 {
     foreach ($copyblobdetail in $copyblobdetails)
     {
@@ -305,11 +329,11 @@ If (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $false) -or $StartTyp
     }
 }
 
-if ($StartType -eq $null -and $MonitorBlobCopySuccess -eq $false)
+if ($StartType -eq "" -and $MonitorBlobCopySuccess -eq $false)
 {
 	Write-Host " - Skipping Resource Group Depoyment due to unsuccessful Blob Copy result" -ForegroundColor Yellow
 }
-elseif (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $true) -or $StartType -eq "ResourceGroupDeployment" -or $StartType -eq "RetryDeployment")
+elseif (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $true) -or $StartType -eq "ResourceGroupDeployment" -or $StartType -eq "RetryDeployment")
 {
 	$ResourceGroupDeploymentError = $null
 
@@ -341,7 +365,7 @@ elseif (($StartType -eq $null -and $MonitorBlobCopySuccess -eq $true) -or $Start
 	}
 }
 
-If (($StartType -eq $null -and $ResourceGroupDeploymentSuccess -eq $false) -or $StartType -eq "TestResourceGroupDeployment")
+If (($StartType -eq "" -and $ResourceGroupDeploymentSuccess -eq $false) -or $StartType -eq "TestResourceGroupDeployment")
 {
 	$TestResourceGroupDeploymentError = $false
 	Write-Host "Resource Group Failed.  Testing Azure Resource Group Deployment for detailed results."
@@ -361,7 +385,7 @@ If (($StartType -eq $null -and $ResourceGroupDeploymentSuccess -eq $false) -or $
 	}
 }
 
-if (($StartType -eq $null -and $ResourceGroupDeploymentSuccess -eq $true) -or $StartType -eq "DeleteMigAzTempStorage" -or $StartType -eq "RetryDeployment")
+if (($StartType -eq "" -and $ResourceGroupDeploymentSuccess -eq $true) -or $StartType -eq "DeleteMigAzTempStorage" -or $StartType -eq "RetryDeployment")
 {
 	Write-Host "- Removing MigAz Temporary Storage Account(s)"
 
