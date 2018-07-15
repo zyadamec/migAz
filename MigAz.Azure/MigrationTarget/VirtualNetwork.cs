@@ -19,9 +19,11 @@ namespace MigAz.Azure.MigrationTarget
         List<string> _AddressPrefixes = new List<string>();
         List<string> _DnsServers = new List<string>();
 
-        public VirtualNetwork() { }
+        #region Constructors
 
-        public VirtualNetwork(Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
+        public VirtualNetwork() : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks) { }
+
+        public VirtualNetwork(Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
@@ -50,7 +52,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public VirtualNetwork(Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
+        public VirtualNetwork(Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
@@ -76,7 +78,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public VirtualNetwork(IVirtualNetwork virtualNetwork, TargetSettings targetSettings)
+        public VirtualNetwork(IVirtualNetwork virtualNetwork, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
@@ -95,6 +97,8 @@ namespace MigAz.Azure.MigrationTarget
                 this.TargetSubnets.Add(targetSubnet);
             }
         }
+
+        #endregion
 
         public IVirtualNetwork SourceVirtualNetwork { get; }
 

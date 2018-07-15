@@ -115,6 +115,14 @@ namespace MigAz.Azure.UserControls
             }
         }
 
+        internal Arm.ProviderResourceType GetTargetProvider(Core.MigrationTarget migrationTarget)
+        {
+            if (this.TargetSubscription == null)
+                return null;
+
+            return this.TargetSubscription.GetProviderResourceType(migrationTarget.ProviderNamespace, migrationTarget.ResourceType);
+        }
+
         private bool ContainTagTypeRecursive(TreeNode parentTreeNode, System.Type tagType)
         {
             if (parentTreeNode.Tag != null && parentTreeNode.Tag.GetType() == tagType)

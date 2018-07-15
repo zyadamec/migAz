@@ -3,6 +3,7 @@
 
 using MigAz.Azure.Interface;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,11 @@ namespace MigAz.Azure.MigrationTarget
         private Int32 _DiskSizeInGB = 0;
         private VirtualMachine _ParentVirtualMachine;
 
-        private Disk() { }
+        #region Constructors
 
-        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings)
+        private Disk() : base(ArmConst.MicrosoftCompute, ArmConst.Disks) { }
+
+        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.Disks)
         {
             this.SourceDisk = sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
@@ -34,7 +37,7 @@ namespace MigAz.Azure.MigrationTarget
 
         }
 
-        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings)
+        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.Disks)
         {
             this.SourceDisk = (IDisk)sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
@@ -59,6 +62,8 @@ namespace MigAz.Azure.MigrationTarget
                 this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
             }
         }
+
+        #endregion
 
         public VirtualMachine ParentVirtualMachine
         {

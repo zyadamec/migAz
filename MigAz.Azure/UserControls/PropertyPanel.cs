@@ -84,6 +84,10 @@ namespace MigAz.Azure.UserControls
             this.ResourceText = String.Empty;
             this.lblResourceType.Text = String.Empty;
             this.pnlProperties.Controls.Clear();
+            this.cmbApiVersions.Items.Clear();
+            this.lblTargetAPIVersion.Visible = false;
+            this.cmbApiVersions.Items.Clear();
+            this.cmbApiVersions.Visible = false;
         }
 
         private void PropertyPanel_Resize(object sender, EventArgs e)
@@ -111,6 +115,7 @@ namespace MigAz.Azure.UserControls
             this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "Start");
 
             this.Clear();
+
             this._MigrationTarget = migrationTarget;
             this.ResourceText = migrationTarget.ToString();
             this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];
@@ -228,6 +233,18 @@ namespace MigAz.Azure.UserControls
             //    properties.Bind(_TargetTreeView, (VirtualMachineImage)migrationTarget, _TargetTreeView);
             //    this.PropertyDetailControl = properties;
             //}
+
+            Arm.ProviderResourceType targetProvider = this.TargetTreeView.GetTargetProvider(migrationTarget);
+            if (targetProvider != null)
+            {
+                lblTargetAPIVersion.Visible = true;
+                cmbApiVersions.Visible = true;
+
+                foreach (string apiVersion in targetProvider.ApiVersions)
+                {
+                    cmbApiVersions.Items.Add(apiVersion);
+                }
+            }
 
             this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "End");
         }

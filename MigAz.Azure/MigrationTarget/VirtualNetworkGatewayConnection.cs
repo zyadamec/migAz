@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 
 namespace MigAz.Azure.MigrationTarget
@@ -12,13 +13,18 @@ namespace MigAz.Azure.MigrationTarget
     {
         private IConnection _SourceConnection;
 
-        private VirtualNetworkGatewayConnection() { }
+        #region Constructors
 
-        public VirtualNetworkGatewayConnection(IConnection connection, TargetSettings targetSettings)
+        private VirtualNetworkGatewayConnection() : base(String.Empty, String.Empty) { }
+
+        public VirtualNetworkGatewayConnection(IConnection connection, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             this._SourceConnection = connection;
             this.SetTargetName(this.SourceName, targetSettings);
         }
+
+        #endregion
+
         public IConnection SourceConnection { get { return _SourceConnection; } }
 
         public String SourceName

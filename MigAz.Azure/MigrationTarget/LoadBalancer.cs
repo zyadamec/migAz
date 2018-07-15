@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -28,14 +29,20 @@ namespace MigAz.Azure.MigrationTarget
         private List<Probe> _Probes = new List<Probe>();
         private LoadBalancerType _LoadBalancerType = LoadBalancerType.Internal;
 
+        #region Constructors
 
-        public LoadBalancer(string targetName, TargetSettings targetSettings)
+        public LoadBalancer() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        {
+            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
+        }
+
+        public LoadBalancer(string targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
             this.SetTargetName(targetName, targetSettings);
             this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
         }
 
-        public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings)
+        public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
             this.Source = sourceLoadBalancer;
             this.SetTargetName(sourceLoadBalancer.Name, targetSettings);
@@ -68,10 +75,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public LoadBalancer()
-        {
-            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
-        }
+        #endregion
 
         public LoadBalancerType LoadBalancerType
         {

@@ -3,6 +3,7 @@
 
 using MigAz.Azure.Interface;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,11 @@ namespace MigAz.Azure.MigrationTarget
     {
         private INetworkInterfaceIpConfiguration _SourceIpConfiguration;
 
-        private NetworkInterfaceIpConfiguration() { }
+        #region Constructors
 
-        public NetworkInterfaceIpConfiguration(Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings)
+        private NetworkInterfaceIpConfiguration() : base(String.Empty, String.Empty) { }
+
+        public NetworkInterfaceIpConfiguration(Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             _SourceIpConfiguration = ipConfiguration;
 
@@ -50,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
 
         }
 
-        public NetworkInterfaceIpConfiguration(Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings)
+        public NetworkInterfaceIpConfiguration(Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             _SourceIpConfiguration = ipConfiguration;
 
@@ -80,6 +83,8 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
             
         }
+
+        #endregion
 
         private VirtualNetwork SeekVirtualNetwork(List<VirtualNetwork> virtualNetworks, string virtualNetworkName)
         {

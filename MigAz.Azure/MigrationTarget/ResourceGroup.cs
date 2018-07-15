@@ -3,6 +3,7 @@
 
 using MigAz.Azure.Interface;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,14 @@ namespace MigAz.Azure.MigrationTarget
     {
         private Arm.Location _TargetLocation;
 
-        public ResourceGroup(TargetSettings targetSettings)
+        #region Constructors
+
+        public ResourceGroup(TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             this.SetTargetName("NewResourceGroup", targetSettings);
         }
+
+        #endregion
 
         public String SourceName
         {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,16 @@ namespace MigAz.Azure.MigrationTarget
         private IPAllocationMethodEnum _IPAllocationMethod = IPAllocationMethodEnum.Dynamic;
         private Arm.PublicIP _Source;
 
-        public PublicIp() { }
+        #region Constructors
 
-        public PublicIp(string targetName, TargetSettings targetSettings)
+        public PublicIp() : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses) { }
+
+        public PublicIp(string targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses)
         {
             this.SetTargetName(targetName, targetSettings);
         }
 
-        public PublicIp(Arm.PublicIP armPublicIP, TargetSettings targetSettings)
+        public PublicIp(Arm.PublicIP armPublicIP, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses)
         {
             this._Source = armPublicIP;
             this.SourceName = armPublicIP.Name;
@@ -36,6 +39,8 @@ namespace MigAz.Azure.MigrationTarget
             if (String.Compare(armPublicIP.PublicIPAllocationMethod, "Static", true) == 0)
                 _IPAllocationMethod = IPAllocationMethodEnum.Static;
         }
+
+        #endregion
 
         public String DomainNameLabel
         {

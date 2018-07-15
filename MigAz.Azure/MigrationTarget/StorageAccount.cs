@@ -29,23 +29,23 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public StorageAccount()
+        public StorageAccount() : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
         }
-        public StorageAccount(StorageAccountType storageAccountType)
+        public StorageAccount(StorageAccountType storageAccountType) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
             this.StorageAccountType = storageAccountType;
         }
-        public StorageAccount(string name, TargetSettings targetSettings)
+        public StorageAccount(string name, TargetSettings targetSettings) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
         {
             this.SetTargetName(name, targetSettings);
         }
 
-        public StorageAccount(IStorageAccount source, TargetSettings targetSettings)
+        public StorageAccount(IStorageAccount source, TargetSettings targetSettings) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
         {
             _Source = source;
             this.SetTargetName(source.Name, targetSettings);
