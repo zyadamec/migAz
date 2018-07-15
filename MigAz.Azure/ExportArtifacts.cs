@@ -168,6 +168,7 @@ namespace MigAz.Azure
 
             foreach (MigrationTarget.StorageAccount targetStorageAccount in this.StorageAccounts)
             {
+                ValidateTargetApiVersion(targetStorageAccount);
                 await targetStorageAccount.CheckNameAvailability(this.TargetSubscription);
 
                 if (!targetStorageAccount.IsNameAvailable)
@@ -182,6 +183,8 @@ namespace MigAz.Azure
 
             foreach (MigrationTarget.VirtualNetwork targetVirtualNetwork in this.VirtualNetworks)
             {
+                ValidateTargetApiVersion(targetVirtualNetwork);
+
                 foreach (MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
                 {
                     if (targetSubnet.NetworkSecurityGroup != null)
@@ -198,12 +201,16 @@ namespace MigAz.Azure
 
             foreach (MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup in this.NetworkSecurityGroups)
             {
+                ValidateTargetApiVersion(targetNetworkSecurityGroup);
+
                 if (targetNetworkSecurityGroup.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Network Security Group must be specified.", targetNetworkSecurityGroup);
             }
 
             foreach (MigrationTarget.LoadBalancer targetLoadBalancer in this.LoadBalancers)
             {
+                ValidateTargetApiVersion(targetLoadBalancer);
+
                 if (targetLoadBalancer.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Load Balancer must be specified.", targetLoadBalancer);
 
@@ -278,6 +285,8 @@ namespace MigAz.Azure
 
             foreach (Azure.MigrationTarget.AvailabilitySet availablitySet in this.AvailablitySets)
             {
+                ValidateTargetApiVersion(availablitySet);
+
                 if (availablitySet.TargetVirtualMachines.Count == 0)
                 {
                     this.AddAlert(AlertType.Error, "Availability Set '" + availablitySet.ToString() + "' does not contain any Virtual Machines.  Remove the Availability Set from the Target Resources for export or associate Virtual Machines to the Availability Set.", availablitySet);
@@ -295,6 +304,8 @@ namespace MigAz.Azure
 
             foreach (Azure.MigrationTarget.VirtualMachine virtualMachine in this.VirtualMachines)
             {
+                ValidateTargetApiVersion(virtualMachine);
+
                 if (virtualMachine.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
 
@@ -478,6 +489,8 @@ namespace MigAz.Azure
 
             foreach (Azure.MigrationTarget.Disk targetDisk in this.Disks)
             {
+                ValidateTargetApiVersion(targetDisk);
+
                 ValidateDiskStandards(targetDisk);
             }
 
@@ -492,6 +505,12 @@ namespace MigAz.Azure
 
             if (AfterResourceValidation != null)
                 await AfterResourceValidation.Invoke();
+        }
+
+        private void ValidateTargetApiVersion(Core.MigrationTarget migrationTarget)
+        {
+            if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion == String.Empty)
+                this.AddAlert(AlertType.Error, "Target Azure RM API Version must be specificed for " + migrationTarget.FriendlyObjectName + " '" + migrationTarget.TargetNameResult + "'.", migrationTarget);
         }
 
         internal bool IsStorageAccountVmDiskTarget(StorageAccount targetStorageAccount)

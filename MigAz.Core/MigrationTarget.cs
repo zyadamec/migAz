@@ -27,7 +27,12 @@ namespace MigAz.Core
 
         public Guid MigrationTargetGuid { get { return _MigrationTargetGuid; } }
 
-        public string ApiVersion { get { return _ApiVersion; } }
+        public string ApiVersion 
+        {
+            get { return _ApiVersion; }
+            set { _ApiVersion = value; }
+        }
+
         public string ProviderNamespace { get { return _ProviderNamespace; } }
         public string ResourceType { get { return _ResourceType; } }
 

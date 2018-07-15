@@ -253,6 +253,17 @@ namespace MigAz.Azure.UserControls
         {
             await PropertyChanged(_MigrationTarget);
         }
+
+        private void cmbApiVersions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_MigrationTarget != null)
+            {
+                if (cmbApiVersions.SelectedItem == null)
+                    _MigrationTarget.ApiVersion = String.Empty;
+                else
+                    _MigrationTarget.ApiVersion = cmbApiVersions.SelectedItem.ToString();
+            }
+        }
     }
 }
 
