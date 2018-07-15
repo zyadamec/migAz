@@ -1518,7 +1518,7 @@ namespace MigAz.Azure.Generator
                     sbCustomAzureEnvironment.Append("<p>Your Azure Resource Manager deployment utilized a custom Azure Environment.  Ensure Azure PowerShell has this custom Azure Environment added:</p>");
 
                     // https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/add-azurermenvironment?view=azurermps-4.4.1
-                    sbCustomAzureEnvironment.Append("<pre>");
+                    sbCustomAzureEnvironment.Append("<pre class=\"wrap\">");
                     sbCustomAzureEnvironment.Append("Add-AzureRmEnvironment");
                     sbCustomAzureEnvironment.Append(" -Name ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.Name);
