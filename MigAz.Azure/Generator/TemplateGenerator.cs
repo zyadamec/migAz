@@ -332,6 +332,7 @@ namespace MigAz.Azure.Generator
 
             availabilitySet.name = targetAvailabilitySet.ToString();
             availabilitySet.location = "[resourceGroup().location]";
+            availabilitySet.apiVersion = targetAvailabilitySet.ApiVersion;
 
             AvailabilitySet_Properties availabilitySet_Properties = new AvailabilitySet_Properties();
             availabilitySet.properties = availabilitySet_Properties;
@@ -363,6 +364,7 @@ namespace MigAz.Azure.Generator
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
             publicipaddress.name = publicIp.ToString();
             publicipaddress.location = "[resourceGroup().location]";
+            publicipaddress.apiVersion = publicIp.ApiVersion;
 
             PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
             publicipaddress.properties = publicipaddress_properties;
@@ -389,6 +391,7 @@ namespace MigAz.Azure.Generator
             LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid);
             loadbalancer.name = loadBalancer.ToString();
             loadbalancer.location = "[resourceGroup().location]";
+            loadbalancer.apiVersion = loadBalancer.ApiVersion;
             loadbalancer.dependsOn = dependson;
 
             LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
@@ -544,6 +547,7 @@ namespace MigAz.Azure.Generator
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = targetVirtualNetwork.ToString();
             virtualnetwork.location = "[resourceGroup().location]";
+            virtualnetwork.apiVersion = targetVirtualNetwork.ApiVersion;
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -812,6 +816,7 @@ namespace MigAz.Azure.Generator
             NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
             networksecuritygroup.name = targetNetworkSecurityGroup.ToString();
             networksecuritygroup.location = "[resourceGroup().location]";
+            networksecuritygroup.apiVersion = targetNetworkSecurityGroup.ApiVersion;
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
@@ -857,6 +862,7 @@ namespace MigAz.Azure.Generator
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.ToString();
             routetable.location = "[resourceGroup().location]";
+            routetable.apiVersion = routeTable.ApiVersion;
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Route>();
@@ -897,6 +903,7 @@ namespace MigAz.Azure.Generator
             NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
             networkInterface.name = targetNetworkInterface.ToString();
             networkInterface.location = "[resourceGroup().location]";
+            networkInterface.apiVersion = targetNetworkInterface.ApiVersion;
 
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
@@ -1007,6 +1014,7 @@ namespace MigAz.Azure.Generator
             VirtualMachine templateVirtualMachine = new VirtualMachine(this.ExecutionGuid);
             templateVirtualMachine.name = targetVirtualMachine.ToString();
             templateVirtualMachine.location = "[resourceGroup().location]";
+            templateVirtualMachine.apiVersion = targetVirtualMachine.ApiVersion;
 
             if (targetVirtualMachine.IsManagedDisks)
             {
@@ -1222,6 +1230,7 @@ namespace MigAz.Azure.Generator
             ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid);
             templateManagedDisk.name = targetManagedDisk.ToString();
             templateManagedDisk.location = "[resourceGroup().location]";
+            templateManagedDisk.apiVersion = targetManagedDisk.ApiVersion;
 
             Dictionary<string, string> managedDiskSku = new Dictionary<string, string>();
             templateManagedDisk.sku = managedDiskSku;
@@ -1370,6 +1379,7 @@ namespace MigAz.Azure.Generator
             storageaccount.name = targetStorageAccount.ToString();
             storageaccount.location = "[resourceGroup().location]";
             storageaccount.properties = storageaccount_properties;
+            storageaccount.apiVersion = targetStorageAccount.ApiVersion;
 
             this.AddResource(storageaccount);
 

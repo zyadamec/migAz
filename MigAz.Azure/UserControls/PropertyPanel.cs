@@ -244,6 +244,11 @@ namespace MigAz.Azure.UserControls
                 {
                     cmbApiVersions.Items.Add(apiVersion);
                 }
+
+                if (migrationTarget.ApiVersion != null && migrationTarget.ApiVersion != String.Empty)
+                {
+                    cmbApiVersions.SelectedIndex = cmbApiVersions.FindStringExact(migrationTarget.ApiVersion);
+                }
             }
 
             this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "End");
@@ -254,7 +259,7 @@ namespace MigAz.Azure.UserControls
             await PropertyChanged(_MigrationTarget);
         }
 
-        private void cmbApiVersions_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cmbApiVersions_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_MigrationTarget != null)
             {
@@ -263,6 +268,9 @@ namespace MigAz.Azure.UserControls
                 else
                     _MigrationTarget.ApiVersion = cmbApiVersions.SelectedItem.ToString();
             }
+
+
+            await PropertyChanged(_MigrationTarget);
         }
     }
 }
