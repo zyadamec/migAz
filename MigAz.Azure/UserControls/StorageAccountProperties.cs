@@ -17,14 +17,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class StorageAccountProperties : UserControl
+    public partial class StorageAccountProperties : TargetPropertyControl
     {
         private StorageAccount _StorageAccount;
-        private TargetTreeView _TargetTreeView;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public StorageAccountProperties()
         {
@@ -35,7 +30,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _StorageAccount = storageAccount;
                 txtTargetName.MaxLength = StorageAccount.MaximumTargetNameLength(targetTreeView.TargetSettings);
@@ -63,7 +58,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -72,8 +67,7 @@ namespace MigAz.Azure.UserControls
             TextBox txtSender = (TextBox)sender;
             _StorageAccount.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -91,8 +85,7 @@ namespace MigAz.Azure.UserControls
             else
                 _StorageAccount.StorageAccountType = StorageAccountType.Standard_LRS;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

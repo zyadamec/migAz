@@ -78,6 +78,11 @@ namespace MigAz.Azure.MigrationTarget
             set { _EnableIPForwarding = value; }
         }
 
+        public bool AllowAcceleratedNetworking
+        {
+            get { return this.ApiVersion.CompareTo("2017-10-01") >= 0; }
+        }
+
         public bool EnableAcceleratedNetworking
         {
             get { return _EnableAcceleratedNetworking; }

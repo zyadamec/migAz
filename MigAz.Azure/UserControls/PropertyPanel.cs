@@ -269,6 +269,11 @@ namespace MigAz.Azure.UserControls
                     _MigrationTarget.ApiVersion = cmbApiVersions.SelectedItem.ToString();
             }
 
+            foreach (Control control in this.pnlProperties.Controls)
+            {
+                TargetPropertyControl targetPropertyControl = (TargetPropertyControl)control;
+                targetPropertyControl.UpdatePropertyEnablement();
+            }
 
             await PropertyChanged(_MigrationTarget);
         }

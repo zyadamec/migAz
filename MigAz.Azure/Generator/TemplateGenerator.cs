@@ -984,7 +984,9 @@ namespace MigAz.Azure.Generator
             NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
             networkinterface_properties.ipConfigurations = ipConfigurations;
             networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
-            networkinterface_properties.enableAcceleratedNetworking = targetNetworkInterface.EnableAcceleratedNetworking;
+
+            if (targetNetworkInterface.AllowAcceleratedNetworking)
+                networkinterface_properties.enableAcceleratedNetworking = targetNetworkInterface.EnableAcceleratedNetworking;
 
             networkInterface.properties = networkinterface_properties;
             networkInterface.dependsOn = dependson;

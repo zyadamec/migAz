@@ -11,14 +11,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class VirtualNetworkGatewayProperties : UserControl
+    public partial class VirtualNetworkGatewayProperties : TargetPropertyControl
     {
         VirtualNetworkGateway _VirtualNetworkGateway;
-        TargetTreeView _TargetTreeView;
-        bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public VirtualNetworkGatewayProperties()
         {
@@ -30,7 +25,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _VirtualNetworkGateway = virtualNetworkGateway;
                 _TargetTreeView = targetTreeView;
 
@@ -38,7 +33,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -48,8 +43,7 @@ namespace MigAz.Azure.UserControls
 
             _VirtualNetworkGateway.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

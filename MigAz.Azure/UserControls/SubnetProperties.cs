@@ -14,14 +14,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class SubnetProperties : UserControl
+    public partial class SubnetProperties : TargetPropertyControl
     {
-        private TargetTreeView _TargetTreeView;
         private MigrationTarget.Subnet _Subnet;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public SubnetProperties()
         {
@@ -32,7 +27,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _Subnet = targetSubnet;
 
@@ -68,7 +63,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -78,8 +73,7 @@ namespace MigAz.Azure.UserControls
 
             _Subnet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

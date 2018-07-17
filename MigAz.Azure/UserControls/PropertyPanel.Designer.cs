@@ -31,6 +31,7 @@ namespace MigAz.Azure.UserControls
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PropertyPanel));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblTargetAPIVersion = new System.Windows.Forms.Label();
@@ -39,7 +40,7 @@ namespace MigAz.Azure.UserControls
             this.pnlProperties = new System.Windows.Forms.Panel();
             this.lblAzureObjectName = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.imageList1 = new System.Windows.Forms.ImageList();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -95,7 +96,7 @@ namespace MigAz.Azure.UserControls
             // pnlProperties
             // 
             this.pnlProperties.AutoScroll = true;
-            this.pnlProperties.Location = new System.Drawing.Point(16, 129);
+            this.pnlProperties.Location = new System.Drawing.Point(10, 129);
             this.pnlProperties.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlProperties.Name = "pnlProperties";
             this.pnlProperties.Size = new System.Drawing.Size(443, 182);

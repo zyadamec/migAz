@@ -264,6 +264,9 @@
     <Compile Include="UserControls\LocalNetworkGatewayProperties.Designer.cs">
       <DependentUpon>LocalNetworkGatewayProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TargetPropertyControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UserControls\TreeViewSourceResourceManager.cs">
       <SubType>UserControl</SubType>
     </Compile>
