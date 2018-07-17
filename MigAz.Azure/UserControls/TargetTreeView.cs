@@ -405,6 +405,14 @@ namespace MigAz.Azure.UserControls
             if (parentNode == null)
                 throw new ArgumentNullException("Migration Target cannot be null.");
 
+            if (parentNode.ApiVersion == null || parentNode.ApiVersion == String.Empty)
+            {
+                if (this.TargetSubscription != null)
+                {
+                    parentNode.ApiVersion = this.GetDefaultApiVersion(parentNode);
+                }
+            }
+
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
 
             if (parentNode.GetType() == typeof(VirtualNetworkGateway))
@@ -581,6 +589,19 @@ namespace MigAz.Azure.UserControls
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());
 
+        }
+
+        private string GetDefaultApiVersion(Core.MigrationTarget parentNode)
+        {
+            if (this.TargetSubscription == null)
+                return String.Empty;
+
+            Arm.ProviderResourceType providerResourceType = this.TargetSubscription.GetProviderResourceType(parentNode.ProviderNamespace, parentNode.ResourceType);
+
+            if (providerResourceType == null)
+                return String.Empty;
+
+            return providerResourceType.GetMaxApiVersionMigAzTested();
         }
 
         private TreeNode GetTargetAvailabilitySetNode(TreeNode subscriptionNode, AvailabilitySet targetAvailabilitySet)
