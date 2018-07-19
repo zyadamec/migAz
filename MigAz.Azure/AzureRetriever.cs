@@ -147,34 +147,43 @@ namespace MigAz.Azure
 
                         HttpWebResponse exceptionResponse = (HttpWebResponse)webException.Response;
 
-                        if ((exceptionResponse != null) &&
-                            (
+                        if (exceptionResponse != null)
+                        {
+                            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " EXCEPTION HttpWebResponse Status Code: " + exceptionResponse.StatusCode);
+
+                            if (
                                 (int)exceptionResponse.StatusCode == 429 || // 429 Too Many Requests
                                 ((int)exceptionResponse.StatusCode >= 500 && (int)exceptionResponse.StatusCode <= 599)
-                            )
-                            )
-                        {
-                            DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
-                            string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
-
-                            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + sleepMessage);
-                            _StatusProvider.UpdateStatus(sleepMessage);
-                            while (DateTime.Now < sleepUntil)
+                                )
                             {
-                                Application.DoEvents();
+                                DateTime sleepUntil = DateTime.Now.AddSeconds(retrySeconds);
+                                string sleepMessage = "Sleeping for " + retrySeconds.ToString() + " second(s) (until " + sleepUntil.ToString() + ") before web request retry.";
+
+                                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " " + sleepMessage);
+                                _StatusProvider.UpdateStatus(sleepMessage);
+                                while (DateTime.Now < sleepUntil)
+                                {
+                                    Application.DoEvents();
+                                }
+                                retrySeconds = retrySeconds * 2;
+
+                                if (retrySeconds > maxRetrySecond)
+                                {
+                                    _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
+                                    _StatusProvider.UpdateStatus("Too many retry.");
+                                    throw webException;
+                                    // too many retry -> throw exception 
+                                }
+
+                                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
+                                _StatusProvider.UpdateStatus("Initiating retry of Web Request.");
                             }
-                            retrySeconds = retrySeconds * 2;
-
-                            if (retrySeconds > maxRetrySecond)
+                            else if (exceptionResponse.StatusCode == HttpStatusCode.Conflict)
                             {
-                                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Too many retry.");
-                                _StatusProvider.UpdateStatus("Too many retry.");
+                                boolRetryGetResponse = false;
+                            }
+                            else
                                 throw webException;
-                                // too many retry -> throw exception 
-                            }
-
-                            _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + " Initiating retry of Web Request.");
-                            _StatusProvider.UpdateStatus("Initiating retry of Web Request.");
                         }
                         else
                             throw webException;
@@ -185,10 +194,13 @@ namespace MigAz.Azure
                     }
                 }
 
-                webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                if (response != null)
+                {
+                    _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
 
-                writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, webRequesetResult);
-                _LogProvider.WriteLog("GetAzureRestResponse", azureRestRequest.RequestGuid.ToString() + "  Status Code " + response.StatusCode);
+                    webRequesetResult = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    writeRetreiverResultToLog(azureRestRequest.RequestGuid, "GetAzureRestResponse", azureRestRequest.Url, webRequesetResult);
+                }
             }
             catch (Exception exception)
             {
