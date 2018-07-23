@@ -14,14 +14,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class AvailabilitySetProperties : UserControl
+    public partial class AvailabilitySetProperties : TargetPropertyControl
     {
-        TargetTreeView _TargetTreeView;
         AvailabilitySet _AvailabilitySet;
-        bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public AvailabilitySetProperties()
         {
@@ -32,7 +27,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
 
                 _TargetTreeView = targetTreeView;
                 _AvailabilitySet = availabilitySet;
@@ -48,7 +43,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -68,24 +63,21 @@ namespace MigAz.Azure.UserControls
 
             _AvailabilitySet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged();
+            this.RaisePropertyChangedEvent();
         }
 
         private void upDownFaultDomains_ValueChanged(object sender, EventArgs e)
         {
             _AvailabilitySet.PlatformFaultDomainCount = Convert.ToInt32(upDownFaultDomains.Value);
 
-            if (!_IsBinding)
-                PropertyChanged();
+            this.RaisePropertyChangedEvent();
         }
 
         private void upDownUpdateDomains_ValueChanged(object sender, EventArgs e)
         {
             _AvailabilitySet.PlatformUpdateDomainCount = Convert.ToInt32(upDownUpdateDomains.Value);
 
-            if (!_IsBinding)
-                PropertyChanged();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

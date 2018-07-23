@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,20 +19,22 @@ namespace MigAz.Azure.MigrationTarget
         private Int32 _PlatformUpdateDomainCount = 5;
         private Int32 _PlatformFaultDomainCount = 3;
 
-        public AvailabilitySet() { }
+        #region Constructors 
 
-        public AvailabilitySet(String targetName, TargetSettings targetSettings)
+        public AvailabilitySet() : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets) { }
+
+        public AvailabilitySet(String targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
         {
             this.SetTargetName(targetName, targetSettings);
         }
 
-        public AvailabilitySet(Asm.CloudService asmCloudService, TargetSettings targetSettings)
+        public AvailabilitySet(Asm.CloudService asmCloudService, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
         {
             _SourceAvailabilitySet = asmCloudService;
             this.SetTargetName(_SourceAvailabilitySet.Name, targetSettings);
         }
 
-        public AvailabilitySet(Arm.AvailabilitySet availabilitySet, TargetSettings targetSettings)
+        public AvailabilitySet(Arm.AvailabilitySet availabilitySet, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
         {
             _SourceAvailabilitySet = availabilitySet;
 
@@ -68,6 +71,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        #endregion
 
         public IAvailabilitySetSource SourceAvailabilitySet
         {

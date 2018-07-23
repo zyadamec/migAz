@@ -16,14 +16,9 @@ using MigAz.Core.Interface;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class LoadBalancerProperties : UserControl
+    public partial class LoadBalancerProperties : TargetPropertyControl
     {
         private LoadBalancer _LoadBalancer;
-        private TargetTreeView _TargetTreeView;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public LoadBalancerProperties()
         {
@@ -32,15 +27,14 @@ namespace MigAz.Azure.UserControls
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         internal async Task Bind(LoadBalancer loadBalancer, TargetTreeView targetTreeView)
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _LoadBalancer = loadBalancer;
                 _TargetTreeView = targetTreeView;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
@@ -52,7 +46,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -67,8 +61,7 @@ namespace MigAz.Azure.UserControls
 
             _LoadBalancer.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private async void cmbLoadBalancerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -97,8 +90,7 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

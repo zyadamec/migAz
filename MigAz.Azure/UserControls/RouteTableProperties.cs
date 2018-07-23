@@ -14,14 +14,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class RouteTableProperties : UserControl
+    public partial class RouteTableProperties : TargetPropertyControl
     {
-        private TargetTreeView _TargetTreeView;
         private RouteTable _RouteTable;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public RouteTableProperties()
         {
@@ -32,7 +27,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _RouteTable = targetRouteTable;
 
@@ -41,7 +36,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -51,8 +46,7 @@ namespace MigAz.Azure.UserControls
 
             _RouteTable.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

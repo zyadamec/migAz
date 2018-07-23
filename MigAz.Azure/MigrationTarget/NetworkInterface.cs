@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,11 @@ namespace MigAz.Azure.MigrationTarget
         private List<InboundNatRule> _InboundNatRules = new List<InboundNatRule>();
         private VirtualMachine _ParentVirtualMachine;
 
-        private NetworkInterface() { }
+        #region Constructors
 
-        public NetworkInterface(Asm.VirtualMachine virtualMachine, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups, TargetSettings targetSettings)
+        private NetworkInterface() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces) { }
+
+        public NetworkInterface(Asm.VirtualMachine virtualMachine, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces)
         {
             _SourceNetworkInterface = networkInterface;
             this.SetTargetName(networkInterface.Name, targetSettings);
@@ -42,7 +45,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public NetworkInterface(Arm.NetworkInterface networkInterface, List<MigrationTarget.VirtualNetwork> armVirtualNetworks, List<MigrationTarget.NetworkSecurityGroup> armNetworkSecurityGroups, TargetSettings targetSettings)
+        public NetworkInterface(Arm.NetworkInterface networkInterface, List<MigrationTarget.VirtualNetwork> armVirtualNetworks, List<MigrationTarget.NetworkSecurityGroup> armNetworkSecurityGroups, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces)
         {
             _SourceNetworkInterface = networkInterface;
             this.SetTargetName(networkInterface.Name, targetSettings);
@@ -62,6 +65,8 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
+        #endregion
+
         public List<MigrationTarget.NetworkInterfaceIpConfiguration> TargetNetworkInterfaceIpConfigurations
         {
             get { return _TargetNetworkInterfaceIpConfigurations; }
@@ -71,6 +76,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _EnableIPForwarding; }
             set { _EnableIPForwarding = value; }
+        }
+
+        public bool AllowAcceleratedNetworking
+        {
+            get { return this.ApiVersion.CompareTo("2017-10-01") >= 0; }
         }
 
         public bool EnableAcceleratedNetworking

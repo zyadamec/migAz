@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MigAz.Azure.Arm;
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 
 namespace MigAz.Azure.MigrationTarget
 {
@@ -22,9 +23,11 @@ namespace MigAz.Azure.MigrationTarget
         private List<Disk> _DataDisks = new List<Disk>();
         private Dictionary<string, string> _PlanAttributes;
 
-        private VirtualMachine() { }
+        #region Constructors
 
-        public VirtualMachine(Asm.VirtualMachine virtualMachine, TargetSettings targetSettings)
+        private VirtualMachine() : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines) { }
+
+        public VirtualMachine(Asm.VirtualMachine virtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.RoleName, targetSettings);
@@ -89,7 +92,7 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
         }
 
-        public VirtualMachine(Arm.VirtualMachine virtualMachine, TargetSettings targetSettings)
+        public VirtualMachine(Arm.VirtualMachine virtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.Name, targetSettings);
@@ -200,6 +203,8 @@ namespace MigAz.Azure.MigrationTarget
                 }
             }
         }
+
+        #endregion
 
         private void EnsureDataDiskTargetLunIsNotNull(ref Disk targetDataDisk)
         {

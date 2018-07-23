@@ -15,14 +15,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class NetworkInterfaceProperties : UserControl
+    public partial class NetworkInterfaceProperties : TargetPropertyControl
     {
-        private TargetTreeView _TargetTreeView;
         private Azure.MigrationTarget.NetworkInterface _TargetNetworkInterface;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public NetworkInterfaceProperties()
         {
@@ -31,15 +26,14 @@ namespace MigAz.Azure.UserControls
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-            if (!_IsBinding)
-                PropertyChanged?.Invoke(); // bubble event
+            this.RaisePropertyChangedEvent();
         }
 
         internal async Task Bind(NetworkInterface targetNetworkInterface, TargetTreeView targetTreeView)
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _TargetNetworkInterface = targetNetworkInterface;
                 networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
@@ -89,13 +83,20 @@ namespace MigAz.Azure.UserControls
 
                 if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() > 0)
                     resourceSummaryPublicIp.Bind(_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp, _TargetTreeView);
+
+                this.UpdatePropertyEnablement();
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
+        internal override void UpdatePropertyEnablement()
+        {
+            this.pnlAcceleratedNetworking.Enabled = _TargetNetworkInterface.AllowAcceleratedNetworking;
+            this.pnlAcceleratedNetworking.Visible = _TargetNetworkInterface.AllowAcceleratedNetworking;
+        }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
@@ -103,8 +104,7 @@ namespace MigAz.Azure.UserControls
 
             _TargetNetworkInterface.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -121,8 +121,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableIPForwarding = true;
 
-                if (!_IsBinding)
-                    PropertyChanged?.Invoke();
+                this.RaisePropertyChangedEvent();
             }
         }
 
@@ -132,8 +131,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableIPForwarding = false;
 
-                if (!_IsBinding)
-                    PropertyChanged?.Invoke();
+                this.RaisePropertyChangedEvent();
             }
         }
 
@@ -143,8 +141,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableAcceleratedNetworking = true;
 
-                if (!_IsBinding)
-                    PropertyChanged?.Invoke();
+                this.RaisePropertyChangedEvent();
             }
         }
 
@@ -154,8 +151,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableAcceleratedNetworking = false;
 
-                if (!_IsBinding)
-                    PropertyChanged?.Invoke();
+                this.RaisePropertyChangedEvent();
             }
         }
     }

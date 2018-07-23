@@ -13,13 +13,9 @@ using System.Windows.Forms;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class VirtualMachineImageProperties : UserControl
+    public partial class VirtualMachineImageProperties : TargetPropertyControl
     {
-        TargetTreeView _TargetTreeView;
         //MigrationTarget.VirtualMachineImage _VirtualMachineImage;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public VirtualMachineImageProperties()
         {

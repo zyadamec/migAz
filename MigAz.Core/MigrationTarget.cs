@@ -13,8 +13,28 @@ namespace MigAz.Core
     public abstract class MigrationTarget
     {
         Guid _MigrationTargetGuid = Guid.NewGuid();
+        String _ApiVersion = String.Empty;
+        String _ProviderNamespace = String.Empty;
+        String _ResourceType = String.Empty;
+
+        private MigrationTarget() { }
+
+        public MigrationTarget(string providerNamespace, string resourceType)
+        {
+            _ProviderNamespace = providerNamespace;
+            _ResourceType = resourceType;
+        }
 
         public Guid MigrationTargetGuid { get { return _MigrationTargetGuid; } }
+
+        public string ApiVersion 
+        {
+            get { return _ApiVersion; }
+            set { _ApiVersion = value; }
+        }
+
+        public string ProviderNamespace { get { return _ProviderNamespace; } }
+        public string ResourceType { get { return _ResourceType; } }
 
         public string TargetName { get; set; }
         public string TargetNameResult { get; set; }

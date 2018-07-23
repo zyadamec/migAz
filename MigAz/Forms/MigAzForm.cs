@@ -80,7 +80,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.4.2.5";
+            string currentVersion = "2.4.3.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -380,11 +380,22 @@ namespace MigAz.Forms
             if (this.AzureGenerator == null)
                 throw new ArgumentException("Unable to Refresh Output:  NULL TemplateGenerator");
 
+            if (this.targetAzureContextViewer == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL TargetAzureContextViewer");
+
+            if (this.targetAzureContextViewer.SelectedAzureContext == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL SelectedAzureContext on TargetAzureContextViewer");
+
+            if (this.targetAzureContextViewer.SelectedAzureContext.TokenProvider == null)
+                throw new ArgumentException("Unable to Refresh Output:  NULL TokenProvider on SelectedAzureContext");
+
             if (this.AzureGenerator != null)
             {
                 this.AzureGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
                 this.AzureGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
                 this.AzureGenerator.OutputDirectory = this.txtDestinationFolder.Text;
+                this.AzureGenerator.TargetAzureTokenProvider = (AzureTokenProvider)this.targetAzureContextViewer.SelectedAzureContext.TokenProvider;
+
                 await this.AzureGenerator.GenerateStreams();
 
                 foreach (TabPage tabPage in tabOutputResults.TabPages)

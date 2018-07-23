@@ -17,15 +17,17 @@ namespace MigAz.Azure.MigrationTarget
         private ISubnet _SourceSubnet;
         private MigrationTarget.VirtualNetwork _ParentVirtualNetwork;
 
-        private Subnet() { }
+        #region Constructors
 
-        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, TargetSettings targetSettings)
+        private Subnet() : base(String.Empty, String.Empty) { }
+
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             _ParentVirtualNetwork = parentVirtualNetwork;
             this.SetTargetName("NewSubnet", targetSettings);
         }
 
-        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings)
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             _ParentVirtualNetwork = parentVirtualNetwork;
             _SourceSubnet = source;
@@ -64,13 +66,15 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(source.Name, targetSettings);
         }
 
-        public Subnet(VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet, TargetSettings targetSettings)
+        public Subnet(VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             this._ParentVirtualNetwork = parentVirtualNetwork;
             this._SourceSubnet = sourceSubnet;
             this.SetTargetName(sourceSubnet.Name, targetSettings);
             this.AddressPrefix = sourceSubnet.AddressPrefix;
         }
+
+        #endregion
 
         private NetworkSecurityGroup SeekNetworkSecurityGroup(List<NetworkSecurityGroup> networkSecurityGroups, string sourceName)
         {

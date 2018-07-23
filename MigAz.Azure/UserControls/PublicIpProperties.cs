@@ -14,14 +14,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class PublicIpProperties : UserControl
+    public partial class PublicIpProperties : TargetPropertyControl
     {
         PublicIp _PublicIp;
-        TargetTreeView _TargetTreeView;
-        bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public PublicIpProperties()
         {
@@ -32,7 +27,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _PublicIp = publicIp;
                 _TargetTreeView = targetTreeView;
 
@@ -47,7 +42,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -57,8 +52,7 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtDomainNameLabel_TextChanged(object sender, EventArgs e)
@@ -67,8 +61,7 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.DomainNameLabel = txtSender.Text;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void cmbPublicIpAllocation_SelectedIndexChanged(object sender, EventArgs e)
@@ -78,8 +71,7 @@ namespace MigAz.Azure.UserControls
             else
                 _PublicIp.IPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

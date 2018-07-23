@@ -11,14 +11,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class LocalNetworkGatewayProperties : UserControl
+    public partial class LocalNetworkGatewayProperties : TargetPropertyControl
     {
         LocalNetworkGateway _LocalNetworkGateway;
-        TargetTreeView _TargetTreeView;
-        bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public LocalNetworkGatewayProperties()
         {
@@ -29,7 +24,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _LocalNetworkGateway = localNetworkGateway;
                 _TargetTreeView = targetTreeView;
 
@@ -37,7 +32,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -47,8 +42,7 @@ namespace MigAz.Azure.UserControls
 
             _LocalNetworkGateway.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

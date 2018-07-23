@@ -11,14 +11,9 @@ using System.Linq;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class VirtualMachineProperties : UserControl
+    public partial class VirtualMachineProperties : TargetPropertyControl
     {
-        private TargetTreeView _TargetTreeView;
         private VirtualMachine _VirtualMachine;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public VirtualMachineProperties()
         {
@@ -29,7 +24,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _VirtualMachine = virtualMachine;
 
@@ -118,7 +113,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -136,8 +131,7 @@ namespace MigAz.Azure.UserControls
         {
             _VirtualMachine.SetTargetName(txtTargetName.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -163,16 +157,14 @@ namespace MigAz.Azure.UserControls
             else
                 _VirtualMachine.TargetSize = null;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private async Task availabilitySetSummary_AfterMigrationTargetChanged(ResourceSummary sender, Core.MigrationTarget selectedResource)
         {
             _VirtualMachine.TargetAvailabilitySet = (AvailabilitySet)selectedResource;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
     }
 }

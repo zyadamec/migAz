@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace MigAz.Azure.MigrationTarget
         private INetworkSecurityGroup _SourceNetworkSecurityGroup;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
-        private NetworkSecurityGroup() { }
+        private NetworkSecurityGroup() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups) { }
 
-        public NetworkSecurityGroup(Asm.NetworkSecurityGroup source, TargetSettings targetSettings)
+        public NetworkSecurityGroup(Asm.NetworkSecurityGroup source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups)
         {
             _SourceNetworkSecurityGroup = source;
             this.SetTargetName(source.Name, targetSettings);
@@ -30,7 +31,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public NetworkSecurityGroup(Arm.NetworkSecurityGroup source, TargetSettings targetSettings)
+        public NetworkSecurityGroup(Arm.NetworkSecurityGroup source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups)
         {
             _SourceNetworkSecurityGroup = source;
             this.SetTargetName(source.Name, targetSettings);

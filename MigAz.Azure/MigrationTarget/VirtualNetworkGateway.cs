@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,17 @@ namespace MigAz.Azure.MigrationTarget
         private IVirtualNetworkGateway _SourceVirtualNetworkGateway;
         private List<Subnet> _TargetSubnets = new List<Subnet>();
 
-        private VirtualNetworkGateway() { }
+        #region Constructors
 
-        public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings)
+        private VirtualNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers) { }
+
+        public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
             this._SourceVirtualNetworkGateway = virtualNetworkGateway;
             this.SetTargetName(this.SourceName, targetSettings);
         }
+
+        #endregion
 
         public IVirtualNetworkGateway SourceVirtualNetworkGateway { get { return _SourceVirtualNetworkGateway; } }
 

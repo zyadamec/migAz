@@ -12,14 +12,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class ResourceGroupProperties : UserControl
+    public partial class ResourceGroupProperties : TargetPropertyControl
     {
         private ResourceGroup _ResourceGroup;
-        private TargetTreeView _TargetTreeView;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public ResourceGroupProperties()
         {
@@ -30,7 +25,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _ResourceGroup = resourceGroup;
                 _TargetTreeView = targetTreeView;
 
@@ -62,7 +57,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -72,8 +67,7 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -90,8 +84,7 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.TargetLocation = (Arm.Location) cmbSender.SelectedItem;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
     }

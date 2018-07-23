@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,17 @@ namespace MigAz.Azure.MigrationTarget
         private IRouteTable _SourceRouteTable;
         private List<Route> _Routes = new List<Route>();
 
-        private RouteTable() { }
+        #region Constructors
 
-         public RouteTable(IRouteTable source, TargetSettings targetSettings)
+        private RouteTable() : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables) { }
+
+         public RouteTable(IRouteTable source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables)
         {
             _SourceRouteTable = source;
             this.SetTargetName(source.Name, targetSettings);
         }
 
-        public RouteTable(Arm.RouteTable source, TargetSettings targetSettings)
+        public RouteTable(Arm.RouteTable source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables)
         {
             _SourceRouteTable = source;
             this.SetTargetName(source.Name, targetSettings);
@@ -34,6 +37,8 @@ namespace MigAz.Azure.MigrationTarget
                 _Routes.Add(new Route(route, targetSettings));
             }
         }
+
+        #endregion
 
         public IRouteTable Source
         {

@@ -14,14 +14,9 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class VirtualNetworkProperties : UserControl
+    public partial class VirtualNetworkProperties : TargetPropertyControl
     {
-        private TargetTreeView _TargetTreeView;
         private VirtualNetwork _VirtualNetwork;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public VirtualNetworkProperties()
         {
@@ -32,7 +27,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _VirtualNetwork = targetVirtualNetwork;
                 _TargetTreeView = targetTreeView;
 
@@ -57,7 +52,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -67,8 +62,7 @@ namespace MigAz.Azure.UserControls
 
             _VirtualNetwork.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings); ;
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

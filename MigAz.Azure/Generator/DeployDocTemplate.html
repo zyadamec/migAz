@@ -18,6 +18,9 @@
             border: 1px solid #aaaaaa;
             padding: 5px;
         }
+        pre.wrap {
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -36,13 +39,8 @@
         </li>
         {AddCustomEnvironment}
         <li>
-            <p>Open Azure PowerShell and sign into your target subscription.</p>
-            <pre>Login-AzureRmAccount{migAzAzureEnvironmentSwitch}{tenantSwitch}{subscriptionSwitch}
-Select-AzureRmSubscription{subscriptionSwitch}</pre>
-        </li>
-        <li>
             <p>Deploy your ARM Resources to the new '{resourceGroupName}' Resource Group with the following PowerShell command:</p>
-            <pre>{migazExecutionCommand}{resourceGroupNameParameter}{resourceGroupLocationParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
+            <pre class="wrap">{migazExecutionCommand}{azureEnvironmentParameter}{tenantParameter}{subscriptionParameter}{accountIdParameter}{accessTokenParameter}{resourceGroupNameParameter}{resourceGroupLocationParameter}{templateFileParameter}{templateParameterFileParameter}{blobCopyFileParameter}
 </pre>
         </li>
     </ol>

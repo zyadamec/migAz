@@ -8,15 +8,10 @@ using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
 {
-    public partial class NetworkSecurityGroupProperties : UserControl
+    public partial class NetworkSecurityGroupProperties : TargetPropertyControl
     {
 
-        private TargetTreeView _TargetTreeView;
         private NetworkSecurityGroup _NetworkSecurityGroup;
-        private bool _IsBinding = false;
-
-        public delegate Task AfterPropertyChanged();
-        public event AfterPropertyChanged PropertyChanged;
 
         public NetworkSecurityGroupProperties()
         {
@@ -27,7 +22,7 @@ namespace MigAz.Azure.UserControls
         {
             try
             {
-                _IsBinding = true;
+                this.IsBinding = true;
                 _NetworkSecurityGroup = networkSecurityGroup;
                 _TargetTreeView = targetTreeView;
 
@@ -49,7 +44,7 @@ namespace MigAz.Azure.UserControls
             }
             finally
             {
-                _IsBinding = false;
+                this.IsBinding = false;
             }
         }
 
@@ -59,8 +54,7 @@ namespace MigAz.Azure.UserControls
 
             _NetworkSecurityGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            if (!_IsBinding)
-                PropertyChanged?.Invoke();
+            this.RaisePropertyChangedEvent();
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

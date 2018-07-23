@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Core;
+using MigAz.Core.ArmTemplate;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,12 @@ namespace MigAz.Azure.MigrationTarget
         private NextHopTypeEnum _NextHopType = NextHopTypeEnum.VnetLocal;
         private String _AddressPrefix = String.Empty;
         private String _NextHopIpAddress = String.Empty;
-        
 
-        private Route() { }
+        #region Constructors
 
-        public Route(IRoute route, TargetSettings targetSettings)
+        private Route() : base(String.Empty, String.Empty) { }
+
+        public Route(IRoute route, TargetSettings targetSettings) : base(String.Empty, String.Empty)
         {
             _Source = route;
 
@@ -30,6 +32,8 @@ namespace MigAz.Azure.MigrationTarget
             this.AddressPrefix = route.AddressPrefix;
             this.NextHopIpAddress = route.NextHopIpAddress;
         }
+
+        #endregion
 
         public NextHopTypeEnum NextHopType
         {

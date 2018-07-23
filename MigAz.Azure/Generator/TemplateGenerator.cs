@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Linq;
 using MigAz.Core;
 using MigAz.Azure.Interface;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure.Generator
 {
@@ -34,6 +35,7 @@ namespace MigAz.Azure.Generator
         private Int32 _AccessSASTokenLifetime = 3600;
         private ExportArtifacts _ExportArtifacts;
         private bool _BuildEmpty = false;
+        private AzureTokenProvider _TargetAzureTokenProvider = null;
 
         public delegate Task AfterTemplateChangedHandler(TemplateGenerator sender);
         public event EventHandler AfterTemplateChanged;
@@ -84,6 +86,12 @@ namespace MigAz.Azure.Generator
             set { _AccessSASTokenLifetime = value; }
         }
 
+        public AzureTokenProvider TargetAzureTokenProvider
+        {
+            get { return _TargetAzureTokenProvider; }
+            set { _TargetAzureTokenProvider = value; }
+        }
+
         public String OutputDirectory
         {
             get { return _OutputDirectory; }
@@ -102,8 +110,6 @@ namespace MigAz.Azure.Generator
         public List<ArmResource> Resources { get { return _Resources; } }
         public Dictionary<string, Core.ArmTemplate.Parameter> Parameters { get { return _Parameters; } }
         public Dictionary<string, MemoryStream> TemplateStreams { get { return _TemplateStreams; } }
-
-
 
         public bool IsProcessed(ArmResource resource)
         {
@@ -326,6 +332,7 @@ namespace MigAz.Azure.Generator
 
             availabilitySet.name = targetAvailabilitySet.ToString();
             availabilitySet.location = "[resourceGroup().location]";
+            availabilitySet.apiVersion = targetAvailabilitySet.ApiVersion;
 
             AvailabilitySet_Properties availabilitySet_Properties = new AvailabilitySet_Properties();
             availabilitySet.properties = availabilitySet_Properties;
@@ -357,6 +364,7 @@ namespace MigAz.Azure.Generator
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
             publicipaddress.name = publicIp.ToString();
             publicipaddress.location = "[resourceGroup().location]";
+            publicipaddress.apiVersion = publicIp.ApiVersion;
 
             PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
             publicipaddress.properties = publicipaddress_properties;
@@ -383,6 +391,7 @@ namespace MigAz.Azure.Generator
             LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid);
             loadbalancer.name = loadBalancer.ToString();
             loadbalancer.location = "[resourceGroup().location]";
+            loadbalancer.apiVersion = loadBalancer.ApiVersion;
             loadbalancer.dependsOn = dependson;
 
             LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
@@ -538,6 +547,7 @@ namespace MigAz.Azure.Generator
             VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
             virtualnetwork.name = targetVirtualNetwork.ToString();
             virtualnetwork.location = "[resourceGroup().location]";
+            virtualnetwork.apiVersion = targetVirtualNetwork.ApiVersion;
             virtualnetwork.dependsOn = dependson;
 
             List<Subnet> subnets = new List<Subnet>();
@@ -806,6 +816,7 @@ namespace MigAz.Azure.Generator
             NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
             networksecuritygroup.name = targetNetworkSecurityGroup.ToString();
             networksecuritygroup.location = "[resourceGroup().location]";
+            networksecuritygroup.apiVersion = targetNetworkSecurityGroup.ApiVersion;
 
             NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
             networksecuritygroup_properties.securityRules = new List<SecurityRule>();
@@ -851,6 +862,7 @@ namespace MigAz.Azure.Generator
             RouteTable routetable = new RouteTable(this.ExecutionGuid);
             routetable.name = routeTable.ToString();
             routetable.location = "[resourceGroup().location]";
+            routetable.apiVersion = routeTable.ApiVersion;
 
             RouteTable_Properties routetable_properties = new RouteTable_Properties();
             routetable_properties.routes = new List<Route>();
@@ -891,6 +903,7 @@ namespace MigAz.Azure.Generator
             NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
             networkInterface.name = targetNetworkInterface.ToString();
             networkInterface.location = "[resourceGroup().location]";
+            networkInterface.apiVersion = targetNetworkInterface.ApiVersion;
 
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
@@ -971,7 +984,9 @@ namespace MigAz.Azure.Generator
             NetworkInterface_Properties networkinterface_properties = new NetworkInterface_Properties();
             networkinterface_properties.ipConfigurations = ipConfigurations;
             networkinterface_properties.enableIPForwarding = targetNetworkInterface.EnableIPForwarding;
-            networkinterface_properties.enableAcceleratedNetworking = targetNetworkInterface.EnableAcceleratedNetworking;
+
+            if (targetNetworkInterface.AllowAcceleratedNetworking)
+                networkinterface_properties.enableAcceleratedNetworking = targetNetworkInterface.EnableAcceleratedNetworking;
 
             networkInterface.properties = networkinterface_properties;
             networkInterface.dependsOn = dependson;
@@ -1001,6 +1016,7 @@ namespace MigAz.Azure.Generator
             VirtualMachine templateVirtualMachine = new VirtualMachine(this.ExecutionGuid);
             templateVirtualMachine.name = targetVirtualMachine.ToString();
             templateVirtualMachine.location = "[resourceGroup().location]";
+            templateVirtualMachine.apiVersion = targetVirtualMachine.ApiVersion;
 
             if (targetVirtualMachine.IsManagedDisks)
             {
@@ -1216,6 +1232,7 @@ namespace MigAz.Azure.Generator
             ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid);
             templateManagedDisk.name = targetManagedDisk.ToString();
             templateManagedDisk.location = "[resourceGroup().location]";
+            templateManagedDisk.apiVersion = targetManagedDisk.ApiVersion;
 
             Dictionary<string, string> managedDiskSku = new Dictionary<string, string>();
             templateManagedDisk.sku = managedDiskSku;
@@ -1364,6 +1381,7 @@ namespace MigAz.Azure.Generator
             storageaccount.name = targetStorageAccount.ToString();
             storageaccount.location = "[resourceGroup().location]";
             storageaccount.properties = storageaccount_properties;
+            storageaccount.apiVersion = targetStorageAccount.ApiVersion;
 
             this.AddResource(storageaccount);
 
@@ -1482,17 +1500,29 @@ namespace MigAz.Azure.Generator
                 instructionContent = reader.ReadToEnd();
             }
 
-            string azureEnvironmentSwitch = String.Empty;
-            string tenantSwitch = String.Empty;
-            string subscriptionSwitch = String.Empty;
+            string azureEnvironmentParameter = String.Empty;
+            string tenantParameter = String.Empty;
+            string subscriptionParameter = String.Empty;
+            string accountIdParameter = String.Empty;
+            string accessTokenParameter = String.Empty;
             StringBuilder sbCustomAzureEnvironment = new StringBuilder();
 
             if (this.TargetSubscription != null)
             {
-                subscriptionSwitch = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
+                if (this.TargetAzureTokenProvider != null)
+                {
+                    AuthenticationResult authenticationResult = this.TargetAzureTokenProvider.GetToken(this.TargetSubscription.TokenResourceUrl, this.TargetSubscription.AzureTenant.TenantId).Result;
+                    if (authenticationResult != null)
+                    {
+                        accountIdParameter = " -AccountId '" + authenticationResult.UserInfo.DisplayableId + "'";
+                        accessTokenParameter = " -AccessToken '" + authenticationResult.AccessToken + "'";
+                    }
+                }
+
+                subscriptionParameter = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
 
                 if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
-                    azureEnvironmentSwitch = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
+                    azureEnvironmentParameter = " -Environment " + this.TargetSubscription.AzureEnvironment.ToString();
 
                 if (this.TargetSubscription.AzureEnvironment.IsUserDefined)
                 {
@@ -1500,7 +1530,7 @@ namespace MigAz.Azure.Generator
                     sbCustomAzureEnvironment.Append("<p>Your Azure Resource Manager deployment utilized a custom Azure Environment.  Ensure Azure PowerShell has this custom Azure Environment added:</p>");
 
                     // https://docs.microsoft.com/en-us/powershell/module/azurerm.profile/add-azurermenvironment?view=azurermps-4.4.1
-                    sbCustomAzureEnvironment.Append("<pre>");
+                    sbCustomAzureEnvironment.Append("<pre class=\"wrap\">");
                     sbCustomAzureEnvironment.Append("Add-AzureRmEnvironment");
                     sbCustomAzureEnvironment.Append(" -Name ");
                     sbCustomAzureEnvironment.Append(this.TargetSubscription.AzureEnvironment.Name);
@@ -1535,13 +1565,15 @@ namespace MigAz.Azure.Generator
                 }
 
                 if (this.TargetSubscription.AzureAdTenantId != Guid.Empty)
-                    tenantSwitch = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
+                    tenantParameter = " -TenantId '" + this.TargetSubscription.AzureAdTenantId.ToString() + "'";
             }
 
             instructionContent = instructionContent.Replace("{AddCustomEnvironment}", sbCustomAzureEnvironment.ToString());
-            instructionContent = instructionContent.Replace("{migAzAzureEnvironmentSwitch}", azureEnvironmentSwitch);
-            instructionContent = instructionContent.Replace("{tenantSwitch}", tenantSwitch);
-            instructionContent = instructionContent.Replace("{subscriptionSwitch}", subscriptionSwitch);
+            instructionContent = instructionContent.Replace("{azureEnvironmentParameter}", azureEnvironmentParameter);
+            instructionContent = instructionContent.Replace("{tenantParameter}", tenantParameter);
+            instructionContent = instructionContent.Replace("{subscriptionParameter}", subscriptionParameter);
+            instructionContent = instructionContent.Replace("{accountIdParameter}", accountIdParameter);
+            instructionContent = instructionContent.Replace("{accessTokenParameter}", accessTokenParameter);
             instructionContent = instructionContent.Replace("{templatePath}", GetTemplatePath());
             instructionContent = instructionContent.Replace("{blobDetailsPath}", GetCopyBlobDetailPath());
             instructionContent = instructionContent.Replace("{resourceGroupName}", this.TargetResourceGroupName);
