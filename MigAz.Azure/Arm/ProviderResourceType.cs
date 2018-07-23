@@ -119,7 +119,7 @@ namespace MigAz.Azure.Arm
                     break;
             }
 
-            return String.Empty;
+            return this.MaxApiVersion;
         }
 
         private string GetMaxApiVersionUpTo(string v)
