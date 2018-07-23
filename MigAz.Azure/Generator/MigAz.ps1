@@ -63,12 +63,6 @@ else
 	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId
 }
 
-$CreateResourceGroupSuccess = $false
-$StartBlobCopySuccess = $false
-$TestResourceGroupDeploymentSuccess = $false
-$MonitorBlobCopySuccess = $false
-$ResourceGroupDeploymentSuccess = $false
-
 If ($StartType -eq "" -or $StartType -eq "CreateResourceGroup")
 {
 	$CreateResourceGroupError = $false
@@ -83,20 +77,15 @@ If ($StartType -eq "" -or $StartType -eq "CreateResourceGroup")
 	{
 		Write-Host " - Azure Resource Group '$($ResourceGroupName)' already exists."
 	}
-
-	if ($CreateResourceGroupError -eq $false)
-	{
-		$CreateResourceGroupSuccess = $true
-	}
 }
 
 # If Initiating the copy of all blobs
-If (($StartType -eq "" -and $CreateResourceGroupSuccess -eq $true) -or $StartType -eq "StartBlobCopy")
+If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "StartBlobCopy")
 {
-	If ($BlobCopyFile -eq $null)
+	If ($BlobCopyFile -eq $null -or $BlobCopyFile -eq "")
 	{
 		Write-Host "Skipping Blob Copy (no BlobCopyFile specified)"
-		$StartBlobCopySuccess = $true
+		$StartBlobCopyError = $null
 	}
 	else
 	{
@@ -192,22 +181,17 @@ If (($StartType -eq "" -and $CreateResourceGroupSuccess -eq $true) -or $StartTyp
 
 		# Updates file with data from $copyblobdetailsout
 		$copyblobdetailsout | ConvertTo-Json -Depth 100 | Out-File $BlobCopyFile
-
-		if ($StartBlobCopyError -eq $false)
-		{
-			$StartBlobCopySuccess = $true
-		}
 	}
 
 }
 
 # If waiting for all blobs to copy and get statistics
-If (($StartType -eq "" -and $StartBlobCopySuccess -eq $true) -or $StartType -eq "MonitorBlobCopy")
+If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlobCopy")
 {
-	If ($BlobCopyFile -eq $null)
+	If ($BlobCopyFile -eq $null -or $BlobCopyFile -eq "")
 	{
 		Write-Host "Skipping Monitor Blob Copy (no BlobCopyFile specified)"
-		$MonitorBlobCopySuccess = $true
+		$BlobCopyFailure = $null
 	}
 	else
 	{
@@ -283,17 +267,19 @@ If (($StartType -eq "" -and $StartBlobCopySuccess -eq $true) -or $StartType -eq 
 				}
 			}
 		}
-
-		if ($BlobCopyFailure -eq $false)
-		{
-			$MonitorBlobCopySuccess = $true
-		}
 	}
 }
 
 # If to Cancel blobs copy
-If (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $false) -or $StartType -eq "CancelBlobCopy")
+If (($StartType -eq "" -and $BlobCopyFailure) -or $StartType -eq "CancelBlobCopy")
 {
+	If ($BlobCopyFile -eq $null -or $BlobCopyFile -eq "")
+	{
+		Write-Host "Skipping Monitor Blob Cancel (no BlobCopyFile specified)"
+		$BlobCopyFailure = $null
+	}
+	else
+	{
     foreach ($copyblobdetail in $copyblobdetails)
     {
         if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
@@ -328,12 +314,13 @@ If (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $false) -or $StartType -
 		}
     }
 }
+}
 
-if ($StartType -eq "" -and $MonitorBlobCopySuccess -eq $false)
+if ($StartType -eq "" -and $BlobCopyFailure)
 {
 	Write-Host " - Skipping Resource Group Depoyment due to unsuccessful Blob Copy result" -ForegroundColor Yellow
 }
-elseif (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $true) -or $StartType -eq "ResourceGroupDeployment" -or $StartType -eq "RetryDeployment")
+elseif (($StartType -eq "" -and !$BlobCopyFailure) -or $StartType -eq "ResourceGroupDeployment" -or $StartType -eq "RetryDeployment")
 {
 	$ResourceGroupDeploymentError = $null
 
@@ -341,7 +328,7 @@ elseif (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $true) -or $StartTyp
 	Write-Host " * ResourceGroupName '$($ResourceGroupName)'"
 	Write-Host " * TemplateFile '$($TemplateFile)'"
 
-	if ($TemplateParameterFile -eq $null)
+	if ($TemplateParameterFile -eq $null -or $TemplateParameterFile -eq "")
 	{
 		Write-Host ""
 
@@ -354,23 +341,14 @@ elseif (($StartType -eq "" -and $MonitorBlobCopySuccess -eq $true) -or $StartTyp
 
 		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
 	}
-
-	if ($ResourceGroupDeploymentError -eq $null)
-	{
-		$ResourceGroupDeploymentSuccess = $true
-	}
-	else
-	{
-		$ResourceGroupDeploymentSuccess = $false
-	}
 }
 
-If (($StartType -eq "" -and $ResourceGroupDeploymentSuccess -eq $false) -or $StartType -eq "TestResourceGroupDeployment")
+If (($StartType -eq "" -and $ResourceGroupDeploymentError) -or $StartType -eq "TestResourceGroupDeployment")
 {
 	$TestResourceGroupDeploymentError = $false
 	Write-Host "Resource Group Failed.  Testing Azure Resource Group Deployment for detailed results."
 
-	if ($TemplateParameterFile -eq $null)
+	if ($TemplateParameterFile -eq $null -or $TemplateParameterFile -eq "")
 	{
 		Write-Host ""
 
@@ -385,7 +363,7 @@ If (($StartType -eq "" -and $ResourceGroupDeploymentSuccess -eq $false) -or $Sta
 	}
 }
 
-if (($StartType -eq "" -and $ResourceGroupDeploymentSuccess -eq $true) -or $StartType -eq "DeleteMigAzTempStorage" -or $StartType -eq "RetryDeployment")
+if (($StartType -eq "" -and !$ResourceGroupDeploymentError) -or $StartType -eq "DeleteMigAzTempStorage" -or $StartType -eq "RetryDeployment")
 {
 	Write-Host "- Removing MigAz Temporary Storage Account(s)"
 

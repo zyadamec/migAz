@@ -1522,7 +1522,7 @@ namespace MigAz.Azure.Generator
                 subscriptionParameter = " -SubscriptionId '" + this.TargetSubscription.SubscriptionId + "'";
 
                 if (this.TargetSubscription.AzureEnvironment.Name != "AzureCloud")
-                    azureEnvironmentParameter = " -EnvironmentName " + this.TargetSubscription.AzureEnvironment.ToString();
+                    azureEnvironmentParameter = " -Environment " + this.TargetSubscription.AzureEnvironment.ToString();
 
                 if (this.TargetSubscription.AzureEnvironment.IsUserDefined)
                 {
