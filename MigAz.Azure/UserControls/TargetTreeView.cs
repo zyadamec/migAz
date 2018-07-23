@@ -591,12 +591,12 @@ namespace MigAz.Azure.UserControls
 
         }
 
-        private string GetDefaultApiVersion(Core.MigrationTarget parentNode)
+        public string GetDefaultApiVersion(Core.MigrationTarget migrationTarget)
         {
             if (this.TargetSubscription == null)
                 return String.Empty;
 
-            Arm.ProviderResourceType providerResourceType = this.TargetSubscription.GetProviderResourceType(parentNode.ProviderNamespace, parentNode.ResourceType);
+            Arm.ProviderResourceType providerResourceType = this.TargetSubscription.GetProviderResourceType(migrationTarget.ProviderNamespace, migrationTarget.ResourceType);
 
             if (providerResourceType == null)
                 return String.Empty;

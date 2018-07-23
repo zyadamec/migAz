@@ -116,6 +116,11 @@ namespace MigAz.Azure.UserControls
 
             this.Clear();
 
+            if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion == String.Empty)
+            {
+                migrationTarget.ApiVersion = this.TargetTreeView.GetDefaultApiVersion(migrationTarget);
+            }
+
             this._MigrationTarget = migrationTarget;
             this.ResourceText = migrationTarget.ToString();
             this.ResourceImage = imageList1.Images[migrationTarget.ImageKey];

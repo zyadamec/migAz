@@ -213,25 +213,30 @@ namespace MigAz.Azure.Arm
                 await this.OSVirtualHardDisk.InitializeChildrenAsync();
             }
 
-            foreach (IArmDisk dataDisk in this.DataDisks)
+            if (this.DataDisks != null)
             {
-                if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                foreach (IArmDisk dataDisk in this.DataDisks)
                 {
-                    ClassicDisk classicDisk = (Arm.ClassicDisk)dataDisk;
-                    await classicDisk.InitializeChildrenAsync();
+                    if (dataDisk.GetType() == typeof(Arm.ClassicDisk))
+                    {
+                        ClassicDisk classicDisk = (Arm.ClassicDisk)dataDisk;
+                        await classicDisk.InitializeChildrenAsync();
+                    }
                 }
             }
 
             if (ResourceToken["properties"] != null && ResourceToken["properties"]["networkProfile"] != null && ResourceToken["properties"]["networkProfile"]["networkInterfaces"] != null)
-            foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
             {
-                if (networkInterfaceToken["id"] != null)
+                foreach (JToken networkInterfaceToken in ResourceToken["properties"]["networkProfile"]["networkInterfaces"])
                 {
-                    NetworkInterface networkInterface = await this.AzureSubscription.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
-                    if (networkInterface != null)
+                    if (networkInterfaceToken["id"] != null)
                     {
-                        networkInterface.VirtualMachine = this;
-                        _NetworkInterfaceCards.Add(networkInterface);
+                        NetworkInterface networkInterface = await this.AzureSubscription.GetAzureARMNetworkInterface((string)networkInterfaceToken["id"]);
+                        if (networkInterface != null)
+                        {
+                            networkInterface.VirtualMachine = this;
+                            _NetworkInterfaceCards.Add(networkInterface);
+                        }
                     }
                 }
             }
