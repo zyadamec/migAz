@@ -517,15 +517,18 @@ namespace MigAz.Azure.UserControls
                     }
                 }
 
-                if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                if (targetVirtualMachine.OSVirtualHardDisk != null)
                 {
-                    // Adding under Virtual Machine, as it is not a managed disk
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
-                }
-                else
-                {
-                    // Under Resource Group, as it is a managed Disk
-                    TreeNode dataDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    if (targetVirtualMachine.OSVirtualHardDisk.IsUnmanagedDisk)
+                    {
+                        // Adding under Virtual Machine, as it is not a managed disk
+                        TreeNode osDiskNode = SeekARMChildTreeNode(virtualMachineNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    }
+                    else
+                    {
+                        // Under Resource Group, as it is a managed Disk
+                        TreeNode osDiskNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk.ToString(), targetVirtualMachine.OSVirtualHardDisk, true);
+                    }
                 }
 
                 foreach (Disk targetDisk in targetVirtualMachine.DataDisks)

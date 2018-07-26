@@ -388,7 +388,7 @@ namespace MigAz.Azure.UserControls
 
                             #region process managed disks
 
-                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+                            if (armVirtualMachine.OSVirtualHardDisk != null && armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
                             {
                                 foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(((Azure.Arm.ManagedDisk)armVirtualMachine.OSVirtualHardDisk).Name, true))
                                 {
@@ -421,7 +421,7 @@ namespace MigAz.Azure.UserControls
 
                             #region OS Disk Storage Account
 
-                            if (armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ClassicDisk)) // Disk in a Storage Account, not a Managed Disk
+                            if (armVirtualMachine.OSVirtualHardDisk != null && armVirtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ClassicDisk)) // Disk in a Storage Account, not a Managed Disk
                             {
                                 foreach (TreeNode treeNode in selectedNode.TreeView.Nodes.Find(((Azure.Arm.ClassicDisk)armVirtualMachine.OSVirtualHardDisk).StorageAccountName, true))
                                 {

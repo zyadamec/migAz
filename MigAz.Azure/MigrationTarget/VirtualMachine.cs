@@ -99,7 +99,7 @@ namespace MigAz.Azure.MigrationTarget
             this.TargetSize = virtualMachine.VmSize;
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
 
-            if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+            if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
             {
                 Azure.Arm.ManagedDisk sourceManagedDisk = (Azure.Arm.ManagedDisk)virtualMachine.OSVirtualHardDisk;
 
@@ -120,10 +120,13 @@ namespace MigAz.Azure.MigrationTarget
             }
             else
             {
-                this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings);
+                if (virtualMachine.OSVirtualHardDisk != null)
+                {
+                    this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings);
+                }
             }
 
-            if (virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
+            if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))
             {
                 Arm.ClassicDisk armDisk = (Arm.ClassicDisk)virtualMachine.OSVirtualHardDisk;
                 if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
@@ -315,7 +318,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                if (!this.OSVirtualHardDisk.IsManagedDisk)
+                if (this.OSVirtualHardDisk != null && !this.OSVirtualHardDisk.IsManagedDisk)
                     return false;
 
                 foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
@@ -332,7 +335,7 @@ namespace MigAz.Azure.MigrationTarget
         {
             get
             {
-                if (!this.OSVirtualHardDisk.IsUnmanagedDisk)
+                if (this.OSVirtualHardDisk != null && !this.OSVirtualHardDisk.IsUnmanagedDisk)
                     return false;
 
                 foreach (Azure.MigrationTarget.Disk dataDisk in this.DataDisks)
