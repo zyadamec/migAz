@@ -309,9 +309,14 @@ namespace MigAz.Azure
                 if (virtualMachine.TargetName == string.Empty)
                     this.AddAlert(AlertType.Error, "Target Name for Virtual Machine '" + virtualMachine.ToString() + "' must be specified.", virtualMachine);
 
+                if (virtualMachine.OSVirtualHardDisk == null)
+                {
+                    this.AddAlert(AlertType.Error, "Virtual Machine '" + virtualMachine.ToString() + "' does not have an OS Disk.", virtualMachine);
+                }
+
                 if (virtualMachine.TargetAvailabilitySet == null)
                 {
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
+                    if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType != StorageAccountType.Premium_LRS)
                         this.AddAlert(AlertType.Warning, "Virtual Machine '" + virtualMachine.ToString() + "' is not part of an Availability Set.  OS Disk should be migrated to Azure Premium Storage to receive an Azure SLA for single server deployments.  Existing configuration will receive no (0%) Service Level Agreement (SLA).", virtualMachine.OSVirtualHardDisk);
 
                     foreach (Azure.MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
@@ -355,7 +360,7 @@ namespace MigAz.Azure
                         }
                     }
 
-                    if (virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
+                    if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
                     {
                         this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
                     }
@@ -459,7 +464,9 @@ namespace MigAz.Azure
                     }
                 }
 
-                ValidateVMDisk(virtualMachine.OSVirtualHardDisk);
+                if (virtualMachine.OSVirtualHardDisk != null)
+                    ValidateVMDisk(virtualMachine.OSVirtualHardDisk);
+
                 foreach (MigrationTarget.Disk dataDisk in virtualMachine.DataDisks)
                 {
                     ValidateVMDisk(dataDisk);

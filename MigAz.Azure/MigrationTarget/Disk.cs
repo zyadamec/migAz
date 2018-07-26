@@ -34,7 +34,6 @@ namespace MigAz.Azure.MigrationTarget
             this.DiskSizeInGB = sourceDisk.DiskSizeGb;
             this.TargetStorageAccountBlob = sourceDisk.StorageAccountBlob;
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
-
         }
 
         public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.Disks)
@@ -43,23 +42,26 @@ namespace MigAz.Azure.MigrationTarget
             this._ParentVirtualMachine = parentVirtualMachine;
             this.TargetStorage = new ManagedDiskStorage(sourceDisk);
 
-            if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
+            if (sourceDisk != null)
             {
-                Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)sourceDisk;
+                if (sourceDisk.GetType() == typeof(Azure.Arm.ClassicDisk))
+                {
+                    Azure.Arm.ClassicDisk armDisk = (Azure.Arm.ClassicDisk)sourceDisk;
 
-                this.SetTargetName(armDisk.Name, targetSettings);
-                this.Lun = armDisk.Lun;
-                this.HostCaching = armDisk.Caching;
-                this.DiskSizeInGB = armDisk.DiskSizeGb;
-                this.TargetStorageAccountBlob = armDisk.StorageAccountBlob;
-                this.SourceStorageAccount = armDisk.SourceStorageAccount;
-            }
-            else if (sourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
-            {
-                Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
+                    this.SetTargetName(armDisk.Name, targetSettings);
+                    this.Lun = armDisk.Lun;
+                    this.HostCaching = armDisk.Caching;
+                    this.DiskSizeInGB = armDisk.DiskSizeGb;
+                    this.TargetStorageAccountBlob = armDisk.StorageAccountBlob;
+                    this.SourceStorageAccount = armDisk.SourceStorageAccount;
+                }
+                else if (sourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
+                {
+                    Azure.Arm.ManagedDisk armManagedDisk = (Azure.Arm.ManagedDisk)sourceDisk;
 
-                this.SetTargetName(armManagedDisk.Name, targetSettings);
-                this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
+                    this.SetTargetName(armManagedDisk.Name, targetSettings);
+                    this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
+                }
             }
         }
 
