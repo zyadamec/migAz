@@ -124,10 +124,6 @@ namespace MigAz.Azure.MigrationTarget
                 {
                     this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings);
                 }
-                else
-                {
-                    int i = 0;
-                }
             }
 
             if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.GetType() == typeof(Arm.ClassicDisk))

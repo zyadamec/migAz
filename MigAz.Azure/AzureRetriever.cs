@@ -190,7 +190,7 @@ namespace MigAz.Azure
                     }
                     catch (Exception exc)
                     {
-                        int i = 0;
+                        // todo?
                     }
                 }
 
