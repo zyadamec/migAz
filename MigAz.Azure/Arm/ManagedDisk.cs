@@ -221,7 +221,7 @@ namespace MigAz.Azure.Arm
 
                 while (diskOperationStatus == "InProgress")
                 { 
-                    string url2 = "/subscriptions/" + azureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.ResourceGroup.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2017-03-30";
+                    string url2 = "/subscriptions/" + azureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2017-03-30";
 
                     if (azureContext != null && azureContext.LogProvider != null)
                         azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' GetAsync " + url2 + "");
