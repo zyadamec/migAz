@@ -355,11 +355,13 @@ namespace MigAz.Azure.UserControls
 
                                     foreach (Azure.MigrationTarget.FrontEndIpConfiguration frontEnd in targetNetworkInterface.BackEndAddressPool.LoadBalancer.FrontEndIpConfigurations)
                                     {
-                                        if (frontEnd.PublicIp != null) // if external load balancer
+                                        if (frontEnd.PublicIp != null && frontEnd.PublicIp.GetType() == typeof(MigrationTarget.PublicIp)) // if external load balancer
                                         {
-                                            TreeNode publicIPAddressNode = new TreeNode(frontEnd.PublicIp.SourceName);
-                                            publicIPAddressNode.Name = frontEnd.PublicIp.SourceName;
-                                            publicIPAddressNode.Tag = frontEnd.PublicIp;
+                                            MigrationTarget.PublicIp targetPublicIp = (MigrationTarget.PublicIp)frontEnd.PublicIp;
+
+                                            TreeNode publicIPAddressNode = new TreeNode(targetPublicIp.SourceName);
+                                            publicIPAddressNode.Name = targetPublicIp.SourceName;
+                                            publicIPAddressNode.Tag = targetPublicIp;
                                             cloudServiceNode.Nodes.Add(publicIPAddressNode);
                                             cloudServiceNode.Expand();
                                         }

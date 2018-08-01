@@ -261,23 +261,28 @@ namespace MigAz.Azure
                     {
                         if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp == null)
                         {
-                            this.AddAlert(AlertType.Error, "Public Load Balancer must have either a Public IP association.", targetLoadBalancer);
+                            this.AddAlert(AlertType.Error, "Public Load Balancer must have a Public IP association.", targetLoadBalancer);
                         }
                         else
                         {
-                            // Ensure the selected Public IP Address is "in the migration" as a target new Public IP Object
-                            bool publicIpExistsInMigration = false;
-                            foreach (Azure.MigrationTarget.PublicIp publicIp in this.PublicIPs)
+                            if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.GetType() == typeof(MigrationTarget.PublicIp))
                             {
-                                if (publicIp.TargetName == targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.TargetName)
-                                {
-                                    publicIpExistsInMigration = true;
-                                    break;
-                                }
-                            }
+                                MigrationTarget.PublicIp migrationTargetPublicIp = (MigrationTarget.PublicIp)targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp;
 
-                            if (!publicIpExistsInMigration)
-                                this.AddAlert(AlertType.Error, "Public IP '" + targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.TargetName + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                                // Ensure the selected Public IP Address is "in the migration" as a target new Public IP Object
+                                bool publicIpExistsInMigration = false;
+                                foreach (Azure.MigrationTarget.PublicIp publicIp in this.PublicIPs)
+                                {
+                                    if (publicIp.TargetName == migrationTargetPublicIp.TargetName)
+                                    {
+                                        publicIpExistsInMigration = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!publicIpExistsInMigration)
+                                    this.AddAlert(AlertType.Error, "Public IP '" + migrationTargetPublicIp.TargetName + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                            }
                         }
                     }
                 }

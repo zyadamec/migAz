@@ -23,7 +23,9 @@ namespace MigAz.Azure.UserControls
         public LoadBalancerProperties()
         {
             InitializeComponent();
+            this.publicIpSelectionControl1.PropertyChanged += PublicIpSelectionControl1_PropertyChanged;
         }
+
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
@@ -55,6 +57,13 @@ namespace MigAz.Azure.UserControls
             get { return _LoadBalancer; }
         }
 
+
+        private void PublicIpSelectionControl1_PropertyChanged()
+        {
+            _LoadBalancer.FrontEndIpConfigurations[0].PublicIp = this.publicIpSelectionControl1.PublicIp;
+            this.RaisePropertyChangedEvent();
+        }
+
         private void txtTargetName_TextChanged(object sender, EventArgs e)
         {
             TextBox txtSender = (TextBox)sender;
@@ -68,13 +77,13 @@ namespace MigAz.Azure.UserControls
         {
             if (cmbLoadBalancerType.SelectedItem.ToString() == "Public")
             {
+                await this.publicIpSelectionControl1.Bind(_TargetTreeView);
+                this.publicIpSelectionControl1.PublicIp = _LoadBalancer.FrontEndIpConfigurations[0].PublicIp;
+
                 _LoadBalancer.LoadBalancerType = MigrationTarget.LoadBalancerType.Public;
                 this.networkSelectionControl1.Enabled = false;
                 this.networkSelectionControl1.Visible = false;
                 this.pnblPublicProperties.Visible = true;
-
-                if (_LoadBalancer.FrontEndIpConfigurations.Count > 0)
-                    resourceSummaryPublicIp.Bind(_LoadBalancer.FrontEndIpConfigurations[0].PublicIp, _TargetTreeView);
             }
             else
             {

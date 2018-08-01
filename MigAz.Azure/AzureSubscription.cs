@@ -1364,6 +1364,23 @@ namespace MigAz.Azure
             return locationVirtualNetworks;
         }
 
+        public List<Arm.PublicIP> FilterArmPublicIPs(Arm.Location azureLocation)
+        {
+            List<Arm.PublicIP> locationPublicIPs = new List<Arm.PublicIP>();
+
+            foreach (List<Arm.PublicIP> armPublicIpList in this.ArmPublicIPs.Values)
+            {
+                foreach (Arm.PublicIP armPublicIp in armPublicIpList)
+                {
+                    if (armPublicIp.Location == azureLocation)
+                        locationPublicIPs.Add(armPublicIp);
+                }
+            }
+
+            return locationPublicIPs;
+        }
+
+
         public async Task<List<Arm.VirtualNetwork>> GetAzureARMVirtualNetworks()
         {
             List<Arm.VirtualNetwork> virtualNetworks = new List<Arm.VirtualNetwork>();

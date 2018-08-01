@@ -162,7 +162,7 @@ namespace MigAz.Azure.Generator
                 if (_ExportArtifacts.HasErrors)
                 {
                     throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
-                }               LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
+                } LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
 
                 foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
                 {
@@ -357,8 +357,9 @@ namespace MigAz.Azure.Generator
             return availabilitySet;
         }
 
-        private async Task BuildPublicIPAddressObject(Azure.MigrationTarget.PublicIp publicIp)
+        private async Task BuildPublicIPAddressObject(MigrationTarget.PublicIp publicIp)
         {
+
             LogProvider.WriteLog("BuildPublicIPAddressObject", "Start " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
 
             PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
@@ -430,13 +431,21 @@ namespace MigAz.Azure.Generator
                 {
                     if (targetFrontEndIpConfiguration.PublicIp != null)
                     {
-                        await BuildPublicIPAddressObject(targetFrontEndIpConfiguration.PublicIp);
+                        if (targetFrontEndIpConfiguration.PublicIp.GetType() == typeof(MigrationTarget.PublicIp))
+                        {
+                            await BuildPublicIPAddressObject((MigrationTarget.PublicIp)targetFrontEndIpConfiguration.PublicIp);
 
-                        Reference publicipaddress_ref = new Reference();
-                        publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
-                        frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+                            Reference publicipaddress_ref = new Reference();
+                            publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
+                            frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
 
-                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                        }
+                        else
+                        {
+                            int todo = 0;
+                        }
+
                     }
                 }
             }
