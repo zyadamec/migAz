@@ -32,6 +32,17 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public string IpConfigurationId
+        {
+            get
+            {
+                if (this.ResourceToken["properties"]["ipConfiguration"] == null || this.ResourceToken["properties"]["ipConfiguration"]["id"] == null)
+                    return String.Empty;
+
+                return (string)this.ResourceToken["properties"]["ipConfiguration"]["id"];
+            }
+        }
+
         public string FQDN
         {
             get
