@@ -33,13 +33,13 @@ namespace MigAz.Azure.MigrationTarget
 
         public LoadBalancer() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
-            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
+            new FrontEndIpConfiguration(this);
         }
 
         public LoadBalancer(string targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
             this.SetTargetName(targetName, targetSettings);
-            this.FrontEndIpConfigurations.Add(new FrontEndIpConfiguration(this));
+            new FrontEndIpConfiguration(this);
         }
 
         public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
@@ -50,7 +50,6 @@ namespace MigAz.Azure.MigrationTarget
             foreach (Arm.FrontEndIpConfiguration armFrontEndIpConfiguration in sourceLoadBalancer.FrontEndIpConfigurations)
             {
                 FrontEndIpConfiguration targetFrontEndIpConfiguration = new FrontEndIpConfiguration(this, armFrontEndIpConfiguration);
-                _FrontEndIpConfiguration.Add(targetFrontEndIpConfiguration);
 
                 if (armFrontEndIpConfiguration.PublicIP != null)
                     this.LoadBalancerType = LoadBalancerType.Public;

@@ -281,7 +281,14 @@ namespace MigAz.Azure
                                 }
 
                                 if (!publicIpExistsInMigration)
-                                    this.AddAlert(AlertType.Error, "Public IP '" + migrationTargetPublicIp.TargetName + "' specified for Load Balancer '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                                    this.AddAlert(AlertType.Error, "Load Balancer Public IP '" + migrationTargetPublicIp.TargetName + "' specified '" + targetLoadBalancer.ToString() + "' is not included in the migration template.", targetLoadBalancer);
+                            }
+                            else if (targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp.GetType() == typeof(Arm.PublicIP))
+                            {
+                                Arm.PublicIP armPublicIp = (Arm.PublicIP)targetLoadBalancer.FrontEndIpConfigurations[0].PublicIp;
+
+                                if (armPublicIp.IpConfigurationId != String.Empty)
+                                    this.AddAlert(AlertType.Error, "Load Balancer referenced ARM Public IP '" + armPublicIp.Name + "' is already in use by ARM Resource '" + armPublicIp.IpConfigurationId + "'.", targetLoadBalancer);
                             }
                         }
                     }
