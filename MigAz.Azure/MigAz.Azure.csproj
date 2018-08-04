@@ -264,6 +264,12 @@
     <Compile Include="UserControls\LocalNetworkGatewayProperties.Designer.cs">
       <DependentUpon>LocalNetworkGatewayProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\PublicIpSelectionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\PublicIpSelectionControl.Designer.cs">
+      <DependentUpon>PublicIpSelectionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\TargetPropertyControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -423,6 +429,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\LocalNetworkGatewayProperties.resx">
       <DependentUpon>LocalNetworkGatewayProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\PublicIpSelectionControl.resx">
+      <DependentUpon>PublicIpSelectionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\TreeViewSourceResourceManager.resx">
       <DependentUpon>TreeViewSourceResourceManager.cs</DependentUpon>

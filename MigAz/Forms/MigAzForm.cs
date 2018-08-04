@@ -80,7 +80,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.4.3.1";
+            string currentVersion = "2.4.4.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -703,6 +703,13 @@ namespace MigAz.Forms
             dgvMigAzMessages.DataSource = sender.Alerts.Select(x => new { AlertType = x.AlertType, Message = x.Message, SourceObject = x.SourceObject }).ToList();
             dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvMigAzMessages.Columns["SourceObject"].Visible = false;
+
+            // WordWrap Message Column
+            dgvMigAzMessages.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            dgvMigAzMessages.Columns["Message"].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvMigAzMessages.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
             btnRefreshOutput.Enabled = true;
             btnExport.Enabled = true;
 

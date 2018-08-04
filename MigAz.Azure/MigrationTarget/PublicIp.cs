@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public class PublicIp : Core.MigrationTarget
+    public class PublicIp : Core.MigrationTarget, IMigrationPublicIp
     {
         private String _SourceName = String.Empty;
         private String _DomainNameLabel = String.Empty;

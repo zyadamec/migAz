@@ -256,6 +256,20 @@ namespace MigAz.Azure.UserControls
 
             return existingVirtualNetworks;
         }
+        internal List<Arm.PublicIP> GetExistingPublicIpsInTargetLocation()
+        {
+            List<Arm.PublicIP> existingPublicIPs = new List<Arm.PublicIP>();
+
+            if (this.TargetResourceGroup != null && this.TargetResourceGroup.TargetLocation != null && this.TargetSubscription != null)
+            {
+                foreach (Arm.PublicIP armPublicIp in this.TargetSubscription.FilterArmPublicIPs(this.TargetResourceGroup.TargetLocation))
+                {
+                    existingPublicIPs.Add(armPublicIp);
+                }
+            }
+
+            return existingPublicIPs;
+        }
 
         internal void TransitionToManagedDisk(Disk disk)
         {
@@ -821,6 +835,26 @@ namespace MigAz.Azure.UserControls
             }
 
             return _TargetVirtualNetworks;
+        }
+        public List<PublicIp> GetPublicIPsInMigration()
+        {
+            List<PublicIp> _TargetPublicIPs = new List<MigrationTarget.PublicIp>();
+
+            TreeNode targetResourceGroupNode = this.ResourceGroupNode;
+
+            if (targetResourceGroupNode != null)
+            {
+                foreach (TreeNode treeNode in targetResourceGroupNode.Nodes)
+                {
+                    if (treeNode.Tag != null && treeNode.Tag.GetType() == typeof(PublicIp))
+                    {
+                        PublicIp targetPublicIp = (PublicIp)treeNode.Tag;
+                        _TargetPublicIPs.Add(targetPublicIp);
+                    }
+                }
+            }
+
+            return _TargetPublicIPs;
         }
 
         public List<StorageAccount> GetStorageAccountsInMigration()

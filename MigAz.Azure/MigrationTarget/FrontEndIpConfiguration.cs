@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure.Interface;
+using MigAz.Core;
 using MigAz.Core.Interface;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace MigAz.Azure.MigrationTarget
         private String _Name = "default";
         private IPAllocationMethodEnum _TargetPrivateIPAllocationMethod = IPAllocationMethodEnum.Dynamic;
         private String _TargetStaticIpAddress = String.Empty;
-        private PublicIp _PublicIp = null;
+        private IMigrationPublicIp _PublicIp = null;
 
         private LoadBalancer _ParentLoadBalancer = null;
         private Arm.FrontEndIpConfiguration _Source;
@@ -74,7 +75,7 @@ namespace MigAz.Azure.MigrationTarget
             set { _Name = value; }
         }
 
-        public PublicIp PublicIp
+        public IMigrationPublicIp PublicIp
         {
             get { return _PublicIp; }
             set

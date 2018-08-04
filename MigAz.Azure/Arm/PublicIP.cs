@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using MigAz.Core;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.Arm
 {
-    public class PublicIP : ArmResource
+    public class PublicIP : ArmResource, IMigrationPublicIp
     {
         public PublicIP(AzureSubscription azureSubscription, JToken resourceToken) : base(azureSubscription, resourceToken)
         {
@@ -31,6 +32,17 @@ namespace MigAz.Azure.Arm
             }
         }
 
+        public string IpConfigurationId
+        {
+            get
+            {
+                if (this.ResourceToken["properties"]["ipConfiguration"] == null || this.ResourceToken["properties"]["ipConfiguration"]["id"] == null)
+                    return String.Empty;
+
+                return (string)this.ResourceToken["properties"]["ipConfiguration"]["id"];
+            }
+        }
+
         public string FQDN
         {
             get
@@ -40,6 +52,11 @@ namespace MigAz.Azure.Arm
 
                 return (string)this.ResourceToken["properties"]["dnsSettings"]["fqdn"];
             }
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }
