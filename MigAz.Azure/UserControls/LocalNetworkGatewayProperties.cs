@@ -42,7 +42,7 @@ namespace MigAz.Azure.UserControls
 
             _LocalNetworkGateway.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_LocalNetworkGateway);
         }
     }
 }

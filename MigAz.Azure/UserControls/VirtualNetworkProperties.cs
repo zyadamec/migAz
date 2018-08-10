@@ -62,7 +62,7 @@ namespace MigAz.Azure.UserControls
 
             _VirtualNetwork.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings); ;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_VirtualNetwork);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

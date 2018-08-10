@@ -204,6 +204,35 @@ namespace MigAz.Azure.UserControls
                 PropertyChanged?.Invoke();
             }
         }
+
+        public new bool Enabled
+        {
+            get
+            {
+                return base.Enabled;
+            }
+            set
+            {
+                _IsBinding = true;
+
+                try
+                {
+                    if (value == false)
+                    {
+                        rbExistingARMPublicIp.Checked = false;
+                        rbPublicIPInMigration.Checked = false;
+                        cmbPublicIp.Items.Clear();
+
+                        PropertyChanged?.Invoke();
+                    }
+                }
+                finally
+                {
+                    base.Enabled = value;
+                    _IsBinding = false;
+                }
+            }
+        }
     }
 }
 

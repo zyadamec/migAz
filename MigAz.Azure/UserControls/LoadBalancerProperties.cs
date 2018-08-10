@@ -29,7 +29,7 @@ namespace MigAz.Azure.UserControls
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_LoadBalancer);
         }
 
         internal async Task Bind(LoadBalancer loadBalancer, TargetTreeView targetTreeView)
@@ -61,7 +61,7 @@ namespace MigAz.Azure.UserControls
         private void PublicIpSelectionControl1_PropertyChanged()
         {
             _LoadBalancer.FrontEndIpConfigurations[0].PublicIp = this.publicIpSelectionControl1.PublicIp;
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_LoadBalancer);
         }
 
         private void txtTargetName_TextChanged(object sender, EventArgs e)
@@ -70,7 +70,7 @@ namespace MigAz.Azure.UserControls
 
             _LoadBalancer.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_LoadBalancer);
         }
 
         private async void cmbLoadBalancerType_SelectedIndexChanged(object sender, EventArgs e)
@@ -99,7 +99,7 @@ namespace MigAz.Azure.UserControls
                 }
             }
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_LoadBalancer);
         }
     }
 }

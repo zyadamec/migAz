@@ -43,7 +43,7 @@ namespace MigAz.Azure.UserControls
 
             _VirtualNetworkGatewayConnection.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_VirtualNetworkGatewayConnection);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_PublicIp);
         }
 
         private void txtDomainNameLabel_TextChanged(object sender, EventArgs e)
@@ -61,7 +61,7 @@ namespace MigAz.Azure.UserControls
 
             _PublicIp.DomainNameLabel = txtSender.Text;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_PublicIp);
         }
 
         private void cmbPublicIpAllocation_SelectedIndexChanged(object sender, EventArgs e)
@@ -71,7 +71,7 @@ namespace MigAz.Azure.UserControls
             else
                 _PublicIp.IPAllocationMethod = IPAllocationMethodEnum.Dynamic;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_PublicIp);
         }
     }
 }

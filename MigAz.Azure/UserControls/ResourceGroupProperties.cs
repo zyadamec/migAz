@@ -67,7 +67,7 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_ResourceGroup);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -84,7 +84,7 @@ namespace MigAz.Azure.UserControls
 
             _ResourceGroup.TargetLocation = (Arm.Location) cmbSender.SelectedItem;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_ResourceGroup);
         }
 
     }

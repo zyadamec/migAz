@@ -9,7 +9,7 @@ namespace MigAz.Azure.UserControls
 {
     public class TargetPropertyControl : UserControl
     {
-        public delegate Task AfterPropertyChanged();
+        public delegate Task AfterPropertyChanged(Core.MigrationTarget migrationTarget);
         public event AfterPropertyChanged PropertyChanged;
 
         internal TargetTreeView _TargetTreeView;
@@ -21,10 +21,10 @@ namespace MigAz.Azure.UserControls
             set { _IsBinding = value; }
         }
 
-        internal void RaisePropertyChangedEvent()
+        internal void RaisePropertyChangedEvent(Core.MigrationTarget migrationTarget)
         {
             if (!this.IsBinding)
-                PropertyChanged?.Invoke();
+                PropertyChanged?.Invoke(migrationTarget);
         }
 
         internal virtual void UpdatePropertyEnablement() { }

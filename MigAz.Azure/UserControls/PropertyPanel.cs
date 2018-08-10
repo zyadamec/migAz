@@ -259,9 +259,10 @@ namespace MigAz.Azure.UserControls
             this.TargetTreeView.LogProvider.WriteLog("PropertyPanel Bind", "End");
         }
 
-        private async Task Properties_PropertyChanged()
+        private async Task Properties_PropertyChanged(Core.MigrationTarget migrationTarget)
         {
-            await PropertyChanged(_MigrationTarget);
+            _MigrationTarget = migrationTarget; // Refresh based on property change
+            await PropertyChanged(migrationTarget);
         }
 
         private async void cmbApiVersions_SelectedIndexChanged(object sender, EventArgs e)
