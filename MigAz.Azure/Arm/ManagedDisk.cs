@@ -19,7 +19,7 @@ namespace MigAz.Azure.Arm
     public class ManagedDisk : ArmResource, IArmDisk
     {
         private VirtualMachine _VirtualMachine;
-        private JToken _VirtualMachineJToken;
+        private JToken _VirtualMachineDiskJToken;
 
         private ManagedDisk() : base(null, null) { }
 
@@ -42,7 +42,7 @@ namespace MigAz.Azure.Arm
         internal void SetParentVirtualMachine(VirtualMachine virtualMachine, JToken jToken)
         {
             _VirtualMachine = virtualMachine;
-            _VirtualMachineJToken = jToken;
+            _VirtualMachineDiskJToken = jToken;
         }
 
         public string Type
@@ -74,11 +74,11 @@ namespace MigAz.Azure.Arm
             {
                 try
                 {
-                    if (this._VirtualMachineJToken == null || this._VirtualMachineJToken["lun"] == null)
+                    if (this._VirtualMachineDiskJToken == null || this._VirtualMachineDiskJToken["lun"] == null)
                         return null;
 
                     int lun = -1;
-                    int.TryParse((string)this._VirtualMachineJToken["lun"], out lun);
+                    int.TryParse((string)this._VirtualMachineDiskJToken["lun"], out lun);
 
                     return lun;
                 }
@@ -92,10 +92,10 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                if (this._VirtualMachineJToken == null || this._VirtualMachineJToken["caching"] == null)
+                if (this._VirtualMachineDiskJToken == null || this._VirtualMachineDiskJToken["caching"] == null)
                     return String.Empty;
 
-                return (string)this._VirtualMachineJToken["caching"];
+                return (string)this._VirtualMachineDiskJToken["caching"];
             }
         }
 
@@ -156,13 +156,109 @@ namespace MigAz.Azure.Arm
         {
             get
             {
-                if (this.ResourceToken["encryptionSettings"] == null)
+                if (this._VirtualMachineDiskJToken == null)
                     return false;
 
-                if (this.ResourceToken["encryptionSettings"]["enabled"] == null)
+                if (this._VirtualMachineDiskJToken["encryptionSettings"] == null)
                     return false;
 
-                return Convert.ToBoolean((string)this.ResourceToken["encryptionSettings"]["enabled"]);
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["enabled"] == null)
+                    return false;
+
+                return Convert.ToBoolean((string)this._VirtualMachineDiskJToken["encryptionSettings"]["enabled"]);
+            }
+        }
+
+
+        public string DiskEncryptionKeySourceVaultId
+        {
+            get
+            {
+                if (this._VirtualMachineDiskJToken == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"]["sourceVault"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"]["sourceVault"]["id"] == null)
+                    return null;
+
+                return (string)this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"]["sourceVault"]["id"];
+            }
+        }
+        public string DiskEncryptionKeySecretUrl
+        {
+            get
+            {
+                if (this._VirtualMachineDiskJToken == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"]["secretUrl"] == null)
+                    return null;
+
+                return (string)this._VirtualMachineDiskJToken["encryptionSettings"]["diskEncryptionKey"]["secretUrl"];
+            }
+        }
+
+        public bool IsEncryptedWithKeyEncryptionKey
+        {
+            get
+            {
+                return this.KeyEncryptionKeyKeyUrl != null;
+            }
+        }
+
+        public string KeyEncryptionKeySourceVaultId
+        {
+            get
+            {
+                if (this._VirtualMachineDiskJToken == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"]["sourceVault"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"]["sourceVault"]["id"] == null)
+                    return null;
+
+                return (string)this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"]["sourceVault"]["id"];
+            }
+        }
+        public string KeyEncryptionKeyKeyUrl
+        {
+            get
+            {
+                if (this._VirtualMachineDiskJToken == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"] == null)
+                    return null;
+
+                if (this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"]["keyUrl"] == null)
+                    return null;
+
+                return (string)this._VirtualMachineDiskJToken["encryptionSettings"]["keyEncryptionKey"]["keyUrl"];
             }
         }
 

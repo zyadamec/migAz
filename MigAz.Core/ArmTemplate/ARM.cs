@@ -441,6 +441,7 @@ namespace MigAz.Core.ArmTemplate
         public Reference managedDisk;
         public string caching;
         public string createOption;
+        public DiskEncrpytionSettings encryptionSettings;
     }
 
     public class DataDisk
@@ -452,6 +453,25 @@ namespace MigAz.Core.ArmTemplate
         public string createOption;
         public long? diskSizeGB;
         public long lun;
+        public DiskEncrpytionSettings encryptionSettings;
+    }
+
+    public class DiskEncrpytionSettings
+    {
+        public bool enabled;
+        public DiskEncryptionKeySettings diskEncryptionKey;
+        public KeyEncryptionKeySettings keyEncryptionKey;
+    }
+
+    public class KeyEncryptionKeySettings
+    {
+        public Reference sourceVault;
+        public string keyUrl;
+    }
+    public class DiskEncryptionKeySettings
+    {
+        public Reference sourceVault;
+        public string secretUrl;
     }
 
     public class Vhd

@@ -54,6 +54,11 @@ namespace MigAz.Azure.MigrationTarget
                     this.DiskSizeInGB = armDisk.DiskSizeGb;
                     this.TargetStorageAccountBlob = armDisk.StorageAccountBlob;
                     this.SourceStorageAccount = armDisk.SourceStorageAccount;
+                    this.IsEncrypted = armDisk.IsEncrypted;
+                    this.DiskEncryptionKeySourceVaultId = armDisk.DiskEncryptionKeySourceVaultId;
+                    this.DiskEncryptionKeySecretUrl = armDisk.DiskEncryptionKeySecretUrl;
+                    this.KeyEncryptionKeySourceVaultId = armDisk.KeyEncryptionKeySourceVaultId;
+                    this.KeyEncryptionKeyKeyUrl = armDisk.KeyEncryptionKeyKeyUrl;
                 }
                 else if (sourceDisk.GetType() == typeof(Azure.Arm.ManagedDisk))
                 {
@@ -61,6 +66,11 @@ namespace MigAz.Azure.MigrationTarget
 
                     this.SetTargetName(armManagedDisk.Name, targetSettings);
                     this.DiskSizeInGB = armManagedDisk.DiskSizeGb;
+                    this.IsEncrypted = armManagedDisk.IsEncrypted;
+                    this.DiskEncryptionKeySourceVaultId = armManagedDisk.DiskEncryptionKeySourceVaultId;
+                    this.DiskEncryptionKeySecretUrl = armManagedDisk.DiskEncryptionKeySecretUrl;
+                    this.KeyEncryptionKeySourceVaultId = armManagedDisk.KeyEncryptionKeySourceVaultId;
+                    this.KeyEncryptionKeyKeyUrl = armManagedDisk.KeyEncryptionKeyKeyUrl;
                 }
             }
         }
@@ -79,6 +89,13 @@ namespace MigAz.Azure.MigrationTarget
         }
 
         public IDisk SourceDisk { get; set; }
+
+        public bool IsEncrypted { get; set; }
+
+        public string DiskEncryptionKeySourceVaultId { get; set; }
+        public string DiskEncryptionKeySecretUrl { get; set; }
+        public string KeyEncryptionKeySourceVaultId { get; set; }
+        public string KeyEncryptionKeyKeyUrl { get; set; }
 
         public String SourceName
         {

@@ -84,6 +84,10 @@ namespace MigAz.Azure.UserControls
             txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
             txtTargetSize.Text = _TargetDisk.DiskSizeInGB.ToString();
+            txtDiskEncryptionKeySecretUrl.Text = _TargetDisk.DiskEncryptionKeySecretUrl;
+            txtDiskEncryptionKeySourceVaultId.Text = _TargetDisk.DiskEncryptionKeySourceVaultId;
+            txtKeyEncryptionKeyKeyUrl.Text = _TargetDisk.KeyEncryptionKeyKeyUrl;
+            txtKeyEncryptionKeySourceVaultId.Text = _TargetDisk.KeyEncryptionKeySourceVaultId;
 
             lblAsmStorageAccount.Text = String.Empty;
             if (_TargetDisk.SourceDisk != null)
@@ -453,6 +457,26 @@ namespace MigAz.Azure.UserControls
                     this.RaisePropertyChangedEvent(_TargetDisk);
                 }
             }
+        }
+
+        private void txtDiskEncryptionKeySecretUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtDiskEncryptionKeySourceVaultId_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtKeyEncryptionKeyKeyUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtKeyEncryptionKeySourceVaultId_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
         }
     }
 }
