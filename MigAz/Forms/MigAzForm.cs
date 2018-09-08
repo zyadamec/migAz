@@ -362,7 +362,7 @@ namespace MigAz.Forms
 
         private async Task<bool> RefreshOutput()
         {
-            if (AssertHasTargetErrors())
+            if (await AssertHasTargetErrors())
             {
                 return false;
             }
@@ -679,8 +679,11 @@ namespace MigAz.Forms
 
         #endregion
 
-        public bool AssertHasTargetErrors()
+        public async Task<bool> AssertHasTargetErrors()
         {
+            // Refresh output first, await, to ensure subsequence call for HasErrors has updated status.
+            await this.targetTreeView1.RefreshExportArtifacts();
+
             if (this.targetTreeView1.HasErrors)
             {
                 tabMigAzMonitoring.SelectTab("tabMessages");
