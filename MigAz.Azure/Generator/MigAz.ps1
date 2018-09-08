@@ -103,16 +103,17 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 			if ($copyblobdetail.SourceExpiration -ne $null)
 			{
 				$sourceExpirationDate = [datetime] $copyblobdetail.SourceExpiration
-				if ($sourceExpirationDate -le (Get-Date))
+                $TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
+
+				if ($TimeDiff.TotalMilliseconds -le 0)
 				{
 					$sourceExpirationValid = $false
 					$StartBlobCopyError = $true
-					Write-Host " - ERROR: '$($copyblobdetail.TargetBlob)' source access has expired ($($sourceExpirationDate))." -ForegroundColor Red
+					Write-Host " - ERROR: '$($copyblobdetail.TargetBlob)' source access has expired ($($sourceExpirationDate) UTC)." -ForegroundColor Red
 				}
 				else
 				{
-					$TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
-					Write-Host " - WARNING: '$($copyblobdetail.TargetBlob)' source access expires in $($TimeDiff.Minutes) minute(s) ($($sourceExpirationDate))." -ForegroundColor Yellow
+					Write-Host " - WARNING: '$($copyblobdetail.TargetBlob)' source access expires in $($TimeDiff.Hours) hour(s) $($TimeDiff.Minutes) minute(s) $($TimeDiff.Seconds) seconds(s) at ($($sourceExpirationDate) UTC)." -ForegroundColor Yellow
 				}
 			}
 		}
@@ -216,6 +217,17 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 					$copyblobdetail.StatusDescription = $status.StatusDescription
 
 					$ContinueBlobCopy = $true
+
+			        if ($copyblobdetail.SourceExpiration -ne $null)
+			        {
+                        $sourceExpirationDate = [datetime] $copyblobdetail.SourceExpiration
+                        $TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
+                        
+                        if ($TimeDiff.Hours -eq 0 -and ($TimeDiff.Minutes -ge 1 -or $TimeDiff.Seconds -ge 1))
+                        {
+                        	Write-Host " - WARNING: '$($copyblobdetail.TargetBlob)' source access expires in $($TimeDiff.Minutes) minute(s) $($TimeDiff.Seconds) seconds(s) at ($($sourceExpirationDate) UTC)." -ForegroundColor Yellow
+                        }
+                    }
 
 					if ($copyblobdetail.Status -eq "Success")
 					{
