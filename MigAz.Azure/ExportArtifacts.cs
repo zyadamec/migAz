@@ -372,7 +372,7 @@ namespace MigAz.Azure
                         }
                     }
 
-                    if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
+                    if (virtualMachine.OSVirtualHardDisk != null && virtualMachine.OSVirtualHardDisk.TargetStorage != null && virtualMachine.OSVirtualHardDisk.TargetStorage.StorageAccountType == StorageAccountType.Premium_LRS && !virtualMachine.TargetSize.IsStorageTypeSupported(virtualMachine.OSVirtualHardDisk.StorageAccountType))
                     {
                         this.AddAlert(AlertType.Error, "Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'.", virtualMachine);
                     }
@@ -466,11 +466,23 @@ namespace MigAz.Azure
 
                         if (ipConfiguration.TargetPublicIp != null)
                         {
-                            MigrationTarget.PublicIp publicIpInMigration = this.SeekPublicIp(ipConfiguration.TargetPublicIp.ToString());
-
-                            if (publicIpInMigration == null)
+                            if (ipConfiguration.TargetPublicIp.GetType().UnderlyingSystemType == typeof(MigrationTarget.PublicIp))
                             {
-                                this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' IP Configuration '" + ipConfiguration.ToString() + "' utilizes Public IP '" + ipConfiguration.TargetPublicIp.ToString() + "', but the Public IP resource is not added into the migration template.", networkInterface);
+                                MigrationTarget.PublicIp publicIpInMigration = this.SeekPublicIp(ipConfiguration.TargetPublicIp.ToString());
+
+                                if (publicIpInMigration == null)
+                                {
+                                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' IP Configuration '" + ipConfiguration.ToString() + "' utilizes Public IP '" + ipConfiguration.TargetPublicIp.ToString() + "', but the Public IP resource is not added into the migration template.", networkInterface);
+                                }
+                            }
+                            else if (ipConfiguration.TargetPublicIp.GetType().UnderlyingSystemType == typeof(Arm.PublicIP))
+                            {
+                                Arm.PublicIP existingArmPublicIp = (Arm.PublicIP)ipConfiguration.TargetPublicIp;
+
+                                if (existingArmPublicIp.IpConfigurationId != String.Empty)
+                                {
+                                    this.AddAlert(AlertType.Error, "Network Interface Card (NIC) '" + networkInterface.ToString() + "' IP Configuration '" + ipConfiguration.ToString() + "' utilizes existing Public IP '" + ipConfiguration.TargetPublicIp.ToString() + "', but the Public IP resource is already used by existing ARM Resource '" + existingArmPublicIp.IpConfigurationId + "'.", networkInterface);
+                                }
                             }
                         }
                     }

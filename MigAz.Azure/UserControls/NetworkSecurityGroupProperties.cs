@@ -54,7 +54,7 @@ namespace MigAz.Azure.UserControls
 
             _NetworkSecurityGroup.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_NetworkSecurityGroup);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

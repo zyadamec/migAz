@@ -1061,6 +1061,29 @@ namespace MigAz.Azure.Generator
 
             OsDisk osdisk = new OsDisk();
             osdisk.caching = targetVirtualMachine.OSVirtualHardDisk.HostCaching;
+            if (targetVirtualMachine.OSVirtualHardDisk.IsEncrypted)
+            {
+                DiskEncrpytionSettings osDiskEncryptionSettings = new DiskEncrpytionSettings();
+                osdisk.encryptionSettings = osDiskEncryptionSettings;
+
+                osDiskEncryptionSettings.enabled = targetVirtualMachine.OSVirtualHardDisk.IsEncrypted;
+
+                DiskEncryptionKeySettings diskEncryptionKeySettings = new DiskEncryptionKeySettings();
+                osDiskEncryptionSettings.diskEncryptionKey = diskEncryptionKeySettings;
+
+                diskEncryptionKeySettings.secretUrl = targetVirtualMachine.OSVirtualHardDisk.DiskEncryptionKeySecretUrl;
+
+                diskEncryptionKeySettings.sourceVault = new Reference();
+                diskEncryptionKeySettings.sourceVault.id = targetVirtualMachine.OSVirtualHardDisk.DiskEncryptionKeySourceVaultId;
+
+                KeyEncryptionKeySettings keyEncryptionKeySettings = new KeyEncryptionKeySettings();
+                osDiskEncryptionSettings.keyEncryptionKey = keyEncryptionKeySettings;
+
+                keyEncryptionKeySettings.keyUrl = targetVirtualMachine.OSVirtualHardDisk.KeyEncryptionKeyKeyUrl;
+
+                keyEncryptionKeySettings.sourceVault = new Reference();
+                keyEncryptionKeySettings.sourceVault.id = targetVirtualMachine.OSVirtualHardDisk.KeyEncryptionKeySourceVaultId;
+            }
 
             ImageReference imagereference = new ImageReference();
             OsProfile osprofile = new OsProfile();

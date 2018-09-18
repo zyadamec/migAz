@@ -127,7 +127,8 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public PublicIp TargetPublicIp { get; set; }
+        public Core.IMigrationPublicIp TargetPublicIp { get; set; }
+
         public NetworkSecurityGroup TargetNetworkSecurityGroup { get; set; }
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)

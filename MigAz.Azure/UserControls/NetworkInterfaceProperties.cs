@@ -22,11 +22,26 @@ namespace MigAz.Azure.UserControls
         public NetworkInterfaceProperties()
         {
             InitializeComponent();
+            this.publicIpSelectionControl1.PropertyChanged += PublicIpSelectionControl1_PropertyChanged;
+            this.networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+        }
+
+        private void PublicIpSelectionControl1_PropertyChanged()
+        {
+            if (!this.IsBinding)
+            {
+                if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                {
+                    _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp = publicIpSelectionControl1.PublicIp;
+                }
+
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
+            }
         }
 
         private void NetworkSelectionControl1_PropertyChanged()
         {
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_TargetNetworkInterface);
         }
 
         internal async Task Bind(NetworkInterface targetNetworkInterface, TargetTreeView targetTreeView)
@@ -36,13 +51,22 @@ namespace MigAz.Azure.UserControls
                 this.IsBinding = true;
                 _TargetTreeView = targetTreeView;
                 _TargetNetworkInterface = targetNetworkInterface;
-                networkSelectionControl1.PropertyChanged += NetworkSelectionControl1_PropertyChanged;
+                await publicIpSelectionControl1.Bind(targetTreeView);
 
                 await networkSelectionControl1.Bind(targetTreeView);
 
                 if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
                 {
                     networkSelectionControl1.VirtualNetworkTarget = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0];
+
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp == null)
+                        rbPublicIpDisabled.Checked = true;
+                    else
+                    {
+                        rbPublicIpEnabled.Checked = true;
+                    }
+
+                    publicIpSelectionControl1.PublicIp = _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp;
                 }
 
                 lblSourceName.Text = _TargetNetworkInterface.SourceName;
@@ -81,8 +105,7 @@ namespace MigAz.Azure.UserControls
                 virtualMachineSummary.Bind(_TargetNetworkInterface.ParentVirtualMachine, _TargetTreeView);
                 networkSecurityGroup.Bind(_TargetNetworkInterface.NetworkSecurityGroup, _TargetTreeView);
 
-                if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count() > 0)
-                    resourceSummaryPublicIp.Bind(_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp, _TargetTreeView);
+                await this.publicIpSelectionControl1.Bind(_TargetTreeView);
 
                 this.UpdatePropertyEnablement();
             }
@@ -104,7 +127,7 @@ namespace MigAz.Azure.UserControls
 
             _TargetNetworkInterface.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_TargetNetworkInterface);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -121,7 +144,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableIPForwarding = true;
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
             }
         }
 
@@ -131,7 +154,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableIPForwarding = false;
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
             }
         }
 
@@ -141,7 +164,7 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableAcceleratedNetworking = true;
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
             }
         }
 
@@ -151,7 +174,39 @@ namespace MigAz.Azure.UserControls
             {
                 _TargetNetworkInterface.EnableAcceleratedNetworking = false;
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
+            }
+        }
+
+        private void rbPublicIpDisabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbPublicIpDisabled.Checked)
+            {
+                try
+                {
+                    this.IsBinding = true;
+
+                    if (_TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations.Count > 0)
+                        _TargetNetworkInterface.TargetNetworkInterfaceIpConfigurations[0].TargetPublicIp = null;
+
+                    publicIpSelectionControl1.PublicIp = null;
+                    publicIpSelectionControl1.Enabled = false;
+                }
+                finally
+                {
+                    this.IsBinding = false;
+                    this.RaisePropertyChangedEvent(_TargetNetworkInterface);
+                }
+            }
+        }
+
+        private void rbPublicIpEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbPublicIpEnabled.Checked)
+            {
+                publicIpSelectionControl1.Enabled = true;
+
+                this.RaisePropertyChangedEvent(_TargetNetworkInterface);
             }
         }
     }

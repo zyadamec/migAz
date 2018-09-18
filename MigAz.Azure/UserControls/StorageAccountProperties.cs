@@ -67,7 +67,7 @@ namespace MigAz.Azure.UserControls
             TextBox txtSender = (TextBox)sender;
             _StorageAccount.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_StorageAccount);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -85,7 +85,7 @@ namespace MigAz.Azure.UserControls
             else
                 _StorageAccount.StorageAccountType = StorageAccountType.Standard_LRS;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_StorageAccount);
         }
     }
 }

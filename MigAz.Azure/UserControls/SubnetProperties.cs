@@ -73,7 +73,7 @@ namespace MigAz.Azure.UserControls
 
             _Subnet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_Subnet);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)

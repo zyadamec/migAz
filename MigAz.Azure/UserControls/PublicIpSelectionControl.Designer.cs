@@ -40,9 +40,10 @@ namespace MigAz.Azure.UserControls
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 66);
+            this.label7.Location = new System.Drawing.Point(2, 54);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(112, 17);
+            this.label7.Size = new System.Drawing.Size(86, 13);
             this.label7.TabIndex = 35;
             this.label7.Text = "Target Public IP:";
             // 
@@ -50,10 +51,10 @@ namespace MigAz.Azure.UserControls
             // 
             this.rbExistingARMPublicIp.AutoSize = true;
             this.rbExistingARMPublicIp.Enabled = false;
-            this.rbExistingARMPublicIp.Location = new System.Drawing.Point(116, 30);
-            this.rbExistingARMPublicIp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbExistingARMPublicIp.Location = new System.Drawing.Point(87, 24);
+            this.rbExistingARMPublicIp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbExistingARMPublicIp.Name = "rbExistingARMPublicIp";
-            this.rbExistingARMPublicIp.Size = new System.Drawing.Size(208, 21);
+            this.rbExistingARMPublicIp.Size = new System.Drawing.Size(161, 17);
             this.rbExistingARMPublicIp.TabIndex = 31;
             this.rbExistingARMPublicIp.Text = "Existing Public IP in Location";
             this.rbExistingARMPublicIp.UseVisualStyleBackColor = true;
@@ -62,10 +63,10 @@ namespace MigAz.Azure.UserControls
             // rbPublicIPInMigration
             // 
             this.rbPublicIPInMigration.AutoSize = true;
-            this.rbPublicIPInMigration.Location = new System.Drawing.Point(116, 2);
-            this.rbPublicIPInMigration.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.rbPublicIPInMigration.Location = new System.Drawing.Point(87, 2);
+            this.rbPublicIPInMigration.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rbPublicIPInMigration.Name = "rbPublicIPInMigration";
-            this.rbPublicIPInMigration.Size = new System.Drawing.Size(202, 21);
+            this.rbPublicIPInMigration.Size = new System.Drawing.Size(156, 17);
             this.rbPublicIPInMigration.TabIndex = 30;
             this.rbPublicIPInMigration.Text = "Public IP in MigAz Migration";
             this.rbPublicIPInMigration.UseVisualStyleBackColor = true;
@@ -75,24 +76,23 @@ namespace MigAz.Azure.UserControls
             // 
             this.cmbPublicIp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPublicIp.FormattingEnabled = true;
-            this.cmbPublicIp.Location = new System.Drawing.Point(116, 64);
-            this.cmbPublicIp.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmbPublicIp.Location = new System.Drawing.Point(87, 52);
+            this.cmbPublicIp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cmbPublicIp.Name = "cmbPublicIp";
-            this.cmbPublicIp.Size = new System.Drawing.Size(287, 24);
+            this.cmbPublicIp.Size = new System.Drawing.Size(216, 21);
             this.cmbPublicIp.TabIndex = 32;
             this.cmbPublicIp.SelectedIndexChanged += new System.EventHandler(this.cmbPublicIp_SelectedIndexChanged);
             // 
             // PublicIpSelectionControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label7);
             this.Controls.Add(this.rbExistingARMPublicIp);
             this.Controls.Add(this.rbPublicIPInMigration);
             this.Controls.Add(this.cmbPublicIp);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Controls.Add(this.label7);
             this.Name = "PublicIpSelectionControl";
-            this.Size = new System.Drawing.Size(413, 94);
+            this.Size = new System.Drawing.Size(310, 76);
             this.ResumeLayout(false);
             this.PerformLayout();
 

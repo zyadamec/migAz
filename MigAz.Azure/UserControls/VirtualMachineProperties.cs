@@ -131,7 +131,7 @@ namespace MigAz.Azure.UserControls
         {
             _VirtualMachine.SetTargetName(txtTargetName.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_VirtualMachine);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
@@ -157,14 +157,14 @@ namespace MigAz.Azure.UserControls
             else
                 _VirtualMachine.TargetSize = null;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_VirtualMachine);
         }
 
         private async Task availabilitySetSummary_AfterMigrationTargetChanged(ResourceSummary sender, Core.MigrationTarget selectedResource)
         {
             _VirtualMachine.TargetAvailabilitySet = (AvailabilitySet)selectedResource;
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_VirtualMachine);
         }
     }
 }

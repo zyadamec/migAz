@@ -63,21 +63,21 @@ namespace MigAz.Azure.UserControls
 
             _AvailabilitySet.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_AvailabilitySet);
         }
 
         private void upDownFaultDomains_ValueChanged(object sender, EventArgs e)
         {
             _AvailabilitySet.PlatformFaultDomainCount = Convert.ToInt32(upDownFaultDomains.Value);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_AvailabilitySet);
         }
 
         private void upDownUpdateDomains_ValueChanged(object sender, EventArgs e)
         {
             _AvailabilitySet.PlatformUpdateDomainCount = Convert.ToInt32(upDownUpdateDomains.Value);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_AvailabilitySet);
         }
     }
 }

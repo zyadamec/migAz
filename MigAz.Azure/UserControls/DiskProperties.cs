@@ -84,6 +84,10 @@ namespace MigAz.Azure.UserControls
             txtBlobName.Text = _TargetDisk.TargetStorageAccountBlob;
 
             txtTargetSize.Text = _TargetDisk.DiskSizeInGB.ToString();
+            txtDiskEncryptionKeySecretUrl.Text = _TargetDisk.DiskEncryptionKeySecretUrl;
+            txtDiskEncryptionKeySourceVaultId.Text = _TargetDisk.DiskEncryptionKeySourceVaultId;
+            txtKeyEncryptionKeyKeyUrl.Text = _TargetDisk.KeyEncryptionKeyKeyUrl;
+            txtKeyEncryptionKeySourceVaultId.Text = _TargetDisk.KeyEncryptionKeySourceVaultId;
 
             lblAsmStorageAccount.Text = String.Empty;
             if (_TargetDisk.SourceDisk != null)
@@ -190,7 +194,7 @@ namespace MigAz.Azure.UserControls
                         cmbTargetStorage.SelectedIndex = comboBoxIndex;
                 }
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetDisk);
             }
         }
 
@@ -269,7 +273,7 @@ namespace MigAz.Azure.UserControls
 
                     _TargetTreeView.TransitionToClassicDisk(_TargetDisk);
 
-                    this.RaisePropertyChangedEvent();
+                    this.RaisePropertyChangedEvent(_TargetDisk);
                 }
             }
         }
@@ -317,7 +321,7 @@ namespace MigAz.Azure.UserControls
 
                 _TargetTreeView.TransitionToClassicDisk(_TargetDisk);
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetDisk);
             }
         }
 
@@ -359,7 +363,7 @@ namespace MigAz.Azure.UserControls
                         _TargetDisk.TargetStorage = null;
                 }
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetDisk);
             }
         }
 
@@ -369,7 +373,7 @@ namespace MigAz.Azure.UserControls
 
             _TargetDisk.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_TargetDisk);
         }
 
         private void txtBlobName_TextChanged(object sender, EventArgs e)
@@ -379,7 +383,7 @@ namespace MigAz.Azure.UserControls
             if (rbExistingARMStorageAccount.Checked || rbStorageAccountInMigration.Checked) // We don't want to call / save text change on a Managed Disk, specifically when set to String.Empty would loose text value
             {
                 _TargetDisk.TargetStorageAccountBlob = txtSender.Text.Trim();
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetDisk);
             }
         }
 
@@ -407,7 +411,7 @@ namespace MigAz.Azure.UserControls
                     _TargetDisk.DiskSizeInGB = 0;
                 }
 
-                this.RaisePropertyChangedEvent();
+                this.RaisePropertyChangedEvent(_TargetDisk);
             }
         }
 
@@ -450,9 +454,29 @@ namespace MigAz.Azure.UserControls
                         upDownLUN.Minimum = 0;
                     }
 
-                    this.RaisePropertyChangedEvent();
+                    this.RaisePropertyChangedEvent(_TargetDisk);
                 }
             }
+        }
+
+        private void txtDiskEncryptionKeySecretUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtDiskEncryptionKeySourceVaultId_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtKeyEncryptionKeyKeyUrl_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
+        }
+
+        private void txtKeyEncryptionKeySourceVaultId_TextChanged(object sender, EventArgs e)
+        {
+            this.RaisePropertyChangedEvent(_TargetDisk);
         }
     }
 }

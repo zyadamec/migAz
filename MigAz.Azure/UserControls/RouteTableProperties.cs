@@ -46,7 +46,7 @@ namespace MigAz.Azure.UserControls
 
             _RouteTable.SetTargetName(txtSender.Text, _TargetTreeView.TargetSettings);
 
-            this.RaisePropertyChangedEvent();
+            this.RaisePropertyChangedEvent(_RouteTable);
         }
 
         private void txtTargetName_KeyPress(object sender, KeyPressEventArgs e)
