@@ -50,6 +50,7 @@ namespace MigAz.Azure.MigrationTarget
             foreach (Arm.FrontEndIpConfiguration armFrontEndIpConfiguration in sourceLoadBalancer.FrontEndIpConfigurations)
             {
                 FrontEndIpConfiguration targetFrontEndIpConfiguration = new FrontEndIpConfiguration(this, armFrontEndIpConfiguration);
+                _FrontEndIpConfiguration.Add(targetFrontEndIpConfiguration);
 
                 if (armFrontEndIpConfiguration.PublicIP != null)
                     this.LoadBalancerType = LoadBalancerType.Public;
