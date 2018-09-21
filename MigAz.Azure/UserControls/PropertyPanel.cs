@@ -281,7 +281,8 @@ namespace MigAz.Azure.UserControls
                 targetPropertyControl.UpdatePropertyEnablement();
             }
 
-            await PropertyChanged(_MigrationTarget);
+            if (PropertyChanged != null && _MigrationTarget != null)
+                await PropertyChanged(_MigrationTarget);
         }
     }
 }
