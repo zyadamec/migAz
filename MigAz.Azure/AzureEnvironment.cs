@@ -179,7 +179,7 @@ namespace MigAz.Azure
                 "https://graph.chinacloudapi.cn/", //GraphUrl
                 "https://management.core.chinacloudapi.cn/", // ASM
                 "https://management.chinacloudapi.cn/", // ARM
-                "core.chi acloudapi.cn", // Storage
+                "core.chinacloudapi.cn", // Storage
                 "blob.core.chinacloudapi.cn", // Blob
                 "https://management.core.chinacloudapi.cn/",  // ActiveDirectoryServiceEndpointResourceId
                 "https://gallery.azure.com/", // GalleryUrl
