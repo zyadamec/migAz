@@ -501,8 +501,11 @@ namespace MigAz.Azure
                     }
                     else
                     {
-                        if (dataDisk.Lun > virtualMachine.TargetSize.maxDataDiskCount - 1)
-                           this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' LUN index " + dataDisk.Lun.Value.ToString() + " exceeds the maximum LUN of " + (virtualMachine.TargetSize.maxDataDiskCount - 1).ToString() + " allowed by VM Size '" + virtualMachine.TargetSize.ToString() + "'.", dataDisk);
+                        if (virtualMachine.TargetSize != null)
+                        {
+                            if (dataDisk.Lun > virtualMachine.TargetSize.maxDataDiskCount - 1)
+                                this.AddAlert(AlertType.Error, "Data Disk '" + dataDisk.ToString() + "' LUN index " + dataDisk.Lun.Value.ToString() + " exceeds the maximum LUN of " + (virtualMachine.TargetSize.maxDataDiskCount - 1).ToString() + " allowed by VM Size '" + virtualMachine.TargetSize.ToString() + "'.", dataDisk);
+                        }
 
                         int lunCount = virtualMachine.DataDisks.Where(a => a.Lun == dataDisk.Lun).Count();
                         if (lunCount > 1)
