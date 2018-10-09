@@ -164,6 +164,32 @@ namespace MigAz.Azure.Generator
                     throw new InvalidOperationException("Export Streams cannot be generated when there are error(s).  Please resolve all template error(s) to enable export stream generation.");
                 } LogProvider.WriteLog("GenerateStreams", "Start processing selected Network Security Groups");
 
+
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Network Gateway(s)");
+                foreach (MigrationTarget.VirtualNetworkGateway targetVirtualNetworkGateway in _ExportArtifacts.VirtualNetworkGateways)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network Gateway : " + targetVirtualNetworkGateway.ToString());
+                    await BuildVirtualNetworkGateway(targetVirtualNetworkGateway);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Network Gateway(s)");
+
+
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Virtual Network Gateway Connections(s)");
+                foreach (MigrationTarget.VirtualNetworkGatewayConnection targetVirtualNetworkGatewayConnection in _ExportArtifacts.VirtualNetworkGatewayConnections)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Virtual Network Gateway Connection : " + targetVirtualNetworkGatewayConnection.ToString());
+                    await BuildVirtualNetworkGatewayConnection(targetVirtualNetworkGatewayConnection);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Virtual Network Gateway Connections(s)");
+
+                LogProvider.WriteLog("GenerateStreams", "Start processing selected Local Network Gateway(s)");
+                foreach (MigrationTarget.LocalNetworkGateway targetLocalNetworkGateway in _ExportArtifacts.LocalNetworkGateways)
+                {
+                    StatusProvider.UpdateStatus("BUSY: Exporting Local Network Gateway : " + targetLocalNetworkGateway.ToString());
+                    await BuildLocalNetworkGateway(targetLocalNetworkGateway);
+                }
+                LogProvider.WriteLog("GenerateStreams", "End processing selected Local Network Gateway(s)");
+
                 foreach (MigrationTarget.StorageAccount targetStorageAccount in _ExportArtifacts.StorageAccounts)
                 {
                     StatusProvider.UpdateStatus("BUSY: Exporting Storage Account : " + targetStorageAccount.ToString());
@@ -619,6 +645,128 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + targetVirtualNetwork.ToString());
         }
 
+        private async Task BuildLocalNetworkGateway(Azure.MigrationTarget.LocalNetworkGateway localNetworkGateway)
+        {
+            LogProvider.WriteLog("BuildLocalNetworkGateway", "Start " + localNetworkGateway.ProviderNamespace + localNetworkGateway.ToString());
+
+            AddressSpace localnetworkaddressspace = new AddressSpace();
+            localnetworkaddressspace.addressPrefixes = localNetworkGateway.AddressPrefixes;
+
+            LocalNetworkGateway_Properties localnetworkgateway_properties = new LocalNetworkGateway_Properties();
+            localnetworkgateway_properties.localNetworkAddressSpace = localnetworkaddressspace;
+            localnetworkgateway_properties.gatewayIpAddress = localNetworkGateway.GatewayIpAddress;
+
+            LocalNetworkGateway localnetworkgateway = new LocalNetworkGateway(this.ExecutionGuid);
+            localnetworkgateway.name = localNetworkGateway.ToString();
+            localnetworkgateway.apiVersion = localNetworkGateway.ApiVersion;
+            localnetworkgateway.location = "[resourceGroup().location]";
+            localnetworkgateway.properties = localnetworkgateway_properties;
+
+            this.AddResource(localnetworkgateway);
+
+            LogProvider.WriteLog("BuildLocalNetworkGateway", "End " + localNetworkGateway.ProviderNamespace + localNetworkGateway.ToString());
+        }
+
+        private async Task BuildVirtualNetworkGateway(Azure.MigrationTarget.VirtualNetworkGateway virtualNetworkGateway)
+        {
+            LogProvider.WriteLog("BuildVirtualNetworkGateway", "Start " + virtualNetworkGateway.ProviderNamespace + virtualNetworkGateway.ToString());
+
+            VirtualNetworkGateway_Sku virtualnetworkgateway_sku = new VirtualNetworkGateway_Sku
+            {
+                name = virtualNetworkGateway.SkuName,
+                tier = virtualNetworkGateway.SkuTier
+            };
+
+            Reference subnet_ref = new Reference
+            {
+                // todonow id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "/subnets/" + ArmConst.GatewaySubnetName + "')]"
+            };
+
+            Reference publicipaddress_ref = new Reference
+            {
+                // todonow id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]"
+            };
+
+            IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties
+            {
+                privateIPAllocationMethod = "Dynamic",
+                subnet = subnet_ref,
+                publicIPAddress = publicipaddress_ref
+            };
+
+            IpConfiguration virtualnetworkgateway_ipconfiguration = new IpConfiguration
+            {
+                name = "GatewayIPConfig",
+                properties = ipconfiguration_properties
+            };
+
+            List<IpConfiguration> virtualnetworkgateway_ipconfigurations = new List<IpConfiguration>();
+            virtualnetworkgateway_ipconfigurations.Add(virtualnetworkgateway_ipconfiguration);
+
+            VirtualNetworkGateway_Properties virtualnetworkgateway_properties = new VirtualNetworkGateway_Properties
+            {
+                ipConfigurations = virtualnetworkgateway_ipconfigurations,
+                sku = virtualnetworkgateway_sku,
+                gatewayType = virtualNetworkGateway.GatewayType.ToString(),
+                enableBgp = virtualNetworkGateway.EnableBgp.ToString(),
+                vpnType = virtualNetworkGateway.VpnType.ToString()
+            };
+
+            VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid)
+            {
+                location = "[resourceGroup().location]",
+                name = virtualNetworkGateway.ToString(),
+                properties = virtualnetworkgateway_properties,
+                apiVersion = virtualNetworkGateway.ApiVersion
+            };
+
+            var dependson = new List<string>();
+            //dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "')]");
+            //dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]");
+
+            virtualnetworkgateway.dependsOn = dependson;
+
+            this.AddResource(virtualnetworkgateway);
+
+            LogProvider.WriteLog("BuildVirtualNetworkGateway", "End " + virtualNetworkGateway.ProviderNamespace + virtualNetworkGateway.ToString());
+        }
+
+        private async Task BuildVirtualNetworkGatewayConnection(Azure.MigrationTarget.VirtualNetworkGatewayConnection virtualNetworkGatewayConnection)
+        {
+            LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "Start " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
+
+            GatewayConnection_Properties gatewayConnection_Properties = new GatewayConnection_Properties();
+            gatewayConnection_Properties.connectionType = virtualNetworkGatewayConnection.ConnectionType.ToString();
+            gatewayConnection_Properties.routingWeight = virtualNetworkGatewayConnection.RoutingWeight;
+
+            Reference virtualNetworkGatewayReference = new Reference();
+            virtualNetworkGatewayReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualNetworkGatewayConnection.VirtualNetworkGateway.ToString() + "')]";
+            gatewayConnection_Properties.virtualNetworkGateway1 = virtualNetworkGatewayReference;
+
+            Reference localNetworkGatewayReference = new Reference();
+            localNetworkGatewayReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + virtualNetworkGatewayConnection.LocalNetworkGateway.ToString() + "')]";
+            gatewayConnection_Properties.localNetworkGateway2 = localNetworkGatewayReference;
+
+            gatewayConnection_Properties.sharedKey = "[parameters('" + virtualNetworkGatewayConnection.ToString() + "_SharedKey" + "')]";
+
+            Parameter parameter = new Parameter();
+            parameter.type = "string";
+            parameter.value = virtualNetworkGatewayConnection.SharedKey;
+            this.Parameters.Add(virtualNetworkGatewayConnection.ToString() + "_SharedKey", parameter);
+
+            GatewayConnection gatewayConnection = new GatewayConnection(this.ExecutionGuid)
+            {
+                name = virtualNetworkGatewayConnection.ToString(),
+                apiVersion = virtualNetworkGatewayConnection.ApiVersion,
+                location = "[resourceGroup().location]",
+                properties = gatewayConnection_Properties
+            };
+
+            this.AddResource(gatewayConnection);
+
+            LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "End " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
+        }
+
         private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
         {
             if (targetVirtualNetwork != null)
@@ -632,189 +780,72 @@ namespace MigAz.Azure.Generator
                         // Process Virtual Network Gateway, if exists
                         if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
                         {
-                            // Gateway Public IP Address
-                            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-                            publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
+                            //// Gateway Public IP Address
+                            //PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+                            //publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
 
-                            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-                            publicipaddress.name = targetVirtualNetwork.TargetName; // todo now  + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
-                            publicipaddress.location = "[resourceGroup().location]";
-                            publicipaddress.properties = publicipaddress_properties;
+                            //PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+                            //publicipaddress.name = targetVirtualNetwork.TargetName; // todo now  + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
+                            //publicipaddress.location = "[resourceGroup().location]";
+                            //publicipaddress.properties = publicipaddress_properties;
 
-                            this.AddResource(publicipaddress);
-
-                            // Virtual Network Gateway
-                            Reference subnet_ref = new Reference();
-                            subnet_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "/subnets/" + ArmConst.GatewaySubnetName + "')]";
-
-                            Reference publicipaddress_ref = new Reference();
-                            publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]";
-
-                            var dependson = new List<string>();
-                            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + templateVirtualNetwork.name + "')]");
-                            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + publicipaddress.name + "')]");
-
-                            IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
-                            ipconfiguration_properties.privateIPAllocationMethod = "Dynamic";
-                            ipconfiguration_properties.subnet = subnet_ref;
-                            ipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-
-                            IpConfiguration virtualnetworkgateway_ipconfiguration = new IpConfiguration();
-                            virtualnetworkgateway_ipconfiguration.name = "GatewayIPConfig";
-                            virtualnetworkgateway_ipconfiguration.properties = ipconfiguration_properties;
-
-                            VirtualNetworkGateway_Sku virtualnetworkgateway_sku = new VirtualNetworkGateway_Sku();
-                            virtualnetworkgateway_sku.name = "Basic";
-                            virtualnetworkgateway_sku.tier = "Basic";
-
-                            List<IpConfiguration> virtualnetworkgateway_ipconfigurations = new List<IpConfiguration>();
-                            virtualnetworkgateway_ipconfigurations.Add(virtualnetworkgateway_ipconfiguration);
-
-                            VirtualNetworkGateway_Properties virtualnetworkgateway_properties = new VirtualNetworkGateway_Properties();
-                            virtualnetworkgateway_properties.ipConfigurations = virtualnetworkgateway_ipconfigurations;
-                            virtualnetworkgateway_properties.sku = virtualnetworkgateway_sku;
+                            //this.AddResource(publicipaddress);
 
                             // If there is VPN Client configuration
-                            if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
-                            {
-                                AddressSpace vpnclientaddresspool = new AddressSpace();
-                                vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
+                            //if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
+                            //{
+                            //    AddressSpace vpnclientaddresspool = new AddressSpace();
+                            //    vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
 
-                                VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
-                                vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
+                            //    VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
+                            //    vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
 
-                                //Process vpnClientRootCertificates
-                                List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
-                                foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
-                                {
-                                    VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
-                                    vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
+                            //    //Process vpnClientRootCertificates
+                            //    List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
+                            //    foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
+                            //    {
+                            //        VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
+                            //        vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
 
-                                    VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
-                                    vpnclientcertificate.name = certificate.TargetSubject;
-                                    vpnclientcertificate.properties = vpnclientcertificate_properties;
+                            //        VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
+                            //        vpnclientcertificate.name = certificate.TargetSubject;
+                            //        vpnclientcertificate.properties = vpnclientcertificate_properties;
 
-                                    vpnclientrootcertificates.Add(vpnclientcertificate);
-                                }
+                            //        vpnclientrootcertificates.Add(vpnclientcertificate);
+                            //    }
 
-                                vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
+                            //    vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
 
-                                virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
-                            }
+                            //    virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
+                            //}
 
-                            if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
-                            {
-                                virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
-                                virtualnetworkgateway_properties.enableBgp = null;
-                                virtualnetworkgateway_properties.vpnType = null;
-                            }
-                            else
-                            {
-                                virtualnetworkgateway_properties.gatewayType = "Vpn";
-                                string vpnType = asmVirtualNetwork.Gateway.GatewayType;
-                                if (vpnType == "StaticRouting")
-                                {
-                                    vpnType = "PolicyBased";
-                                }
-                                else if (vpnType == "DynamicRouting")
-                                {
-                                    vpnType = "RouteBased";
-                                }
-                                virtualnetworkgateway_properties.vpnType = vpnType;
-                            }
-
-                            VirtualNetworkGateway virtualnetworkgateway = new VirtualNetworkGateway(this.ExecutionGuid);
-                            virtualnetworkgateway.location = "[resourceGroup().location]";
-                            virtualnetworkgateway.name = targetVirtualNetwork.TargetName; // todo  + _settingsProvider.VirtualNetworkGatewaySuffix;
-                            virtualnetworkgateway.properties = virtualnetworkgateway_properties;
-                            virtualnetworkgateway.dependsOn = dependson;
-
-                            this.AddResource(virtualnetworkgateway);
+                            //if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
+                            //{
+                            //    //virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
+                            //    //virtualnetworkgateway_properties.enableBgp = null;
+                            //    //virtualnetworkgateway_properties.vpnType = null;
+                            //}
+                            //else
+                            //{
+                            //    //virtualnetworkgateway_properties.gatewayType = "Vpn";
+                            //    //string vpnType = asmVirtualNetwork.Gateway.GatewayType;
+                            //    //if (vpnType == "StaticRouting")
+                            //    //{
+                            //    //    vpnType = "PolicyBased";
+                            //    //}
+                            //    //else if (vpnType == "DynamicRouting")
+                            //    //{
+                            //    //    vpnType = "RouteBased";
+                            //    //}
+                            //    //virtualnetworkgateway_properties.vpnType = vpnType;
+                            //}
 
                             // todo now move to ExportArtifactValidation
                             //if (!asmVirtualNetwork.HasGatewaySubnet)
                             //    this.AddAlert(AlertType.Error, "The Virtual Network '" + targetVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
-
-                            await AddLocalSiteToGateway(asmVirtualNetwork, templateVirtualNetwork, virtualnetworkgateway);
                         }
                     }
                 }
-            }
-        }
-
-        private async Task AddLocalSiteToGateway(Asm.VirtualNetwork asmVirtualNetwork, VirtualNetwork virtualnetwork, VirtualNetworkGateway virtualnetworkgateway)
-        {
-            // Local Network Gateways & Connections
-            foreach (Asm.LocalNetworkSite asmLocalNetworkSite in asmVirtualNetwork.LocalNetworkSites)
-            {
-                GatewayConnection_Properties gatewayconnection_properties = new GatewayConnection_Properties();
-                var dependson = new List<string>();
-
-                if (asmLocalNetworkSite.ConnectionType == "IPsec")
-                {
-                    // Local Network Gateway
-                    List<String> addressprefixes = asmLocalNetworkSite.AddressPrefixes;
-
-                    AddressSpace localnetworkaddressspace = new AddressSpace();
-                    localnetworkaddressspace.addressPrefixes = addressprefixes;
-
-                    LocalNetworkGateway_Properties localnetworkgateway_properties = new LocalNetworkGateway_Properties();
-                    localnetworkgateway_properties.localNetworkAddressSpace = localnetworkaddressspace;
-                    localnetworkgateway_properties.gatewayIpAddress = asmLocalNetworkSite.VpnGatewayAddress;
-
-                    LocalNetworkGateway localnetworkgateway = new LocalNetworkGateway(this.ExecutionGuid);
-                    localnetworkgateway.name = asmLocalNetworkSite.Name + "-LocalGateway";
-                    localnetworkgateway.name = localnetworkgateway.name.Replace(" ", String.Empty);
-
-                    localnetworkgateway.location = "[resourceGroup().location]";
-                    localnetworkgateway.properties = localnetworkgateway_properties;
-
-                    this.AddResource(localnetworkgateway);
-
-                    Reference localnetworkgateway_ref = new Reference();
-                    localnetworkgateway_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + localnetworkgateway.name + "')]";
-                    dependson.Add(localnetworkgateway_ref.id);
-
-                    gatewayconnection_properties.connectionType = asmLocalNetworkSite.ConnectionType;
-                    gatewayconnection_properties.localNetworkGateway2 = localnetworkgateway_ref;
-
-                    string connectionShareKey = asmLocalNetworkSite.SharedKey;
-                    if (connectionShareKey == String.Empty)
-                    {
-                        gatewayconnection_properties.sharedKey = "***SHARED KEY GOES HERE***";
-                        // todo now Move to ExportArtifactValidation
-                        //this.AddAlert(AlertType.Error, $"Unable to retrieve shared key for VPN connection '{virtualnetworkgateway.name}'. Please edit the template to provide this value.", asmVirtualNetwork);
-                    }
-                    else
-                    {
-                        gatewayconnection_properties.sharedKey = connectionShareKey;
-                    }
-                }
-                else if (asmLocalNetworkSite.ConnectionType == "Dedicated")
-                {
-                    gatewayconnection_properties.connectionType = "ExpressRoute";
-                    gatewayconnection_properties.peer = new Reference() { id = "/subscriptions/***/resourceGroups/***" + ArmConst.ProviderExpressRouteCircuits + "***" }; // todo, this is incomplete
-
-                    // todo now Move to ExportArtifactValidation
-                    //this.AddAlert(AlertType.Error, $"Gateway '{virtualnetworkgateway.name}' connects to ExpressRoute. MigAz is unable to migrate ExpressRoute circuits. Please create or convert the circuit yourself and update the circuit resource ID in the generated template.", asmVirtualNetwork);
-                }
-
-                // Connections
-                Reference virtualnetworkgateway_ref = new Reference();
-                virtualnetworkgateway_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualnetworkgateway.name + "')]";
-
-                dependson.Add(virtualnetworkgateway_ref.id);
-
-                gatewayconnection_properties.virtualNetworkGateway1 = virtualnetworkgateway_ref;
-
-                GatewayConnection gatewayconnection = new GatewayConnection(this.ExecutionGuid);
-                gatewayconnection.name = virtualnetworkgateway.name + "-" + asmLocalNetworkSite.TargetName + "-connection"; // TODO, HardCoded
-                gatewayconnection.location = "[resourceGroup().location]";
-                gatewayconnection.properties = gatewayconnection_properties;
-                gatewayconnection.dependsOn = dependson;
-
-                this.AddResource(gatewayconnection);
-
             }
         }
 

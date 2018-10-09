@@ -771,69 +771,69 @@ namespace MigAz.Azure
             }
             await Task.WhenAll(armVirtualNetworkConnectionTasks.ToArray());
 
-            this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Storage Account REST calls.");
+            //////this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Storage Account REST calls.");
 
-            List<Task> armStorageAccountTasks = new List<Task>();
-            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                Task armStorageAccountTask = LoadARMStorageAccounts(armResourceGroup);
-                armStorageAccountTasks.Add(armStorageAccountTask);
-            }
-            await Task.WhenAll(armStorageAccountTasks.ToArray());
+            //////List<Task> armStorageAccountTasks = new List<Task>();
+            //////foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////{
+            //////    Task armStorageAccountTask = LoadARMStorageAccounts(armResourceGroup);
+            //////    armStorageAccountTasks.Add(armStorageAccountTask);
+            //////}
+            //////await Task.WhenAll(armStorageAccountTasks.ToArray());
 
-            if (this.ExistsProviderResourceType(ArmConst.MicrosoftCompute, "disks"))
-            {
-                this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Managed Disk REST calls.");
+            //////if (this.ExistsProviderResourceType(ArmConst.MicrosoftCompute, "disks"))
+            //////{
+            //////    this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Managed Disk REST calls.");
 
-                List<Task> armManagedDiskTasks = new List<Task>();
-                foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-                {
-                    Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup);
-                    armManagedDiskTasks.Add(armManagedDiskTask);
-                }
-                await Task.WhenAll(armManagedDiskTasks.ToArray());
-            }
+            //////    List<Task> armManagedDiskTasks = new List<Task>();
+            //////    foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////    {
+            //////        Task armManagedDiskTask = LoadARMManagedDisks(armResourceGroup);
+            //////        armManagedDiskTasks.Add(armManagedDiskTask);
+            //////    }
+            //////    await Task.WhenAll(armManagedDiskTasks.ToArray());
+            //////}
 
-            this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Availablity Sets REST calls.");
+            //////this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Availablity Sets REST calls.");
 
-            List<Task> armAvailabilitySetTasks = new List<Task>();
-            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                Task armAvailabilitySetTask = LoadARMAvailabilitySets(armResourceGroup);
-                armAvailabilitySetTasks.Add(armAvailabilitySetTask);
-            }
-            await Task.WhenAll(armAvailabilitySetTasks.ToArray());
+            //////List<Task> armAvailabilitySetTasks = new List<Task>();
+            //////foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////{
+            //////    Task armAvailabilitySetTask = LoadARMAvailabilitySets(armResourceGroup);
+            //////    armAvailabilitySetTasks.Add(armAvailabilitySetTask);
+            //////}
+            //////await Task.WhenAll(armAvailabilitySetTasks.ToArray());
 
-            this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Network Interface REST calls.");
+            //////this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Network Interface REST calls.");
 
-            List<Task> armNetworkInterfaceTasks = new List<Task>();
-            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups);
-                armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
-            }
-            await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
+            //////List<Task> armNetworkInterfaceTasks = new List<Task>();
+            //////foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////{
+            //////    Task armNetworkInterfaceTask = LoadARMNetworkInterfaces(armResourceGroup, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups);
+            //////    armNetworkInterfaceTasks.Add(armNetworkInterfaceTask);
+            //////}
+            //////await Task.WhenAll(armNetworkInterfaceTasks.ToArray());
 
-            this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Virtual Machine REST calls.");
+            //////this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Virtual Machine REST calls.");
 
-            List<Task> armVirtualMachineTasks = new List<Task>();
-            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                Task armVirtualMachineTask = LoadARMVirtualMachines(armResourceGroup);
-                armVirtualMachineTasks.Add(armVirtualMachineTask);
-            }
-            await Task.WhenAll(armVirtualMachineTasks.ToArray());
+            //////List<Task> armVirtualMachineTasks = new List<Task>();
+            //////foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////{
+            //////    Task armVirtualMachineTask = LoadARMVirtualMachines(armResourceGroup);
+            //////    armVirtualMachineTasks.Add(armVirtualMachineTask);
+            //////}
+            //////await Task.WhenAll(armVirtualMachineTasks.ToArray());
 
 
-            this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Load Balanacer REST calls.");
+            //////this.LogProvider.WriteLog("BindArmResources", "Initializing ARM Load Balanacer REST calls.");
 
-            List<Task> armLoadBalancerTasks = new List<Task>();
-            foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
-            {
-                Task armLoadBalancerTask = LoadARMLoadBalancers(armResourceGroup);
-                armLoadBalancerTasks.Add(armLoadBalancerTask);
-            }
-            await Task.WhenAll(armLoadBalancerTasks.ToArray());
+            //////List<Task> armLoadBalancerTasks = new List<Task>();
+            //////foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())
+            //////{
+            //////    Task armLoadBalancerTask = LoadARMLoadBalancers(armResourceGroup);
+            //////    armLoadBalancerTasks.Add(armLoadBalancerTask);
+            //////}
+            //////await Task.WhenAll(armLoadBalancerTasks.ToArray());
 
             //List<Task> armVirtualMachineImageTasks = new List<Task>();
             //foreach (ResourceGroup armResourceGroup in await this.GetAzureARMResourceGroups())

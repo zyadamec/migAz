@@ -50,7 +50,8 @@ namespace MigAz.Core.ArmTemplate
         public const string NetworkInterfaces = "networkInterfaces";
         public const string ProviderNetworkInterfaces = "/providers/" + MicrosoftNetwork + "/networkInterfaces/";
         public const string ProviderExpressRouteCircuits = "/providers/" + MicrosoftNetwork + "/expressRouteCircuits/";
-        public const string ProviderGatewayConnection = "/providers/" + MicrosoftNetwork + "/connections/";
+        public const string Connections = "connections";
+        public const string ProviderGatewayConnection = "/providers/" + MicrosoftNetwork + "/" + Connections + "/";
     }
 }
 
