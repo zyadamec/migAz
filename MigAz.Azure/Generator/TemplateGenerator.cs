@@ -354,17 +354,19 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildAvailabilitySetObject", "Start");
 
-            AvailabilitySet availabilitySet = new AvailabilitySet(this.ExecutionGuid);
+            AvailabilitySet_Properties availabilitySet_Properties = new AvailabilitySet_Properties
+            {
+                platformFaultDomainCount = targetAvailabilitySet.PlatformFaultDomainCount,
+                platformUpdateDomainCount = targetAvailabilitySet.PlatformUpdateDomainCount
+            };
 
-            availabilitySet.name = targetAvailabilitySet.ToString();
-            availabilitySet.location = "[resourceGroup().location]";
-            availabilitySet.apiVersion = targetAvailabilitySet.ApiVersion;
-
-            AvailabilitySet_Properties availabilitySet_Properties = new AvailabilitySet_Properties();
-            availabilitySet.properties = availabilitySet_Properties;
-
-            availabilitySet_Properties.platformFaultDomainCount = targetAvailabilitySet.PlatformFaultDomainCount;
-            availabilitySet_Properties.platformUpdateDomainCount = targetAvailabilitySet.PlatformUpdateDomainCount;
+            AvailabilitySet availabilitySet = new AvailabilitySet(this.ExecutionGuid)
+            {
+                name = targetAvailabilitySet.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetAvailabilitySet.ApiVersion,
+                properties = availabilitySet_Properties
+            };
 
             if (targetAvailabilitySet.IsManagedDisks)
             {
@@ -385,18 +387,12 @@ namespace MigAz.Azure.Generator
 
         private async Task BuildPublicIPAddressObject(MigrationTarget.PublicIp publicIp)
         {
-
             LogProvider.WriteLog("BuildPublicIPAddressObject", "Start " + ArmConst.ProviderLoadBalancers + publicIp.ToString());
 
-            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-            publicipaddress.name = publicIp.ToString();
-            publicipaddress.location = "[resourceGroup().location]";
-            publicipaddress.apiVersion = publicIp.ApiVersion;
-
-            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-            publicipaddress.properties = publicipaddress_properties;
-
-            publicipaddress_properties.publicIPAllocationMethod = publicIp.IPAllocationMethod.ToString();
+            PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties
+            {
+                publicIPAllocationMethod = publicIp.IPAllocationMethod.ToString()
+            };
 
             if (publicIp.DomainNameLabel != String.Empty)
             {
@@ -404,6 +400,14 @@ namespace MigAz.Azure.Generator
                 dnssettings.Add("domainNameLabel", publicIp.DomainNameLabel);
                 publicipaddress_properties.dnsSettings = dnssettings;
             }
+
+            PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid)
+            {
+                name = publicIp.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = publicIp.ApiVersion,
+                properties = publicipaddress_properties
+            };
 
             this.AddResource(publicipaddress);
 
@@ -415,15 +419,8 @@ namespace MigAz.Azure.Generator
             LogProvider.WriteLog("BuildLoadBalancerObject", "Start " + ArmConst.ProviderLoadBalancers + loadBalancer.ToString());
 
             List<string> dependson = new List<string>();
-            LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid);
-            loadbalancer.name = loadBalancer.ToString();
-            loadbalancer.location = "[resourceGroup().location]";
-            loadbalancer.apiVersion = loadBalancer.ApiVersion;
-            loadbalancer.dependsOn = dependson;
 
             LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
-            loadbalancer.properties = loadbalancer_properties;
-
 
             List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
             loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
@@ -497,70 +494,97 @@ namespace MigAz.Azure.Generator
             // Add Inbound Nat Rules
             foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
             {
-                InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties();
-                inboundnatrule_properties.frontendPort = inboundNatRule.FrontEndPort;
-                inboundnatrule_properties.backendPort = inboundNatRule.BackEndPort;
-                inboundnatrule_properties.protocol = inboundNatRule.Protocol;
+                InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties
+                {
+                    frontendPort = inboundNatRule.FrontEndPort,
+                    backendPort = inboundNatRule.BackEndPort,
+                    protocol = inboundNatRule.Protocol
+                };
 
                 if (inboundNatRule.FrontEndIpConfiguration != null)
                 {
                     Reference frontendIPConfiguration = new Reference();
-                    frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/default')]";
+                    frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/default')]";
                     inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
                 }
 
-                InboundNatRule inboundnatrule = new InboundNatRule();
-                inboundnatrule.name = inboundNatRule.Name;
-                inboundnatrule.properties = inboundnatrule_properties;
+                InboundNatRule inboundnatrule = new InboundNatRule
+                {
+                    name = inboundNatRule.Name,
+                    properties = inboundnatrule_properties
+                };
 
                 loadbalancer_properties.inboundNatRules.Add(inboundnatrule);
             }
 
             foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
             {
-                Probe_Properties probe_properties = new Probe_Properties();
-                probe_properties.port = targetProbe.Port;
-                probe_properties.protocol = targetProbe.Protocol;
-                probe_properties.intervalInSeconds = targetProbe.IntervalInSeconds;
-                probe_properties.numberOfProbes = targetProbe.NumberOfProbes;
+                Probe_Properties probe_properties = new Probe_Properties
+                {
+                    port = targetProbe.Port,
+                    protocol = targetProbe.Protocol,
+                    intervalInSeconds = targetProbe.IntervalInSeconds,
+                    numberOfProbes = targetProbe.NumberOfProbes
+                };
 
                 if (targetProbe.RequestPath != null && targetProbe.RequestPath != String.Empty)
                     probe_properties.requestPath = targetProbe.RequestPath;
 
-                Probe probe = new Probe();
-                probe.name = targetProbe.Name;
-                probe.properties = probe_properties;
+                Probe probe = new Probe
+                {
+                    name = targetProbe.Name,
+                    properties = probe_properties
+                };
 
                 loadbalancer_properties.probes.Add(probe);
             }
 
             foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
             {
-                Reference frontendipconfiguration_ref = new Reference();
-                frontendipconfiguration_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]";
+                Reference frontendipconfiguration_ref = new Reference
+                {
+                    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]"
+                };
 
-                Reference backendaddresspool_ref = new Reference();
-                backendaddresspool_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/backendAddressPools/" + targetLoadBalancingRule.BackEndAddressPool.Name + "')]";
+                Reference backendaddresspool_ref = new Reference
+                {
+                    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/backendAddressPools/" + targetLoadBalancingRule.BackEndAddressPool.Name + "')]"
+                };
 
-                Reference probe_ref = new Reference();
-                probe_ref.id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadbalancer.name + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]";
+                Reference probe_ref = new Reference
+                {
+                    id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]"
+                };
 
-                LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties();
-                loadbalancingrule_properties.frontendIPConfiguration = frontendipconfiguration_ref;
-                loadbalancingrule_properties.backendAddressPool = backendaddresspool_ref;
-                loadbalancingrule_properties.probe = probe_ref;
-                loadbalancingrule_properties.frontendPort = targetLoadBalancingRule.FrontEndPort;
-                loadbalancingrule_properties.backendPort = targetLoadBalancingRule.BackEndPort;
-                loadbalancingrule_properties.protocol = targetLoadBalancingRule.Protocol;
-                loadbalancingrule_properties.enableFloatingIP = targetLoadBalancingRule.EnableFloatingIP;
-                loadbalancingrule_properties.idleTimeoutInMinutes = targetLoadBalancingRule.IdleTimeoutInMinutes;
+                LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties
+                {
+                    frontendIPConfiguration = frontendipconfiguration_ref,
+                    backendAddressPool = backendaddresspool_ref,
+                    probe = probe_ref,
+                    frontendPort = targetLoadBalancingRule.FrontEndPort,
+                    backendPort = targetLoadBalancingRule.BackEndPort,
+                    protocol = targetLoadBalancingRule.Protocol,
+                    enableFloatingIP = targetLoadBalancingRule.EnableFloatingIP,
+                    idleTimeoutInMinutes = targetLoadBalancingRule.IdleTimeoutInMinutes
+                };
 
-                LoadBalancingRule loadbalancingrule = new LoadBalancingRule();
-                loadbalancingrule.name = targetLoadBalancingRule.Name;
-                loadbalancingrule.properties = loadbalancingrule_properties;
+                LoadBalancingRule loadbalancingrule = new LoadBalancingRule
+                {
+                    name = targetLoadBalancingRule.Name,
+                    properties = loadbalancingrule_properties
+                };
 
                 loadbalancer_properties.loadBalancingRules.Add(loadbalancingrule);
             }
+
+            LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid)
+            {
+                name = loadBalancer.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = loadBalancer.ApiVersion,
+                dependsOn = dependson,
+                properties = loadbalancer_properties
+            };
 
             this.AddResource(loadbalancer);
 
@@ -573,27 +597,29 @@ namespace MigAz.Azure.Generator
 
             List<string> dependson = new List<string>();
 
-            AddressSpace addressspace = new AddressSpace();
-            addressspace.addressPrefixes = targetVirtualNetwork.AddressPrefixes;
+            AddressSpace addressspace = new AddressSpace
+            {
+                addressPrefixes = targetVirtualNetwork.AddressPrefixes
+            };
 
-            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions();
-            dhcpoptions.dnsServers = targetVirtualNetwork.DnsServers;
-
-            VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid);
-            virtualnetwork.name = targetVirtualNetwork.ToString();
-            virtualnetwork.location = "[resourceGroup().location]";
-            virtualnetwork.apiVersion = targetVirtualNetwork.ApiVersion;
-            virtualnetwork.dependsOn = dependson;
+            VirtualNetwork_dhcpOptions dhcpoptions = new VirtualNetwork_dhcpOptions
+            {
+                dnsServers = targetVirtualNetwork.DnsServers
+            };
 
             List<Subnet> subnets = new List<Subnet>();
             foreach (Azure.MigrationTarget.Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
             {
-                Subnet_Properties properties = new Subnet_Properties();
-                properties.addressPrefix = targetSubnet.AddressPrefix;
+                Subnet_Properties properties = new Subnet_Properties
+                {
+                    addressPrefix = targetSubnet.AddressPrefix
+                };
 
-                Subnet subnet = new Subnet();
-                subnet.name = targetSubnet.TargetName;
-                subnet.properties = properties;
+                Subnet subnet = new Subnet
+                {
+                    name = targetSubnet.TargetName,
+                    properties = properties
+                };
 
                 subnets.Add(subnet);
 
@@ -608,9 +634,9 @@ namespace MigAz.Azure.Generator
                     properties.networkSecurityGroup = networksecuritygroup_ref;
 
                     // Add NSG dependsOn to the Virtual Network object
-                    if (!virtualnetwork.dependsOn.Contains(networksecuritygroup_ref.id))
+                    if (!dependson.Contains(networksecuritygroup_ref.id))
                     {
-                        virtualnetwork.dependsOn.Add(networksecuritygroup_ref.id);
+                        dependson.Add(networksecuritygroup_ref.id);
                     }
                 }
 
@@ -624,19 +650,28 @@ namespace MigAz.Azure.Generator
                     properties.routeTable = routetable_ref;
 
                     // Add Route Table dependsOn to the Virtual Network object
-                    if (!virtualnetwork.dependsOn.Contains(routetable_ref.id))
+                    if (!dependson.Contains(routetable_ref.id))
                     {
-                        virtualnetwork.dependsOn.Add(routetable_ref.id);
+                        dependson.Add(routetable_ref.id);
                     }
                 }
             }
 
-            VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties();
-            virtualnetwork_properties.addressSpace = addressspace;
-            virtualnetwork_properties.subnets = subnets;
-            virtualnetwork_properties.dhcpOptions = dhcpoptions;
+            VirtualNetwork_Properties virtualnetwork_properties = new VirtualNetwork_Properties
+            {
+                addressSpace = addressspace,
+                subnets = subnets,
+                dhcpOptions = dhcpoptions
+            };
 
-            virtualnetwork.properties = virtualnetwork_properties;
+            VirtualNetwork virtualnetwork = new VirtualNetwork(this.ExecutionGuid)
+            {
+                name = targetVirtualNetwork.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetVirtualNetwork.ApiVersion,
+                dependsOn = dependson,
+                properties = virtualnetwork_properties
+            };
 
             this.AddResource(virtualnetwork);
 
@@ -647,18 +682,24 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildLocalNetworkGateway", "Start " + localNetworkGateway.ProviderNamespace + localNetworkGateway.ToString());
 
-            AddressSpace localnetworkaddressspace = new AddressSpace();
-            localnetworkaddressspace.addressPrefixes = localNetworkGateway.AddressPrefixes;
+            AddressSpace localnetworkaddressspace = new AddressSpace
+            {
+                addressPrefixes = localNetworkGateway.AddressPrefixes
+            };
 
-            LocalNetworkGateway_Properties localnetworkgateway_properties = new LocalNetworkGateway_Properties();
-            localnetworkgateway_properties.localNetworkAddressSpace = localnetworkaddressspace;
-            localnetworkgateway_properties.gatewayIpAddress = localNetworkGateway.GatewayIpAddress;
+            LocalNetworkGateway_Properties localnetworkgateway_properties = new LocalNetworkGateway_Properties
+            {
+                localNetworkAddressSpace = localnetworkaddressspace,
+                gatewayIpAddress = localNetworkGateway.GatewayIpAddress
+            };
 
-            LocalNetworkGateway localnetworkgateway = new LocalNetworkGateway(this.ExecutionGuid);
-            localnetworkgateway.name = localNetworkGateway.ToString();
-            localnetworkgateway.apiVersion = localNetworkGateway.ApiVersion;
-            localnetworkgateway.location = "[resourceGroup().location]";
-            localnetworkgateway.properties = localnetworkgateway_properties;
+            LocalNetworkGateway localnetworkgateway = new LocalNetworkGateway(this.ExecutionGuid)
+            {
+                name = localNetworkGateway.ToString(),
+                apiVersion = localNetworkGateway.ApiVersion,
+                location = "[resourceGroup().location]",
+                properties = localnetworkgateway_properties
+            };
 
             this.AddResource(localnetworkgateway);
 
@@ -733,23 +774,30 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "Start " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
 
-            GatewayConnection_Properties gatewayConnection_Properties = new GatewayConnection_Properties();
-            gatewayConnection_Properties.connectionType = virtualNetworkGatewayConnection.ConnectionType.ToString();
-            gatewayConnection_Properties.routingWeight = virtualNetworkGatewayConnection.RoutingWeight;
+            Reference virtualNetworkGatewayReference = new Reference
+            {
+                id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualNetworkGatewayConnection.VirtualNetworkGateway.ToString() + "')]"
+            };
 
-            Reference virtualNetworkGatewayReference = new Reference();
-            virtualNetworkGatewayReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualNetworkGatewayConnection.VirtualNetworkGateway.ToString() + "')]";
-            gatewayConnection_Properties.virtualNetworkGateway1 = virtualNetworkGatewayReference;
+            Reference localNetworkGatewayReference = new Reference
+            {
+                id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + virtualNetworkGatewayConnection.LocalNetworkGateway.ToString() + "')]"
+            };
 
-            Reference localNetworkGatewayReference = new Reference();
-            localNetworkGatewayReference.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + virtualNetworkGatewayConnection.LocalNetworkGateway.ToString() + "')]";
-            gatewayConnection_Properties.localNetworkGateway2 = localNetworkGatewayReference;
+            GatewayConnection_Properties gatewayConnection_Properties = new GatewayConnection_Properties
+            {
+                connectionType = virtualNetworkGatewayConnection.ConnectionType.ToString(),
+                routingWeight = virtualNetworkGatewayConnection.RoutingWeight,
+                virtualNetworkGateway1 = virtualNetworkGatewayReference,
+                localNetworkGateway2 = localNetworkGatewayReference,
+                sharedKey = "[parameters('" + virtualNetworkGatewayConnection.ToString() + "_SharedKey" + "')]"
+            };
 
-            gatewayConnection_Properties.sharedKey = "[parameters('" + virtualNetworkGatewayConnection.ToString() + "_SharedKey" + "')]";
-
-            Parameter parameter = new Parameter();
-            parameter.type = "string";
-            parameter.value = virtualNetworkGatewayConnection.SharedKey;
+            Parameter parameter = new Parameter
+            {
+                type = "string",
+                value = virtualNetworkGatewayConnection.SharedKey
+            };
             this.Parameters.Add(virtualNetworkGatewayConnection.ToString() + "_SharedKey", parameter);
 
             GatewayConnection gatewayConnection = new GatewayConnection(this.ExecutionGuid)
@@ -769,13 +817,10 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildNetworkSecurityGroup", "Start");
 
-            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid);
-            networksecuritygroup.name = targetNetworkSecurityGroup.ToString();
-            networksecuritygroup.location = "[resourceGroup().location]";
-            networksecuritygroup.apiVersion = targetNetworkSecurityGroup.ApiVersion;
-
-            NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties();
-            networksecuritygroup_properties.securityRules = new List<SecurityRule>();
+            NetworkSecurityGroup_Properties networksecuritygroup_properties = new NetworkSecurityGroup_Properties
+            {
+                securityRules = new List<SecurityRule>()
+            };
 
             // for each rule
             foreach (MigrationTarget.NetworkSecurityGroupRule targetNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
@@ -783,26 +828,36 @@ namespace MigAz.Azure.Generator
                 // if not system rule
                 if (!targetNetworkSecurityGroupRule.IsSystemRule)
                 {
-                    SecurityRule_Properties securityrule_properties = new SecurityRule_Properties();
-                    securityrule_properties.description = targetNetworkSecurityGroupRule.ToString();
-                    securityrule_properties.direction = targetNetworkSecurityGroupRule.Direction;
-                    securityrule_properties.priority = targetNetworkSecurityGroupRule.Priority;
-                    securityrule_properties.access = targetNetworkSecurityGroupRule.Access;
-                    securityrule_properties.sourceAddressPrefix = targetNetworkSecurityGroupRule.SourceAddressPrefix;
-                    securityrule_properties.destinationAddressPrefix = targetNetworkSecurityGroupRule.DestinationAddressPrefix;
-                    securityrule_properties.sourcePortRange = targetNetworkSecurityGroupRule.SourcePortRange;
-                    securityrule_properties.destinationPortRange = targetNetworkSecurityGroupRule.DestinationPortRange;
-                    securityrule_properties.protocol = targetNetworkSecurityGroupRule.Protocol;
+                    SecurityRule_Properties securityrule_properties = new SecurityRule_Properties
+                    {
+                        description = targetNetworkSecurityGroupRule.ToString(),
+                        direction = targetNetworkSecurityGroupRule.Direction,
+                        priority = targetNetworkSecurityGroupRule.Priority,
+                        access = targetNetworkSecurityGroupRule.Access,
+                        sourceAddressPrefix = targetNetworkSecurityGroupRule.SourceAddressPrefix,
+                        destinationAddressPrefix = targetNetworkSecurityGroupRule.DestinationAddressPrefix,
+                        sourcePortRange = targetNetworkSecurityGroupRule.SourcePortRange,
+                        destinationPortRange = targetNetworkSecurityGroupRule.DestinationPortRange,
+                        protocol = targetNetworkSecurityGroupRule.Protocol
+                    };
 
-                    SecurityRule securityrule = new SecurityRule();
-                    securityrule.name = targetNetworkSecurityGroupRule.ToString();
-                    securityrule.properties = securityrule_properties;
+                    SecurityRule securityrule = new SecurityRule
+                    {
+                        name = targetNetworkSecurityGroupRule.ToString(),
+                        properties = securityrule_properties
+                    };
 
                     networksecuritygroup_properties.securityRules.Add(securityrule);
                 }
             }
 
-            networksecuritygroup.properties = networksecuritygroup_properties;
+            NetworkSecurityGroup networksecuritygroup = new NetworkSecurityGroup(this.ExecutionGuid)
+            {
+                name = targetNetworkSecurityGroup.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetNetworkSecurityGroup.ApiVersion,
+                properties = networksecuritygroup_properties
+            };
 
             this.AddResource(networksecuritygroup);
 
@@ -815,32 +870,39 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildRouteTable", "Start");
 
-            RouteTable routetable = new RouteTable(this.ExecutionGuid);
-            routetable.name = routeTable.ToString();
-            routetable.location = "[resourceGroup().location]";
-            routetable.apiVersion = routeTable.ApiVersion;
-
-            RouteTable_Properties routetable_properties = new RouteTable_Properties();
-            routetable_properties.routes = new List<Route>();
+            RouteTable_Properties routetable_properties = new RouteTable_Properties
+            {
+                routes = new List<Route>()
+            };
 
             // for each route
             foreach (MigrationTarget.Route migrationRoute in routeTable.Routes)
             {
-                Route_Properties route_properties = new Route_Properties();
-                route_properties.addressPrefix = migrationRoute.AddressPrefix;
-                route_properties.nextHopType = migrationRoute.NextHopType.ToString();
+                Route_Properties route_properties = new Route_Properties
+                {
+                    addressPrefix = migrationRoute.AddressPrefix,
+                    nextHopType = migrationRoute.NextHopType.ToString()
+                };
 
                 if (route_properties.nextHopType == "VirtualAppliance")
                     route_properties.nextHopIpAddress = migrationRoute.NextHopIpAddress;
 
-                Route route = new Route();
-                route.name = migrationRoute.ToString();
-                route.properties = route_properties;
+                Route route = new Route
+                {
+                    name = migrationRoute.ToString(),
+                    properties = route_properties
+                };
 
                 routetable_properties.routes.Add(route);
             }
 
-            routetable.properties = routetable_properties;
+            RouteTable routetable = new RouteTable(this.ExecutionGuid)
+            {
+                name = routeTable.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = routeTable.ApiVersion,
+                properties = routetable_properties
+            };
 
             this.AddResource(routetable);
 
@@ -856,16 +918,13 @@ namespace MigAz.Azure.Generator
 
             List<string> dependson = new List<string>();
 
-            NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid);
-            networkInterface.name = targetNetworkInterface.ToString();
-            networkInterface.location = "[resourceGroup().location]";
-            networkInterface.apiVersion = targetNetworkInterface.ApiVersion;
-
             List<IpConfiguration> ipConfigurations = new List<IpConfiguration>();
             foreach (Azure.MigrationTarget.NetworkInterfaceIpConfiguration ipConfiguration in targetNetworkInterface.TargetNetworkInterfaceIpConfigurations)
             {
-                IpConfiguration ipconfiguration = new IpConfiguration();
-                ipconfiguration.name = ipConfiguration.ToString();
+                IpConfiguration ipconfiguration = new IpConfiguration
+                {
+                    name = ipConfiguration.ToString()
+                };
                 IpConfiguration_Properties ipconfiguration_properties = new IpConfiguration_Properties();
                 ipconfiguration.properties = ipconfiguration_properties;
                 Reference subnet_ref = new Reference();
@@ -944,9 +1003,6 @@ namespace MigAz.Azure.Generator
             if (targetNetworkInterface.AllowAcceleratedNetworking)
                 networkinterface_properties.enableAcceleratedNetworking = targetNetworkInterface.EnableAcceleratedNetworking;
 
-            networkInterface.properties = networkinterface_properties;
-            networkInterface.dependsOn = dependson;
-
             if (targetNetworkInterface.NetworkSecurityGroup != null)
             {
                 // Add NSG reference to the network interface
@@ -955,8 +1011,17 @@ namespace MigAz.Azure.Generator
 
                 networkinterface_properties.NetworkSecurityGroup = networksecuritygroup_ref;
 
-                networkInterface.dependsOn.Add(networksecuritygroup_ref.id);
+                dependson.Add(networksecuritygroup_ref.id);
             }
+
+            NetworkInterface networkInterface = new NetworkInterface(this.ExecutionGuid)
+            {
+                name = targetNetworkInterface.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetNetworkInterface.ApiVersion,
+                properties = networkinterface_properties,
+                dependsOn = dependson
+            };
 
             this.AddResource(networkInterface);
 
@@ -969,17 +1034,6 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildVirtualMachineObject", "Start Microsoft.Compute/virtualMachines/" + targetVirtualMachine.ToString());
 
-            VirtualMachine templateVirtualMachine = new VirtualMachine(this.ExecutionGuid);
-            templateVirtualMachine.name = targetVirtualMachine.ToString();
-            templateVirtualMachine.location = "[resourceGroup().location]";
-            templateVirtualMachine.apiVersion = targetVirtualMachine.ApiVersion;
-
-            if (targetVirtualMachine.IsManagedDisks)
-            {
-                // using API Version "2017-03-30" per current documentation at https://docs.microsoft.com/en-us/azure/storage/storage-using-managed-disks-template-deployments
-                templateVirtualMachine.apiVersion = "2017-03-30";
-            }
-
             List<string> dependson = new List<string>();
 
             // process network interface
@@ -990,24 +1044,32 @@ namespace MigAz.Azure.Generator
                 NetworkProfile_NetworkInterface_Properties networkinterface_ref_properties = new NetworkProfile_NetworkInterface_Properties();
                 networkinterface_ref_properties.primary = targetNetworkInterface.IsPrimary;
 
-                NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface();
-                networkinterface_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString() + "')]";
-                networkinterface_ref.properties = networkinterface_ref_properties;
+                NetworkProfile_NetworkInterface networkinterface_ref = new NetworkProfile_NetworkInterface
+                {
+                    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString() + "')]",
+                    properties = networkinterface_ref_properties
+                };
 
                 networkinterfaces.Add(networkinterface_ref);
 
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderNetworkInterfaces + targetNetworkInterface.ToString() + "')]");
             }
 
-            HardwareProfile hardwareprofile = new HardwareProfile();
-            hardwareprofile.vmSize = targetVirtualMachine.TargetSize.ToString();
+            HardwareProfile hardwareprofile = new HardwareProfile
+            {
+                vmSize = targetVirtualMachine.TargetSize.ToString()
+            };
 
-            NetworkProfile networkprofile = new NetworkProfile();
-            networkprofile.networkInterfaces = networkinterfaces;
+            NetworkProfile networkprofile = new NetworkProfile
+            {
+                networkInterfaces = networkinterfaces
+            };
 
 
-            OsDisk osdisk = new OsDisk();
-            osdisk.caching = targetVirtualMachine.OSVirtualHardDisk.HostCaching;
+            OsDisk osdisk = new OsDisk
+            {
+                caching = targetVirtualMachine.OSVirtualHardDisk.HostCaching
+            };
             if (targetVirtualMachine.OSVirtualHardDisk.IsEncrypted)
             {
                 DiskEncrpytionSettings osDiskEncryptionSettings = new DiskEncrpytionSettings();
@@ -1103,8 +1165,10 @@ namespace MigAz.Azure.Generator
                 }
                 else if (targetVirtualMachine.OSVirtualHardDisk.IsManagedDisk)
                 {
-                    Reference managedDiskReference = new Reference();
-                    managedDiskReference.id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId;
+                    Reference managedDiskReference = new Reference
+                    {
+                        id = targetVirtualMachine.OSVirtualHardDisk.ReferenceId
+                    };
 
                     osdisk.managedDisk = managedDiskReference;
 
@@ -1118,10 +1182,12 @@ namespace MigAz.Azure.Generator
             {
                 if (dataDisk.TargetStorage != null)
                 {
-                    DataDisk datadisk = new DataDisk();
-                    datadisk.name = dataDisk.ToString();
-                    datadisk.caching = dataDisk.HostCaching;
-                    datadisk.diskSizeGB = dataDisk.DiskSizeInGB;
+                    DataDisk datadisk = new DataDisk
+                    {
+                        name = dataDisk.ToString(),
+                        caching = dataDisk.HostCaching,
+                        diskSizeGB = dataDisk.DiskSizeInGB
+                    };
                     if (dataDisk.Lun.HasValue)
                         datadisk.lun = dataDisk.Lun.Value;
 
@@ -1138,10 +1204,11 @@ namespace MigAz.Azure.Generator
 
                     if (dataDisk.IsUnmanagedDisk)
                     {
-                        Vhd vhd = new Vhd();
-                        vhd.uri = dataDisk.TargetMediaLink;
+                        Vhd vhd = new Vhd
+                        {
+                            uri = dataDisk.TargetMediaLink
+                        };
                         datadisk.vhd = vhd;
-
 
                         if (dataDisk.TargetStorage != null && (dataDisk.TargetStorage.GetType() == typeof(Arm.StorageAccount) || dataDisk.TargetStorage.GetType() == typeof(MigrationTarget.StorageAccount)))
                         {
@@ -1151,8 +1218,10 @@ namespace MigAz.Azure.Generator
                     }
                     else if (dataDisk.IsManagedDisk)
                     {
-                        Reference managedDiskReference = new Reference();
-                        managedDiskReference.id = dataDisk.ReferenceId;
+                        Reference managedDiskReference = new Reference
+                        {
+                            id = dataDisk.ReferenceId
+                        };
 
                         datadisk.diskSizeGB = null;
                         datadisk.managedDisk = managedDiskReference;
@@ -1164,16 +1233,20 @@ namespace MigAz.Azure.Generator
                 }
             }
 
-            StorageProfile storageprofile = new StorageProfile();
+            StorageProfile storageprofile = new StorageProfile
+            {
+                osDisk = osdisk,
+                dataDisks = datadisks
+            };
             if (this.BuildEmpty) { storageprofile.imageReference = imagereference; }
-            storageprofile.osDisk = osdisk;
-            storageprofile.dataDisks = datadisks;
 
-            VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties();
-            virtualmachine_properties.hardwareProfile = hardwareprofile;
+            VirtualMachine_Properties virtualmachine_properties = new VirtualMachine_Properties
+            {
+                hardwareProfile = hardwareprofile,
+                networkProfile = networkprofile,
+                storageProfile = storageprofile
+            };
             if (this.BuildEmpty) { virtualmachine_properties.osProfile = osprofile; }
-            virtualmachine_properties.networkProfile = networkprofile;
-            virtualmachine_properties.storageProfile = storageprofile;
 
             // process availability set
             if (targetVirtualMachine.TargetAvailabilitySet != null)
@@ -1184,17 +1257,28 @@ namespace MigAz.Azure.Generator
                 dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderAvailabilitySets + targetVirtualMachine.TargetAvailabilitySet.ToString() + "')]");
             }
 
-            templateVirtualMachine.properties = virtualmachine_properties;
-            templateVirtualMachine.dependsOn = dependson;
-            templateVirtualMachine.resources = new List<ArmResource>();
+            VirtualMachine templateVirtualMachine = new VirtualMachine(this.ExecutionGuid)
+            {
+                name = targetVirtualMachine.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetVirtualMachine.ApiVersion,
+                properties = virtualmachine_properties,
+                dependsOn = dependson,
+                resources = new List<ArmResource>()
+            };
 
             // Virtual Machine Plan Attributes (i.e. VM is an Azure Marketplace item that has a Marketplace plan associated
             templateVirtualMachine.plan = targetVirtualMachine.PlanAttributes;
 
-
             // Diagnostics Extension
             Extension extension_iaasdiagnostics = null;
             if (extension_iaasdiagnostics != null) { templateVirtualMachine.resources.Add(extension_iaasdiagnostics); }
+
+            if (targetVirtualMachine.IsManagedDisks)
+            {
+                // using API Version "2017-03-30" per current documentation at https://docs.microsoft.com/en-us/azure/storage/storage-using-managed-disks-template-deployments
+                templateVirtualMachine.apiVersion = "2017-03-30";
+            }
 
             this.AddResource(templateVirtualMachine);
 
@@ -1208,19 +1292,13 @@ namespace MigAz.Azure.Generator
 
             LogProvider.WriteLog("BuildManagedDiskObject", "Start Microsoft.Compute/disks/" + targetManagedDisk.ToString());
 
-            ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid);
-            templateManagedDisk.name = targetManagedDisk.ToString();
-            templateManagedDisk.location = "[resourceGroup().location]";
-            templateManagedDisk.apiVersion = targetManagedDisk.ApiVersion;
-
             Dictionary<string, string> managedDiskSku = new Dictionary<string, string>();
-            templateManagedDisk.sku = managedDiskSku;
             managedDiskSku.Add("name", targetManagedDisk.StorageAccountType.ToString());
 
-            ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties();
-            templateManagedDisk.properties = templateManagedDiskProperties;
-
-            templateManagedDiskProperties.diskSizeGb = targetManagedDisk.DiskSizeInGB;
+            ManagedDisk_Properties templateManagedDiskProperties = new ManagedDisk_Properties
+            {
+                diskSizeGb = targetManagedDisk.DiskSizeInGB
+            };
 
             ManagedDiskCreationData_Properties templateManageDiskCreationDataProperties = new ManagedDiskCreationData_Properties();
             templateManagedDiskProperties.creationData = templateManageDiskCreationDataProperties;
@@ -1231,9 +1309,11 @@ namespace MigAz.Azure.Generator
 
                 if (!this.Parameters.ContainsKey(managedDiskSourceUriParameterName))
                 {
-                    Parameter parameter = new Parameter();
-                    parameter.type = "string";
-                    parameter.value = managedDiskSourceUriParameterName + "_BlobCopyResult";
+                    Parameter parameter = new Parameter
+                    {
+                        type = "string",
+                        value = managedDiskSourceUriParameterName + "_BlobCopyResult"
+                    };
 
                     this.Parameters.Add(managedDiskSourceUriParameterName, parameter);
                 }
@@ -1244,6 +1324,15 @@ namespace MigAz.Azure.Generator
 
             // sample json with encryption
             // https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-create-encrypted-managed-disk/CreateEncryptedManagedDisk-kek.json
+
+            ManagedDisk templateManagedDisk = new ManagedDisk(this.ExecutionGuid)
+            {
+                name = targetManagedDisk.ToString(),
+                location = "[resourceGroup().location]",
+                apiVersion = targetManagedDisk.ApiVersion,
+                sku = managedDiskSku,
+                properties = templateManagedDiskProperties
+            };
 
             this.AddResource(templateManagedDisk);
 
@@ -1353,14 +1442,18 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildStorageAccountObject", "Start Microsoft.Storage/storageAccounts/" + targetStorageAccount.ToString());
 
-            StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties();
-            storageaccount_properties.accountType = targetStorageAccount.StorageAccountType.ToString();
+            StorageAccount_Properties storageaccount_properties = new StorageAccount_Properties
+            {
+                accountType = targetStorageAccount.StorageAccountType.ToString()
+            };
 
-            StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid);
-            storageaccount.name = targetStorageAccount.ToString();
-            storageaccount.location = "[resourceGroup().location]";
-            storageaccount.properties = storageaccount_properties;
-            storageaccount.apiVersion = targetStorageAccount.ApiVersion;
+            StorageAccount storageaccount = new StorageAccount(this.ExecutionGuid)
+            {
+                name = targetStorageAccount.ToString(),
+                location = "[resourceGroup().location]",
+                properties = storageaccount_properties,
+                apiVersion = targetStorageAccount.ApiVersion
+            };
 
             this.AddResource(storageaccount);
 
