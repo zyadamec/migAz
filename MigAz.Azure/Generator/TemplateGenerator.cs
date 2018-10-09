@@ -640,8 +640,6 @@ namespace MigAz.Azure.Generator
 
             this.AddResource(virtualnetwork);
 
-            await AddGatewaysToVirtualNetwork(targetVirtualNetwork, virtualnetwork);
-
             LogProvider.WriteLog("BuildVirtualNetworkObject", "End Microsoft.Network/virtualNetworks/" + targetVirtualNetwork.ToString());
         }
 
@@ -765,88 +763,6 @@ namespace MigAz.Azure.Generator
             this.AddResource(gatewayConnection);
 
             LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "End " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
-        }
-
-        private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
-        {
-            if (targetVirtualNetwork != null)
-            {
-                if (targetVirtualNetwork.SourceVirtualNetwork != null)
-                {
-                    if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
-                    {
-                        Asm.VirtualNetwork asmVirtualNetwork = (Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
-
-                        // Process Virtual Network Gateway, if exists
-                        if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
-                        {
-                            //// Gateway Public IP Address
-                            //PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
-                            //publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
-
-                            //PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
-                            //publicipaddress.name = targetVirtualNetwork.TargetName; // todo now  + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
-                            //publicipaddress.location = "[resourceGroup().location]";
-                            //publicipaddress.properties = publicipaddress_properties;
-
-                            //this.AddResource(publicipaddress);
-
-                            // If there is VPN Client configuration
-                            //if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
-                            //{
-                            //    AddressSpace vpnclientaddresspool = new AddressSpace();
-                            //    vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
-
-                            //    VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
-                            //    vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
-
-                            //    //Process vpnClientRootCertificates
-                            //    List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
-                            //    foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
-                            //    {
-                            //        VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
-                            //        vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
-
-                            //        VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
-                            //        vpnclientcertificate.name = certificate.TargetSubject;
-                            //        vpnclientcertificate.properties = vpnclientcertificate_properties;
-
-                            //        vpnclientrootcertificates.Add(vpnclientcertificate);
-                            //    }
-
-                            //    vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
-
-                            //    virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
-                            //}
-
-                            //if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
-                            //{
-                            //    //virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
-                            //    //virtualnetworkgateway_properties.enableBgp = null;
-                            //    //virtualnetworkgateway_properties.vpnType = null;
-                            //}
-                            //else
-                            //{
-                            //    //virtualnetworkgateway_properties.gatewayType = "Vpn";
-                            //    //string vpnType = asmVirtualNetwork.Gateway.GatewayType;
-                            //    //if (vpnType == "StaticRouting")
-                            //    //{
-                            //    //    vpnType = "PolicyBased";
-                            //    //}
-                            //    //else if (vpnType == "DynamicRouting")
-                            //    //{
-                            //    //    vpnType = "RouteBased";
-                            //    //}
-                            //    //virtualnetworkgateway_properties.vpnType = vpnType;
-                            //}
-
-                            // todo now move to ExportArtifactValidation
-                            //if (!asmVirtualNetwork.HasGatewaySubnet)
-                            //    this.AddAlert(AlertType.Error, "The Virtual Network '" + targetVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
-                        }
-                    }
-                }
-            }
         }
 
         private async Task<NetworkSecurityGroup> BuildNetworkSecurityGroup(MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup)
@@ -1857,3 +1773,86 @@ namespace MigAz.Azure.Generator
     }
 }
 
+
+// This method was from ASM to ARM, need to reconstruct, but must now use Target Objects to facilitate template build
+//private async Task AddGatewaysToVirtualNetwork(MigrationTarget.VirtualNetwork targetVirtualNetwork, VirtualNetwork templateVirtualNetwork)
+//{
+//    if (targetVirtualNetwork != null)
+//    {
+//        if (targetVirtualNetwork.SourceVirtualNetwork != null)
+//        {
+//            if (targetVirtualNetwork.SourceVirtualNetwork.GetType() == typeof(Azure.Asm.VirtualNetwork))
+//            {
+//                Asm.VirtualNetwork asmVirtualNetwork = (Asm.VirtualNetwork)targetVirtualNetwork.SourceVirtualNetwork;
+
+//                // Process Virtual Network Gateway, if exists
+//                if ((asmVirtualNetwork.Gateway != null) && (asmVirtualNetwork.Gateway.IsProvisioned))
+//                {
+//                    //// Gateway Public IP Address
+//                    //PublicIPAddress_Properties publicipaddress_properties = new PublicIPAddress_Properties();
+//                    //publicipaddress_properties.publicIPAllocationMethod = "Dynamic";
+
+//                    //PublicIPAddress publicipaddress = new PublicIPAddress(this.ExecutionGuid);
+//                    //publicipaddress.name = targetVirtualNetwork.TargetName; // todo now  + _settingsProvider.VirtualNetworkGatewaySuffix + _settingsProvider.PublicIPSuffix;
+//                    //publicipaddress.location = "[resourceGroup().location]";
+//                    //publicipaddress.properties = publicipaddress_properties;
+
+//                    //this.AddResource(publicipaddress);
+
+//                    // If there is VPN Client configuration
+//                    //if (asmVirtualNetwork.VPNClientAddressPrefixes.Count > 0)
+//                    //{
+//                    //    AddressSpace vpnclientaddresspool = new AddressSpace();
+//                    //    vpnclientaddresspool.addressPrefixes = asmVirtualNetwork.VPNClientAddressPrefixes;
+
+//                    //    VPNClientConfiguration vpnclientconfiguration = new VPNClientConfiguration();
+//                    //    vpnclientconfiguration.vpnClientAddressPool = vpnclientaddresspool;
+
+//                    //    //Process vpnClientRootCertificates
+//                    //    List<VPNClientCertificate> vpnclientrootcertificates = new List<VPNClientCertificate>();
+//                    //    foreach (Asm.ClientRootCertificate certificate in asmVirtualNetwork.ClientRootCertificates)
+//                    //    {
+//                    //        VPNClientCertificate_Properties vpnclientcertificate_properties = new VPNClientCertificate_Properties();
+//                    //        vpnclientcertificate_properties.PublicCertData = certificate.PublicCertData;
+
+//                    //        VPNClientCertificate vpnclientcertificate = new VPNClientCertificate();
+//                    //        vpnclientcertificate.name = certificate.TargetSubject;
+//                    //        vpnclientcertificate.properties = vpnclientcertificate_properties;
+
+//                    //        vpnclientrootcertificates.Add(vpnclientcertificate);
+//                    //    }
+
+//                    //    vpnclientconfiguration.vpnClientRootCertificates = vpnclientrootcertificates;
+
+//                    //    virtualnetworkgateway_properties.vpnClientConfiguration = vpnclientconfiguration;
+//                    //}
+
+//                    //if (asmVirtualNetwork.LocalNetworkSites.Count > 0 && asmVirtualNetwork.LocalNetworkSites[0].ConnectionType == "Dedicated")
+//                    //{
+//                    //    //virtualnetworkgateway_properties.gatewayType = "ExpressRoute";
+//                    //    //virtualnetworkgateway_properties.enableBgp = null;
+//                    //    //virtualnetworkgateway_properties.vpnType = null;
+//                    //}
+//                    //else
+//                    //{
+//                    //    //virtualnetworkgateway_properties.gatewayType = "Vpn";
+//                    //    //string vpnType = asmVirtualNetwork.Gateway.GatewayType;
+//                    //    //if (vpnType == "StaticRouting")
+//                    //    //{
+//                    //    //    vpnType = "PolicyBased";
+//                    //    //}
+//                    //    //else if (vpnType == "DynamicRouting")
+//                    //    //{
+//                    //    //    vpnType = "RouteBased";
+//                    //    //}
+//                    //    //virtualnetworkgateway_properties.vpnType = vpnType;
+//                    //}
+
+//                    // todo now move to ExportArtifactValidation
+//                    //if (!asmVirtualNetwork.HasGatewaySubnet)
+//                    //    this.AddAlert(AlertType.Error, "The Virtual Network '" + targetVirtualNetwork.TargetName + "' does not contain the necessary '" + ArmConst.GatewaySubnetName + "' subnet for deployment of the '" + virtualnetworkgateway.name + "' Gateway.", asmVirtualNetwork);
+//                }
+//            }
+//        }
+//    }
+//}
