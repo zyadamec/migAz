@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.AWS.Models;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Forms;
 using MigAz.Providers;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using MigAz.Azure;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Forms;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -187,7 +187,7 @@ namespace MigAz.Forms
 
         #endregion
 
-        private async Task PropertyPanel1_PropertyChanged(Core.MigrationTarget migrationTarget)
+        private async Task PropertyPanel1_PropertyChanged(Azure.Core.MigrationTarget migrationTarget)
         {
             TreeNode targetNode = this.targetTreeView1.SeekMigrationTargetTreeNode(migrationTarget);
 

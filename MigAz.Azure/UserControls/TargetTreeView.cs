@@ -10,10 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.Generator;
-using MigAz.Core;
+using MigAz.Azure.Core.Generator;
+using MigAz.Azure.Core;
 
 namespace MigAz.Azure.UserControls
 {
@@ -423,7 +423,7 @@ namespace MigAz.Azure.UserControls
             {
                 if (this.TargetSubscription != null)
                 {
-                    parentNode.ApiVersion = this.GetDefaultApiVersion(parentNode);
+                    parentNode.DefaultApiVersion(this.TargetSubscription);
                 }
             }
 
@@ -606,19 +606,6 @@ namespace MigAz.Azure.UserControls
             else
                 throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());
 
-        }
-
-        public string GetDefaultApiVersion(Core.MigrationTarget migrationTarget)
-        {
-            if (this.TargetSubscription == null)
-                return String.Empty;
-
-            Arm.ProviderResourceType providerResourceType = this.TargetSubscription.GetProviderResourceType(migrationTarget.ProviderNamespace, migrationTarget.ResourceType);
-
-            if (providerResourceType == null)
-                return String.Empty;
-
-            return providerResourceType.GetMaxApiVersionMigAzTested();
         }
 
         private TreeNode GetTargetAvailabilitySetNode(TreeNode subscriptionNode, AvailabilitySet targetAvailabilitySet)

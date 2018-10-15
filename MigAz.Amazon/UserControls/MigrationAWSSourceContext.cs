@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
-using MigAz.Core.Interface;
-using MigAz.Core;
+using MigAz.Azure.Core.Interface;
+using MigAz.Azure.Core;
 
 namespace MigAz.AWS.UserControls
 {
@@ -60,9 +60,9 @@ namespace MigAz.AWS.UserControls
 //using System.Windows.Forms;
 //using System.Collections;
 //using System.Collections.Generic;
-//using MigAz.Core.Interface;
+//using MigAz.Azure.Core.Interface;
 //using MigAz.AWS.Providers;
-//using MigAz.Core;
+//using MigAz.Azure.Core;
 //using MigAz.Azure;
 //using MigAz.Azure.UserControls;
 //using MigAz.Azure.Generator.AsmToArm;
@@ -305,11 +305,11 @@ namespace MigAz.AWS.UserControls
 //                {
 //                    if (e.Node.Checked)
 //                    {
-//                        resultUpdateARMTree = await treeTargetARM.AddMigrationTargetToTargetTree((MigAz.Core.Interface.IMigrationTarget)e.Node.Tag);
+//                        resultUpdateARMTree = await treeTargetARM.AddMigrationTargetToTargetTree((MigAz.Azure.Core.Interface.IMigrationTarget)e.Node.Tag);
 //                    }
 //                    else
 //                    {
-//                        await treeTargetARM.RemoveASMNodeFromARMTree((MigAz.Core.Interface.IMigrationTarget)e.Node.Tag);
+//                        await treeTargetARM.RemoveASMNodeFromARMTree((MigAz.Azure.Core.Interface.IMigrationTarget)e.Node.Tag);
 //                    }
 //                }
 //            }

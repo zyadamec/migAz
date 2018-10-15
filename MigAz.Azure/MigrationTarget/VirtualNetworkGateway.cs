@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using MigAz.Core;
-using MigAz.Core.ArmTemplate;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core;
+using MigAz.Azure.Core.ArmTemplate;
+using MigAz.Azure.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,10 +44,10 @@ namespace MigAz.Azure.MigrationTarget
 
             switch (virtualNetworkGateway.GatewayType)
             {
-                case "w":
-                    this.GatewayType = VirtualNetworkGatewayType.Vpn;
+                case "ExpressRoute":
+                    this.GatewayType = VirtualNetworkGatewayType.ExpressRoute;
                     break;
-                case "f":
+                case "Vpn":
                 default:
                     this.GatewayType = VirtualNetworkGatewayType.Vpn;
                     break;
@@ -55,10 +55,10 @@ namespace MigAz.Azure.MigrationTarget
 
             switch (virtualNetworkGateway.VpnType)
             {
-                case "w":
+                case "PolicyBased":
                     this.VpnType = VirtualNetworkGatewayVpnType.PolicyBased;
                     break;
-                case "f":
+                case "RouteBased":
                 default:
                     this.VpnType = VirtualNetworkGatewayVpnType.RouteBased;
                     break;
@@ -66,16 +66,16 @@ namespace MigAz.Azure.MigrationTarget
 
             switch (virtualNetworkGateway.SkuName)
             {
-                case "1":
+                case "VpnGw1":
                     this.SkuName = VirtualNetworkGatewaySkuType.VpnGw1;
                     break;
-                case "2":
+                case "VpnGw2":
                     this.SkuName = VirtualNetworkGatewaySkuType.VpnGw2;
                     break;
-                case "3":
+                case "VpnGw3":
                     this.SkuName = VirtualNetworkGatewaySkuType.VpnGw3;
                     break;
-                case "f":
+                case "Basic":
                 default:
                     this.SkuName = VirtualNetworkGatewaySkuType.Basic;
                     break;
@@ -83,16 +83,16 @@ namespace MigAz.Azure.MigrationTarget
 
             switch (virtualNetworkGateway.SkuName)
             {
-                case "1":
+                case "VpnGw1":
                     this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw1;
                     break;
-                case "2":
+                case "VpnGw2":
                     this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw2;
                     break;
-                case "3":
+                case "VpnGw3":
                     this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw3;
                     break;
-                case "f":
+                case "Basic":
                 default:
                     this.SkuTier = VirtualNetworkGatewaySkuType.Basic;
                     break;

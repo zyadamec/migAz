@@ -3,8 +3,8 @@
 
 using System;
 using MigAz.Azure.UserControls;
-using MigAz.Core;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Providers
 {

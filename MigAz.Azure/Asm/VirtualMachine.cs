@@ -3,8 +3,8 @@
 
 using MigAz.Azure.Arm;
 using MigAz.Azure.Interface;
-using MigAz.Core;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core;
+using MigAz.Azure.Core.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;

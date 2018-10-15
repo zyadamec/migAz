@@ -10,9 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Azure.UserControls
 {

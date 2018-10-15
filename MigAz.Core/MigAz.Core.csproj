@@ -43,43 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArmTemplate\ARM.cs" />
-    <Compile Include="ArmTemplate\ArmConst.cs" />
-    <Compile Include="CIDR.cs" />
-    <Compile Include="Generator\MigAzGeneratorAlert.cs" />
-    <Compile Include="IMigrationPublicIp.cs" />
-    <Compile Include="Interface\IAvailabilitySetSource.cs" />
-    <Compile Include="Interface\IConnection.cs" />
-    <Compile Include="Interface\IDisk.cs" />
-    <Compile Include="Interface\IExportArtifacts.cs" />
-    <Compile Include="Interface\ILoadBalancer.cs" />
-    <Compile Include="Interface\ILocalNetworkGateway.cs" />
-    <Compile Include="Interface\ILocation.cs" />
-    <Compile Include="Interface\ILogProvider.cs" />
-    <Compile Include="Interface\IMigrationSourceUserControl.cs" />
-    <Compile Include="Interface\IMigrationSubnet.cs" />
-    <Compile Include="MigrationTarget.cs" />
-    <Compile Include="Interface\IMigrationTargetUserControl.cs" />
-    <Compile Include="Interface\IMigrationVirtualNetwork.cs" />
-    <Compile Include="Interface\IMigrationVirtualNetworkGateway.cs" />
-    <Compile Include="Interface\INetworkInterface.cs" />
-    <Compile Include="Interface\INetworkInterfaceIpConfiguration.cs" />
-    <Compile Include="Interface\INetworkSecurityGroup.cs" />
-    <Compile Include="Interface\IRoute.cs" />
-    <Compile Include="Interface\IRouteTable.cs" />
-    <Compile Include="Interface\ISaveSelectionProvider.cs" />
-    <Compile Include="Interface\ISettingsProvider.cs" />
-    <Compile Include="Interface\IStatusProvider.cs" />
-    <Compile Include="Interface\IStorageTarget.cs" />
-    <Compile Include="Interface\ISubnet.cs" />
-    <Compile Include="Interface\ITelemetryProvider.cs" />
-    <Compile Include="Interface\IVirtualMachine.cs" />
-    <Compile Include="Interface\IVirtualMachineImage.cs" />
-    <Compile Include="Interface\IVirtualNetwork.cs" />
-    <Compile Include="Interface\IVirtualNetworkGateway.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TargetSettings.cs" />
-    <Compile Include="VersionCheck.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ArmTemplate\" />
+    <Folder Include="Generator\" />
+    <Folder Include="Interface\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

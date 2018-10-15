@@ -4,18 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MigAz.Core.Interface;
-using MigAz.Core.ArmTemplate;
+using MigAz.Azure.Core.Interface;
+using MigAz.Azure.Core.ArmTemplate;
 using System.Threading.Tasks;
 using System.Text;
 using System.Windows.Forms;
-using MigAz.Core.Generator;
+using MigAz.Azure.Core.Generator;
 using System.Collections;
 using MigAz.Azure.Models;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Linq;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using MigAz.Azure.Interface;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
@@ -1795,7 +1795,7 @@ namespace MigAz.Azure.Generator
             List<ArmResource> storageAccountResources = new List<ArmResource>();
             foreach (ArmResource armResource in this.Resources)
             {
-                if (armResource.GetType() == typeof(MigAz.Core.ArmTemplate.StorageAccount))
+                if (armResource.GetType() == typeof(MigAz.Azure.Core.ArmTemplate.StorageAccount))
                 {
                     storageAccountResources.Add(armResource);
                 }

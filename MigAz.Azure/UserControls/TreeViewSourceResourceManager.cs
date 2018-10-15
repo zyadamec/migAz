@@ -10,12 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using MigAz.Azure.Interface;
 using System.Net;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Forms;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace MigAz.Azure.UserControls

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Tests.Fakes
 {

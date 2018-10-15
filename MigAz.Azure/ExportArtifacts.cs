@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System.Collections.Generic;
 using System;
-using MigAz.Core.Generator;
+using MigAz.Azure.Core.Generator;
 using System.Threading.Tasks;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using System.Linq;
 
 namespace MigAz.Azure
@@ -544,7 +544,14 @@ namespace MigAz.Azure
         private void ValidateTargetApiVersion(Core.MigrationTarget migrationTarget)
         {
             if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion == String.Empty)
+            {
+                if (this.TargetSubscription != null)
+                {
+                    migrationTarget.DefaultApiVersion(this.TargetSubscription);
+                }
+
                 this.AddAlert(AlertType.Error, "Target Azure RM API Version must be specificed for " + migrationTarget.FriendlyObjectName + " '" + migrationTarget.TargetNameResult + "'.", migrationTarget);
+            }
         }
 
         internal bool IsStorageAccountVmDiskTarget(StorageAccount targetStorageAccount)

@@ -120,6 +120,42 @@
     <Compile Include="AzureRestRequest.cs" />
     <Compile Include="AzureRestResponse.cs" />
     <Compile Include="AzureSubscriptionResourceCache.cs" />
+    <Compile Include="Core\ArmTemplate\ARM.cs" />
+    <Compile Include="Core\ArmTemplate\ArmConst.cs" />
+    <Compile Include="Core\CIDR.cs" />
+    <Compile Include="Core\Generator\MigAzGeneratorAlert.cs" />
+    <Compile Include="Core\IMigrationPublicIp.cs" />
+    <Compile Include="Core\Interface\IAvailabilitySetSource.cs" />
+    <Compile Include="Core\Interface\IConnection.cs" />
+    <Compile Include="Core\Interface\IDisk.cs" />
+    <Compile Include="Core\Interface\IExportArtifacts.cs" />
+    <Compile Include="Core\Interface\ILoadBalancer.cs" />
+    <Compile Include="Core\Interface\ILocalNetworkGateway.cs" />
+    <Compile Include="Core\Interface\ILocation.cs" />
+    <Compile Include="Core\Interface\ILogProvider.cs" />
+    <Compile Include="Core\Interface\IMigrationSourceUserControl.cs" />
+    <Compile Include="Core\Interface\IMigrationSubnet.cs" />
+    <Compile Include="Core\Interface\IMigrationTargetUserControl.cs" />
+    <Compile Include="Core\Interface\IMigrationVirtualNetwork.cs" />
+    <Compile Include="Core\Interface\IMigrationVirtualNetworkGateway.cs" />
+    <Compile Include="Core\Interface\INetworkInterface.cs" />
+    <Compile Include="Core\Interface\INetworkInterfaceIpConfiguration.cs" />
+    <Compile Include="Core\Interface\INetworkSecurityGroup.cs" />
+    <Compile Include="Core\Interface\IRoute.cs" />
+    <Compile Include="Core\Interface\IRouteTable.cs" />
+    <Compile Include="Core\Interface\ISaveSelectionProvider.cs" />
+    <Compile Include="Core\Interface\ISettingsProvider.cs" />
+    <Compile Include="Core\Interface\IStatusProvider.cs" />
+    <Compile Include="Core\Interface\IStorageTarget.cs" />
+    <Compile Include="Core\Interface\ISubnet.cs" />
+    <Compile Include="Core\Interface\ITelemetryProvider.cs" />
+    <Compile Include="Core\Interface\IVirtualMachine.cs" />
+    <Compile Include="Core\Interface\IVirtualMachineImage.cs" />
+    <Compile Include="Core\Interface\IVirtualNetwork.cs" />
+    <Compile Include="Core\Interface\IVirtualNetworkGateway.cs" />
+    <Compile Include="Core\MigrationTarget.cs" />
+    <Compile Include="Core\TargetSettings.cs" />
+    <Compile Include="Core\VersionCheck.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="ExportArtifacts.cs" />
     <Compile Include="Forms\ASM403ForbiddenExceptionDialog.cs">
@@ -487,12 +523,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
-      <Project>{1BDC90E2-902B-4397-8B4F-7DFF2D486FC2}</Project>
-      <Name>MigAz.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\VNet.png" />
   </ItemGroup>
   <ItemGroup>
@@ -507,6 +537,7 @@
   <ItemGroup>
     <None Include="Resources\LoadBalancer.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

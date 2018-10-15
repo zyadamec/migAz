@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure.Interface;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MigAz.Azure.Arm;
-using MigAz.Core;
-using MigAz.Core.ArmTemplate;
+using MigAz.Azure.Core;
+using MigAz.Azure.Core.ArmTemplate;
 
 namespace MigAz.Azure.MigrationTarget
 {

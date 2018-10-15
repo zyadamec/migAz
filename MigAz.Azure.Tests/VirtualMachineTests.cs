@@ -13,9 +13,9 @@
 //using MigAz.Azure.Generator;
 //using MigAz.Azure;
 //using MigAz.Azure.Generator.AsmToArm;
-//using MigAz.Core.Generator;
-//using MigAz.Core.ArmTemplate;
-//using MigAz.Core.Interface;
+//using MigAz.Azure.Core.Generator;
+//using MigAz.Azure.Core.ArmTemplate;
+//using MigAz.Azure.Core.Interface;
 
 //namespace MigAz.Tests
 //{

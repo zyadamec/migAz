@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using MigAz.Azure;
 using MigAz.Azure.UserControls;
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core;
+using MigAz.Azure.Core;
 
 namespace MigAz.Tests
 {
@@ -147,7 +147,7 @@ namespace MigAz.Tests
             Assert.IsFalse(artifacts.HasErrors, "Template Generation cannot occur as the are error(s).");
 
             ManagedDiskStorage managedDiskStorage = new ManagedDiskStorage(artifacts.VirtualMachines[0].OSVirtualHardDisk.SourceDisk);
-            managedDiskStorage.StorageAccountType = Core.Interface.StorageAccountType.Premium_LRS;
+            managedDiskStorage.StorageAccountType = Azure.Core.Interface.StorageAccountType.Premium_LRS;
             artifacts.VirtualMachines[0].OSVirtualHardDisk.TargetStorage = managedDiskStorage;
             await artifacts.ValidateAzureResources();
             Assert.IsNotNull(artifacts.SeekAlert("Premium Disk based Virtual Machines must be of VM Series 'B', 'DS', 'DS v2', 'DS v3', 'GS', 'GS v2', 'Ls' or 'Fs'."));

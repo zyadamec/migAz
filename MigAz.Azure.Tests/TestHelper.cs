@@ -13,10 +13,10 @@ using System.Threading.Tasks;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Generator.AsmToArm;
-using MigAz.Core.Interface;
-using MigAz.Core.Generator;
+using MigAz.Azure.Core.Interface;
+using MigAz.Azure.Core.Generator;
 using MIGAZ.Tests.Fakes;
-using MigAz.Core;
+using MigAz.Azure.Core;
 using MigAz.Azure.Interface;
 
 namespace MigAz.Tests

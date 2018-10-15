@@ -62,10 +62,6 @@
       <Project>{a794a00c-299a-4e82-bd35-2213e091b8a8}</Project>
       <Name>MigAz.Azure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MigAz.Core\MigAz.Core.csproj">
-      <Project>{1bdc90e2-902b-4397-8b4f-7dff2d486fc2}</Project>
-      <Name>MigAz.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
