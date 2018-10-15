@@ -29,13 +29,13 @@ namespace MigAz.Azure.MigrationTarget
 
         private VirtualNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworkGateways) { }
 
-        public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworkGateways)
         {
             this._SourceVirtualNetworkGateway = virtualNetworkGateway;
             this.SetTargetName(this.SourceName, targetSettings);
         }
 
-        public VirtualNetworkGateway(Arm.VirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        public VirtualNetworkGateway(Arm.VirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworkGateways)
         {
             this._SourceVirtualNetworkGateway = virtualNetworkGateway;
             this.SetTargetName(this.SourceName, targetSettings);
