@@ -160,6 +160,7 @@
     <Compile Include="Interface\IVirtualNetworkTarget.cs" />
     <Compile Include="MigrationTarget\AvailabilitySet.cs" />
     <Compile Include="MigrationTarget\BackEndAddressPool.cs" />
+    <Compile Include="MigrationTarget\MigrationTargetEnums.cs" />
     <Compile Include="MigrationTarget\VirtualNetworkGatewayConnection.cs" />
     <Compile Include="MigrationTarget\Constants.cs" />
     <Compile Include="MigrationTarget\Disk.cs" />

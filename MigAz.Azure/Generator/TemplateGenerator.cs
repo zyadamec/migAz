@@ -712,8 +712,9 @@ namespace MigAz.Azure.Generator
 
             VirtualNetworkGateway_Sku virtualnetworkgateway_sku = new VirtualNetworkGateway_Sku
             {
-                name = virtualNetworkGateway.SkuName,
-                tier = virtualNetworkGateway.SkuTier
+                name = virtualNetworkGateway.SkuName.ToString(),
+                tier = virtualNetworkGateway.SkuTier.ToString(),
+                capacity = virtualNetworkGateway.SkuCapacity
             };
 
             Reference subnet_ref = new Reference
@@ -748,6 +749,7 @@ namespace MigAz.Azure.Generator
                 sku = virtualnetworkgateway_sku,
                 gatewayType = virtualNetworkGateway.GatewayType.ToString(),
                 enableBgp = virtualNetworkGateway.EnableBgp.ToString(),
+                activeActive = virtualNetworkGateway.ActiveActive.ToString(),
                 vpnType = virtualNetworkGateway.VpnType.ToString()
             };
 

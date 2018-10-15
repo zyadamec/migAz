@@ -12,24 +12,17 @@ using System.Threading.Tasks;
 
 namespace MigAz.Azure.MigrationTarget
 {
-    public enum VirtualNetworkGatewayType
-    {
-        ExpressRoute,
-        Vpn
-    }
-
-    public enum VirtualNetworkGatewayVpnType
-    {
-        PolicyBased, // Dynamic Gateway
-        RouteBased // Static Gateway
-    }
-
+    
     public class VirtualNetworkGateway : Core.MigrationTarget, IMigrationVirtualNetworkGateway
     {
         private IVirtualNetworkGateway _SourceVirtualNetworkGateway;
         private List<Subnet> _TargetSubnets = new List<Subnet>();
         private VirtualNetworkGatewayType _GatewayType = VirtualNetworkGatewayType.Vpn;
         private bool _EnableBgp = false;
+        private bool _ActiveActive = false;
+        private VirtualNetworkGatewaySkuType _SkuName = VirtualNetworkGatewaySkuType.Basic;
+        private VirtualNetworkGatewaySkuType _SkuTier = VirtualNetworkGatewaySkuType.Basic;
+        private int _SkuCapacity = 2;
         private VirtualNetworkGatewayVpnType _VirtualNetworkGatewayVpnType = VirtualNetworkGatewayVpnType.RouteBased;
 
         #region Constructors
@@ -40,6 +33,77 @@ namespace MigAz.Azure.MigrationTarget
         {
             this._SourceVirtualNetworkGateway = virtualNetworkGateway;
             this.SetTargetName(this.SourceName, targetSettings);
+        }
+
+        public VirtualNetworkGateway(Arm.VirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        {
+            this._SourceVirtualNetworkGateway = virtualNetworkGateway;
+            this.SetTargetName(this.SourceName, targetSettings);
+            this.EnableBgp = virtualNetworkGateway.EnableBgp;
+            this.ActiveActive = virtualNetworkGateway.ActiveActive;
+
+            switch (virtualNetworkGateway.GatewayType)
+            {
+                case "w":
+                    this.GatewayType = VirtualNetworkGatewayType.Vpn;
+                    break;
+                case "f":
+                default:
+                    this.GatewayType = VirtualNetworkGatewayType.Vpn;
+                    break;
+            }
+
+            switch (virtualNetworkGateway.VpnType)
+            {
+                case "w":
+                    this.VpnType = VirtualNetworkGatewayVpnType.PolicyBased;
+                    break;
+                case "f":
+                default:
+                    this.VpnType = VirtualNetworkGatewayVpnType.RouteBased;
+                    break;
+            }
+
+            switch (virtualNetworkGateway.SkuName)
+            {
+                case "1":
+                    this.SkuName = VirtualNetworkGatewaySkuType.VpnGw1;
+                    break;
+                case "2":
+                    this.SkuName = VirtualNetworkGatewaySkuType.VpnGw2;
+                    break;
+                case "3":
+                    this.SkuName = VirtualNetworkGatewaySkuType.VpnGw3;
+                    break;
+                case "f":
+                default:
+                    this.SkuName = VirtualNetworkGatewaySkuType.Basic;
+                    break;
+            }
+
+            switch (virtualNetworkGateway.SkuName)
+            {
+                case "1":
+                    this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw1;
+                    break;
+                case "2":
+                    this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw2;
+                    break;
+                case "3":
+                    this.SkuTier = VirtualNetworkGatewaySkuType.VpnGw3;
+                    break;
+                case "f":
+                default:
+                    this.SkuTier = VirtualNetworkGatewaySkuType.Basic;
+                    break;
+            }
+
+            this.SkuCapacity = virtualNetworkGateway.SkuCapacity;
+
+            foreach (IpConfiguration gatewayIpConfiguration in virtualNetworkGateway.IpConfigurations)
+            {
+
+            }
         }
 
         #endregion
@@ -57,13 +121,20 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public String SkuName
+        public VirtualNetworkGatewaySkuType SkuName
         {
-            get { return "Basic"; }
+            get { return _SkuName; }
+            set { _SkuName = value; }
         }
-        public String SkuTier
+        public VirtualNetworkGatewaySkuType SkuTier
         {
-            get { return "Basic"; }
+            get { return _SkuTier; }
+            set { _SkuTier = value; }
+        }
+        public int SkuCapacity
+        {
+            get { return _SkuCapacity; }
+            set { _SkuCapacity = value; }
         }
 
         public VirtualNetworkGatewayType GatewayType
@@ -76,6 +147,11 @@ namespace MigAz.Azure.MigrationTarget
         {
             get { return _EnableBgp; }
             set { _EnableBgp = value; }
+        }
+        public bool ActiveActive
+        {
+            get { return _ActiveActive; }
+            set { _ActiveActive = value; }
         }
 
         public VirtualNetworkGatewayVpnType VpnType

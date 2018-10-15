@@ -41,6 +41,7 @@ namespace MigAz.Core.ArmTemplate
         public string gatewayType; // VPN or ER
         public string vpnType; // RouteBased or PolicyBased
         public string enableBgp = "false";
+        public string activeActive = "false";
         public VPNClientConfiguration vpnClientConfiguration;
     }
 
@@ -48,6 +49,7 @@ namespace MigAz.Core.ArmTemplate
     {
         public string name;
         public string tier;
+        public int capacity;
     }
 
     public class LocalNetworkGateway : ArmResource
