@@ -550,7 +550,8 @@ namespace MigAz.Azure
                     migrationTarget.DefaultApiVersion(this.TargetSubscription);
                 }
 
-                this.AddAlert(AlertType.Error, "Target Azure RM API Version must be specificed for " + migrationTarget.FriendlyObjectName + " '" + migrationTarget.TargetNameResult + "'.", migrationTarget);
+                if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion.Length == 0)
+                    this.AddAlert(AlertType.Error, "Target Azure RM API Version must be specificed for " + migrationTarget.FriendlyObjectName + " '" + migrationTarget.TargetNameResult + "'.", migrationTarget);
             }
         }
 

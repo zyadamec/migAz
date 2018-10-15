@@ -414,32 +414,32 @@ namespace MigAz.Azure.UserControls
             return targetResourceGroupNode;
         }
 
-        public async Task<TreeNode> AddMigrationTarget(Core.MigrationTarget parentNode)
+        public async Task<TreeNode> AddMigrationTarget(Core.MigrationTarget migrationTarget)
         {
-            if (parentNode == null)
+            if (migrationTarget == null)
                 throw new ArgumentNullException("Migration Target cannot be null.");
 
-            if (parentNode.ApiVersion == null || parentNode.ApiVersion == String.Empty)
+            if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion == String.Empty)
             {
                 if (this.TargetSubscription != null)
                 {
-                    parentNode.DefaultApiVersion(this.TargetSubscription);
+                    migrationTarget.DefaultApiVersion(this.TargetSubscription);
                 }
             }
 
             TreeNode targetResourceGroupNode = SeekResourceGroupTreeNode();
 
-            if (parentNode.GetType() == typeof(VirtualNetworkGateway))
+            if (migrationTarget.GetType() == typeof(VirtualNetworkGateway))
             {
-                VirtualNetworkGateway targetVirtualNetworkGateway = (VirtualNetworkGateway)parentNode;
+                VirtualNetworkGateway targetVirtualNetworkGateway = (VirtualNetworkGateway)migrationTarget;
                 TreeNode virtualNetworkGatewayNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetworkGateway.ToString(), targetVirtualNetworkGateway.ToString(), targetVirtualNetworkGateway, true);
                 
                 targetResourceGroupNode.ExpandAll();
                 return virtualNetworkGatewayNode;
             }
-            else if (parentNode.GetType() == typeof(VirtualNetwork))
+            else if (migrationTarget.GetType() == typeof(VirtualNetwork))
             {
-                VirtualNetwork targetVirtualNetwork = (VirtualNetwork)parentNode;
+                VirtualNetwork targetVirtualNetwork = (VirtualNetwork)migrationTarget;
                 TreeNode virtualNetworkNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetVirtualNetwork.ToString(), targetVirtualNetwork.ToString(), targetVirtualNetwork, true);
 
                 foreach (Subnet targetSubnet in targetVirtualNetwork.TargetSubnets)
@@ -450,74 +450,74 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return virtualNetworkNode;
             }
-            else if (parentNode.GetType() == typeof(LocalNetworkGateway))
+            else if (migrationTarget.GetType() == typeof(LocalNetworkGateway))
             {
-                LocalNetworkGateway targetLocalNetworkGateway = (LocalNetworkGateway)parentNode;
+                LocalNetworkGateway targetLocalNetworkGateway = (LocalNetworkGateway)migrationTarget;
                 TreeNode localNetworkGatewayNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLocalNetworkGateway.ToString(), targetLocalNetworkGateway.ToString(), targetLocalNetworkGateway, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return localNetworkGatewayNode;
             }
-            else if (parentNode.GetType() == typeof(VirtualNetworkGatewayConnection))
+            else if (migrationTarget.GetType() == typeof(VirtualNetworkGatewayConnection))
             {
-                VirtualNetworkGatewayConnection targetConnection = (VirtualNetworkGatewayConnection)parentNode;
+                VirtualNetworkGatewayConnection targetConnection = (VirtualNetworkGatewayConnection)migrationTarget;
                 TreeNode connectionNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetConnection.ToString(), targetConnection.ToString(), targetConnection, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return connectionNode;
             }
-            else if (parentNode.GetType() == typeof(StorageAccount))
+            else if (migrationTarget.GetType() == typeof(StorageAccount))
             {
-                StorageAccount targetStorageAccount = (StorageAccount)parentNode;
+                StorageAccount targetStorageAccount = (StorageAccount)migrationTarget;
 
                 TreeNode storageAccountNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetStorageAccount.ToString(), targetStorageAccount.ToString(), targetStorageAccount, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return storageAccountNode;
             }
-            else if (parentNode.GetType() == typeof(NetworkSecurityGroup))
+            else if (migrationTarget.GetType() == typeof(NetworkSecurityGroup))
             {
-                NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)parentNode;
+                NetworkSecurityGroup targetNetworkSecurityGroup = (NetworkSecurityGroup)migrationTarget;
                 TreeNode networkSecurityGroupNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup.ToString(), targetNetworkSecurityGroup, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return networkSecurityGroupNode;
             }
-            else if (parentNode.GetType() == typeof(LoadBalancer))
+            else if (migrationTarget.GetType() == typeof(LoadBalancer))
             {
-                LoadBalancer targetLoadBalancer = (LoadBalancer)parentNode;
+                LoadBalancer targetLoadBalancer = (LoadBalancer)migrationTarget;
                 TreeNode targetLoadBalancerNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetLoadBalancer.ToString(), targetLoadBalancer.ToString(), targetLoadBalancer, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetLoadBalancerNode;
             }
-            else if (parentNode.GetType() == typeof(PublicIp))
+            else if (migrationTarget.GetType() == typeof(PublicIp))
             {
-                PublicIp targetPublicIp = (PublicIp)parentNode;
+                PublicIp targetPublicIp = (PublicIp)migrationTarget;
                 TreeNode targetPublicIpNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetPublicIp.ToString(), targetPublicIp.ToString(), targetPublicIp, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetPublicIpNode;
             }
-            else if (parentNode.GetType() == typeof(NetworkInterface))
+            else if (migrationTarget.GetType() == typeof(NetworkInterface))
             {
-                NetworkInterface targetNetworkInterface = (NetworkInterface)parentNode;
+                NetworkInterface targetNetworkInterface = (NetworkInterface)migrationTarget;
                 TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.ToString(), targetNetworkInterface.ToString(), targetNetworkInterface, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetNetworkInterfaceNode;
             }
-            else if (parentNode.GetType() == typeof(AvailabilitySet))
+            else if (migrationTarget.GetType() == typeof(AvailabilitySet))
             {
-                AvailabilitySet targetAvailabilitySet = (AvailabilitySet)parentNode;
+                AvailabilitySet targetAvailabilitySet = (AvailabilitySet)migrationTarget;
                 TreeNode targetAvailabilitySetNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetAvailabilitySet.ToString(), targetAvailabilitySet.ToString(), targetAvailabilitySet, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetAvailabilitySetNode;
             }
-            else if (parentNode.GetType() == typeof(VirtualMachine))
+            else if (migrationTarget.GetType() == typeof(VirtualMachine))
             {
-                VirtualMachine targetVirtualMachine = (VirtualMachine)parentNode;
+                VirtualMachine targetVirtualMachine = (VirtualMachine)migrationTarget;
 
                 TreeNode virtualMachineParentNode = targetResourceGroupNode;
                 TreeNode virtualMachineNode = SeekARMChildTreeNode(virtualMachineParentNode.Nodes, targetVirtualMachine.ToString(), targetVirtualMachine.ToString(), targetVirtualMachine, true);
@@ -571,9 +571,9 @@ namespace MigAz.Azure.UserControls
                 targetResourceGroupNode.ExpandAll();
                 return virtualMachineNode;
             }
-            else if (parentNode.GetType() == typeof(Disk))
+            else if (migrationTarget.GetType() == typeof(Disk))
             {
-                Disk targetDisk = (Disk)parentNode;
+                Disk targetDisk = (Disk)migrationTarget;
                 TreeNode targetDiskNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetDisk.ToString(), targetDisk.ToString(), targetDisk, true);
 
                 targetResourceGroupNode.ExpandAll();
@@ -587,24 +587,24 @@ namespace MigAz.Azure.UserControls
             //    targetResourceGroupNode.ExpandAll();
             //    return targetVirtualMachineImageNode;
             //}
-            else if (parentNode.GetType() == typeof(NetworkInterface))
+            else if (migrationTarget.GetType() == typeof(NetworkInterface))
             {
-                NetworkInterface targetNetworkInterface = (NetworkInterface)parentNode;
+                NetworkInterface targetNetworkInterface = (NetworkInterface)migrationTarget;
                 TreeNode targetNetworkInterfaceNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetNetworkInterface.SourceName, targetNetworkInterface.ToString(), targetNetworkInterface, true);
 
                 targetResourceGroupNode.ExpandAll();
                 return targetNetworkInterfaceNode;
             }
-            else if (parentNode.GetType() == typeof(RouteTable))
+            else if (migrationTarget.GetType() == typeof(RouteTable))
             {
-                RouteTable targetRouteTable = (RouteTable)parentNode;
+                RouteTable targetRouteTable = (RouteTable)migrationTarget;
                 TreeNode targetRouteTableNode = SeekARMChildTreeNode(targetResourceGroupNode.Nodes, targetRouteTable.ToString(), targetRouteTable.ToString(), targetRouteTable, true);
 
                 targetRouteTableNode.ExpandAll();
                 return targetRouteTableNode;
             }
             else
-                throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + parentNode.GetType());
+                throw new Exception("Unhandled Node Type in AddMigrationTargetToTargetTree: " + migrationTarget.GetType());
 
         }
 

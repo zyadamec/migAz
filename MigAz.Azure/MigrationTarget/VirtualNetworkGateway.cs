@@ -27,7 +27,7 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private VirtualNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers) { }
+        private VirtualNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworkGateways) { }
 
         public VirtualNetworkGateway(IVirtualNetworkGateway virtualNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
         {
