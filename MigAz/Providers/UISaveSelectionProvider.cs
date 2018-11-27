@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Arm;
 using MigAz.Azure;
-using MigAz.Core.Interface;
-using MigAz.Core;
+using MigAz.Azure.Core.Interface;
+using MigAz.Azure.Core;
 
 namespace MigAz.Providers
 {

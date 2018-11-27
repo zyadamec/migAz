@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Forms.ARM.Providers
 {

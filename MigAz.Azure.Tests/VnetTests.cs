@@ -12,7 +12,7 @@
 //using System.Threading.Tasks;
 //using MigAz.Azure;
 //using MigAz.Azure.Generator;
-//using MigAz.Core.Generator;
+//using MigAz.Azure.Core.Generator;
 
 //namespace MigAz.Tests
 //{

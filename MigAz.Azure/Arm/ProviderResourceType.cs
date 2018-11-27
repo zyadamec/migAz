@@ -94,8 +94,10 @@ namespace MigAz.Azure.Arm
                     {
                         case Core.ArmTemplate.ArmConst.LoadBalancers:
                             return this.GetMaxApiVersionUpTo("2015-06-15");
+                        case Core.ArmTemplate.ArmConst.Connections:
+                            return this.GetMaxApiVersionUpTo("2018-07-01");
                         case Core.ArmTemplate.ArmConst.LocalNetworkGateways:
-                            return this.GetMaxApiVersionUpTo("2015-06-15");
+                            return this.GetMaxApiVersionUpTo("2018-07-01");
                         case Core.ArmTemplate.ArmConst.NetworkInterfaces:
                             return this.GetMaxApiVersionUpTo("2017-10-01");
                         case Core.ArmTemplate.ArmConst.NetworkSecurityGroups:
@@ -107,7 +109,7 @@ namespace MigAz.Azure.Arm
                         case Core.ArmTemplate.ArmConst.VirtualNetworks:
                             return this.GetMaxApiVersionUpTo("2015-06-15");
                         case Core.ArmTemplate.ArmConst.VirtualNetworkGateways:
-                            return this.GetMaxApiVersionUpTo("2015-06-15");
+                            return this.GetMaxApiVersionUpTo("2018-07-01");
                     }
                     break;
                 case Core.ArmTemplate.ArmConst.MicrosoftStorage:

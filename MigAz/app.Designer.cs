@@ -12,7 +12,7 @@ namespace MigAz {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.8.0.0")]
     internal sealed partial class app : global::System.Configuration.ApplicationSettingsBase {
         
         private static app defaultInstance = ((app)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new app())));
@@ -257,9 +257,9 @@ namespace MigAz {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("ManagedDisk")]
-        public global::MigAz.Core.Interface.ArmDiskType DefaultTargetDiskType {
+        public global::MigAz.Azure.Core.Interface.ArmDiskType DefaultTargetDiskType {
             get {
-                return ((global::MigAz.Core.Interface.ArmDiskType)(this["DefaultTargetDiskType"]));
+                return ((global::MigAz.Azure.Core.Interface.ArmDiskType)(this["DefaultTargetDiskType"]));
             }
             set {
                 this["DefaultTargetDiskType"] = value;

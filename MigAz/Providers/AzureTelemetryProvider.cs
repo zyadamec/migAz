@@ -4,7 +4,7 @@
 using MigAz.Azure;
 using MigAz.Azure.Generator.AsmToArm;
 using MigAz.Azure.Models;
-using MigAz.Core.ArmTemplate;
+using MigAz.Azure.Core.ArmTemplate;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace MigAz.Providers
 {
-    public class AzureTelemetryProvider : MigAz.Core.Interface.ITelemetryProvider
+    public class AzureTelemetryProvider : MigAz.Azure.Core.Interface.ITelemetryProvider
     {
         private Dictionary<string,string> GetProcessedItems(AzureGenerator templateResult)
         {

@@ -3,14 +3,14 @@
 
 using MigAz.Azure.Interface;
 using MigAz.Azure.Models;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MigAz.Core.Generator;
+using MigAz.Azure.Core.Generator;
 using System.IO;
-using MigAz.Core.ArmTemplate;
+using MigAz.Azure.Core.ArmTemplate;
 using System.Text;
 using Newtonsoft.Json;
 using System.Reflection;

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using MigAz.Azure.MigrationTarget;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

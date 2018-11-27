@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using MigAz.Azure.MigrationTarget;
 
 namespace MigAz.Azure.UserControls
@@ -118,7 +118,7 @@ namespace MigAz.Azure.UserControls
 
             if (migrationTarget.ApiVersion == null || migrationTarget.ApiVersion == String.Empty)
             {
-                migrationTarget.ApiVersion = this.TargetTreeView.GetDefaultApiVersion(migrationTarget);
+                migrationTarget.DefaultApiVersion(this.TargetTreeView.TargetSubscription);
             }
 
             this._MigrationTarget = migrationTarget;

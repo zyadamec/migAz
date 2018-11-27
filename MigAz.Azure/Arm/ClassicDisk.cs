@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using MigAz.Azure.Interface;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {

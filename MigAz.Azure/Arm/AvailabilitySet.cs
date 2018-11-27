@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Azure.Arm
 {

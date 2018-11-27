@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

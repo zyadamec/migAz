@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Asm;
 using MigAz.Azure.Interface;
 using MigAz.Azure;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.Tests.Fakes
 {

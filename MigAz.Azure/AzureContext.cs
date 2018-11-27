@@ -3,8 +3,8 @@
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
-using MigAz.Core;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core;
+using MigAz.Azure.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

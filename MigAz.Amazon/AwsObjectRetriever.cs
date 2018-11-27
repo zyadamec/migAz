@@ -10,7 +10,7 @@ using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ElasticLoadBalancing;
 using Amazon.ElasticLoadBalancing.Model;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System.Windows.Forms;
 
 namespace MigAz.AWS

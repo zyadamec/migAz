@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using System.Collections.Generic;
 using MigAz.Azure.MigrationTarget;
 using System.Linq;

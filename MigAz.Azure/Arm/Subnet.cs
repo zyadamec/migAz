@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using MigAz.Core.ArmTemplate;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.ArmTemplate;
+using MigAz.Azure.Core.Interface;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 

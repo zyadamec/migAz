@@ -13,10 +13,10 @@ using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using MigAz.Azure.Asm;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using MigAz.Core.ArmTemplate;
+using MigAz.Azure.Core.ArmTemplate;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using MigAz.Azure.Arm;
 using MigAz.Azure.Interface;
 

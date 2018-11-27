@@ -98,9 +98,9 @@ namespace MigAz.Forms
             app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
 
             if (rbClassicDisk.Checked)
-                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ClassicDisk;
+                app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ClassicDisk;
             else
-                app.Default.DefaultTargetDiskType = Core.Interface.ArmDiskType.ManagedDisk;
+                app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ManagedDisk;
 
             app.Default.Save();
 
@@ -131,7 +131,7 @@ namespace MigAz.Forms
             chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
             upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
             
-            if (app.Default.DefaultTargetDiskType == Core.Interface.ArmDiskType.ClassicDisk)
+            if (app.Default.DefaultTargetDiskType == Azure.Core.Interface.ArmDiskType.ClassicDisk)
                 rbClassicDisk.Checked = true;
             else
                 rbManagedDisk.Checked = true;

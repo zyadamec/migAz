@@ -85,7 +85,7 @@ namespace MigAz.Azure.UserControls
             // treeViewSourceResourceManager1
             // 
             this.treeViewSourceResourceManager1.AutoSelectDependencies = true;
-            this.treeViewSourceResourceManager1.DefaultTargetDiskType = MigAz.Core.Interface.ArmDiskType.ManagedDisk;
+            this.treeViewSourceResourceManager1.DefaultTargetDiskType = MigAz.Azure.Core.Interface.ArmDiskType.ManagedDisk;
             this.treeViewSourceResourceManager1.IsSourceContextAuthenticated = false;
             this.treeViewSourceResourceManager1.Location = new System.Drawing.Point(221, 131);
             this.treeViewSourceResourceManager1.Name = "treeViewSourceResourceManager1";

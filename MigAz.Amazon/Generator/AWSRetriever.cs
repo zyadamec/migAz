@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.EC2.Model;
 using System.Windows.Forms;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 using Amazon.ElasticLoadBalancing.Model;
 using Amazon.ElasticLoadBalancing;
 using System.Net;

@@ -13,7 +13,7 @@ using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using System.Configuration;
-using MigAz.Core.Interface;
+using MigAz.Azure.Core.Interface;
 
 namespace MigAz.AWS
 {
