@@ -54,7 +54,7 @@ if ((get-command Get-AzureRmStorageAccountKey).Version.ToString() -lt '4.0.1')
     Exit
 }
 
-if ($AccountId -ne $null -and $AccessToken -ne $null)
+if ($AccountId -ne $null -and $AccountId.Length -gt 0 -and $AccessToken -ne $null -and $AccessToken.Length -gt 0)
 {
 	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId -AccountId $AccountId -AccessToken $AccessToken
 }
