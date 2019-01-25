@@ -423,158 +423,171 @@ namespace MigAz.Azure.Generator
             LoadBalancer_Properties loadbalancer_properties = new LoadBalancer_Properties();
 
             List<FrontendIPConfiguration> frontendipconfigurations = new List<FrontendIPConfiguration>();
-            loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
-
-            foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
-            {
-                FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
-                frontendipconfiguration.name = targetFrontEndIpConfiguration.Name;
-                frontendipconfigurations.Add(frontendipconfiguration);
-
-                FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
-                frontendipconfiguration.properties = frontendipconfiguration_properties;
-
-                if (loadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
-                {
-                    frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod.ToString();
-                    frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.TargetPrivateIpAddress;
-
-                    if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
-                        dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + targetFrontEndIpConfiguration.TargetVirtualNetwork.ToString() + "')]");
-
-                    Reference subnet_ref = new Reference();
-                    frontendipconfiguration_properties.subnet = subnet_ref;
-
-                    if (targetFrontEndIpConfiguration.TargetSubnet != null)
-                    {
-                        subnet_ref.id = targetFrontEndIpConfiguration.TargetSubnet.TargetId;
-                    }
-                }
-                else
-                {
-                    if (targetFrontEndIpConfiguration.PublicIp != null)
-                    {
-                        if (targetFrontEndIpConfiguration.PublicIp.GetType() == typeof(MigrationTarget.PublicIp))
-                        {
-                            await BuildPublicIPAddressObject((MigrationTarget.PublicIp)targetFrontEndIpConfiguration.PublicIp);
-
-                            Reference publicipaddress_ref = new Reference();
-                            publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
-                            frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
-
-                            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
-                        }
-                        else
-                        {
-                            int todo = 0;
-                        }
-
-                    }
-                }
-            }
-
             List<Hashtable> backendaddresspools = new List<Hashtable>();
-            loadbalancer_properties.backendAddressPools = backendaddresspools;
-
-            foreach (Azure.MigrationTarget.BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
-            {
-                Hashtable backendaddresspool = new Hashtable();
-                backendaddresspool.Add("name", targetBackEndAddressPool.Name);
-                backendaddresspools.Add(backendaddresspool);
-            }
-
             List<InboundNatRule> inboundnatrules = new List<InboundNatRule>();
             List<LoadBalancingRule> loadbalancingrules = new List<LoadBalancingRule>();
             List<Probe> probes = new List<Probe>();
 
+            loadbalancer_properties.frontendIPConfigurations = frontendipconfigurations;
+            loadbalancer_properties.backendAddressPools = backendaddresspools;
             loadbalancer_properties.inboundNatRules = inboundnatrules;
             loadbalancer_properties.loadBalancingRules = loadbalancingrules;
             loadbalancer_properties.probes = probes;
 
-            // Add Inbound Nat Rules
-            foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
+            if (loadBalancer.FrontEndIpConfigurations != null)
             {
-                InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties
+                foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in loadBalancer.FrontEndIpConfigurations)
                 {
-                    frontendPort = inboundNatRule.FrontEndPort,
-                    backendPort = inboundNatRule.BackEndPort,
-                    protocol = inboundNatRule.Protocol
-                };
+                    FrontendIPConfiguration frontendipconfiguration = new FrontendIPConfiguration();
+                    frontendipconfiguration.name = targetFrontEndIpConfiguration.Name;
+                    frontendipconfigurations.Add(frontendipconfiguration);
 
-                if (inboundNatRule.FrontEndIpConfiguration != null)
-                {
-                    Reference frontendIPConfiguration = new Reference();
-                    frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/default')]";
-                    inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
+                    FrontendIPConfiguration_Properties frontendipconfiguration_properties = new FrontendIPConfiguration_Properties();
+                    frontendipconfiguration.properties = frontendipconfiguration_properties;
+
+                    if (loadBalancer.LoadBalancerType == MigrationTarget.LoadBalancerType.Internal)
+                    {
+                        frontendipconfiguration_properties.privateIPAllocationMethod = targetFrontEndIpConfiguration.TargetPrivateIPAllocationMethod.ToString();
+                        frontendipconfiguration_properties.privateIPAddress = targetFrontEndIpConfiguration.TargetPrivateIpAddress;
+
+                        if (targetFrontEndIpConfiguration.TargetVirtualNetwork != null && targetFrontEndIpConfiguration.TargetVirtualNetwork.GetType() == typeof(Azure.MigrationTarget.VirtualNetwork))
+                            dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetwork + targetFrontEndIpConfiguration.TargetVirtualNetwork.ToString() + "')]");
+
+                        Reference subnet_ref = new Reference();
+                        frontendipconfiguration_properties.subnet = subnet_ref;
+
+                        if (targetFrontEndIpConfiguration.TargetSubnet != null)
+                        {
+                            subnet_ref.id = targetFrontEndIpConfiguration.TargetSubnet.TargetId;
+                        }
+                    }
+                    else
+                    {
+                        if (targetFrontEndIpConfiguration.PublicIp != null)
+                        {
+                            if (targetFrontEndIpConfiguration.PublicIp.GetType() == typeof(MigrationTarget.PublicIp))
+                            {
+                                await BuildPublicIPAddressObject((MigrationTarget.PublicIp)targetFrontEndIpConfiguration.PublicIp);
+
+                                Reference publicipaddress_ref = new Reference();
+                                publicipaddress_ref.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]";
+                                frontendipconfiguration_properties.publicIPAddress = publicipaddress_ref;
+
+                                dependson.Add("[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderPublicIpAddress + targetFrontEndIpConfiguration.PublicIp.ToString() + "')]");
+                            }
+                            else
+                            {
+                                int todo = 0;
+                            }
+
+                        }
+                    }
                 }
-
-                InboundNatRule inboundnatrule = new InboundNatRule
-                {
-                    name = inboundNatRule.Name,
-                    properties = inboundnatrule_properties
-                };
-
-                loadbalancer_properties.inboundNatRules.Add(inboundnatrule);
             }
 
-            foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
+            if (loadBalancer.BackEndAddressPools != null)
             {
-                Probe_Properties probe_properties = new Probe_Properties
+                foreach (Azure.MigrationTarget.BackEndAddressPool targetBackEndAddressPool in loadBalancer.BackEndAddressPools)
                 {
-                    port = targetProbe.Port,
-                    protocol = targetProbe.Protocol,
-                    intervalInSeconds = targetProbe.IntervalInSeconds,
-                    numberOfProbes = targetProbe.NumberOfProbes
-                };
-
-                if (targetProbe.RequestPath != null && targetProbe.RequestPath != String.Empty)
-                    probe_properties.requestPath = targetProbe.RequestPath;
-
-                Probe probe = new Probe
-                {
-                    name = targetProbe.Name,
-                    properties = probe_properties
-                };
-
-                loadbalancer_properties.probes.Add(probe);
+                    Hashtable backendaddresspool = new Hashtable();
+                    backendaddresspool.Add("name", targetBackEndAddressPool.Name);
+                    backendaddresspools.Add(backendaddresspool);
+                }
             }
 
-            foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
+            // Add Inbound Nat Rules
+            if (loadBalancer.InboundNatRules != null)
             {
-                Reference frontendipconfiguration_ref = new Reference
+                foreach (Azure.MigrationTarget.InboundNatRule inboundNatRule in loadBalancer.InboundNatRules)
                 {
-                    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]"
-                };
+                    InboundNatRule_Properties inboundnatrule_properties = new InboundNatRule_Properties
+                    {
+                        frontendPort = inboundNatRule.FrontEndPort,
+                        backendPort = inboundNatRule.BackEndPort,
+                        protocol = inboundNatRule.Protocol
+                    };
 
-                Reference backendaddresspool_ref = new Reference
+                    if (inboundNatRule.FrontEndIpConfiguration != null)
+                    {
+                        Reference frontendIPConfiguration = new Reference();
+                        frontendIPConfiguration.id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/default')]";
+                        inboundnatrule_properties.frontendIPConfiguration = frontendIPConfiguration;
+                    }
+
+                    InboundNatRule inboundnatrule = new InboundNatRule
+                    {
+                        name = inboundNatRule.Name,
+                        properties = inboundnatrule_properties
+                    };
+
+                    loadbalancer_properties.inboundNatRules.Add(inboundnatrule);
+                }
+            }
+
+            if (loadBalancer.Probes != null)
+            {
+                foreach (Azure.MigrationTarget.Probe targetProbe in loadBalancer.Probes)
                 {
-                    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/backendAddressPools/" + targetLoadBalancingRule.BackEndAddressPool.Name + "')]"
-                };
+                    Probe_Properties probe_properties = new Probe_Properties
+                    {
+                        port = targetProbe.Port,
+                        protocol = targetProbe.Protocol,
+                        intervalInSeconds = targetProbe.IntervalInSeconds,
+                        numberOfProbes = targetProbe.NumberOfProbes
+                    };
 
-                Reference probe_ref = new Reference
+                    if (targetProbe.RequestPath != null && targetProbe.RequestPath != String.Empty)
+                        probe_properties.requestPath = targetProbe.RequestPath;
+
+                    Probe probe = new Probe
+                    {
+                        name = targetProbe.Name,
+                        properties = probe_properties
+                    };
+
+                    loadbalancer_properties.probes.Add(probe);
+                }
+            }
+
+            if (loadBalancer.LoadBalancingRules != null)
+            {
+                foreach (Azure.MigrationTarget.LoadBalancingRule targetLoadBalancingRule in loadBalancer.LoadBalancingRules)
                 {
-                    id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]"
-                };
+                    Reference frontendipconfiguration_ref = new Reference
+                    {
+                        id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/frontendIPConfigurations/" + targetLoadBalancingRule.FrontEndIpConfiguration.Name + "')]"
+                    };
 
-                LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties
-                {
-                    frontendIPConfiguration = frontendipconfiguration_ref,
-                    backendAddressPool = backendaddresspool_ref,
-                    probe = probe_ref,
-                    frontendPort = targetLoadBalancingRule.FrontEndPort,
-                    backendPort = targetLoadBalancingRule.BackEndPort,
-                    protocol = targetLoadBalancingRule.Protocol,
-                    enableFloatingIP = targetLoadBalancingRule.EnableFloatingIP,
-                    idleTimeoutInMinutes = targetLoadBalancingRule.IdleTimeoutInMinutes
-                };
+                    Reference backendaddresspool_ref = new Reference
+                    {
+                        id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/backendAddressPools/" + targetLoadBalancingRule.BackEndAddressPool.Name + "')]"
+                    };
 
-                LoadBalancingRule loadbalancingrule = new LoadBalancingRule
-                {
-                    name = targetLoadBalancingRule.Name,
-                    properties = loadbalancingrule_properties
-                };
+                    Reference probe_ref = new Reference
+                    {
+                        id = "[concat(" + ArmConst.ResourceGroupId + ",'" + ArmConst.ProviderLoadBalancers + loadBalancer.ToString() + "/probes/" + targetLoadBalancingRule.Probe.Name + "')]"
+                    };
 
-                loadbalancer_properties.loadBalancingRules.Add(loadbalancingrule);
+                    LoadBalancingRule_Properties loadbalancingrule_properties = new LoadBalancingRule_Properties
+                    {
+                        frontendIPConfiguration = frontendipconfiguration_ref,
+                        backendAddressPool = backendaddresspool_ref,
+                        probe = probe_ref,
+                        frontendPort = targetLoadBalancingRule.FrontEndPort,
+                        backendPort = targetLoadBalancingRule.BackEndPort,
+                        protocol = targetLoadBalancingRule.Protocol,
+                        enableFloatingIP = targetLoadBalancingRule.EnableFloatingIP,
+                        idleTimeoutInMinutes = targetLoadBalancingRule.IdleTimeoutInMinutes
+                    };
+
+                    LoadBalancingRule loadbalancingrule = new LoadBalancingRule
+                    {
+                        name = targetLoadBalancingRule.Name,
+                        properties = loadbalancingrule_properties
+                    };
+
+                    loadbalancer_properties.loadBalancingRules.Add(loadbalancingrule);
+                }
             }
 
             LoadBalancer loadbalancer = new LoadBalancer(this.ExecutionGuid)
