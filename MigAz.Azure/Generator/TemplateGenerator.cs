@@ -838,7 +838,7 @@ namespace MigAz.Azure.Generator
             };
 
             // for each rule
-            foreach (MigrationTarget.NetworkSecurityGroupRule targetNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules)
+            foreach (MigrationTarget.NetworkSecurityGroupRule targetNetworkSecurityGroupRule in targetNetworkSecurityGroup.Rules.OrderBy(a => a.Direction).ThenBy(a => a.Priority))
             {
                 // if not system rule
                 if (!targetNetworkSecurityGroupRule.IsSystemRule)
