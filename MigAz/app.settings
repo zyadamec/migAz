@@ -66,7 +66,7 @@
       <Value Profile="(Default)">ManagedDisk</Value>
     </Setting>
     <Setting Name="AccessSASTokenLifetimeSeconds" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3600</Value>
+      <Value Profile="(Default)">43200</Value>
     </Setting>
     <Setting Name="LoginPromptBehavior" Type="Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior" Scope="User">
       <Value Profile="(Default)">SelectAccount</Value>
