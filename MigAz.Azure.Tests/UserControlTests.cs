@@ -18,30 +18,6 @@ namespace MIGAZ.Tests
             Assert.AreEqual("10.249.16.4", ipv4AddressBox.Text);
             ipv4AddressBox.Text = "10.249.8.4";
             Assert.AreEqual("10.249.8.4", ipv4AddressBox.Text);
-
-            bool exceptionThrown = false;
-            try
-            {
-                ipv4AddressBox.Text = "10.249.a.4";
-            }
-            catch (ArgumentException)
-            {
-                exceptionThrown = true;
-            }
-            Assert.IsTrue(exceptionThrown);
-            Assert.AreEqual("10.249.8.4", ipv4AddressBox.Text);
-
-            exceptionThrown = false;
-            try
-            {
-                ipv4AddressBox.Text = "abc123";
-            }
-            catch (ArgumentException)
-            {
-                exceptionThrown = true;
-            }
-            Assert.IsTrue(exceptionThrown);
-            Assert.AreEqual("10.249.8.4", ipv4AddressBox.Text);
         }
     }
 }
