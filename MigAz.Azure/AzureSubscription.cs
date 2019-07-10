@@ -523,20 +523,20 @@ namespace MigAz.Azure
                     // Ensure we load the Full Details to get NSG Rules
                     Azure.Asm.NetworkSecurityGroup asmNetworkSecurityGroupFullDetail = await this.GetAzureAsmNetworkSecurityGroup(asmNetworkSecurityGroup.Name);
 
-                    MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new MigrationTarget.NetworkSecurityGroup(asmNetworkSecurityGroupFullDetail, targetSettings);
+                    MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new MigrationTarget.NetworkSecurityGroup(asmNetworkSecurityGroupFullDetail, targetSettings, this.LogProvider);
                     this.AsmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
                 }
 
                 List<Azure.Asm.VirtualNetwork> asmVirtualNetworks = await this.GetAzureAsmVirtualNetworks();
                 foreach (Azure.Asm.VirtualNetwork asmVirtualNetwork in asmVirtualNetworks)
                 {
-                    MigrationTarget.VirtualNetwork targetVirtualNetwork = new MigrationTarget.VirtualNetwork(asmVirtualNetwork, this.AsmTargetNetworkSecurityGroups, this.ArmTargetRouteTables, targetSettings);
+                    MigrationTarget.VirtualNetwork targetVirtualNetwork = new MigrationTarget.VirtualNetwork(asmVirtualNetwork, this.AsmTargetNetworkSecurityGroups, this.ArmTargetRouteTables, targetSettings, this.LogProvider);
                     this.AsmTargetVirtualNetworks.Add(targetVirtualNetwork);
                 }
 
                 foreach (Azure.Asm.StorageAccount asmStorageAccount in await this.GetAzureAsmStorageAccounts())
                 {
-                    MigrationTarget.StorageAccount targetStorageAccount = new MigrationTarget.StorageAccount(asmStorageAccount, targetSettings);
+                    MigrationTarget.StorageAccount targetStorageAccount = new MigrationTarget.StorageAccount(asmStorageAccount, targetSettings, this.LogProvider);
                     this.AsmTargetStorageAccounts.Add(targetStorageAccount);
                 }
 
@@ -544,11 +544,11 @@ namespace MigAz.Azure
                 foreach (Azure.Asm.CloudService asmCloudService in asmCloudServices)
                 {
                     List<Azure.MigrationTarget.VirtualMachine> cloudServiceTargetVirtualMachines = new List<Azure.MigrationTarget.VirtualMachine>();
-                    MigrationTarget.AvailabilitySet targetAvailabilitySet = new MigrationTarget.AvailabilitySet(asmCloudService, targetSettings);
+                    MigrationTarget.AvailabilitySet targetAvailabilitySet = new MigrationTarget.AvailabilitySet(asmCloudService, targetSettings, this.LogProvider);
 
                     foreach (Azure.Asm.VirtualMachine asmVirtualMachine in asmCloudService.VirtualMachines)
                     {
-                        MigrationTarget.VirtualMachine targetVirtualMachine = new MigrationTarget.VirtualMachine(asmVirtualMachine, targetSettings);
+                        MigrationTarget.VirtualMachine targetVirtualMachine = new MigrationTarget.VirtualMachine(asmVirtualMachine, targetSettings, this.LogProvider);
                         targetVirtualMachine.TargetAvailabilitySet = targetAvailabilitySet;
                         cloudServiceTargetVirtualMachines.Add(targetVirtualMachine);
                         this.AsmTargetVirtualMachines.Add(targetVirtualMachine);
@@ -855,7 +855,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Network Security Group '" + armNetworkSecurityGroup.ToString() + "' to Target Object.");
 
-                    MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new MigrationTarget.NetworkSecurityGroup(armNetworkSecurityGroup, targetSettings);
+                    MigrationTarget.NetworkSecurityGroup targetNetworkSecurityGroup = new MigrationTarget.NetworkSecurityGroup(armNetworkSecurityGroup, targetSettings, this.LogProvider);
                     this.ArmTargetNetworkSecurityGroups.Add(targetNetworkSecurityGroup);
                 }
             }
@@ -868,7 +868,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Route Table '" + armRouteTable.ToString() + "' to Target Object.");
 
-                    MigrationTarget.RouteTable targetRouteTable = new MigrationTarget.RouteTable(armRouteTable, targetSettings);
+                    MigrationTarget.RouteTable targetRouteTable = new MigrationTarget.RouteTable(armRouteTable, targetSettings, this.LogProvider);
                     this.ArmTargetRouteTables.Add(targetRouteTable);
                 }
             }
@@ -881,7 +881,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Public IP '" + armPublicIp.ToString() + "' to Target Object.");
 
-                    MigrationTarget.PublicIp targetPublicIP = new MigrationTarget.PublicIp(armPublicIp, targetSettings);
+                    MigrationTarget.PublicIp targetPublicIP = new MigrationTarget.PublicIp(armPublicIp, targetSettings, this.LogProvider);
                     this.ArmTargetPublicIPs.Add(targetPublicIP);
                 }
             }
@@ -894,7 +894,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Virtual Network '" + armVirtualNetwork.ToString() + "' to Target Object.");
 
-                    MigrationTarget.VirtualNetwork targetVirtualNetwork = new MigrationTarget.VirtualNetwork(armVirtualNetwork, this.ArmTargetNetworkSecurityGroups, this.ArmTargetRouteTables, targetSettings);
+                    MigrationTarget.VirtualNetwork targetVirtualNetwork = new MigrationTarget.VirtualNetwork(armVirtualNetwork, this.ArmTargetNetworkSecurityGroups, this.ArmTargetRouteTables, targetSettings, this.LogProvider);
                     this.ArmTargetVirtualNetworks.Add(targetVirtualNetwork);
                 }
             }
@@ -907,7 +907,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Virtual Network Gateway '" + armVirtualNetworkGateway.ToString() + "' to Target Object.");
 
-                    MigrationTarget.VirtualNetworkGateway targetVirtualNetworkGateway = new MigrationTarget.VirtualNetworkGateway(armVirtualNetworkGateway, targetSettings);
+                    MigrationTarget.VirtualNetworkGateway targetVirtualNetworkGateway = new MigrationTarget.VirtualNetworkGateway(armVirtualNetworkGateway, targetSettings, this.LogProvider);
                     this.ArmTargetVirtualNetworkGateways.Add(targetVirtualNetworkGateway);
                 }
             }
@@ -920,7 +920,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Local Network Gateway '" + armLocalNetworkGateway.ToString() + "' to Target Object.");
 
-                    MigrationTarget.LocalNetworkGateway targetLocalNetworkGateway = new MigrationTarget.LocalNetworkGateway(armLocalNetworkGateway, targetSettings);
+                    MigrationTarget.LocalNetworkGateway targetLocalNetworkGateway = new MigrationTarget.LocalNetworkGateway(armLocalNetworkGateway, targetSettings, this.LogProvider);
                     this.ArmTargetLocalNetworkGateways.Add(targetLocalNetworkGateway);
                 }
             }
@@ -933,7 +933,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Virtual Network Gateway Connection '" + armConnection.ToString() + "' to Target Object.");
 
-                    MigrationTarget.VirtualNetworkGatewayConnection targetConnection = new MigrationTarget.VirtualNetworkGatewayConnection(armConnection, targetSettings);
+                    MigrationTarget.VirtualNetworkGatewayConnection targetConnection = new MigrationTarget.VirtualNetworkGatewayConnection(armConnection, targetSettings, this.LogProvider);
                     this.ArmTargetConnections.Add(targetConnection);
                 }
             }
@@ -946,7 +946,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Storage Account '" + armStorageAccount.ToString() + "' to Target Objects.");
 
-                    MigrationTarget.StorageAccount targetStorageAccount = new MigrationTarget.StorageAccount(armStorageAccount, targetSettings);
+                    MigrationTarget.StorageAccount targetStorageAccount = new MigrationTarget.StorageAccount(armStorageAccount, targetSettings, this.LogProvider);
                     this.ArmTargetStorageAccounts.Add(targetStorageAccount);
                 }
             }
@@ -959,7 +959,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Managed Disk '" + armManagedDisk.ToString() + "' to Target Object.");
 
-                    MigrationTarget.Disk targetManagedDisk = new MigrationTarget.Disk(armManagedDisk, null, targetSettings);
+                    MigrationTarget.Disk targetManagedDisk = new MigrationTarget.Disk(armManagedDisk, null, targetSettings, this.LogProvider);
                     this.ArmTargetManagedDisks.Add(targetManagedDisk);
                 }
             }
@@ -972,7 +972,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Availability Set '" + armAvailabilitySet.ToString() + "' to Target Object.");
 
-                    MigrationTarget.AvailabilitySet targetAvailabilitySet = new MigrationTarget.AvailabilitySet(armAvailabilitySet, targetSettings);
+                    MigrationTarget.AvailabilitySet targetAvailabilitySet = new MigrationTarget.AvailabilitySet(armAvailabilitySet, targetSettings, this.LogProvider);
                     this.ArmTargetAvailabilitySets.Add(targetAvailabilitySet);
                 }
             }
@@ -985,7 +985,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Network Interface '" + armNetworkInterface.ToString() + "' to Target Object.");
 
-                    MigrationTarget.NetworkInterface targetNetworkInterface = new MigrationTarget.NetworkInterface(armNetworkInterface, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups, targetSettings);
+                    MigrationTarget.NetworkInterface targetNetworkInterface = new MigrationTarget.NetworkInterface(armNetworkInterface, this.ArmTargetVirtualNetworks, this.ArmTargetNetworkSecurityGroups, targetSettings, this.LogProvider);
                     this.ArmTargetNetworkInterfaces.Add(targetNetworkInterface);
                 }
             }
@@ -998,7 +998,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Virtual Machine '" + armVirtualMachine.ToString() + "' to Target Object.");
 
-                    MigrationTarget.VirtualMachine targetVirtualMachine = new MigrationTarget.VirtualMachine(armVirtualMachine, targetSettings);
+                    MigrationTarget.VirtualMachine targetVirtualMachine = new MigrationTarget.VirtualMachine(armVirtualMachine, targetSettings, this.LogProvider);
                     this.ArmTargetVirtualMachines.Add(targetVirtualMachine);
 
                     if (armVirtualMachine.AvailabilitySet != null)
@@ -1059,7 +1059,7 @@ namespace MigAz.Azure
                 {
                     this.LogProvider.WriteLog("BindArmResources", "Converting ARM Resource Group '" + resourceGroup.ToString() + "' Load Balancer '" + armLoadBalancer.ToString() + "' to Target Object.");
 
-                    MigrationTarget.LoadBalancer targetLoadBalancer = new MigrationTarget.LoadBalancer(armLoadBalancer, targetSettings);
+                    MigrationTarget.LoadBalancer targetLoadBalancer = new MigrationTarget.LoadBalancer(armLoadBalancer, targetSettings, this.LogProvider);
                     foreach (Azure.MigrationTarget.FrontEndIpConfiguration targetFrontEndIpConfiguration in targetLoadBalancer.FrontEndIpConfigurations)
                     {
                         if (targetFrontEndIpConfiguration.Source != null && targetFrontEndIpConfiguration.Source.PublicIP != null)

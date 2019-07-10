@@ -17,9 +17,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private LocalNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.LocalNetworkGateways) { }
+        private LocalNetworkGateway() : base(ArmConst.MicrosoftNetwork, ArmConst.LocalNetworkGateways, null) { }
 
-        public LocalNetworkGateway(ILocalNetworkGateway localNetworkGateway, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LocalNetworkGateways)
+        public LocalNetworkGateway(ILocalNetworkGateway localNetworkGateway, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.LocalNetworkGateways, logProvider)
         {
             this._SourceLocalNetworkGateway = localNetworkGateway;
             this.SetTargetName(this.SourceName, targetSettings);

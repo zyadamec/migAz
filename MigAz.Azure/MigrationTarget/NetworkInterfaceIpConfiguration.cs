@@ -19,9 +19,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private NetworkInterfaceIpConfiguration() : base(String.Empty, String.Empty) { }
+        private NetworkInterfaceIpConfiguration() : base(String.Empty, String.Empty, null) { }
 
-        public NetworkInterfaceIpConfiguration(Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public NetworkInterfaceIpConfiguration(Azure.Asm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             _SourceIpConfiguration = ipConfiguration;
 
@@ -53,7 +53,7 @@ namespace MigAz.Azure.MigrationTarget
 
         }
 
-        public NetworkInterfaceIpConfiguration(Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public NetworkInterfaceIpConfiguration(Azure.Arm.NetworkInterfaceIpConfiguration ipConfiguration, List<VirtualNetwork> virtualNetworks, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             _SourceIpConfiguration = ipConfiguration;
 

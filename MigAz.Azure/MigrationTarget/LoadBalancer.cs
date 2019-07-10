@@ -31,18 +31,18 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public LoadBalancer() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        public LoadBalancer() : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers, null)
         {
             new FrontEndIpConfiguration(this);
         }
 
-        public LoadBalancer(string targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        public LoadBalancer(string targetName, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers, logProvider)
         {
             this.SetTargetName(targetName, targetSettings);
             new FrontEndIpConfiguration(this);
         }
 
-        public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers)
+        public LoadBalancer(Arm.LoadBalancer sourceLoadBalancer, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.LoadBalancers, logProvider)
         {
             this.Source = sourceLoadBalancer;
             this.SetTargetName(sourceLoadBalancer.Name, targetSettings);

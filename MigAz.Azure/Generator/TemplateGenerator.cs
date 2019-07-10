@@ -789,41 +789,43 @@ namespace MigAz.Azure.Generator
         {
             LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "Start " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
 
-            Reference virtualNetworkGatewayReference = new Reference
-            {
-                id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualNetworkGatewayConnection.VirtualNetworkGateway.ToString() + "')]"
-            };
+            // TODO: Commenting out until next build, we need to test / rework this export officially
 
-            Reference localNetworkGatewayReference = new Reference
-            {
-                id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + virtualNetworkGatewayConnection.LocalNetworkGateway.ToString() + "')]"
-            };
+            //Reference virtualNetworkGatewayReference = new Reference
+            //{
+            //    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderVirtualNetworkGateways + virtualNetworkGatewayConnection.VirtualNetworkGateway.ToString() + "')]"
+            //};
 
-            GatewayConnection_Properties gatewayConnection_Properties = new GatewayConnection_Properties
-            {
-                connectionType = virtualNetworkGatewayConnection.ConnectionType.ToString(),
-                routingWeight = virtualNetworkGatewayConnection.RoutingWeight,
-                virtualNetworkGateway1 = virtualNetworkGatewayReference,
-                localNetworkGateway2 = localNetworkGatewayReference,
-                sharedKey = "[parameters('" + virtualNetworkGatewayConnection.ToString() + "_SharedKey" + "')]"
-            };
+            //Reference localNetworkGatewayReference = new Reference
+            //{
+            //    id = "[concat(" + ArmConst.ResourceGroupId + ", '" + ArmConst.ProviderLocalNetworkGateways + virtualNetworkGatewayConnection.LocalNetworkGateway.ToString() + "')]"
+            //};
 
-            Parameter parameter = new Parameter
-            {
-                type = "string",
-                value = virtualNetworkGatewayConnection.SharedKey
-            };
-            this.Parameters.Add(virtualNetworkGatewayConnection.ToString() + "_SharedKey", parameter);
+            //GatewayConnection_Properties gatewayConnection_Properties = new GatewayConnection_Properties
+            //{
+            //    connectionType = virtualNetworkGatewayConnection.ConnectionType.ToString(),
+            //    routingWeight = virtualNetworkGatewayConnection.RoutingWeight,
+            //    virtualNetworkGateway1 = virtualNetworkGatewayReference,
+            //    localNetworkGateway2 = localNetworkGatewayReference,
+            //    sharedKey = "[parameters('" + virtualNetworkGatewayConnection.ToString() + "_SharedKey" + "')]"
+            //};
 
-            GatewayConnection gatewayConnection = new GatewayConnection(this.ExecutionGuid)
-            {
-                name = virtualNetworkGatewayConnection.ToString(),
-                apiVersion = virtualNetworkGatewayConnection.ApiVersion,
-                location = "[resourceGroup().location]",
-                properties = gatewayConnection_Properties
-            };
+            //Parameter parameter = new Parameter
+            //{
+            //    type = "string",
+            //    value = virtualNetworkGatewayConnection.SharedKey
+            //};
+            //this.Parameters.Add(virtualNetworkGatewayConnection.ToString() + "_SharedKey", parameter);
 
-            this.AddResource(gatewayConnection);
+            //GatewayConnection gatewayConnection = new GatewayConnection(this.ExecutionGuid)
+            //{
+            //    name = virtualNetworkGatewayConnection.ToString(),
+            //    apiVersion = virtualNetworkGatewayConnection.ApiVersion,
+            //    location = "[resourceGroup().location]",
+            //    properties = gatewayConnection_Properties
+            //};
+
+            //this.AddResource(gatewayConnection);
 
             LogProvider.WriteLog("BuildVirtualNetworkGatewayConnection", "End " + virtualNetworkGatewayConnection.ProviderNamespace + virtualNetworkGatewayConnection.ToString());
         }
@@ -1447,7 +1449,7 @@ namespace MigAz.Azure.Generator
                 }
             }
 
-            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount(disk.StorageAccountType);
+            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount(disk.StorageAccountType, this.LogProvider);
             _TemporaryStorageAccounts.Add(newTemporaryStorageAccount);
 
             return newTemporaryStorageAccount;

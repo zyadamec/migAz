@@ -24,9 +24,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private NetworkInterface() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces) { }
+        private NetworkInterface() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces, null) { }
 
-        public NetworkInterface(Asm.VirtualMachine virtualMachine, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces)
+        public NetworkInterface(Asm.VirtualMachine virtualMachine, Asm.NetworkInterface networkInterface, List<VirtualNetwork> virtualNetworks, List<NetworkSecurityGroup> networkSecurityGroups, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces, logProvider)
         {
             _SourceNetworkInterface = networkInterface;
             this.SetTargetName(networkInterface.Name, targetSettings);
@@ -35,7 +35,7 @@ namespace MigAz.Azure.MigrationTarget
             
             foreach (Asm.NetworkInterfaceIpConfiguration asmNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
-                NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(asmNetworkInterfaceIpConfiguration, virtualNetworks, targetSettings);
+                NetworkInterfaceIpConfiguration migrationNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(asmNetworkInterfaceIpConfiguration, virtualNetworks, targetSettings, logProvider);
                 this.TargetNetworkInterfaceIpConfigurations.Add(migrationNetworkInterfaceIpConfiguration);
             }
 
@@ -45,7 +45,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public NetworkInterface(Arm.NetworkInterface networkInterface, List<MigrationTarget.VirtualNetwork> armVirtualNetworks, List<MigrationTarget.NetworkSecurityGroup> armNetworkSecurityGroups, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces)
+        public NetworkInterface(Arm.NetworkInterface networkInterface, List<MigrationTarget.VirtualNetwork> armVirtualNetworks, List<MigrationTarget.NetworkSecurityGroup> armNetworkSecurityGroups, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkInterfaces, logProvider)
         {
             _SourceNetworkInterface = networkInterface;
             this.SetTargetName(networkInterface.Name, targetSettings);
@@ -55,7 +55,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Arm.NetworkInterfaceIpConfiguration armNetworkInterfaceIpConfiguration in networkInterface.NetworkInterfaceIpConfigurations)
             {
-                NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(armNetworkInterfaceIpConfiguration, armVirtualNetworks, targetSettings);
+                NetworkInterfaceIpConfiguration targetNetworkInterfaceIpConfiguration = new NetworkInterfaceIpConfiguration(armNetworkInterfaceIpConfiguration, armVirtualNetworks, targetSettings, this.LogProvider);
                 this.TargetNetworkInterfaceIpConfigurations.Add(targetNetworkInterfaceIpConfiguration);
             }
 

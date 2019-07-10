@@ -21,9 +21,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public VirtualNetwork() : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks) { }
+        public VirtualNetwork() : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks, null) { }
 
-        public VirtualNetwork(Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
+        public VirtualNetwork(Asm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks, logProvider)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
@@ -32,13 +32,13 @@ namespace MigAz.Azure.MigrationTarget
             {
                 foreach (Asm.VirtualNetworkGateway virtualNetworkGateway in virtualNetwork.Gateways2)
                 {
-                    TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(virtualNetworkGateway, targetSettings));
+                    TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(virtualNetworkGateway, targetSettings, logProvider));
                 }
             }
 
             foreach (Asm.Subnet subnet in virtualNetwork.Subnets)
             {
-                this.TargetSubnets.Add(new Subnet(this, subnet, networkSecurityGroups, routeTables, targetSettings));
+                this.TargetSubnets.Add(new Subnet(this, subnet, networkSecurityGroups, routeTables, targetSettings, logProvider));
             }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
@@ -52,19 +52,19 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public VirtualNetwork(Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
+        public VirtualNetwork(Arm.VirtualNetwork virtualNetwork, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks, logProvider)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
 
             foreach (Arm.VirtualNetworkGateway virtualNetworkGateway in virtualNetwork.VirtualNetworkGateways)
             {
-                TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(virtualNetworkGateway, targetSettings));
+                TargetVirtualNetworkGateways.Add(new VirtualNetworkGateway(virtualNetworkGateway, targetSettings, logProvider));
             }
 
             foreach (Arm.Subnet subnet in virtualNetwork.Subnets)
             {
-                this.TargetSubnets.Add(new Subnet(this, subnet, networkSecurityGroups, routeTables, targetSettings));
+                this.TargetSubnets.Add(new Subnet(this, subnet, networkSecurityGroups, routeTables, targetSettings, logProvider));
             }
 
             foreach (String addressPrefix in virtualNetwork.AddressPrefixes)
@@ -78,7 +78,7 @@ namespace MigAz.Azure.MigrationTarget
             }
         }
 
-        public VirtualNetwork(IVirtualNetwork virtualNetwork, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks)
+        public VirtualNetwork(IVirtualNetwork virtualNetwork, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.VirtualNetworks, logProvider)
         {
             this.SourceVirtualNetwork = virtualNetwork;
             this.SetTargetName(virtualNetwork.Name, targetSettings);
@@ -93,7 +93,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (ISubnet sourceSubnet in virtualNetwork.Subnets)
             {
-                MigrationTarget.Subnet targetSubnet = new Subnet(this, sourceSubnet, targetSettings);
+                MigrationTarget.Subnet targetSubnet = new Subnet(this, sourceSubnet, targetSettings, logProvider);
                 this.TargetSubnets.Add(targetSubnet);
             }
         }
@@ -155,7 +155,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            this.TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
             this.TargetNameResult = this.TargetName + targetSettings.VirtualNetworkSuffix;
         }
     }

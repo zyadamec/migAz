@@ -20,9 +20,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private Disk() : base(ArmConst.MicrosoftCompute, ArmConst.Disks) { }
+        private Disk() : base(ArmConst.MicrosoftCompute, ArmConst.Disks, null) { }
 
-        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.Disks)
+        public Disk(Asm.Disk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.Disks, logProvider)
         {
             this.SourceDisk = sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;
@@ -36,7 +36,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SourceStorageAccount = sourceDisk.SourceStorageAccount;
         }
 
-        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.Disks)
+        public Disk(IArmDisk sourceDisk, VirtualMachine parentVirtualMachine, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.Disks, logProvider)
         {
             this.SourceDisk = (IDisk)sourceDisk;
             this._ParentVirtualMachine = parentVirtualMachine;

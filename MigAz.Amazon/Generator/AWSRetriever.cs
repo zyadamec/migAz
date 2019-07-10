@@ -89,7 +89,7 @@ namespace MigAz.AWS.Generator
                     foreach (var vpc in vpcResponse.Vpcs)
                     {
                         MigAz.AWS.MigrationSource.VirtualNetwork sourceVirtualNetwork = new MigrationSource.VirtualNetwork(_awsObjectRetriever, vpc);
-                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(sourceVirtualNetwork, null);
+                        Azure.MigrationTarget.VirtualNetwork targetVirtualNetwork = new Azure.MigrationTarget.VirtualNetwork(sourceVirtualNetwork, null, this._LogProvider);
                         targetVirtualNetworks.Add(targetVirtualNetwork);
 
                         TreeNode vpcTreeNode = new TreeNode(sourceVirtualNetwork.Id + " - " + sourceVirtualNetwork.Name);

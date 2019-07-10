@@ -229,9 +229,16 @@ namespace MigAz.Azure
 
             foreach (JObject tenantJson in tenants)
             {
-                AzureTenant azureTenant = new AzureTenant(this, tenantJson);
-                await azureTenant.InitializeChildren(this, allowRestCacheUse);
-                _ArmTenants.Add(azureTenant);
+                try
+                {
+                    AzureTenant azureTenant = new AzureTenant(this, tenantJson);
+                    await azureTenant.InitializeChildren(this, allowRestCacheUse);
+                    _ArmTenants.Add(azureTenant);
+                }
+                catch (Exception exc)
+                {
+                    this.LogProvider.WriteLog("GetAzureARMTenants", "Error getting Azure Tenant: '" + exc.Message);
+                }
             }
 
             return _ArmTenants;

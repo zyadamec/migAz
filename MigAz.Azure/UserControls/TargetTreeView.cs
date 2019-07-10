@@ -900,7 +900,7 @@ namespace MigAz.Azure.UserControls
                 _TargetSettings = value;
                 if (value != null)
                     if (_TargetResourceGroup == null)
-                        _TargetResourceGroup = new ResourceGroup(value);
+                        _TargetResourceGroup = new ResourceGroup(value, this.LogProvider);
             }
         }
 
@@ -1179,7 +1179,7 @@ namespace MigAz.Azure.UserControls
         private void asdfasdfToolStripMenuItem_Click(object sender, EventArgs e)
         {
             VirtualNetwork virtualNetwork = (VirtualNetwork)treeTargetARM.SelectedNode.Tag;
-            Subnet subnet = new Subnet(virtualNetwork, this.TargetSettings);
+            Subnet subnet = new Subnet(virtualNetwork, this.TargetSettings, this.LogProvider);
             TreeNode subnetNode = SeekARMChildTreeNode(treeTargetARM.SelectedNode.Nodes, subnet.ToString(), subnet.ToString(), subnet, true);
             treeTargetARM.SelectedNode = subnetNode;
         }

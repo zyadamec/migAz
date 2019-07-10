@@ -19,15 +19,15 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private Subnet() : base(String.Empty, String.Empty) { }
+        private Subnet() : base(String.Empty, String.Empty, null) { }
 
-        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             _ParentVirtualNetwork = parentVirtualNetwork;
             this.SetTargetName("NewSubnet", targetSettings);
         }
 
-        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public Subnet(MigrationTarget.VirtualNetwork parentVirtualNetwork, ISubnet source, List<NetworkSecurityGroup> networkSecurityGroups, List<RouteTable> routeTables, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             _ParentVirtualNetwork = parentVirtualNetwork;
             _SourceSubnet = source;
@@ -66,7 +66,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SetTargetName(source.Name, targetSettings);
         }
 
-        public Subnet(VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public Subnet(VirtualNetwork parentVirtualNetwork, ISubnet sourceSubnet, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             this._ParentVirtualNetwork = parentVirtualNetwork;
             this._SourceSubnet = sourceSubnet;
@@ -145,7 +145,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            this.TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
             this.TargetNameResult = this.TargetName;
         }
     }

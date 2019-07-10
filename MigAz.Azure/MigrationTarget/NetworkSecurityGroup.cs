@@ -17,28 +17,28 @@ namespace MigAz.Azure.MigrationTarget
         private INetworkSecurityGroup _SourceNetworkSecurityGroup;
         private List<NetworkSecurityGroupRule> _Rules = new List<NetworkSecurityGroupRule>();
 
-        private NetworkSecurityGroup() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups) { }
+        private NetworkSecurityGroup() : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups, null) { }
 
-        public NetworkSecurityGroup(Asm.NetworkSecurityGroup source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups)
+        public NetworkSecurityGroup(Asm.NetworkSecurityGroup source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups, logProvider)
         {
             _SourceNetworkSecurityGroup = source;
             this.SetTargetName(source.Name, targetSettings);
 
             foreach (Asm.NetworkSecurityGroupRule sourceRule in source.Rules)
             {
-                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(sourceRule, targetSettings);
+                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(sourceRule, targetSettings, this.LogProvider);
                 this.Rules.Add(targetRule);
             }
         }
 
-        public NetworkSecurityGroup(Arm.NetworkSecurityGroup source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups)
+        public NetworkSecurityGroup(Arm.NetworkSecurityGroup source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.NetworkSecurityGroups, logProvider)
         {
             _SourceNetworkSecurityGroup = source;
             this.SetTargetName(source.Name, targetSettings);
 
             foreach (Arm.NetworkSecurityGroupRule sourceRule in source.Rules)
             {
-                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(sourceRule, targetSettings);
+                NetworkSecurityGroupRule targetRule = new NetworkSecurityGroupRule(sourceRule, targetSettings, this.LogProvider);
                 this.Rules.Add(targetRule);
             }
         }
