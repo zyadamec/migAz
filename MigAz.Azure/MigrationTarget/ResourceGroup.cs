@@ -19,7 +19,7 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public ResourceGroup(TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public ResourceGroup(TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             this.SetTargetName("NewResourceGroup", targetSettings);
         }

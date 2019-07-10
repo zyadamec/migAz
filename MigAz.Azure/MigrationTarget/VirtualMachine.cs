@@ -25,13 +25,13 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private VirtualMachine() : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines) { }
+        private VirtualMachine() : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines, null) { }
 
-        public VirtualMachine(Asm.VirtualMachine virtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines)
+        public VirtualMachine(Asm.VirtualMachine virtualMachine, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines, logProvider)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.RoleName, targetSettings);
-            this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings);
+            this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings, logProvider);
             this.OSVirtualHardDiskOS = virtualMachine.OSVirtualHardDiskOS;
 
             if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)
@@ -39,7 +39,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Asm.Disk asmDataDisk in virtualMachine.DataDisks)
             {
-                Disk targetDataDisk = new Disk(asmDataDisk, this, targetSettings);
+                Disk targetDataDisk = new Disk(asmDataDisk, this, targetSettings, logProvider);
 
                 EnsureDataDiskTargetLunIsNotNull(ref targetDataDisk);
 
@@ -51,7 +51,7 @@ namespace MigAz.Azure.MigrationTarget
 
             foreach (Asm.NetworkInterface asmNetworkInterface in virtualMachine.NetworkInterfaces)
             {
-                NetworkInterface migrationNetworkInterface = new NetworkInterface(virtualMachine, asmNetworkInterface, virtualMachine.AzureSubscription.AsmTargetVirtualNetworks, virtualMachine.AzureSubscription.AsmTargetNetworkSecurityGroups, targetSettings);
+                NetworkInterface migrationNetworkInterface = new NetworkInterface(virtualMachine, asmNetworkInterface, virtualMachine.AzureSubscription.AsmTargetVirtualNetworks, virtualMachine.AzureSubscription.AsmTargetNetworkSecurityGroups, targetSettings, logProvider);
                 migrationNetworkInterface.ParentVirtualMachine = this;
                 this.NetworkInterfaces.Add(migrationNetworkInterface);
             }
@@ -92,7 +92,7 @@ namespace MigAz.Azure.MigrationTarget
             #endregion
         }
 
-        public VirtualMachine(Arm.VirtualMachine virtualMachine, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines)
+        public VirtualMachine(Arm.VirtualMachine virtualMachine, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.VirtualMachines, logProvider)
         {
             this.Source = virtualMachine;
             this.SetTargetName(virtualMachine.Name, targetSettings);
@@ -122,7 +122,7 @@ namespace MigAz.Azure.MigrationTarget
             {
                 if (virtualMachine.OSVirtualHardDisk != null)
                 {
-                    this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings);
+                    this.OSVirtualHardDisk = new Disk(virtualMachine.OSVirtualHardDisk, this, targetSettings, this.LogProvider);
                 }
             }
 
@@ -165,7 +165,7 @@ namespace MigAz.Azure.MigrationTarget
                 }
                 else if(dataDisk.GetType() == typeof(Arm.ClassicDisk))
                 {
-                    Disk targetDataDisk = new Disk(dataDisk, this, targetSettings);
+                    Disk targetDataDisk = new Disk(dataDisk, this, targetSettings, this.LogProvider);
 
                     Arm.ClassicDisk armDisk = (Arm.ClassicDisk)dataDisk;
                     if (targetSettings.DefaultTargetDiskType == ArmDiskType.ClassicDisk)

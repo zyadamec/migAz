@@ -21,20 +21,20 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors 
 
-        public AvailabilitySet() : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets) { }
+        public AvailabilitySet() : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets, null) { }
 
-        public AvailabilitySet(String targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
+        public AvailabilitySet(String targetName, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets, logProvider)
         {
             this.SetTargetName(targetName, targetSettings);
         }
 
-        public AvailabilitySet(Asm.CloudService asmCloudService, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
+        public AvailabilitySet(Asm.CloudService asmCloudService, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets, logProvider)
         {
             _SourceAvailabilitySet = asmCloudService;
             this.SetTargetName(_SourceAvailabilitySet.Name, targetSettings);
         }
 
-        public AvailabilitySet(Arm.AvailabilitySet availabilitySet, TargetSettings targetSettings) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets)
+        public AvailabilitySet(Arm.AvailabilitySet availabilitySet, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftCompute, ArmConst.AvailabilitySets, logProvider)
         {
             _SourceAvailabilitySet = availabilitySet;
 

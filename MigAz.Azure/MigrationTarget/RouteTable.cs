@@ -19,22 +19,22 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private RouteTable() : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables) { }
+        private RouteTable() : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables, null) { }
 
-         public RouteTable(IRouteTable source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables)
+         public RouteTable(IRouteTable source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables, logProvider)
         {
             _SourceRouteTable = source;
             this.SetTargetName(source.Name, targetSettings);
         }
 
-        public RouteTable(Arm.RouteTable source, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables)
+        public RouteTable(Arm.RouteTable source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.RouteTables, logProvider)
         {
             _SourceRouteTable = source;
             this.SetTargetName(source.Name, targetSettings);
 
             foreach (Arm.Route route in source.Routes)
             {
-                _Routes.Add(new Route(route, targetSettings));
+                _Routes.Add(new Route(route, targetSettings, logProvider));
             }
         }
 

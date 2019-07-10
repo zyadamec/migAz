@@ -21,9 +21,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private Route() : base(String.Empty, String.Empty) { }
+        private Route() : base(String.Empty, String.Empty, null) { }
 
-        public Route(IRoute route, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public Route(IRoute route, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             _Source = route;
 

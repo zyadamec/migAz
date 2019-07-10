@@ -1447,7 +1447,7 @@ namespace MigAz.Azure.Generator
                 }
             }
 
-            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount(disk.StorageAccountType);
+            MigrationTarget.StorageAccount newTemporaryStorageAccount = new MigrationTarget.StorageAccount(disk.StorageAccountType, this.LogProvider);
             _TemporaryStorageAccounts.Add(newTemporaryStorageAccount);
 
             return newTemporaryStorageAccount;

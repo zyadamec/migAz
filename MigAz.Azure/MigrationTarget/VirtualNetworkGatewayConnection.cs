@@ -25,9 +25,9 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        private VirtualNetworkGatewayConnection() : base(String.Empty, String.Empty) { }
+        private VirtualNetworkGatewayConnection() : base(String.Empty, String.Empty, null) { }
 
-        public VirtualNetworkGatewayConnection(IConnection connection, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public VirtualNetworkGatewayConnection(IConnection connection, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             this._SourceConnection = connection;
             this.SetTargetName(this.SourceName, targetSettings);

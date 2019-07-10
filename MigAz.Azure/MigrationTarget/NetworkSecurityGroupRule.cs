@@ -14,7 +14,7 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public NetworkSecurityGroupRule(Asm.NetworkSecurityGroupRule asmRule, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public NetworkSecurityGroupRule(Asm.NetworkSecurityGroupRule asmRule, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             this.SetTargetName(asmRule.Name, targetSettings);
             this.Access = asmRule.Action;
@@ -28,7 +28,7 @@ namespace MigAz.Azure.MigrationTarget
             this.SourcePortRange = asmRule.SourcePortRange;
         }
 
-        public NetworkSecurityGroupRule(Arm.NetworkSecurityGroupRule armRule, TargetSettings targetSettings) : base(String.Empty, String.Empty)
+        public NetworkSecurityGroupRule(Arm.NetworkSecurityGroupRule armRule, TargetSettings targetSettings, ILogProvider logProvider) : base(String.Empty, String.Empty, logProvider)
         {
             this.SetTargetName(armRule.Name, targetSettings);
             this.Access = armRule.Access;

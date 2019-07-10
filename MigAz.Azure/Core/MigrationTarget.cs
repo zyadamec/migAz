@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MigAz.Azure.Core
 {
@@ -16,16 +17,36 @@ namespace MigAz.Azure.Core
         String _ApiVersion = String.Empty;
         String _ProviderNamespace = String.Empty;
         String _ResourceType = String.Empty;
+        ILogProvider _LogProvider = null;
 
         private MigrationTarget() { }
 
-        public MigrationTarget(string providerNamespace, string resourceType)
+        public MigrationTarget(string providerNamespace, string resourceType, ILogProvider logProvider)
         {
             _ProviderNamespace = providerNamespace;
             _ResourceType = resourceType;
+            _LogProvider = logProvider;
         }
 
         public Guid MigrationTargetGuid { get { return _MigrationTargetGuid; } }
+
+        public ILogProvider LogProvider
+        {
+            get { return _LogProvider; }
+            set { _LogProvider = value; }
+        }
+
+        public void WriteLog(string function, string message)
+        {
+            if (this.LogProvider != null)
+            {
+                this.LogProvider.WriteLog(function, message);
+            }
+            else
+            {
+                MessageBox.Show(message, function);
+            }
+        }
 
         public string ApiVersion 
         {

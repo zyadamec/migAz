@@ -29,23 +29,23 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public StorageAccount() : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
+        public StorageAccount() : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, null)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
         }
-        public StorageAccount(StorageAccountType storageAccountType) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
+        public StorageAccount(StorageAccountType storageAccountType, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
             this.StorageAccountType = storageAccountType;
         }
-        public StorageAccount(string name, TargetSettings targetSettings) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
+        public StorageAccount(string name, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
         {
             this.SetTargetName(name, targetSettings);
         }
 
-        public StorageAccount(IStorageAccount source, TargetSettings targetSettings) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts)
+        public StorageAccount(IStorageAccount source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
         {
             _Source = source;
             this.SetTargetName(source.Name, targetSettings);

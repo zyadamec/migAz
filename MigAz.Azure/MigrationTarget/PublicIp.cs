@@ -21,14 +21,14 @@ namespace MigAz.Azure.MigrationTarget
 
         #region Constructors
 
-        public PublicIp() : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses) { }
+        public PublicIp() : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses, null) { }
 
-        public PublicIp(string targetName, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses)
+        public PublicIp(string targetName, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses, logProvider)
         {
             this.SetTargetName(targetName, targetSettings);
         }
 
-        public PublicIp(Arm.PublicIP armPublicIP, TargetSettings targetSettings) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses)
+        public PublicIp(Arm.PublicIP armPublicIP, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftNetwork, ArmConst.PublicIPAddresses, logProvider)
         {
             this._Source = armPublicIP;
             this.SourceName = armPublicIP.Name;
