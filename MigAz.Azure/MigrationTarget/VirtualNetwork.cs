@@ -155,7 +155,7 @@ namespace MigAz.Azure.MigrationTarget
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
-            this.TargetName = targetName.Trim().Replace(" ", String.Empty).Replace("-", String.Empty);
+            this.TargetName = targetName.Trim().Replace(" ", String.Empty);
             this.TargetNameResult = this.TargetName + targetSettings.VirtualNetworkSuffix;
         }
     }
