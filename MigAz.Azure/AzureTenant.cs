@@ -107,39 +107,46 @@ namespace MigAz.Azure
 
         public async Task<List<AzureDomain>> GetAzureARMDomains(AzureContext azureContext, bool allowRestCacheUse = false)
         {
-            azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
-
-            if (this == null)
-                throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
-            if (azureContext.TokenProvider == null)
-                throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
-
-            String domainUrl = azureContext.AzureEnvironment.GraphEndpoint + "myorganization/domains?api-version=1.6";
-
-            AuthenticationResult tenantAuthenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.GraphEndpoint, this.TenantId, PromptBehavior.Never);
-
-            azureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
-
-            AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
-            AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-            JObject domainsJson = JObject.Parse(azureRestResponse.Response);
-
-            var domains = from domain in domainsJson["value"]
-                          select domain;
-
-            _Domains = new List<AzureDomain>();
-
-            foreach (JObject domainJson in domains)
+            try
             {
-                try
+                azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Start");
+
+                if (this == null)
+                    throw new ArgumentNullException("AzureContext is null.  Unable to call Azure API without Azure Context.");
+                if (azureContext.TokenProvider == null)
+                    throw new ArgumentNullException("TokenProvider Context is null.  Unable to call Azure API without TokenProvider.");
+
+                String domainUrl = azureContext.AzureEnvironment.GraphEndpoint + "myorganization/domains?api-version=1.6";
+
+                AuthenticationResult tenantAuthenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.GraphEndpoint, this.TenantId, PromptBehavior.Never);
+
+                azureContext.StatusProvider.UpdateStatus("BUSY: Getting Tenant Domain details from Graph...");
+
+                AzureRestRequest azureRestRequest = new AzureRestRequest(domainUrl, tenantAuthenticationResult, "GET", allowRestCacheUse);
+                AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+                JObject domainsJson = JObject.Parse(azureRestResponse.Response);
+
+                var domains = from domain in domainsJson["value"]
+                              select domain;
+
+                _Domains = new List<AzureDomain>();
+
+                foreach (JObject domainJson in domains)
                 {
-                    AzureDomain azureDomain = new AzureDomain(this, domainJson);
-                    _Domains.Add(azureDomain);
+                    try
+                    {
+                        AzureDomain azureDomain = new AzureDomain(this, domainJson);
+                        _Domains.Add(azureDomain);
+                    }
+                    catch (Exception exc)
+                    {
+                        azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Error getting Azure AD Domain:" + exc.Message);
+                    }
                 }
-                catch (Exception exc)
-                {
-                    azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Error getting Azure AD Domain:" + exc.Message);
-                }
+            }
+            catch (Exception exc)
+            {
+                azureContext.LogProvider.WriteLog("GetAzureARMDomains", "Error getting Azure Subscriptions:" + exc.Message);
             }
 
             return _Domains;
@@ -173,7 +180,7 @@ namespace MigAz.Azure
 
                 azureContext.StatusProvider.UpdateStatus("BUSY: Instantiating Subscriptions");
 
-                new List<AzureSubscription>();
+                _AzureSubscriptions = new List<AzureSubscription>();
 
                 foreach (JObject azureSubscriptionJson in subscriptions)
                 {

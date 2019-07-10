@@ -150,7 +150,7 @@ namespace MigAz.Azure.UserControls
                         cboTenant.Items.Clear();
                         foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
                         {
-                            if (azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
+                            if (azureTenant.Subscriptions != null && azureTenant.Subscriptions.Count > 0) // Only add Tenants to the drop down that have subscriptions
                                 cboTenant.Items.Add(azureTenant);
                         }
 
