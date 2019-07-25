@@ -96,31 +96,39 @@ namespace MigAz.Azure.Arm
             {
                 if (_ArmVmSizes == null)
                 {
-                    AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
-
-                    // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
-                    string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "locations/vmSizes");
-                    azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM VMSizes Location : " + this.ToString());
-
-                    AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
-                    AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
-                    JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
-
-                    azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
-
-                    var VMSizes = from VMSize in locationsVMSizesJson["value"]
-                                  select VMSize;
-
-                    List<VMSize> vmSizes = new List<VMSize>();
-                    foreach (var VMSize in VMSizes)
+                    try
                     {
-                        Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
-                        vmSizes.Add(armVMSize);
+                        AuthenticationResult armToken = await azureContext.TokenProvider.GetToken(this.AzureSubscription.TokenResourceUrl, this.AzureSubscription.AzureTenant.TenantId);
 
-                        azureContext.StatusProvider.UpdateStatus("BUSY: Instantiated VMSize '" + armVMSize.ToString() +"' for Location: " + this.ToString());
+                        // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/virtualmachines-list-sizes-region
+                        string url = this.AzureSubscription.ApiUrl + "subscriptions/" + this.AzureSubscription.SubscriptionId + String.Format(ArmConst.ProviderVMSizes, this.Name) + "?api-version=" + this.AzureSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftCompute, "locations/vmSizes");
+                        azureContext.StatusProvider.UpdateStatus("BUSY: Getting ARM VMSizes Location : " + this.ToString());
+
+                        AzureRestRequest azureRestRequest = new AzureRestRequest(url, armToken);
+                        AzureRestResponse azureRestResponse = await azureContext.AzureRetriever.GetAzureRestResponse(azureRestRequest);
+                        JObject locationsVMSizesJson = JObject.Parse(azureRestResponse.Response);
+
+                        azureContext.StatusProvider.UpdateStatus("BUSY: Loading VMSizes for Location: " + this.ToString());
+
+                        var VMSizes = from VMSize in locationsVMSizesJson["value"]
+                                      select VMSize;
+
+                        List<VMSize> vmSizes = new List<VMSize>();
+                        foreach (var VMSize in VMSizes)
+                        {
+                            Arm.VMSize armVMSize = new Arm.VMSize(VMSize);
+                            vmSizes.Add(armVMSize);
+
+                            azureContext.StatusProvider.UpdateStatus("BUSY: Instantiated VMSize '" + armVMSize.ToString() + "' for Location: " + this.ToString());
+                        }
+
+                        _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
                     }
-
-                    _ArmVmSizes = vmSizes.OrderBy(a => a.Name).ToList();
+                    catch (Exception exc)
+                    {
+                        azureContext.LogProvider.WriteLog("InitializeARMVMSizes", "Error loading VM Sizes - Location : " + this.Name + "  Error: " + exc.Message);
+                        _ArmVmSizes = new List<VMSize>();
+                    }
                 }
             }
 
