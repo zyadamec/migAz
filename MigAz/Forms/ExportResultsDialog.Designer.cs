@@ -92,7 +92,7 @@ namespace MigAz.Forms
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::MigAz.Properties.Resources.Resource_group;
+            this.pictureBox1.Image = global::MigAz.Properties.Resources.ResourceGroup;
             this.pictureBox1.Location = new System.Drawing.Point(23, 19);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";

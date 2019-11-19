@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MigAz.Azure.Interface;
 using MigAz.Azure.UserControls;
-using MigAz.AWS.UserControls;
 
 namespace MigAz.UserControls
 {
@@ -40,7 +39,7 @@ namespace MigAz.UserControls
         private void btnAmazonWebServices_Click(object sender, EventArgs e)
         {
             MessageBox.Show("AWS Source work in progress from old version, not yet functional.");
-            AfterMigrationSourceSelected?.Invoke(new MigrationAWSSourceContext());
+            //AfterMigrationSourceSelected?.Invoke(new MigrationAWSSourceContext());
         }
         
     }

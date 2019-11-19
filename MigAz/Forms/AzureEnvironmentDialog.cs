@@ -1,5 +1,5 @@
 ﻿using MigAz.Azure;
-using MigAz.AzureStack;
+using MigAz.Azure.AzureStack;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

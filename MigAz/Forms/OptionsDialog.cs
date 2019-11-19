@@ -63,46 +63,47 @@ namespace MigAz.Forms
 
         private void SaveChanges()
         {
-            app.Default.ResourceGroupSuffix = txtResourceGroupSuffix.Text.Trim();
-            app.Default.VirtualNetworkSuffix = txtVirtualNetworkSuffix.Text.Trim();
-            app.Default.VirtualNetworkGatewaySuffix = txtVirtualNetworkGatewaySuffix.Text.Trim();
-            app.Default.NetworkSecurityGroupSuffix = txtNetworkSecurityGroupSuffix.Text.Trim();
-            app.Default.StorageAccountSuffix = txtStorageAccountSuffix.Text.Trim();
-            app.Default.PublicIPSuffix = txtPublicIPSuffix.Text.Trim();
-            app.Default.LoadBalancerSuffix = txtLoadBalancerSuffix.Text.Trim();
-            app.Default.AvailabilitySetSuffix = txtAvailabilitySetSuffix.Text.Trim();
-            app.Default.VirtualMachineSuffix = txtVirtualMachineSuffix.Text.Trim();
-            app.Default.NetworkInterfaceCardSuffix = txtNetworkInterfaceCardSuffix.Text.Trim();
-            app.Default.AutoSelectDependencies = chkAutoSelectDependencies.Checked;
-            app.Default.SaveSelection = chkSaveSelection.Checked;
-            app.Default.BuildEmpty = chkBuildEmpty.Checked;
-            app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
-            app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
-            
-            switch (cmbLoginPromptBehavior.SelectedItem)
-            {
-                case "Always":
-                    app.Default.LoginPromptBehavior = PromptBehavior.Always;
-                    break;
-                case "Auto":
-                    app.Default.LoginPromptBehavior = PromptBehavior.Auto;
-                    break;
-                case "SelectAccount":
-                    app.Default.LoginPromptBehavior = PromptBehavior.SelectAccount;
-                    break;
-                default:
-                    app.Default.LoginPromptBehavior = PromptBehavior.Auto;
-                    break;
-            }
+            //todonowasap
+            //app.Default.ResourceGroupSuffix = txtResourceGroupSuffix.Text.Trim();
+            //app.Default.VirtualNetworkSuffix = txtVirtualNetworkSuffix.Text.Trim();
+            //app.Default.VirtualNetworkGatewaySuffix = txtVirtualNetworkGatewaySuffix.Text.Trim();
+            //app.Default.NetworkSecurityGroupSuffix = txtNetworkSecurityGroupSuffix.Text.Trim();
+            //app.Default.StorageAccountSuffix = txtStorageAccountSuffix.Text.Trim();
+            //app.Default.PublicIPSuffix = txtPublicIPSuffix.Text.Trim();
+            //app.Default.LoadBalancerSuffix = txtLoadBalancerSuffix.Text.Trim();
+            //app.Default.AvailabilitySetSuffix = txtAvailabilitySetSuffix.Text.Trim();
+            //app.Default.VirtualMachineSuffix = txtVirtualMachineSuffix.Text.Trim();
+            //app.Default.NetworkInterfaceCardSuffix = txtNetworkInterfaceCardSuffix.Text.Trim();
+            //app.Default.AutoSelectDependencies = chkAutoSelectDependencies.Checked;
+            //app.Default.SaveSelection = chkSaveSelection.Checked;
+            //app.Default.BuildEmpty = chkBuildEmpty.Checked;
+            //app.Default.AllowTelemetry = chkAllowTelemetry.Checked;
+            //app.Default.AccessSASTokenLifetimeSeconds = Convert.ToInt32(upDownAccessSASMinutes.Value) * 60;
 
-            app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
+            //switch (cmbLoginPromptBehavior.SelectedItem)
+            //{
+            //    case "Always":
+            //        app.Default.LoginPromptBehavior = PromptBehavior.Always;
+            //        break;
+            //    case "Auto":
+            //        app.Default.LoginPromptBehavior = PromptBehavior.Auto;
+            //        break;
+            //    case "SelectAccount":
+            //        app.Default.LoginPromptBehavior = PromptBehavior.SelectAccount;
+            //        break;
+            //    default:
+            //        app.Default.LoginPromptBehavior = PromptBehavior.Auto;
+            //        break;
+            //}
 
-            if (rbClassicDisk.Checked)
-                app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ClassicDisk;
-            else
-                app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ManagedDisk;
+            //app.Default.AzureEnvironment = cmbDefaultAzureEnvironment.SelectedItem.ToString();
 
-            app.Default.Save();
+            //if (rbClassicDisk.Checked)
+            //    app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ClassicDisk;
+            //else
+            //    app.Default.DefaultTargetDiskType = Azure.Core.Interface.ArmDiskType.ManagedDisk;
+
+            //app.Default.Save();
 
             _HasChanges = false;
         }
@@ -115,31 +116,32 @@ namespace MigAz.Forms
 
         private void formOptions_Load(object sender, EventArgs e)
         {
-            txtResourceGroupSuffix.Text = app.Default.ResourceGroupSuffix;
-            txtVirtualNetworkSuffix.Text = app.Default.VirtualNetworkSuffix;
-            txtVirtualNetworkGatewaySuffix.Text = app.Default.VirtualNetworkGatewaySuffix;
-            txtNetworkSecurityGroupSuffix.Text = app.Default.NetworkSecurityGroupSuffix;
-            txtStorageAccountSuffix.Text = app.Default.StorageAccountSuffix;
-            txtPublicIPSuffix.Text = app.Default.PublicIPSuffix;
-            txtLoadBalancerSuffix.Text = app.Default.LoadBalancerSuffix;
-            txtAvailabilitySetSuffix.Text = app.Default.AvailabilitySetSuffix;
-            txtVirtualMachineSuffix.Text = app.Default.VirtualMachineSuffix;
-            txtNetworkInterfaceCardSuffix.Text = app.Default.NetworkInterfaceCardSuffix;
-            chkAutoSelectDependencies.Checked = app.Default.AutoSelectDependencies;
-            chkSaveSelection.Checked = app.Default.SaveSelection;
-            chkBuildEmpty.Checked = app.Default.BuildEmpty;
-            chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
-            upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
+            //todonowasap
+            //txtResourceGroupSuffix.Text = app.Default.ResourceGroupSuffix;
+            //txtVirtualNetworkSuffix.Text = app.Default.VirtualNetworkSuffix;
+            //txtVirtualNetworkGatewaySuffix.Text = app.Default.VirtualNetworkGatewaySuffix;
+            //txtNetworkSecurityGroupSuffix.Text = app.Default.NetworkSecurityGroupSuffix;
+            //txtStorageAccountSuffix.Text = app.Default.StorageAccountSuffix;
+            //txtPublicIPSuffix.Text = app.Default.PublicIPSuffix;
+            //txtLoadBalancerSuffix.Text = app.Default.LoadBalancerSuffix;
+            //txtAvailabilitySetSuffix.Text = app.Default.AvailabilitySetSuffix;
+            //txtVirtualMachineSuffix.Text = app.Default.VirtualMachineSuffix;
+            //txtNetworkInterfaceCardSuffix.Text = app.Default.NetworkInterfaceCardSuffix;
+            //chkAutoSelectDependencies.Checked = app.Default.AutoSelectDependencies;
+            //chkSaveSelection.Checked = app.Default.SaveSelection;
+            //chkBuildEmpty.Checked = app.Default.BuildEmpty;
+            //chkAllowTelemetry.Checked = app.Default.AllowTelemetry;
+            //upDownAccessSASMinutes.Value = app.Default.AccessSASTokenLifetimeSeconds / 60;
             
-            if (app.Default.DefaultTargetDiskType == Azure.Core.Interface.ArmDiskType.ClassicDisk)
-                rbClassicDisk.Checked = true;
-            else
-                rbManagedDisk.Checked = true;
+            //if (app.Default.DefaultTargetDiskType == Azure.Core.Interface.ArmDiskType.ClassicDisk)
+            //    rbClassicDisk.Checked = true;
+            //else
+            //    rbManagedDisk.Checked = true;
 
-            int promptBehaviorIndex = cmbLoginPromptBehavior.FindStringExact(app.Default.LoginPromptBehavior.ToString());
-            cmbLoginPromptBehavior.SelectedIndex = promptBehaviorIndex;
+            //int promptBehaviorIndex = cmbLoginPromptBehavior.FindStringExact(app.Default.LoginPromptBehavior.ToString());
+            //cmbLoginPromptBehavior.SelectedIndex = promptBehaviorIndex;
 
-            _HasChanges = false;
+            //_HasChanges = false;
         }
 
         private void btnApplyDefaultNaming_Click(object sender, EventArgs e)
@@ -214,11 +216,12 @@ namespace MigAz.Forms
                 cmbDefaultAzureEnvironment.Items.Add(azureEnvironment);
             }
 
-            int defaultAzureEnvironmentIndex = cmbDefaultAzureEnvironment.FindStringExact(app.Default.AzureEnvironment);
-            if (defaultAzureEnvironmentIndex >= 0)
-                cmbDefaultAzureEnvironment.SelectedIndex = defaultAzureEnvironmentIndex;
-            else
-                cmbDefaultAzureEnvironment.SelectedIndex = 0;
+            //todonowasap
+            //int defaultAzureEnvironmentIndex = cmbDefaultAzureEnvironment.FindStringExact(app.Default.AzureEnvironment);
+            //if (defaultAzureEnvironmentIndex >= 0)
+            //    cmbDefaultAzureEnvironment.SelectedIndex = defaultAzureEnvironmentIndex;
+            //else
+            //    cmbDefaultAzureEnvironment.SelectedIndex = 0;
         }
     }
 }

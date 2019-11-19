@@ -45,11 +45,6 @@ namespace MigAz.Azure.Arm
             _VirtualMachineDiskJToken = jToken;
         }
 
-        public string Type
-        {
-            get { return (string)ResourceToken["type"]; }
-        }
-
         public Int32 DiskSizeGb
         {
             get
@@ -264,11 +259,6 @@ namespace MigAz.Azure.Arm
 
         #endregion
 
-        public override string ToString()
-        {
-            return this.Name;
-        }
-
         public async Task<string> GetSASUrlAsync(int tokenDurationSeconds)
         {
             if (this.AzureSubscription == null)
@@ -301,54 +291,55 @@ namespace MigAz.Azure.Arm
                     azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' PostAsync " + url + "");
 
                 IEnumerable<string> requestId;
-                using (var response = await client.PostAsJsonAsync(url,
-                        new
-                        {
-                            access = "Read",
-                            durationInSeconds = tokenDurationSeconds.ToString()
-                        })
-                    )
-                {
-                    //response.EnsureSuccessStatusCode();
-                    response.Headers.TryGetValues("x-ms-request-id", out requestId);
-                }
+                //todonowasap
+                //using (var response = await client.PostAsJsonAsync(url,
+                //        new
+                //        {
+                //            access = "Read",
+                //            durationInSeconds = tokenDurationSeconds.ToString()
+                //        })
+                //    )
+                //{
+                //    //response.EnsureSuccessStatusCode();
+                //    response.Headers.TryGetValues("x-ms-request-id", out requestId);
+                //}
 
-                String diskOperationStatus = "InProgress";
+                //String diskOperationStatus = "InProgress";
 
-                while (diskOperationStatus == "InProgress")
-                { 
-                    string url2 = "/subscriptions/" + azureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2017-03-30";
+                //while (diskOperationStatus == "InProgress")
+                //{ 
+                //    string url2 = "/subscriptions/" + azureContext.AzureSubscription.SubscriptionId + "/providers/Microsoft.Compute/locations/" + this.Location + "/DiskOperations/" + requestId.ToList<string>()[0].ToString() + "?api-version=2017-03-30";
 
-                    if (azureContext != null && azureContext.LogProvider != null)
-                        azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' GetAsync " + url2 + "");
+                //    if (azureContext != null && azureContext.LogProvider != null)
+                //        azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' GetAsync " + url2 + "");
 
-                    using (var response2 = await client.GetAsync(url2))
-                    {
-                        //response2.EnsureSuccessStatusCode();
-                        string responseString = await response2.Content.ReadAsStringAsync();
-                        JObject responseJson = JObject.Parse(responseString);
+                //    using (var response2 = await client.GetAsync(url2))
+                //    {
+                //        //response2.EnsureSuccessStatusCode();
+                //        string responseString = await response2.Content.ReadAsStringAsync();
+                //        JObject responseJson = JObject.Parse(responseString);
 
-                        if (responseJson["status"] == null && this._VirtualMachine != null)
-                            throw new MigAzSASUrlException("Unable to obtain SAS Token for Disk '" + this.ToString() + "'.  Disk is attached to Virtual Machine '" + this._VirtualMachine.ToString() + "' which may be running.  MigAz can currently only obtain the SAS URL for the Managed Disk when the owning VM is stopped.  Please ensure VM is stopped.");
+                //        if (responseJson["status"] == null && this._VirtualMachine != null)
+                //            throw new MigAzSASUrlException("Unable to obtain SAS Token for Disk '" + this.ToString() + "'.  Disk is attached to Virtual Machine '" + this._VirtualMachine.ToString() + "' which may be running.  MigAz can currently only obtain the SAS URL for the Managed Disk when the owning VM is stopped.  Please ensure VM is stopped.");
 
-                        diskOperationStatus = responseJson["status"].ToString();
+                //        diskOperationStatus = responseJson["status"].ToString();
 
-                        if (azureContext != null && azureContext.LogProvider != null)
-                            azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' Disk Operation Status " + diskOperationStatus + "");
+                //        if (azureContext != null && azureContext.LogProvider != null)
+                //            azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name + "' Disk Operation Status " + diskOperationStatus + "");
 
-                        if (diskOperationStatus == "InProgress")
-                        {
-                            System.Threading.Thread.Sleep(1000);
-                        }
-                        else if (diskOperationStatus == "Succeeded")
-                        {
-                            strAccessSAS = responseJson["properties"]["output"]["accessSAS"].ToString();
+                //        if (diskOperationStatus == "InProgress")
+                //        {
+                //            System.Threading.Thread.Sleep(1000);
+                //        }
+                //        else if (diskOperationStatus == "Succeeded")
+                //        {
+                //            strAccessSAS = responseJson["properties"]["output"]["accessSAS"].ToString();
 
-                            if (azureContext != null && azureContext.LogProvider != null)
-                                azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name +  "' Obtained AccessSAS " + strAccessSAS + "");
-                        }
-                    }
-                }
+                //            if (azureContext != null && azureContext.LogProvider != null)
+                //                azureContext.LogProvider.WriteLog("GetSASUrlAsync", "Disk '" + this.Name +  "' Obtained AccessSAS " + strAccessSAS + "");
+                //        }
+                //    }
+                //}
             }
 
             if (azureContext != null && azureContext.LogProvider != null)

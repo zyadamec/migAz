@@ -22,32 +22,31 @@ namespace MigAz.Azure.MigrationTarget
     {
         #region Variables
 
-        private IStorageAccount _Source;
         private StorageAccountType _StorageAccountType = StorageAccountType.Premium_LRS;
 
         #endregion
 
         #region Constructors
 
-        public StorageAccount() : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, null)
+        public StorageAccount() : base(null, ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, null, null)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
         }
-        public StorageAccount(StorageAccountType storageAccountType, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
+        public StorageAccount(AzureSubscription azureSubscription, StorageAccountType storageAccountType, TargetSettings targetSettings, ILogProvider logProvider) : base(azureSubscription, ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, targetSettings, logProvider)
         {
             this.TargetName = "migaz" + Guid.NewGuid().ToString().ToLower().Replace("-", "").Substring(0, 19);
             this.TargetNameResult = this.TargetName;
             this.StorageAccountType = storageAccountType;
         }
-        public StorageAccount(string name, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
+        public StorageAccount(AzureSubscription azureSubscription, string name, TargetSettings targetSettings, ILogProvider logProvider) : base(azureSubscription, ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, targetSettings, logProvider)
         {
             this.SetTargetName(name, targetSettings);
         }
 
-        public StorageAccount(IStorageAccount source, TargetSettings targetSettings, ILogProvider logProvider) : base(ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, logProvider)
+        public StorageAccount(AzureSubscription azureSubscription, IStorageAccount source, TargetSettings targetSettings, ILogProvider logProvider) : base(azureSubscription, ArmConst.MicrosoftStorage, ArmConst.StorageAccounts, targetSettings, logProvider)
         {
-            _Source = source;
+            this.Source = source;
             this.SetTargetName(source.Name, targetSettings);
             this.StorageAccountType = MigrationTarget.StorageAccount.GetStorageAccountType(source.AccountType);
         }
@@ -61,25 +60,9 @@ namespace MigAz.Azure.MigrationTarget
             get;set;
         }
 
-        public IStorageAccount SourceAccount
-        {
-            get { return _Source; }
-        }
-
         public override string ImageKey { get { return "StorageAccount"; } }
 
         public override string FriendlyObjectName { get { return "Storage Account"; } }
-
-        public String SourceName
-        {
-            get
-            {
-                if (this.SourceAccount == null)
-                    return String.Empty;
-                else
-                    return this.SourceAccount.ToString();
-            }
-        }
 
         public StorageAccountType StorageAccountType
         {
@@ -154,25 +137,26 @@ namespace MigAz.Azure.MigrationTarget
                     if (azureContext != null && azureContext.LogProvider != null)
                         azureContext.LogProvider.WriteLog("CheckNameAvailability", "Storage Account '" + this.ToString() + "' PostAsync " + url);
 
-                    using (var response = await client.PostAsJsonAsync(url,
-                            new
-                            {
-                                name = this.ToString(),
-                                type = ArmConst.TypeStorageAccount
-                            })
-                        )
-                    {
-                        String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
-                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "HttpStatusCode: '" + response.StatusCode);
-                        azureContext.LogProvider.WriteLog("CheckNameAvailability", "Response:  '" + strResponse);
+                    //todonowasap
+                    //using (var response = await client.PostAsJsonAsync(url,
+                    //        new
+                    //        {
+                    //            name = this.ToString(),
+                    //            type = ArmConst.TypeStorageAccount
+                    //        })
+                    //    )
+                    //{
+                    //    String strResponse = response.Content.ReadAsStringAsync().Result.ToString();
+                    //    azureContext.LogProvider.WriteLog("CheckNameAvailability", "HttpStatusCode: '" + response.StatusCode);
+                    //    azureContext.LogProvider.WriteLog("CheckNameAvailability", "Response:  '" + strResponse);
 
 
-                        JObject responseJson = JObject.Parse(strResponse);
-                        this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
-                            responseJson != null &&
-                            responseJson["nameAvailable"] != null &&
-                            String.Compare(responseJson["nameAvailable"].ToString(), "True", true) == 0);
-                    }
+                    //    JObject responseJson = JObject.Parse(strResponse);
+                    //    this.IsNameAvailable = (response.StatusCode == System.Net.HttpStatusCode.OK &&
+                    //        responseJson != null &&
+                    //        responseJson["nameAvailable"] != null &&
+                    //        String.Compare(responseJson["nameAvailable"].ToString(), "True", true) == 0);
+                    //}
                 }
 
                 if (azureContext != null && azureContext.StatusProvider != null)
@@ -190,13 +174,31 @@ namespace MigAz.Azure.MigrationTarget
 
         public override void SetTargetName(string targetName, TargetSettings targetSettings)
         {
+            int maxStorageAccountNameLength = 24;
             string value = targetName.Trim().Replace(" ", String.Empty).ToLower();
 
-            if (value.Length + targetSettings.StorageAccountSuffix.Length > 24)
-                value = value.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length);
+            if (targetSettings != null)
+            {
+                if (targetSettings.StorageAccountSuffix != null)
+                {
+                    if (value.Length + targetSettings.StorageAccountSuffix.Length > maxStorageAccountNameLength)
+                        value = value.Substring(0, 24 - targetSettings.StorageAccountSuffix.Length);
+
+                    this.TargetName = value;
+                    this.TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
+                }
+            }
+
+            if (value.Length > 24)
+                throw new ArgumentException("Storage Account Name '" + value + "' exceeds maximum length of " + maxStorageAccountNameLength.ToString() + ".");
 
             this.TargetName = value;
-            this.TargetNameResult = this.TargetName + targetSettings.StorageAccountSuffix;
+            this.TargetNameResult = value;
+        }
+
+        public override async Task RefreshFromSource()
+        {
+            //throw new NotImplementedException();
         }
 
         #endregion

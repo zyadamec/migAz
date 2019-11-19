@@ -46,13 +46,14 @@ namespace MigAz.Forms
             _appSettingsProvider = new AppSettingsProvider();
             _AzureEnvironments = AzureEnvironment.GetAzureEnvironments();
             _AzureRetriever = new AzureRetriever(_logProvider, _statusProvider);
-            _TargetAzureContext = new AzureContext(_AzureRetriever, _appSettingsProvider.GetTargetSettings(), app.Default.LoginPromptBehavior);
+            _TargetAzureContext = new AzureContext(_AzureRetriever, _appSettingsProvider.GetTargetSettings());
             _AzureGenerator = new AzureGenerator(_logProvider, _statusProvider);
 
-            if (app.Default.UserDefinedAzureEnvironments != null && app.Default.UserDefinedAzureEnvironments != String.Empty)
-            {
-                _UserDefinedAzureEnvironments  = JsonConvert.DeserializeObject<List<AzureEnvironment>>(app.Default.UserDefinedAzureEnvironments);
-            }
+            //todonowasap 
+            //if (app.Default.UserDefinedAzureEnvironments != null && app.Default.UserDefinedAzureEnvironments != String.Empty)
+            //{
+            //    _UserDefinedAzureEnvironments  = JsonConvert.DeserializeObject<List<AzureEnvironment>>(app.Default.UserDefinedAzureEnvironments);
+            //}
 
             targetAzureContextViewer.Bind(_TargetAzureContext, _AzureRetriever, _AzureEnvironments, ref _UserDefinedAzureEnvironments);
 
@@ -80,7 +81,7 @@ namespace MigAz.Forms
 
         private async Task AlertIfNewVersionAvailable()
         {
-            string currentVersion = "2.4.4.4";
+            string currentVersion = "2.5.0.0";
             VersionCheck versionCheck = new VersionCheck(this.LogProvider);
             string newVersionNumber = await versionCheck.GetAvailableVersion("https://migaz.azurewebsites.net/api/v2", currentVersion);
             if (versionCheck.IsVersionNewer(currentVersion, newVersionNumber))
@@ -343,7 +344,7 @@ namespace MigAz.Forms
                 if (sourceUserControl.GetType() == typeof(MigrationAzureSourceContext))
                 {
                     MigrationAzureSourceContext migrationAzureSourceContext = (MigrationAzureSourceContext)sourceUserControl;
-                    migrationAzureSourceContext.AzureContext.LoginPromptBehavior = app.Default.LoginPromptBehavior;
+                    migrationAzureSourceContext.AzureContext.LoginPromptBehavior = Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.SelectAccount; //todonowasap  app.Default.LoginPromptBehavior;
                 }
             }
         }
@@ -391,7 +392,7 @@ namespace MigAz.Forms
 
             if (this.AzureGenerator != null)
             {
-                this.AzureGenerator.AccessSASTokenLifetimeSeconds = app.Default.AccessSASTokenLifetimeSeconds;
+                this.AzureGenerator.AccessSASTokenLifetimeSeconds = 43200; //todonowasap  app.Default.AccessSASTokenLifetimeSeconds;
                 this.AzureGenerator.ExportArtifacts = this.targetTreeView1.ExportArtifacts;
                 this.AzureGenerator.OutputDirectory = this.txtDestinationFolder.Text;
                 this.AzureGenerator.TargetAzureTokenProvider = (AzureTokenProvider)this.targetAzureContextViewer.SelectedAzureContext.TokenProvider;
@@ -616,7 +617,7 @@ namespace MigAz.Forms
                 MigrationAzureSourceContext azureControl = (MigrationAzureSourceContext)migrationSourceUserControl;
 
                 // This will move to be based on the source context (upon instantiation)
-                azureControl.Bind(this._AzureRetriever, this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, app.Default.LoginPromptBehavior, this._AzureEnvironments, ref this._UserDefinedAzureEnvironments);
+                azureControl.Bind(this._AzureRetriever, this._statusProvider, this._logProvider, this._appSettingsProvider.GetTargetSettings(), this.imageList1, Microsoft.IdentityModel.Clients.ActiveDirectory.PromptBehavior.SelectAccount, this._AzureEnvironments, ref this._UserDefinedAzureEnvironments);
 
                 azureControl.AzureContext.AzureEnvironment = GetDefaultAzureEnvironment();
 
@@ -650,16 +651,16 @@ namespace MigAz.Forms
 
             if (_AzureEnvironments != null)
             {
-                defaultAzureEnvironment = _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
-                if (defaultAzureEnvironment != null)
-                    return defaultAzureEnvironment;
+                //todonowasap defaultAzureEnvironment = _AzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+                //if (defaultAzureEnvironment != null)
+                    //return defaultAzureEnvironment;
             }
 
             if (_UserDefinedAzureEnvironments != null)
             {
-                defaultAzureEnvironment = _UserDefinedAzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
-                if (defaultAzureEnvironment != null)
-                    return defaultAzureEnvironment;
+                //todonowasap defaultAzureEnvironment = _UserDefinedAzureEnvironments.Where(a => a.Name == app.Default.AzureEnvironment).FirstOrDefault();
+                //if (defaultAzureEnvironment != null)
+                    //return defaultAzureEnvironment;
             }
 
             return null;
@@ -778,8 +779,8 @@ namespace MigAz.Forms
             azureEnvironmentDialog.ShowDialog();
 
             // Save User Defined Azure Environments to App Settings
-            app.Default.UserDefinedAzureEnvironments = JsonConvert.SerializeObject(_UserDefinedAzureEnvironments);
-            app.Default.Save();
+            //todonowasap app.Default.UserDefinedAzureEnvironments = JsonConvert.SerializeObject(_UserDefinedAzureEnvironments);
+            //todonowasap             app.Default.Save();
         }
 
         private async Task targetAzureContextViewer_AfterContextChanged(AzureLoginContextViewer sender)

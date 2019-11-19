@@ -14,13 +14,13 @@ namespace MigAz.Providers
         {
             get
             {
-                return app.Default.AllowTelemetry;
+                return false; //todonowasap app.Default.AllowTelemetry;
             }
 
             set
             {
-                app.Default.AllowTelemetry = value;
-                app.Default.Save();
+                //todonowasap app.Default.AllowTelemetry = value;
+                //todonowasap app.Default.Save();
             }
         }
 
@@ -28,13 +28,13 @@ namespace MigAz.Providers
         {
             get
             {
-                return app.Default.BuildEmpty;
+                return false; //todonowasap app.Default.BuildEmpty;
             }
 
             set
             {
-                app.Default.BuildEmpty = value;
-                app.Default.Save();
+                //todonowasap app.Default.BuildEmpty = value;
+                //todonowasap app.Default.Save();
             }
         }
 
@@ -42,26 +42,26 @@ namespace MigAz.Providers
         {
             get
             {
-                return app.Default.StorageAccountSuffix;
+                return "v2";//todonowasap app.Default.StorageAccountSuffix;
             }
 
             set
             {
-                app.Default.StorageAccountSuffix = value;
-                app.Default.Save();
+                //todonowasap app.Default.StorageAccountSuffix = value;
+                //todonowasap app.Default.Save();
             }
         }
         public string AvailabilitySetSuffix
         {
             get
             {
-                return app.Default.AvailabilitySetSuffix;
+                return String.Empty; //todonowasap app.Default.AvailabilitySetSuffix;
             }
 
             set
             {
-                app.Default.AvailabilitySetSuffix = value;
-                app.Default.Save();
+                //todonowasap app.Default.AvailabilitySetSuffix = value;
+                //todonowasap app.Default.Save();
             }
         }
 
@@ -69,81 +69,102 @@ namespace MigAz.Providers
         {
             get
             {
-                return app.Default.NetworkInterfaceCardSuffix;
+                return String.Empty; //todonowasap return app.Default.NetworkInterfaceCardSuffix;
             }
 
             set
             {
-                app.Default.NetworkInterfaceCardSuffix = value;
-                app.Default.Save();
+                //app.Default.NetworkInterfaceCardSuffix = value;
+                //app.Default.Save();
             }
         }
 
         public string VirtualNetworkSuffix
         {
-            get { return app.Default.VirtualNetworkSuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap return app.Default.VirtualNetworkSuffix; 
+            }
             set
             {
-                app.Default.VirtualNetworkSuffix = value;
-                app.Default.Save();
+                //app.Default.VirtualNetworkSuffix = value;
+                //app.Default.Save();
             }
         }
         public string ResourceGroupSuffix
         {
-            get { return app.Default.ResourceGroupSuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap return app.Default.ResourceGroupSuffix;
+            }
             set
             {
-                app.Default.ResourceGroupSuffix = value;
-                app.Default.Save();
+                //app.Default.ResourceGroupSuffix = value;
+                //app.Default.Save();
             }
         }
 
         public string VirtualNetworkGatewaySuffix
         {
-            get { return app.Default.VirtualNetworkGatewaySuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap return app.Default.VirtualNetworkGatewaySuffix; 
+            }
             set
             {
-                app.Default.VirtualNetworkGatewaySuffix = value;
-                app.Default.Save();
+                //app.Default.VirtualNetworkGatewaySuffix = value;
+                //app.Default.Save();
             }
         }
         public string PublicIPSuffix
         {
-            get { return app.Default.PublicIPSuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap return app.Default.PublicIPSuffix; 
+            }
             set
             {
-                app.Default.PublicIPSuffix = value;
-                app.Default.Save();
+                //app.Default.PublicIPSuffix = value;
+                //app.Default.Save();
             }
         }
 
         public string NetworkSecurityGroupSuffix
         {
-            get { return app.Default.NetworkSecurityGroupSuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap     return app.Default.NetworkSecurityGroupSuffix; 
+            }
             set
             {
-                app.Default.NetworkSecurityGroupSuffix = value;
-                app.Default.Save();
+                //app.Default.NetworkSecurityGroupSuffix = value;
+                //app.Default.Save();
             }
         }
 
         public string LoadBalancerSuffix
         {
-            get { return app.Default.LoadBalancerSuffix; }
+            get 
+            {
+                return String.Empty; //todonowasap return app.Default.LoadBalancerSuffix;
+            }
             set
             {
-                app.Default.LoadBalancerSuffix = value;
-                app.Default.Save();
+                //app.Default.LoadBalancerSuffix = value;
+                //app.Default.Save();
             }
         }
 
         public string VirtualMachineSuffix
         {
-            get { return app.Default.VirtualMachineSuffix; }
+            get
+            {
+                return String.Empty; //todonowasap                 return app.Default.VirtualMachineSuffix; 
+            }
             set
             {
-                app.Default.VirtualMachineSuffix = value;
-                app.Default.Save();
+                //app.Default.VirtualMachineSuffix = value;
+                //app.Default.Save();
             }
         }
 
