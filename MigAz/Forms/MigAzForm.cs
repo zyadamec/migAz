@@ -60,7 +60,7 @@ namespace MigAz.Forms
             propertyPanel1.Clear();
             splitContainer2.SplitterDistance = this.Height / 2;
             splitContainer3.SplitterDistance = splitContainer3.Width / 2;
-            splitContainer4.SplitterDistance = 45;
+            splitContainer4.SplitterDistance = 175;
 
             lblLastOutputRefresh.Text = String.Empty;
             txtDestinationFolder.Text = AppDomain.CurrentDomain.BaseDirectory;
@@ -292,20 +292,27 @@ namespace MigAz.Forms
 
         private async void btnExport_Click_1Async(object sender, EventArgs e)
         {
-            // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
-            if (await RefreshOutput())
+            try
             {
-                if (this.AzureGenerator != null)
+                // We are refreshing both the MemoryStreams and the Output Tabs via this call, prior to writing to files
+                if (await RefreshOutput())
                 {
-                    this.AzureGenerator.OutputDirectory = txtDestinationFolder.Text;
+                    if (this.AzureGenerator != null)
+                    {
+                        this.AzureGenerator.OutputDirectory = txtDestinationFolder.Text;
 
-                    this.AzureGenerator.Write();
+                        this.AzureGenerator.Write();
 
-                    StatusProvider.UpdateStatus("Ready");
+                        StatusProvider.UpdateStatus("Ready");
 
-                    var exportResults = new ExportResultsDialog(this.AzureGenerator);
-                    exportResults.ShowDialog(this);
+                        var exportResults = new ExportResultsDialog(this.AzureGenerator);
+                        exportResults.ShowDialog(this);
+                    }
                 }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message);
             }
         }
 
@@ -511,7 +518,7 @@ namespace MigAz.Forms
         private void splitContainer1_Panel2_Resize(object sender, EventArgs e)
         {
             propertyPanel1.Width = splitContainer1.Panel2.Width - 10;
-            propertyPanel1.Height = splitContainer1.Panel2.Height - 100;
+            propertyPanel1.Height = splitContainer1.Panel2.Height - 150;
             panel1.Top = splitContainer1.Panel2.Height - panel1.Height - 15;
             panel1.Width = splitContainer1.Panel2.Width;
         }

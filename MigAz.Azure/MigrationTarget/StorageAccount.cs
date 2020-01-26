@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Core;
 using MigAz.Azure.Core.ArmTemplate;
@@ -15,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace MigAz.Azure.MigrationTarget
 {
@@ -126,7 +126,7 @@ namespace MigAz.Azure.MigrationTarget
                 // https://docs.microsoft.com/en-us/rest/api/storagerp/storageaccounts/checknameavailability
                 string url = "/subscriptions/" + targetSubscription.SubscriptionId + ArmConst.ProviderStorage + checkNameAvailability + "?api-version=" + targetSubscription.GetProviderMaxApiVersion(ArmConst.MicrosoftStorage, checkNameAvailability);
 
-                AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
+                AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, "user_impersonation");
 
                 using (var client = new HttpClient())
                 {

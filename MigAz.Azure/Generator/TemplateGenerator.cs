@@ -17,7 +17,7 @@ using System.Reflection;
 using System.Linq;
 using MigAz.Azure.Core;
 using MigAz.Azure.Interface;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 
 namespace MigAz.Azure.Generator
 {
@@ -1661,10 +1661,10 @@ namespace MigAz.Azure.Generator
             {
                 if (this.TargetAzureTokenProvider != null)
                 {
-                    AuthenticationResult authenticationResult = this.TargetAzureTokenProvider.GetToken(this.TargetSubscription.TokenResourceUrl, this.TargetSubscription.AzureTenant.TenantId).Result;
+                    AuthenticationResult authenticationResult = this.TargetAzureTokenProvider.GetToken(this.TargetSubscription.TokenResourceUrl, "user_impersonation").Result;
                     if (authenticationResult != null)
                     {
-                        accountIdParameter = " -AccountId '" + authenticationResult.UserInfo.DisplayableId + "'";
+                        accountIdParameter = " -AccountId '" + authenticationResult.Account.Username + "'";
                         accessTokenParameter = " -AccessToken '" + authenticationResult.AccessToken + "'";
                     }
                 }

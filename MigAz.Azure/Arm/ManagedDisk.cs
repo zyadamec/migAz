@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MigAz.Azure.Interface;
 using MigAz.Azure.Core.ArmTemplate;
 using MigAz.Azure.Core.Interface;
@@ -13,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 
 namespace MigAz.Azure.Arm
 {
@@ -279,7 +279,7 @@ namespace MigAz.Azure.Arm
             string url = "/subscriptions/" + this.AzureSubscription.SubscriptionId + "/resourceGroups/" + this.ResourceGroup.Name + ArmConst.ProviderManagedDisks + this.Name + "/BeginGetAccess?api-version=2017-03-30";
             string strAccessSAS = String.Empty;
 
-            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, azureContext.AzureSubscription.AzureAdTenantId);
+            AuthenticationResult authenticationResult = await azureContext.TokenProvider.GetToken(azureContext.AzureEnvironment.ResourceManagerEndpoint, "user_impersonation");
 
             using (var client = new HttpClient())
             {
