@@ -40,38 +40,38 @@ param (
     $RefreshInterval = 10
 )
 
-# Check Azure.Storage version - minimum 4.0.1 required
-if ((get-command New-AzureStorageContext).Version.ToString() -lt '4.0.1')
+# Check Az.Storage version - minimum 4.0.1 required
+if ((get-command New-AzStorageContext).Version.ToString() -lt '2.1.0')
 {
-    Write-Host 'Please update Azure.Storage module to 4.0.1 or higher before running this script' -ForegroundColor Yellow
+    Write-Host 'Please update Az.Storage module to 2.1.0 or higher before running this script' -ForegroundColor Yellow
     Exit
 }
 
-# Check AzureRM.Storage version - minimum 4.0.1 required
-if ((get-command Get-AzureRmStorageAccountKey).Version.ToString() -lt '4.0.1')
+# Check Az.Storage version - minimum 4.0.1 required
+if ((get-command Get-AzStorageAccountKey).Version.ToString() -lt '2.1.0')
 {
-    Write-Host 'Please update AzureRM.Storage module to 4.0.1 or higher before running this script' -ForegroundColor Yellow
+    Write-Host 'Please update Az.Storage module to 2.1.0 or higher before running this script' -ForegroundColor Yellow
     Exit
 }
 
 if ($AccountId -ne $null -and $AccountId.Length -gt 0 -and $AccessToken -ne $null -and $AccessToken.Length -gt 0)
 {
-	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId -AccountId $AccountId -AccessToken $AccessToken
+	Add-AzAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId -AccountId $AccountId -AccessToken $AccessToken
 }
 else
 {
-	Add-AzureRmAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId
+	Add-AzAccount -Environment $Environment -TenantId $TenantId -SubscriptionId $SubscriptionId
 }
 
 If ($StartType -eq "" -or $StartType -eq "CreateResourceGroup")
 {
 	$CreateResourceGroupError = $false
 	Write-Host "Getting Azure Resource Group '$($ResourceGroupName)'"
-	$ResourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction Continue -ErrorVariable GetResourceGroupError
+	$ResourceGroup = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction Continue -ErrorVariable GetResourceGroupError
 	if ($GetResourceGroupError)
 	{
 		Write-Host " - Creating Azure Resource Group '$($ResourceGroupName)' in Location '$($ResourceGroupLocation)'"
-		New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -ErrorAction Stop
+		New-AzResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -ErrorAction Stop
 	}
 	else
 	{
@@ -129,46 +129,46 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 		foreach ($copyblobdetail in $copyblobdetails)
 		{
 			# Ensure the Storage Account Exists
-			$targetStorageAccount = Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -ErrorAction SilentlyContinue
+			$targetStorageAccount = Get-AzStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -ErrorAction SilentlyContinue
 			if ($targetStorageAccount -eq $null)
 			{
 				Write-Host "Target Storage Account '$($copyblobdetail.TargetStorageAccount)' not found.  Attempting to create."
-				New-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -Location $copyblobdetail.TargetLocation -SkuName $copyblobdetail.TargetStorageAccountType -ErrorAction Stop
+				New-AzStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -Location $copyblobdetail.TargetLocation -SkuName $copyblobdetail.TargetStorageAccountType -ErrorAction Stop
 			}
 
 			# Create destination storage account context
-			$copyblobdetail.TargetKey = (Get-AzureRmStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount | Get-AzureRmStorageAccountKey).Value[0]
-			$destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint -ErrorAction Stop
+			$copyblobdetail.TargetKey = (Get-AzStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount | Get-AzStorageAccountKey).Value[0]
+			$destination_context = New-AzStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint -ErrorAction Stop
 
 			# Create destination container if it does not exist
-			$destination_container = Get-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer -ErrorAction SilentlyContinue
+			$destination_container = Get-AzStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer -ErrorAction SilentlyContinue
 			if ($destination_container -eq $null)
 			{ 
-				New-AzureStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer
+				New-AzStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer
 			}
 
 			if ($copyblobdetail.SourceAbsoluteUri -eq $null)
 			{
 				# Create source storage account context
-				$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment -ErrorAction Stop
+				$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment -ErrorAction Stop
     
 				#Get a reference to a blob
-				$blob = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Blob $copyblobdetail.SourceBlob -ErrorAction Stop
+				$blob = Get-AzStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Blob $copyblobdetail.SourceBlob -ErrorAction Stop
 				#Create a snapshot of the blob
 				$snap = $blob.ICloudBlob.CreateSnapshot()
 				$copyblobdetail.SnapshotTime = $snap.SnapshotTime.DateTime.ToString()
 				# Get just created snapshot
-				$snapshot = Get-AzureStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Prefix $copyblobdetail.SourceBlob | Where-Object  { $_.Name -eq $copyblobdetail.SourceBlob -and $_.SnapshotTime -eq $snap.SnapshotTime } 
+				$snapshot = Get-AzStorageBlob -Context $source_context -Container $copyblobdetail.SourceContainer -Prefix $copyblobdetail.SourceBlob | Where-Object  { $_.Name -eq $copyblobdetail.SourceBlob -and $_.SnapshotTime -eq $snap.SnapshotTime } 
             
 				Write-Host " - Starting Blob Copy '$($copyblobdetail.TargetBlob)'." -ForegroundColor Green
 
 				# Initiate blob snapshot copy job
-				Start-AzureStorageBlobCopy -Context $source_context -ICloudBlob $snapshot.ICloudBlob -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
+				Start-AzStorageBlobCopy -Context $source_context -ICloudBlob $snapshot.ICloudBlob -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
 			}
 			else
 			{
 				# Initiate blob snapshot copy job
-				Start-AzureStorageBlobCopy -AbsoluteUri $copyblobdetail.SourceAbsoluteUri -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
+				Start-AzStorageBlobCopy -AbsoluteUri $copyblobdetail.SourceAbsoluteUri -DestContext $destination_context -DestContainer $copyblobdetail.TargetContainer -DestBlob $copyblobdetail.TargetBlob
 			}
 
 			# Updates $copyblobdetailsout array
@@ -208,8 +208,8 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 			{
 				if ($copyblobdetail.Status -ne "Success" -and $copyblobdetail.Status -ne "Failed")
 				{
-					$destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint
-					$status = Get-AzureStorageBlobCopyState -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob
+					$destination_context = New-AzStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey -Endpoint $copyblobdetail.TargetEndpoint
+					$status = Get-AzStorageBlobCopyState -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob
 
 					$copyblobdetail.TotalBytes = "{0:N0} MB" -f ($status.TotalBytes / 1MB)
 					$copyblobdetail.BytesCopied = "{0:N0} MB" -f ($status.BytesCopied / 1MB)
@@ -268,9 +268,9 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 			# Create source storage account context
 			if ($copyblobdetail.SourceStorageAccount -ne $null)
 			{
-				$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+				$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
-				$source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
+				$source_container = Get-AzStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
 				$blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
 
 				if ($blobs.Count > 0)
@@ -298,8 +298,8 @@ If (($StartType -eq "" -and $BlobCopyFailure) -or $StartType -eq "CancelBlobCopy
         {
 			Write-Host " - Stopping Blob Copy '$($copyblobdetail.TargetBlob)'"
 
-            $destination_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
-            Stop-AzureStorageBlobCopy -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob -Force
+            $destination_context = New-AzStorageContext -StorageAccountName $copyblobdetail.TargetStorageAccount -StorageAccountKey $copyblobdetail.TargetKey
+            Stop-AzStorageBlobCopy -Context $destination_context -Container $copyblobdetail.TargetContainer -Blob $copyblobdetail.TargetBlob -Force
 
             $copyblobdetail.Status = "Canceled"
             $copyblobdetail.EndTime = Get-Date
@@ -315,9 +315,9 @@ If (($StartType -eq "" -and $BlobCopyFailure) -or $StartType -eq "CancelBlobCopy
 		if ($copyblobdetail.SourceStorageAccount -ne $null)
 		{
 			# Create source storage account context
-			$source_context = New-AzureStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
+			$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
-			$source_container = Get-AzureStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
+			$source_container = Get-AzStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
 			$blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
 			if ($blobs.Count > 0)
 			{
@@ -344,14 +344,14 @@ elseif (($StartType -eq "" -and !$BlobCopyFailure) -or $StartType -eq "ResourceG
 	{
 		Write-Host ""
 
-		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
+		New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
 	}
 	else
 	{
 		Write-Host " * TemplateParameterFile '$($TemplateParameterFile)'"
 		Write-Host ""
 
-		New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
+		New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -ErrorAction Continue -ErrorVariable ResourceGroupDeploymentError
 	}
 }
 
@@ -364,14 +364,14 @@ If (($StartType -eq "" -and $ResourceGroupDeploymentError) -or $StartType -eq "T
 	{
 		Write-Host ""
 
-		Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -Debug -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
+		Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -Debug -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
 	}
 	else
 	{
 		Write-Host " * TemplateParameterFile '$($TemplateParameterFile)'"
 		Write-Host ""
 
-		Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -Debug -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
+		Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $TemplateFile -TemplateParameterFile $TemplateParameterFile -Debug -ErrorAction Continue -ErrorVariable TestResourceGroupDeploymentError
 	}
 }
 
@@ -383,6 +383,6 @@ if (($StartType -eq "" -and !$ResourceGroupDeploymentError) -or $StartType -eq "
 	foreach ($migAzTempStorage in $distinctMigAzTempStorage)
 	{
 		Write-Host " * Removing MigAz Temporary Storage Account '$($migAzTempStorage.TargetStorageAccount)'" -ForegroundColor Green
-		Remove-AzureRmStorageAccount -ResourceGroupName $ResourceGroupName -Name $migAzTempStorage.TargetStorageAccount -Confirm:$false
+		Remove-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $migAzTempStorage.TargetStorageAccount -Confirm:$false
 	}
 }
