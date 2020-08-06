@@ -74,7 +74,7 @@ namespace MigAz.Azure.UserControls
                 {
                     foreach (AzureTenant azureTenant in azureTenants)
                     {
-                        if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
+                        if (azureTenant.Subscriptions != null && azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                             cboTenant.Items.Add(azureTenant);
                     }
                     cboTenant.Enabled = true;
