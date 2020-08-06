@@ -56,28 +56,32 @@ namespace MigAz.Azure.Forms
                 if (azureLoginContextViewer.ExistingContext.AzureRetriever != null && azureLoginContextViewer.ExistingContext.TokenProvider != null)
                 {
                     azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Loading Azure Tenants");
-                    foreach (AzureTenant azureTenant in await azureLoginContextViewer.ExistingContext.GetAzureARMTenants())
+                    List<AzureTenant> azureTenants = await azureLoginContextViewer.ExistingContext.GetAzureARMTenants();
+                    if (azureTenants != null)
                     {
-                        subscriptionCount += azureTenant.Subscriptions.Count;
-
-                        if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
+                        foreach (AzureTenant azureTenant in azureTenants)
                         {
-                            if (azureTenant.Subscriptions.Count == 1 && azureTenant.Subscriptions[0] == azureLoginContextViewer.ExistingContext.AzureSubscription)
+                            subscriptionCount += azureTenant.Subscriptions.Count;
+
+                            if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                             {
-                                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "', as it has only one subscription, which is the same as the Existing Azure Context.");
+                                if (azureTenant.Subscriptions.Count == 1 && azureTenant.Subscriptions[0] == azureLoginContextViewer.ExistingContext.AzureSubscription)
+                                {
+                                    azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "', as it has only one subscription, which is the same as the Existing Azure Context.");
+                                }
+                                else
+                                {
+                                    cboTenant.Items.Add(azureTenant);
+                                    azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                                }
                             }
                             else
                             {
-                                cboTenant.Items.Add(azureTenant);
-                                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Added Azure Tenant '" + azureTenant.ToString() + "'");
+                                azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "'.  Contains no subscriptions.");
                             }
                         }
-                        else
-                        {
-                            azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "'.  Contains no subscriptions.");
-                        }
+                        cboTenant.Enabled = true;
                     }
-                    cboTenant.Enabled = true;
 
                     if (azureLoginContextViewer.SelectedAzureContext != null && azureLoginContextViewer.SelectedAzureContext.AzureTenant != null)
                     {
