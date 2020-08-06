@@ -24,14 +24,20 @@ namespace MigAz.Azure.UserControls
             _AzureContext = azureContext;
 
             cboAzureEnvironment.Items.Clear();
-            foreach (AzureEnvironment azureEnvironment in azureEnvironments)
+            if (azureEnvironments != null)
             {
-                cboAzureEnvironment.Items.Add(azureEnvironment);
+                foreach (AzureEnvironment azureEnvironment in azureEnvironments)
+                {
+                    cboAzureEnvironment.Items.Add(azureEnvironment);
+                }
             }
 
-            foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
+            if (userDefinedAzureEnvironments != null)
             {
-                cboAzureEnvironment.Items.Add(azureEnvironment);
+                foreach (AzureEnvironment azureEnvironment in userDefinedAzureEnvironments)
+                {
+                    cboAzureEnvironment.Items.Add(azureEnvironment);
+                }
             }
 
             if (_AzureContext.AzureEnvironment != null)
@@ -62,12 +68,17 @@ namespace MigAz.Azure.UserControls
             cboTenant.Items.Clear();
             if (_AzureContext.AzureRetriever != null && _AzureContext.TokenProvider != null && _AzureContext.TokenProvider.LastUserInfo != null)
             {
-                foreach (AzureTenant azureTenant in await _AzureContext.GetAzureARMTenants())
+                List<AzureTenant> azureTenants = await _AzureContext.GetAzureARMTenants();
+
+                if (azureTenants != null)
                 {
-                    if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
-                        cboTenant.Items.Add(azureTenant);
+                    foreach (AzureTenant azureTenant in azureTenants)
+                    {
+                        if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
+                            cboTenant.Items.Add(azureTenant);
+                    }
+                    cboTenant.Enabled = true;
                 }
-                cboTenant.Enabled = true;
 
                 if (_AzureContext.AzureTenant != null)
                 {
@@ -85,11 +96,15 @@ namespace MigAz.Azure.UserControls
                     cmbSubscriptions.Items.Clear();
                     if (_AzureContext.AzureRetriever != null)
                     {
-                        foreach (AzureSubscription azureSubscription in await selectedTenant.GetAzureARMSubscriptions(_AzureContext, false))
+                        List<AzureSubscription> azureSubscriptions = await selectedTenant.GetAzureARMSubscriptions(_AzureContext, false);
+                        if (azureSubscriptions != null)
                         {
-                            cmbSubscriptions.Items.Add(azureSubscription);
+                            foreach (AzureSubscription azureSubscription in azureSubscriptions)
+                            {
+                                cmbSubscriptions.Items.Add(azureSubscription);
+                            }
+                            cmbSubscriptions.Enabled = true;
                         }
-                        cmbSubscriptions.Enabled = true;
                     }
 
                     if (_AzureContext.AzureSubscription != null)
