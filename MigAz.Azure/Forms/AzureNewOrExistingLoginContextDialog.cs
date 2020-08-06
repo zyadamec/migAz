@@ -61,10 +61,10 @@ namespace MigAz.Azure.Forms
                     {
                         foreach (AzureTenant azureTenant in azureTenants)
                         {
-                            subscriptionCount += azureTenant.Subscriptions.Count;
-
-                            if (azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
+                            if (azureTenant.Subscriptions != null && azureTenant.Subscriptions.Count > 0) // Only add Tenants that have one or more Subscriptions
                             {
+                                subscriptionCount += azureTenant.Subscriptions.Count;
+
                                 if (azureTenant.Subscriptions.Count == 1 && azureTenant.Subscriptions[0] == azureLoginContextViewer.ExistingContext.AzureSubscription)
                                 {
                                     azureLoginContextViewer.ExistingContext.LogProvider.WriteLog("InitializeDialog", "Not adding Azure Tenant '" + azureTenant.ToString() + "', as it has only one subscription, which is the same as the Existing Azure Context.");
