@@ -100,7 +100,7 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 		# Validate Source Expiration Date(s)
 		foreach ($copyblobdetail in $copyblobdetails)
 		{
-			if ($copyblobdetail.SourceExpiration -ne $null)
+			if ($null -ne $copyblobdetail.SourceExpiration)
 			{
 				$sourceExpirationDate = [datetime] $copyblobdetail.SourceExpiration
                 $TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
@@ -130,7 +130,7 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 		{
 			# Ensure the Storage Account Exists
 			$targetStorageAccount = Get-AzStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -ErrorAction SilentlyContinue
-			if ($targetStorageAccount -eq $null)
+			if ($null -eq $targetStorageAccount)
 			{
 				Write-Host "Target Storage Account '$($copyblobdetail.TargetStorageAccount)' not found.  Attempting to create."
 				New-AzStorageAccount -ResourceGroupName $copyblobdetail.TargetResourceGroup -Name $copyblobdetail.TargetStorageAccount -Location $copyblobdetail.TargetLocation -SkuName $copyblobdetail.TargetStorageAccountType -ErrorAction Stop
@@ -142,12 +142,12 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 
 			# Create destination container if it does not exist
 			$destination_container = Get-AzStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer -ErrorAction SilentlyContinue
-			if ($destination_container -eq $null)
+			if ($null -eq $destination_container)
 			{ 
 				New-AzStorageContainer -Context $destination_context -Name $copyblobdetail.TargetContainer
 			}
 
-			if ($copyblobdetail.SourceAbsoluteUri -eq $null)
+			if ($null -eq $copyblobdetail.SourceAbsoluteUri)
 			{
 				# Create source storage account context
 				$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment -ErrorAction Stop
@@ -177,7 +177,7 @@ If (($StartType -eq "" -and !$CreateResourceGroupError) -or $StartType -eq "Star
 
 			# Updates screen table
 			# cls
-			$copyblobdetails | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+			$copyblobdetails | Select-Object TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 		}
 
 		# Updates file with data from $copyblobdetailsout
@@ -218,7 +218,7 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 
 					$ContinueBlobCopy = $true
 
-			        if ($copyblobdetail.SourceExpiration -ne $null)
+			        if ($null -ne $copyblobdetail.SourceExpiration)
 			        {
                         $sourceExpirationDate = [datetime] $copyblobdetail.SourceExpiration
                         $TimeDiff = New-TimeSpan (Get-Date) $sourceExpirationDate
@@ -234,7 +234,7 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 						Write-Host " - Blob Copy '$($copyblobdetail.TargetBlob)' Completed" -ForegroundColor Green
 						$copyblobdetail.EndTime = Get-Date
 
-						if ($TemplateParameterFile -ne $null -and $copyblobdetail.OutputParameterName -ne $null)
+						if ($TemplateParameterFile -ne $null -and $null -ne $copyblobdetail.OutputParameterName)
 						{
 							$SourceUri = "$($destination_context.BlobEndPoint)$($copyblobdetail.TargetContainer)/$($copyblobdetail.TargetBlob)"
 							Write-Host " - Replacing parameter placeholder '$($copyblobdetail.OutputParameterName)' with '$($SourceUri)' in '$($TemplateParameterFile)'" -ForegroundColor Green
@@ -255,25 +255,25 @@ If (($StartType -eq "" -and !$StartBlobCopyError) -or $StartType -eq "MonitorBlo
 
 			if ($ContinueBlobCopy -eq $true -and $BlobCopyFailure -eq $false)
 			{
-				$copyblobdetails | ? { $_.Status -eq "Pending" } | Sort-Object TargetBlob | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+				$copyblobdetails | Where-Object { $_.Status -eq "Pending" } | Sort-Object TargetBlob | Select-Object TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 				Start-Sleep -Seconds $refreshinterval
 			}
 		}
 
-		$copyblobdetails | Sort-Object Status, TargetBlob | select TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
+		$copyblobdetails | Sort-Object Status, TargetBlob | Select-Object TargetStorageAccount, TargetContainer, TargetBlob, Status, BytesCopied, TotalBytes, StartTime, EndTime | Format-Table -AutoSize
 
 		# Delete used snapshots
 		foreach ($copyblobdetail in $copyblobdetails)
 		{
 			# Create source storage account context
-			if ($copyblobdetail.SourceStorageAccount -ne $null)
+			if ($null -ne $copyblobdetail.SourceStorageAccount)
 			{
 				$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
 				$source_container = Get-AzStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
 				$blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
 
-				if ($blobs.Count > 0)
+				if ($blobs.Count -gt 0)
 				{
 					$blobs[0].Delete()
 				}
@@ -312,14 +312,14 @@ If (($StartType -eq "" -and $BlobCopyFailure) -or $StartType -eq "CancelBlobCopy
     # Delete used snapshots
     foreach ($copyblobdetail in $copyblobdetails)
     {
-		if ($copyblobdetail.SourceStorageAccount -ne $null)
+		if ($null -ne $copyblobdetail.SourceStorageAccount)
 		{
 			# Create source storage account context
 			$source_context = New-AzStorageContext -StorageAccountName $copyblobdetail.SourceStorageAccount -StorageAccountKey $copyblobdetail.SourceKey -Environment $copyblobdetail.SourceEnvironment
 
 			$source_container = Get-AzStorageContainer -Context $source_context -Name $copyblobdetail.SourceContainer
 			$blobs = $source_container.CloudBlobContainer.ListBlobs($copyblobdetail.SourceBlob, $true, "Snapshots") | Where-Object { $_.SnapshotTime -ne $null -and $_.SnapshotTime.DateTime.ToString() -EQ $copyblobdetail.SnapshotTime }
-			if ($blobs.Count > 0)
+			if ($blobs.Count -gt 0)
 			{
 				$blobs[0].Delete()
 			}
@@ -379,7 +379,7 @@ if (($StartType -eq "" -and !$ResourceGroupDeploymentError) -or $StartType -eq "
 {
 	Write-Host "- Removing MigAz Temporary Storage Account(s)"
 
-	$distinctMigAzTempStorage = $copyblobdetails | ? { $_.TargetStorageAccount -like 'migaz*' } | select TargetStorageAccount -Unique
+	$distinctMigAzTempStorage = $copyblobdetails | Where-Object { $_.TargetStorageAccount -like 'migaz*' } | Select-Object TargetStorageAccount -Unique
 	foreach ($migAzTempStorage in $distinctMigAzTempStorage)
 	{
 		Write-Host " * Removing MigAz Temporary Storage Account '$($migAzTempStorage.TargetStorageAccount)'" -ForegroundColor Green
